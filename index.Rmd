@@ -8,6 +8,7 @@ geometry: margin=1in
 colorlinks: true
 lof: true
 lot: true
+bibliography: packages.bib
 biblio-style: apalike
 link-citations: true
 ---

@@ -5,3 +5,5 @@ bookdown::pdf_book:
   keep_tex: true
   includes:
     in_header: preamble.tex
+  citation_package: natbib
+  toc_bib: yes
