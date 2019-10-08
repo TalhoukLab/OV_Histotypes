@@ -1,0 +1,273 @@
+\documentclass[]{report}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+\hypersetup{unicode=true,
+            pdftitle={OV\_Histotypes: Report of Statistical Findings},
+            pdfauthor={Derek Chiu},
+            colorlinks=true,
+            linkcolor=Maroon,
+            citecolor=Blue,
+            urlcolor=Blue,
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{natbib}
+\bibliographystyle{apalike}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{OV\_Histotypes: Report of Statistical Findings}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Derek Chiu}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{2019-10-08}
+
+\let\paragraph\oldparagraph
+\let\subparagraph\oldsubparagraph
+
+\usepackage{titlesec, blindtext, color}
+
+\titleformat{\chapter}[display]
+  {\Huge\bfseries}
+  {}
+  {0pt}
+  {\thechapter.\ }
+
+\titleformat{name=\chapter,numberless}[display]
+  {\Huge\bfseries}
+  {}
+  {0pt}
+  {}
+
+\titlespacing*{\chapter}{0pt}{0pt}{40pt}
+
+\renewcommand{\bibname}{References}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{1}
+\tableofcontents
+}
+\listoftables
+\listoffigures
+\hypertarget{preface}{%
+\chapter*{Preface}\label{preface}}
+\addcontentsline{toc}{chapter}{Preface}
+
+This report of statistical findings describes the classification of ovarian cancer histotypes using data from NanoString CodeSets.
+
+Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang implemented class imbalance techniques, Derek Chiu conducted the normalization and statistical analysis, and Aline Talhouk lead the project.
+
+\hypertarget{introduction}{%
+\chapter{Introduction}\label{introduction}}
+
+Ovarian cancer has five major histotypes: high-grade serous carcinoma (HGSC), low-grade serous carcinoma (LGSC), endometrioid carcinoma (ENOC), mucinous carcinoma (MUC), and clear cell carcinoma (CCOC). A common problem with classifying these histotypes is that there is a class imbalance issue. HGSC dominates the distribution, commonly accounting for 70\% of cases in many patient cohorts, while the other four histotypes are spread over the rest.
+
+In the NanoString CodeSets, we also run into a problem with trying to find suitable control pools to normalize the gene expression. For prospective NanoString runs, the pools can be specifically chosen, but for retrospective runs, we have to utilize a combination of common samples and common genes as references for normalization.
+
+The supervised learning is performed under a consensus framework: we consider various classification algorithms and use evaluation metrics to help making decisions of which methods to carry forward.
+
+\hypertarget{methods}{%
+\chapter{Methods}\label{methods}}
+
+\hypertarget{data-processing}{%
+\section{Data Processing}\label{data-processing}}
+
+There are 3 NanoString CodeSets:
+
+\begin{itemize}
+\tightlist
+\item
+  CS 1: OvCa2103\_C953
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 412
+  \item
+    Genes = 275
+  \end{itemize}
+\item
+  CS 2: PrOTYPE2\_v2\_C1645
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 1223
+  \item
+    Genes = 384
+  \end{itemize}
+\item
+  CS 3: OTTA2014\_C2822
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 5424
+  \item
+    Genes = 532
+  \end{itemize}
+\end{itemize}
+
+These datasets contain raw counts extracted straight from NanoString RCC files.
+
+\hypertarget{housekeeping-genes}{%
+\section{Housekeeping Genes}\label{housekeeping-genes}}
+
+The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log2 housekeeping gene expression from the log2 endogenous gene expression. The updated CodeSet dimensions are now:
+
+\begin{itemize}
+\tightlist
+\item
+  CS 1: OvCa2103\_C953
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 412
+  \item
+    Genes = 256
+  \end{itemize}
+\item
+  CS 2: PrOTYPE2\_v2\_C1645
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 1223
+  \item
+    Genes = 365
+  \end{itemize}
+\item
+  CS 3: OTTA2014\_C2822
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 5424
+  \item
+    Genes = 513
+  \end{itemize}
+\end{itemize}
+
+The number of genes are reduced by 19: 5 housekeeping, 8 negative, 6 positive (the latter 2 types are not used).
+
+\hypertarget{common-samples-and-genes}{%
+\section{Common Samples and Genes}\label{common-samples-and-genes}}
+
+Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found 72 common genes. Using the \texttt{summaryID} identifer, we found 78 common summary IDs, which translated to 320 samples. The number of samples that were found in each CodeSet differed:
+
+\begin{itemize}
+\tightlist
+\item
+  CS 1: OvCa2103\_C953
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 93
+  \item
+    Genes = 72
+  \end{itemize}
+\item
+  CS 2: PrOTYPE2\_v2\_C1645
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 87
+  \item
+    Genes = 72
+  \end{itemize}
+\item
+  CS 3: OTTA2014\_C2822
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 140
+  \item
+    Genes = 72
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{results}{%
+\chapter{Results}\label{results}}
+
+\bibliography{packages.bib}
+\addcontentsline{toc}{chapter}{\bibname}
+
+
+\end{document}
