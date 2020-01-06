@@ -102,5 +102,5 @@ cs1_norm_ref %>% dplyr::count(hist_gr)
 cs1_data <- dplyr::select_if(cs1_norm_ref, is.double)
 cs1_class <- cs1_norm_ref[["revHist"]]
 
-saveRDS(cs1_data, here::here("data/cs1_data.rds"))
-saveRDS(cs1_class, here::here("data/cs1_class.rds"))
+# saveRDS(cs1_data, here::here("data/cs1_data.rds"))
+# saveRDS(cs1_class, here::here("data/cs1_class.rds"))
