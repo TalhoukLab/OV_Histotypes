@@ -1,0 +1,403 @@
+---
+title: "Calibrate_CS1"
+author: "Cathy Tang"
+date: "October 31, 2018"
+output: html_document
+---
+
+### 0. Setup
+
+```{r}
+library(tidyverse)
+source("/Users/administrator/Desktop/nanostringr/R/CCplot.R")
+source("/Users/administrator/Desktop/nanostringr/R/HKnorm.R")
+source("/Users/administrator/Desktop/nanostringr/R/check.R")
+
+# data
+load("/Users/administrator/Desktop/data/otta/data/rawOVCA2.rda") # CS1: OvCa2103_C953
+load("/Users/administrator/Desktop/data/otta/data/rawOTTA.rda")  # CS3: OTTA2014_C2822
+load("/Users/administrator/Desktop/data/otta/data/rawPROT.rda")  # CS2: PrOTYPE2_v2_C1645
+
+CS1 <- rawOVCA2
+CS2 <- rawPROT
+CS3 <- rawOTTA
+
+CS1 <- HKnorm(CS1)
+CS2 <- HKnorm(CS2)
+CS3 <- HKnorm(CS3)
+
+rownames(CS1) <- CS1[["Name"]]
+rownames(CS2) <- CS2[["Name"]]
+rownames(CS3) <- CS3[["Name"]]
+
+# Check for common samples among codesets
+load("/Users/administrator/Desktop/data/otta/data/annot.rda")
+exp0 <- annot
+t <- table(exp0$summaryID[exp0$RCC.geneRLF %in% c("OTTA2014_C2822","OvCa2103_C953","PrOTYPE2_v2_C1645")],
+           exp0$RCC.geneRLF[exp0$RCC.geneRLF %in% c("OTTA2014_C2822","OvCa2103_C953","PrOTYPE2_v2_C1645")]) %>% 
+  data.frame()
+t_df <- spread(t, Var2, Freq) %>% dplyr::mutate(s=rowSums(.[, -1]))
+for (i in 1:nrow(t_df)) {
+  if (t_df$OTTA2014_C2822[i] != 0 & t_df$OvCa2103_C953[i] != 0 & t_df$PrOTYPE2_v2_C1645[i] != 0) {
+    t_df$res[i] <- TRUE
+  } else {
+    t_df$res[i] <- FALSE
+  }
+}
+
+exp0_cs1 <- filter(exp0, RCC.geneRLF == "OvCa2103_C953")
+exp0_cs2 <- filter(exp0, RCC.geneRLF == "PrOTYPE2_v2_C1645")
+exp0_cs3 <- filter(exp0, RCC.geneRLF == "OTTA2014_C2822")
+
+sample_common_genes <- intersect(CS2$Name, intersect(CS1$Name, CS3$Name))[c(57, 19, 70, 4, 36, 16, 46, 23, 69)]
+# 9 randomly selected genes for plot
+```
+
+
+### 1. Uncorrected results
+
+```{r fig.width=8, fig.height=8}
+# find common samples between cs1 and cs3
+common_samples_cs1_cs3 <- filter(t_df, (OvCa2103_C953 > 0 & OTTA2014_C2822 > 0))[["Var1"]] %>% as.character()  # 103
+common_samples_cs1 <- rep(NA, length(common_samples_cs1_cs3))
+for (i in 1:length(common_samples_cs1_cs3)) {
+  common_samples_cs1[i] <- (exp0_cs1$RCC.File.Name[which(exp0_cs1$summaryID == common_samples_cs1_cs3[i])])[1]
+}
+common_samples_cs3 <- rep(NA, length(common_samples_cs1_cs3))
+for (i in 1:length(common_samples_cs1_cs3)) {
+  common_samples_cs3[i] <- (exp0_cs3$RCC.File.Name[which(exp0_cs3$summaryID == common_samples_cs1_cs3[i])])[1]
+}
+
+df_check_names <- data.frame(summaryID = as.character(common_samples_cs1_cs3),
+                             CS1_filename = as.character(paste("X",common_samples_cs1,sep="")),
+                             CS3_filename = as.character(paste("X",common_samples_cs3,sep="")))
+
+# find common genes between cs1 and cs3
+common_genes_cs1_cs3 <- intersect(CS1$Name, CS3$Name) # 79
+
+# df of gene name and expression in cs1 and cs3
+cs1 <- CS1[common_genes_cs1_cs3, c("Name", paste("X",common_samples_cs1, sep = ""))] %>% 
+  reshape2::melt(id.var = "Name", value.name = "gene_exp_cs1")
+cs3 <- CS3[common_genes_cs1_cs3, c("Name", paste("X",common_samples_cs3, sep = ""))] %>% 
+  reshape2::melt(id.var = "Name", value.name = "gene_exp_cs3")
+
+# CCplot
+par(mfrow=c(3,3))
+for (name in sample_common_genes) {
+  cat(name,"\n")
+  tmp_cs1 <- filter(cs1, Name == name)
+  tmp_cs3 <- filter(cs3, Name == name)
+  
+  # check the common sample names match in two codesets
+  tmp_df <- data.frame(Name = as.character(tmp_cs1[["Name"]]),
+                       Name1 = as.character(tmp_cs1[["variable"]]),
+                       Name3 = as.character(tmp_cs3[["variable"]]))
+  tmp_res <- rep(NA, nrow(tmp_df))
+  for (j in 1:nrow(tmp_df)) {
+    tmp_res[j] <- 
+      df_check_names$CS3_filename[which(df_check_names$CS1_filename == tmp_df$Name1[j])] == tmp_df$Name3[j]
+  }
+  
+  if (all(tmp_res) == TRUE) {cat("TRUE\n")} else {cat("FALSE\n")}
+  
+  CCplot(tmp_cs1$gene_exp_cs1, (tmp_cs3$gene_exp_cs3), Ptype = "scatter")
+  title(main=name, xlab="CS1", ylab="CS3")
+}
+```
+
+
+### 2. Using common samples between cs1 and cs3 as reference to calibrate cs1
+
+```{r fig.width=8, fig.height=8}
+# randomly choose 10 common samples as reference (not as good as selecting 15 references)
+# ref_cs1_names <- common_samples_cs1[c(37, 13, 27, 36, 42, 81, 55, 32, 92, 16)]
+# ref_cs3_names <- common_samples_cs3[c(37, 13, 27, 36, 42, 81, 55, 32, 92, 16)]
+
+# randomly choose 15 common samples as reference
+ref_cs1_names <- common_samples_cs1[c(20, 72, 82, 38, 37, 3, 22, 71, 26, 75, 65, 90, 13, 66, 10)]
+ref_cs3_names <- common_samples_cs3[c(20, 72, 82, 38, 37, 3, 22, 71, 26, 75, 65, 90, 13, 66, 10)]
+
+ref_cs1 <- CS1[common_genes_cs1_cs3, c("Name", paste0("X",ref_cs1_names))]
+ref_cs3 <- CS3[common_genes_cs1_cs3, c("Name", paste0("X",ref_cs3_names))] 
+cs1_common <- CS1[common_genes_cs1_cs3, c("Name", paste0("X",common_samples_cs1))]
+cs3_common <- CS3[common_genes_cs1_cs3, c("Name", paste0("X",common_samples_cs3))]
+
+# calculate batch effect and normalize cs1
+mR1 <- tibble::enframe(rowMeans(ref_cs3[, -1]), name = "Name", value = "expR1")
+mR2 <- tibble::enframe(rowMeans(ref_cs1[, -1]), name = "Name", value = "expR2")
+
+CS1_tmp <- dplyr::inner_join(mR1, mR2, by = "Name") %>%
+  dplyr::transmute(Name, be = expR1 - expR2) %>%
+  dplyr::inner_join(cs1_common, by = "Name")
+
+CS1_norm <- CS1_tmp %>%
+  as.data.frame() %>%
+  tibble::column_to_rownames("Name") %>%
+  dplyr::select(-c(be)) %>%
+  apply(2, `+`, CS1_tmp[["be"]]) %>%
+  as.data.frame()
+CS1_norm$Name <- rownames(CS1_norm)
+
+# df of gene name and expression in cs1 and cs3
+cs1_m1 <- CS1_norm %>% 
+  reshape2::melt(id.var = "Name", value.name = "gene_exp_cs1") %>% 
+  dplyr::mutate(ref = ifelse(variable %in% paste0("X",ref_cs1_names), TRUE, FALSE))
+cs3_m1 <- cs3_common %>% 
+  reshape2::melt(id.var = "Name", value.name = "gene_exp_cs3") %>% 
+  dplyr::mutate(ref = ifelse(variable %in% paste0("X",ref_cs3_names), TRUE, FALSE))
+
+# CCplot
+# red points are the references (common samples between cs1 and cs3) that are used for calibration
+par(mfrow=c(3,3))
+for (name in sample_common_genes) {
+  cat(name, "\n")
+  tmp_cs1 <- filter(cs1_m1, Name == name)
+  tmp_cs3 <- filter(cs3_m1, Name == name)
+  
+  tmp_df <- data.frame(Name = as.character(tmp_cs1[["Name"]]),
+                       Name1 = as.character(tmp_cs1[["variable"]]),
+                       Name3 = as.character(tmp_cs3[["variable"]]),
+                       stringsAsFactors=FALSE)
+  tmp_res <- rep(NA, nrow(tmp_df))
+  for (j in 1:nrow(tmp_df)) {
+    tmp_res[j] <- 
+      df_check_names$CS3_filename[which(df_check_names$CS1_filename == tmp_df$Name1[j])] == tmp_df$Name3[j]
+  }
+  
+  if (all(tmp_res) == TRUE) {cat("TRUE\n")} else {cat("FALSE\n")}
+  
+  #CCplot(log(tmp_cs1$gene_exp_cs1), log(tmp_cs3$gene_exp_cs3), Ptype = "scatter")
+  CCplot((tmp_cs1$gene_exp_cs1[tmp_cs1$ref == FALSE]), 
+         (tmp_cs3$gene_exp_cs3[tmp_cs3$ref == FALSE]), Ptype = "scatter")
+  title(main=name, xlab="CS1", ylab="CS3")
+  points(tmp_cs1$gene_exp_cs1[tmp_cs1$ref == TRUE], 
+         tmp_cs3$gene_exp_cs3[tmp_cs3$ref == TRUE], col = "red", pch=20)
+}
+```
+
+
+### 3. Using pools in cs2 with weighted average to recreate pseudo pools in cs1, then calibrate cs1 using the pools
+
+```{r fig.width=8, fig.height=8}
+# find the same samples in cs1 that used to form pools in cs2 (information come from Mike's excel sheet)
+pool_cs1_colnames <- c(
+  "20110428_OvCa2103-C953-1-1_VOA120-FFPE_10.RCC",
+  "20110428_OvCa2103-C953-1-2_VOA156-FFPE_02.RCC",
+  "20110428_OvCa2103-C953-1-2_VOA232-FFPE_09.RCC",
+  "20110428_OvCa2103-C953-1-2_VOA260-FFPE_12.RCC",
+  "20110506_OvCa2103c953-4-2_VOA334-FRZN_09.RCC",
+  "20110429_2103c953-2-1_01_09.RCC",
+  "20110429_2103c953-2-2_01_05.RCC",
+  "20110503_OvCa2103c953-3-2_ffpe_02.RCC",
+  "20120209_OvCa2103c953-12-2_VOA203B-FFPE_05.RCC",
+  "20110506_OvCa2103c953-4-2_VOA351-FRZN_10.RCC",
+  "20110506_OvCa2103c953-4-2_VOA729-FRZN_12.RCC") %>% 
+  gsub("-", "",.) %>% 
+  gsub(".RCC", "",.)
+pool_cs1 <- CS1[common_genes_cs1_cs3, c("Name", paste("X", pool_cs1_colnames, sep = ""))] %>% 
+  .[, c(1, 4:9, 12)] # select these 7 because they were also found in cs3 (matched by ottaID as below)
+
+# find the corresponding samples in cs3 using ottaid
+ottaid <- paste("TVAN20", 
+                #c(120, 156, 232, 260, 334, 352, 417, 667, 203, 351, 729),
+                c(232, 260, 334, 352, 417, 667, 729),  # only 7 were found
+                sep = "")
+pool_cs3_colnames <- rep(NA, length(ottaid))
+for (i in 1:length(ottaid)) {
+  pool_cs3_colnames[i] <- exp0_cs3$RCC.File.Name[which(exp0_cs3$ottaID == ottaid[i])][1]
+}
+pool_cs3 <- CS3[common_genes_cs1_cs3, c("Name", paste("X", pool_cs3_colnames, sep = ""))]
+
+# calculate weights using excel file for only those 7 samples
+pool_weights <- c(1.6, 1.9, 7.3, 3.3, 1.7, 3, 4.6)/3
+pool_cs1[, 2] <- pool_cs1[, 2]*pool_weights[1]
+pool_cs1[, 3] <- pool_cs1[, 3]*pool_weights[2]
+pool_cs1[, 4] <- pool_cs1[, 4]*pool_weights[3]
+pool_cs1[, 5] <- pool_cs1[, 5]*pool_weights[4]
+pool_cs1[, 6] <- pool_cs1[, 6]*pool_weights[5]
+pool_cs1[, 7] <- pool_cs1[, 7]*pool_weights[6]
+pool_cs1[, 8] <- pool_cs1[, 8]*pool_weights[7]
+
+# ??: cs3 samples are already weighted?
+
+# calculate be and calibrate cs1
+mR1 <- tibble::enframe(rowMeans(pool_cs3[, -1]), name = "Name", value = "expR1")
+mR2 <- tibble::enframe(rowMeans(pool_cs1[, -1]), name = "Name", value = "expR2")
+
+cs1_common <- CS1[common_genes_cs1_cs3, c("Name", paste0("X",common_samples_cs1))]
+cs3_common <- CS3[common_genes_cs1_cs3, c("Name", paste0("X",common_samples_cs3))]
+
+CS1_tmp <- dplyr::inner_join(mR1, mR2, by = "Name") %>%
+  dplyr::transmute(Name, be = expR1 - expR2) %>%
+  dplyr::inner_join(cs1_common, by = "Name")
+
+CS1_norm <- CS1_tmp %>%
+  as.data.frame() %>%
+  tibble::column_to_rownames("Name") %>%
+  dplyr::select(-c(be)) %>%
+  apply(2, `+`, CS1_tmp[["be"]]) %>%
+  as.data.frame()
+CS1_norm$Name <- rownames(CS1_norm)
+
+# df of gene name and expression
+cs1_m2 <- CS1_norm %>% 
+  reshape2::melt(id.var = "Name", value.name = "gene_exp_cs1") %>% 
+  dplyr::mutate(ref = ifelse(variable %in% colnames(pool_cs1)[-c(4,8)], TRUE, FALSE)) 
+cs3_m2 <- cs3_common %>% 
+  reshape2::melt(id.var = "Name", value.name = "gene_exp_cs3") %>% 
+  dplyr::mutate(ref = ifelse(variable %in% colnames(pool_cs3)[-c(4,8)], TRUE, FALSE))
+  # remove two extra samples in cs3 because they are not in common sample names of cs1
+
+# CCplot
+# red points are the references (pseudo pools in cs1 and corresponding samples in cs3) that are used for calibration
+par(mfrow=c(3,3))
+for (name in sample_common_genes) {
+  cat(name, "\n")
+  tmp_cs1 <- filter(cs1_m2, Name == name)
+  tmp_cs3 <- filter(cs3_m2, Name == name)
+  
+  tmp_df <- data.frame(Name = as.character(tmp_cs1[["Name"]]),
+                       Name1 = as.character(tmp_cs1[["variable"]]),
+                       Name3 = as.character(tmp_cs3[["variable"]]),
+                       stringsAsFactors=FALSE)
+  tmp_res <- rep(NA, nrow(tmp_df))
+  for (j in 1:nrow(tmp_df)) {
+    tmp_res[j] <-
+      df_check_names$CS3_filename[which(df_check_names$CS1_filename == tmp_df$Name1[j])] == tmp_df$Name3[j]
+  }
+
+  if (all(tmp_res) == TRUE) {cat("TRUE\n")} else {cat("FALSE\n")}
+  
+  CCplot((tmp_cs1$gene_exp_cs1[tmp_cs1$ref == FALSE]), 
+         (tmp_cs3$gene_exp_cs3[tmp_cs3$ref == FALSE]), Ptype = "scatter")
+  title(main=name, xlab="CS1", ylab="CS3")
+  points(tmp_cs1$gene_exp_cs1[tmp_cs1$ref == TRUE], 
+         tmp_cs3$gene_exp_cs3[tmp_cs3$ref == TRUE], col = "red", pch=20)
+}
+```
+
+
+### 4. Two stage
+#### Calibrate cs1 to cs2 using common samples as references; combine calibrated cs1 with cs2; calibrate the combined new cs2 to cs3 using pools in cs2 and cs3
+
+```{r fig.width=8, fig.height=8}
+# find reference samples between cs1 and cs2
+common_samples_cs1_cs2 <- filter(t_df, (OvCa2103_C953 > 0 & PrOTYPE2_v2_C1645 > 0))[["Var1"]] %>% as.character() #178
+common_samples_cs1 <- rep(NA, length(common_samples_cs1_cs2))
+for (i in 1:length(common_samples_cs1_cs2)) {
+  common_samples_cs1[i] <- (exp0_cs1$RCC.File.Name[which(exp0_cs1$summaryID == common_samples_cs1_cs2[i])])[1]
+}
+common_samples_cs2 <- rep(NA, length(common_samples_cs1_cs2))
+for (i in 1:length(common_samples_cs1_cs2)) {
+  common_samples_cs2[i] <- (exp0_cs2$RCC.File.Name[which(exp0_cs2$summaryID == common_samples_cs1_cs2[i])])[1]
+}
+
+common_genes_cs1_cs2 <- intersect(CS1$Name, CS2$Name) # 122
+
+# ref_cs1_names <- common_samples_cs1[c(70,49,34,102,17,125,127,32,117,69)]
+# ref_cs2_names <- common_samples_cs2[c(70,49,34,102,17,125,127,32,117,69)]
+
+ref_cs1_names <- common_samples_cs1[c(139,2,10,49,36,103,70,112,16,52,119,171,165,6,145)]
+ref_cs2_names <- common_samples_cs2[c(139,2,10,49,36,103,70,112,16,52,119,171,165,6,145)]
+
+ref_cs1 <- CS1[common_genes_cs1_cs2, c("Name", paste0("X",ref_cs1_names))]
+ref_cs2 <- CS2[common_genes_cs1_cs2, c("Name", paste0("X",ref_cs2_names))] 
+cs1_common <- CS1[common_genes_cs1_cs2, ] %>% dplyr::select(-c(Code.Class, Accession))
+cs2_common <- CS2[common_genes_cs1_cs2, ] %>% dplyr::select(-c(Code.Class, Accession))
+
+# calculate be and calibrate cs1
+mR1 <- tibble::enframe(rowMeans(ref_cs2[, -1]), name = "Name", value = "expR1")
+mR2 <- tibble::enframe(rowMeans(ref_cs1[, -1]), name = "Name", value = "expR2")
+
+CS1_tmp <- dplyr::inner_join(mR1, mR2, by = "Name") %>%
+  dplyr::transmute(Name, be = expR1 - expR2) %>%
+  dplyr::inner_join(cs1_common, by = "Name")
+
+CS1_norm <- CS1_tmp %>%
+  as.data.frame() %>%
+  tibble::column_to_rownames("Name") %>%
+  dplyr::select(-c(be)) %>%
+  apply(2, `+`, CS1_tmp[["be"]]) %>%
+  as.data.frame()
+
+# cbind calibrated cs1 to cs2 -> cs1' should be equivalent to cs2
+new_CS2 <- cbind(cs2_common, CS1_norm)
+
+# find pools in new_cs2 and cs3
+pool_cs2_names <- colnames(new_CS2)[(grepl("POOL", colnames(new_CS2), ignore.case = TRUE))]  # 27
+pool_cs3_names <- colnames(CS3)[(grepl("POOL", colnames(CS3), ignore.case = TRUE))]  # 58
+
+common_genes_newcs2_cs3 <- intersect(new_CS2$Name, CS3$Name)  # 72
+
+pool_cs2 <- new_CS2[common_genes_newcs2_cs3, c("Name", pool_cs2_names)]
+pool_cs3 <- CS3[common_genes_newcs2_cs3, c("Name", pool_cs3_names)] 
+newcs2_common <- new_CS2[common_genes_newcs2_cs3, ]
+cs3_common <- CS3[common_genes_newcs2_cs3, ]
+
+# calculate be and calibrate new_cs2 -> equivalent to cs3
+mR1 <- tibble::enframe(rowMeans(pool_cs3[, -1]), name = "Name", value = "expR1")
+mR2 <- tibble::enframe(rowMeans(pool_cs2[, -1]), name = "Name", value = "expR2")
+
+newCS2_tmp <- dplyr::inner_join(mR1, mR2, by = "Name") %>%
+  dplyr::transmute(Name, be = expR1 - expR2) %>%
+  dplyr::inner_join(newcs2_common, by = "Name")
+
+newCS2_norm <- newCS2_tmp %>%
+  as.data.frame() %>%
+  tibble::column_to_rownames("Name") %>%
+  dplyr::select(-c(be)) %>%
+  apply(2, `+`, newCS2_tmp[["be"]]) %>%
+  as.data.frame()
+
+# find common samples between newCS2_norm and other_CS3 for plot
+res_colnum <- c()
+res_cs3col <- c()
+res_cs2col <- c()
+for (i in 1:ncol(newCS2_norm)) {
+  if (any(paste("X",exp0_cs1$RCC.File.Name, sep = "") == colnames(newCS2_norm)[i])) {
+    tmp <- exp0_cs3$RCC.File.Name[exp0_cs3$ottaID == 
+                             exp0_cs1$ottaID[which(paste0("X",exp0_cs1$RCC.File.Name) 
+                                                                    == colnames(newCS2_norm)[i])]][1]
+    if (!is.na(tmp)) {res_colnum <- c(res_colnum, i)}
+    if (!is.na(tmp)) {res_cs3col <- c(res_cs3col, tmp)}
+    if (!is.na(tmp)) {res_cs2col <- c(res_cs2col, colnames(newCS2_norm)[i])}
+  } else if (any(paste("X",exp0_cs2$RCC.File.Name, sep = "") == colnames(newCS2_norm)[i])) {
+    tmp <- exp0_cs3$RCC.File.Name[exp0_cs3$ottaID == 
+                                    exp0_cs2$ottaID[which(paste0("X",exp0_cs2$RCC.File.Name) 
+                                                          == colnames(newCS2_norm)[i])]][1]
+    if (!is.na(tmp)) {res_colnum <- c(res_colnum, i)}
+    if (!is.na(tmp)) {res_cs3col <- c(res_cs3col, tmp)}
+    if (!is.na(tmp)) {res_cs2col <- c(res_cs2col, colnames(newCS2_norm)[i])}
+  } else {}
+}
+
+common_samples_newcs2 <- newCS2_norm[common_genes_newcs2_cs3, res_colnum]
+common_samples_cs3 <- cs3_common[common_genes_newcs2_cs3, paste0("X",res_cs3col)]
+common_samples_newcs2$Name <- rownames(common_samples_newcs2)
+common_samples_cs3$Name <- rownames(common_samples_cs3)
+
+cs1_m3 <- common_samples_newcs2 %>% 
+  reshape2::melt(id.var = "Name", value.name = "gene_exp_cs1") %>% 
+  dplyr::mutate(ref = ifelse(variable %in% pool_cs2_names[pool_cs2_names %in% res_cs2col == TRUE], TRUE, FALSE)) 
+
+tmp <- res_cs3col[which(pool_cs2_names %in% pool_cs2_names[pool_cs2_names %in% res_cs2col == TRUE])]
+cs3_m3 <- common_samples_cs3 %>% 
+  reshape2::melt(id.var = "Name", value.name = "gene_exp_cs3") %>% 
+  dplyr::mutate(ref = ifelse(variable %in% paste0("X", tmp), TRUE, FALSE))
+
+# CCplot
+# red points are common samples in pools of cs2 and cs3 only, the references in cs1 and cs2 are intermediate and are not labeled.
+par(mfrow=c(3,3))
+for (name in sample_common_genes) {
+  cat(name, "\n")
+  tmp_cs1 <- filter(cs1_m3, Name == name)
+  tmp_cs3 <- filter(cs3_m3, Name == name)
+  
+  CCplot((tmp_cs1$gene_exp_cs1[tmp_cs1$ref == FALSE]), 
+         (tmp_cs3$gene_exp_cs3[tmp_cs3$ref == FALSE]), Ptype = "scatter")
+  title(main=name, xlab="CS1", ylab="CS3")
+  points(tmp_cs1$gene_exp_cs1[tmp_cs1$ref == TRUE], 
+         tmp_cs3$gene_exp_cs3[tmp_cs3$ref == TRUE], col = "red", pch=20)
+}
+```
+

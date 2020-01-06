@@ -1,0 +1,206 @@
+---
+title: "CodeSet 2 Validation"
+output: 
+  pdf_document: 
+    fig_height: 8
+    fig_width: 8
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+```{r processing}
+# CodeSet Processing ------------------------------------------------------
+source(here::here("validation/cs_process.R"))
+```
+
+```{r methods}
+# Dataset Split -----------------------------------------------------------
+
+# CS2 gene order
+cs2_genes <- names(cs2_clean)[-1:-2]
+
+# Split CS2 common samples into Reference and Validation sets
+# Reference set: duplicate samples
+cs2_ref <- cs2_clean %>%
+  dplyr::filter(duplicated(ottaID) | duplicated(ottaID, fromLast = TRUE)) %>%
+  dplyr::select(-FileName)
+
+# Validation set: unique samples
+cs2_val <- dplyr::anti_join(cs2_clean, cs2_ref, by = "ottaID") %>%
+  dplyr::select(-FileName)
+
+
+# No Normalization --------------------------------------------------------
+
+# Sort CS2 validation set without normalization to preserve sample order
+cs2_val_norm0 <- dplyr::arrange(cs2_val, ottaID)
+
+# Extract CS3 samples corresponding to CS2 validation set without normalization
+# Averaged gene expression within duplicates
+cs3_val_norm0 <- cs3_clean %>%
+  dplyr::select(names(cs2_val_norm0)) %>%
+  dplyr::semi_join(cs2_val_norm0, by = "ottaID") %>%
+  dplyr::group_by(ottaID) %>%
+  dplyr::summarize_if(is.double, mean)
+
+
+# Pool Method -------------------------------------------------------------
+
+# Pool set: pool samples from CS2
+pool_samples <-
+  gsub("-|\\.RCC", "", grep("POOL", pools[["CS2-FileName"]], value = TRUE))
+cs2_pools <- dplyr::select(cs2_norm, Name, paste0("X", pool_samples))
+
+# Locked down reference pools weights
+weights <- c("Pool1", "Pool2", "Pool3") %>%
+  purrr::set_names() %>%
+  purrr::map_dbl(~ mean(grepl(., names(ref_pools), ignore.case = TRUE)))
+
+# Weighted mean gene expression for CS2 pools (using reference pools weights)
+cs2_pools_mgx <- weights %>%
+  purrr::imap_dfc(~ .x * rowMeans(dplyr::select(cs2_pools, dplyr::matches(.y)))) %>%
+  dplyr::transmute(Name = cs2_pools[["Name"]], cs2_exp = rowSums(.))
+
+# Mean gene expression for CS3 reference pools
+cs3_pools_mgx <-
+  tibble::enframe(rowMeans(ref_pools), name = "Name", value = "cs3_exp")
+
+# Transposed validation set
+cs2_val_t <- cs2_val %>%
+  tidyr::gather(Name, value, -1) %>%
+  tidyr::spread(ottaID, value)
+
+# Normalize each gene by adding batch effect (diff in mean gx)
+cs2_val_norm1 <-
+  dplyr::inner_join(cs3_pools_mgx, cs2_pools_mgx, by = "Name") %>%
+  dplyr::transmute(Name, be = cs3_exp - cs2_exp) %>%
+  dplyr::inner_join(cs2_val_t, by = "Name") %>%
+  tidyr::gather(ottaID, exp, -1:-2) %>%
+  dplyr::transmute(Name = factor(Name, levels = cs2_genes), ottaID, exp = be + exp) %>%
+  tidyr::spread(Name, exp)
+
+
+# Reference Method --------------------------------------------------------
+
+# Corresponding samples in CS3 found in CS2 reference set
+cs3_ref <- cs3_clean %>%
+  dplyr::semi_join(cs2_ref, by = "ottaID") %>%
+  dplyr::select(cs2_genes)
+
+# Remove non-numeric column names
+cs2_ref2 <- dplyr::select_if(cs2_ref, is.double)
+cs2_val2 <- dplyr::select_if(cs2_val, is.double)
+
+# Normalize by reference method using reference samples
+cs2_val_norm2 <- nanostringr::refMethod(cs2_val2, cs2_ref2, cs3_ref) %>%
+  tibble::as_tibble() %>%
+  tibble::add_column(ottaID = cs2_val[["ottaID"]], .before = 1) %>%
+  dplyr::arrange(ottaID)
+```
+
+```{r validation}
+# Method Comparisons ------------------------------------------------------
+
+# Compare cs2_val_norm0, cs2_val_norm1, cs2_val_norm2, with cs3_val_norm0
+cs_combined <-
+  tibble::lst(cs2_val_norm0, cs2_val_norm1, cs2_val_norm2, cs3_val_norm0) %>%
+  dplyr::bind_rows(.id = "dataset") %>%
+  tidyr::gather(gene, exp, -1:-2, factor_key = TRUE) %>%
+  tidyr::spread(dataset, exp)
+
+# Common plotting layers
+n_samples <- dplyr::n_distinct(cs_combined[["ottaID"]])
+layers <- list(
+  geom_point(alpha = 0.3),
+  geom_abline(slope = 1, intercept = 0, color = "blue"),
+  facet_wrap(~ gene, nrow = 8, ncol = 9),
+  labs(
+    y = "CS3 No Normalization",
+    title = paste0("CS2 Validation Set (n=", n_samples,
+                   ") vs. Corresponding CS3 Samples")
+  )
+)
+
+# Scatterplots of each CS2 dataset vs CS3
+p0 <- ggplot(cs_combined, aes(cs2_val_norm0, cs3_val_norm0)) +
+  xlab("CS2 No Normalization") +
+  layers
+print(p0)
+
+p1 <- ggplot(cs_combined, aes(cs2_val_norm1, cs3_val_norm0)) +
+  xlab("CS2 Pools Normalization") +
+  layers
+print(p1)
+
+p2 <- ggplot(cs_combined, aes(cs2_val_norm2, cs3_val_norm0)) +
+  xlab("CS2 Reference Normalization") +
+  layers
+print(p2)
+
+
+# Concordance Histograms --------------------------------------------------
+
+# Concordance measures between samples of same gene, for each dataset comparison
+all_metrics <- cs_combined %>%
+  tidyr::gather(Methods, cs2_val_norm, dplyr::matches("cs2")) %>%
+  dplyr::mutate(
+    Methods = dplyr::recode_factor(
+      Methods,
+      cs2_val_norm0 = "CS2 None vs. CS3 None",
+      cs2_val_norm1 = "CS2 Pools vs. CS3 None",
+      cs2_val_norm2 = "CS2 Common vs. CS3 None"
+    )
+  ) %>%
+  dplyr::group_by(Methods, ottaID) %>%
+  dplyr::summarize(
+    R2 = cor(cs2_val_norm, cs3_val_norm0) ^ 2,
+    Ca = epiR::epi.ccc(cs2_val_norm, cs3_val_norm0)[["C.b"]],
+    Rc = epiR::epi.ccc(cs2_val_norm, cs3_val_norm0)[["rho.c"]][["est"]]
+  ) %>%
+  dplyr::ungroup() %>%
+  tidyr::gather(Metric, Expression, c("R2", "Ca", "Rc"), factor_key = TRUE)
+
+# Plot all combinations of cross-dataset concordance measure histograms
+p <- ggplot(all_metrics, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  facet_grid(rows = vars(Methods), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2 Datasets vs. CS3 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p)
+```
+
+```{r distributions}
+# Histotype Distributions -------------------------------------------------
+
+# All CodeSet Counts
+all_hist <- hist %>% dplyr::filter(!is.na(revHist))
+
+all_hist %>%
+  dplyr::count(CodeSet, hist_gr) %>%
+  tidyr::spread(CodeSet, n, fill = 0L) %>% 
+  knitr::kable(caption = "All CodeSet Histotype Groups")
+
+all_counts <- all_hist %>% dplyr::count(CodeSet, revHist)
+all_counts %>%
+  tidyr::spread(CodeSet, n, fill = 0L) %>% 
+  knitr::kable(caption = "All CodeSet Histotypes")
+
+# Counts by CodeSet
+all_counts %>% 
+  dplyr::filter(CodeSet == "CS1") %>% 
+  knitr::kable(caption = "CS1 Histotypes")
+all_counts %>% 
+  dplyr::filter(CodeSet == "CS2") %>% 
+  knitr::kable(caption = "CS2 Histotypes")
+all_counts %>% 
+  dplyr::filter(CodeSet == "CS3") %>% 
+  knitr::kable(caption = "CS3 Histotypes")
+```
