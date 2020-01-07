@@ -1,6 +1,8 @@
 bookdown::gitbook:
   lib_dir: lib
   split_by: chapter+number
+  config:
+    download: pdf
 bookdown::pdf_book:
   keep_tex: true
   includes:
