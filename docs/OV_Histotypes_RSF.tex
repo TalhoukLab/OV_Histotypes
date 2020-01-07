@@ -37,7 +37,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={OV\_Histotypes: Report of Statistical Findings},
+  pdftitle={Ovarian Cancer Histotypes: Report of Statistical Findings},
   pdfauthor={Derek Chiu},
   colorlinks=true,
   linkcolor=Maroon,
@@ -93,9 +93,9 @@
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
 
-\title{OV\_Histotypes: Report of Statistical Findings}
+\title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-01-06}
+\date{2020-01-07}
 
 \begin{document}
 \maketitle
@@ -127,10 +127,13 @@ The supervised learning is performed under a consensus framework: we consider va
 \hypertarget{methods}{%
 \chapter{Methods}\label{methods}}
 
-\begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/setup-02-1} \end{center}
-
 \hypertarget{data-processing}{%
 \section{Data Processing}\label{data-processing}}
+
+Normalizing CS2 to CS3 can easily follow the PrOTYPE method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
+
+\hypertarget{raw-data}{%
+\subsection{Raw Data}\label{raw-data}}
 
 There are 3 NanoString CodeSets:
 
@@ -171,7 +174,7 @@ There are 3 NanoString CodeSets:
 These datasets contain raw counts extracted straight from NanoString RCC files.
 
 \hypertarget{housekeeping-genes}{%
-\section{Housekeeping Genes}\label{housekeeping-genes}}
+\subsection{Housekeeping Genes}\label{housekeeping-genes}}
 
 The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log2 housekeeping gene expression from the log2 endogenous gene expression. The updated CodeSet dimensions are now:
 
@@ -212,7 +215,7 @@ The first normalization step is to normalize all endogenous genes to housekeepin
 The number of genes are reduced by 19: 5 housekeeping, 8 negative, 6 positive (the latter 2 types are not used).
 
 \hypertarget{common-samples-and-genes}{%
-\section{Common Samples and Genes}\label{common-samples-and-genes}}
+\subsection{Common Samples and Genes}\label{common-samples-and-genes}}
 
 Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found 72 common genes. Using the \texttt{summaryID} identifer, we found 78 common summary IDs, which translated to 320 samples. The number of samples that were found in each CodeSet differed:
 
@@ -251,7 +254,7 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
 \end{itemize}
 
 \hypertarget{cs1-training-set-generation}{%
-\section{CS1 Training Set Generation}\label{cs1-training-set-generation}}
+\subsection{CS1 Training Set Generation}\label{cs1-training-set-generation}}
 
 We use the reference method to normalize CS1 to CS3.
 
@@ -292,7 +295,7 @@ We use the reference method to normalize CS1 to CS3.
 The final CS1 training set has 304 samples on 72 genes after normalization and keeping only the major histotypes of interest.
 
 \hypertarget{cs2-training-set-generation}{%
-\section{CS2 Training Set Generation}\label{cs2-training-set-generation}}
+\subsection{CS2 Training Set Generation}\label{cs2-training-set-generation}}
 
 We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOTYPE normalization when there are available pools.
 
@@ -322,6 +325,289 @@ We use the pool method to normalize CS2 to CS3 so we can be consistent with the 
 
 The final CS2 training set has 945 samples on 136 (common) genes after normalization
 and keeping ony the major histotypes of interest.
+
+\hypertarget{classification}{%
+\section{Classification}\label{classification}}
+
+We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1.
+
+\begin{itemize}
+\tightlist
+\item
+  Classifiers:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Random Forest
+  \item
+    Adaboost
+  \item
+    LDA
+  \item
+    SVM
+  \item
+    K-Nearest Neighbours
+  \end{itemize}
+\item
+  Subsampling:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    None
+  \item
+    Down-sampling
+  \item
+    Up-sampling
+  \item
+    SMOTE
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{validation}{%
+\chapter{Validation}\label{validation}}
+
+First we'd like to validate the CS2 normalization process.
+
+\begin{figure}
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-none-vs-cs3-1} 
+
+}
+
+\caption{Gene Expression CS2 No Normalization vs. CS3}\label{fig:cs2-none-vs-cs3}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-pools-vs-cs3-1} 
+
+}
+
+\caption{Gene Expression CS2 Pools Normalization vs. CS3}\label{fig:cs2-pools-vs-cs3}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-reference-vs-cs3-1} 
+
+}
+
+\caption{Gene Expression CS2 Reference Normalization vs. CS3}\label{fig:cs2-reference-vs-cs3}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-hist-1} 
+
+}
+
+\caption{Concordance Histograms}\label{fig:cc-hist}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:dist-all-gr}All CodeSet Histotype Groups}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+hist\_gr & CS1 & CS2 & CS3\\
+\hline
+HGSC & 169 & 757 & 2453\\
+\hline
+non-HGSC & 196 & 377 & 677\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:dist-all}All CodeSet Histotypes}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+revHist & CS1 & CS2 & CS3\\
+\hline
+CARCINOMA-NOS & 0 & 61 & 23\\
+\hline
+Carcinoma, NOS & 0 & 0 & 2\\
+\hline
+CCC & 57 & 0 & 182\\
+\hline
+CCOC & 0 & 68 & 0\\
+\hline
+CCOC-MCT & 0 & 1 & 0\\
+\hline
+Cell-Line & 17 & 48 & 13\\
+\hline
+CTRL & 0 & 12 & 0\\
+\hline
+ENOC & 0 & 30 & 0\\
+\hline
+ENOC-CCOC & 0 & 7 & 0\\
+\hline
+ENOCa & 61 & 0 & 272\\
+\hline
+ERROR & 0 & 3 & 0\\
+\hline
+HGSC & 169 & 757 & 2453\\
+\hline
+HGSC-MCT & 0 & 1 & 0\\
+\hline
+LGSC & 22 & 29 & 50\\
+\hline
+MBOT & 0 & 20 & 3\\
+\hline
+MET-NOP & 0 & 21 & 0\\
+\hline
+MIXED (ENOC/CCOC) & 0 & 0 & 1\\
+\hline
+MIXED (ENOC/LGSC) & 0 & 0 & 1\\
+\hline
+MIXED (HGSC/CCOC) & 0 & 0 & 1\\
+\hline
+mixed cell & 0 & 0 & 7\\
+\hline
+MMMT & 0 & 0 & 30\\
+\hline
+MUC & 20 & 61 & 77\\
+\hline
+Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial & 0 & 0 & 1\\
+\hline
+Other/Exclude & 0 & 0 & 8\\
+\hline
+SBOT & 19 & 10 & 3\\
+\hline
+Serous & 0 & 0 & 2\\
+\hline
+serous LMP & 0 & 0 & 1\\
+\hline
+SQAMOUS & 0 & 1 & 0\\
+\hline
+UNK & 0 & 4 & 0\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:dist-cs1}CS1 Histotypes}
+\centering
+\begin{tabular}[t]{l|l|r}
+\hline
+CodeSet & revHist & n\\
+\hline
+CS1 & CCC & 57\\
+\hline
+CS1 & Cell-Line & 17\\
+\hline
+CS1 & ENOCa & 61\\
+\hline
+CS1 & HGSC & 169\\
+\hline
+CS1 & LGSC & 22\\
+\hline
+CS1 & MUC & 20\\
+\hline
+CS1 & SBOT & 19\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:dist-cs2}CS2 Histotypes}
+\centering
+\begin{tabular}[t]{l|l|r}
+\hline
+CodeSet & revHist & n\\
+\hline
+CS2 & CARCINOMA-NOS & 61\\
+\hline
+CS2 & CCOC & 68\\
+\hline
+CS2 & CCOC-MCT & 1\\
+\hline
+CS2 & Cell-Line & 48\\
+\hline
+CS2 & CTRL & 12\\
+\hline
+CS2 & ENOC & 30\\
+\hline
+CS2 & ENOC-CCOC & 7\\
+\hline
+CS2 & ERROR & 3\\
+\hline
+CS2 & HGSC & 757\\
+\hline
+CS2 & HGSC-MCT & 1\\
+\hline
+CS2 & LGSC & 29\\
+\hline
+CS2 & MBOT & 20\\
+\hline
+CS2 & MET-NOP & 21\\
+\hline
+CS2 & MUC & 61\\
+\hline
+CS2 & SBOT & 10\\
+\hline
+CS2 & SQAMOUS & 1\\
+\hline
+CS2 & UNK & 4\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:dist-cs3}CS3 Histotypes}
+\centering
+\begin{tabular}[t]{l|l|r}
+\hline
+CodeSet & revHist & n\\
+\hline
+CS3 & CARCINOMA-NOS & 23\\
+\hline
+CS3 & Carcinoma, NOS & 2\\
+\hline
+CS3 & CCC & 182\\
+\hline
+CS3 & Cell-Line & 13\\
+\hline
+CS3 & ENOCa & 272\\
+\hline
+CS3 & HGSC & 2453\\
+\hline
+CS3 & LGSC & 50\\
+\hline
+CS3 & MBOT & 3\\
+\hline
+CS3 & MIXED (ENOC/CCOC) & 1\\
+\hline
+CS3 & MIXED (ENOC/LGSC) & 1\\
+\hline
+CS3 & MIXED (HGSC/CCOC) & 1\\
+\hline
+CS3 & mixed cell & 7\\
+\hline
+CS3 & MMMT & 30\\
+\hline
+CS3 & MUC & 77\\
+\hline
+CS3 & Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial & 1\\
+\hline
+CS3 & Other/Exclude & 8\\
+\hline
+CS3 & SBOT & 3\\
+\hline
+CS3 & Serous & 2\\
+\hline
+CS3 & serous LMP & 1\\
+\hline
+\end{tabular}
+\end{table}
 
 \hypertarget{results}{%
 \chapter{Results}\label{results}}
