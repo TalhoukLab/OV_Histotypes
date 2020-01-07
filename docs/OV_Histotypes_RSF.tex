@@ -1,42 +1,62 @@
-\documentclass[]{report}
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[
+]{report}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
-\else % if luatex or xelatex
-  \ifxetex
-    \usepackage{mathspec}
-  \else
-    \usepackage{fontspec}
-  \fi
-  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
-% use upquote if available, for straight quotes in verbatim environments
+% Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{%
-\usepackage{microtype}
-\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={OV\_Histotypes: Report of Statistical Findings},
+  pdfauthor={Derek Chiu},
+  colorlinks=true,
+  linkcolor=Maroon,
+  filecolor=Maroon,
+  citecolor=Blue,
+  urlcolor=Blue,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
-\usepackage{hyperref}
-\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
-\hypersetup{unicode=true,
-            pdftitle={OV\_Histotypes: Report of Statistical Findings},
-            pdfauthor={Derek Chiu},
-            colorlinks=true,
-            linkcolor=Maroon,
-            citecolor=Blue,
-            urlcolor=Blue,
-            breaklinks=true}
-\urlstyle{same}  % don't use monospace font for urls
-\usepackage{natbib}
-\bibliographystyle{apalike}
 \usepackage{longtable,booktabs}
-\usepackage{graphicx,grffile}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -45,55 +65,14 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\IfFileExists{parskip.sty}{%
-\usepackage{parskip}
-}{% else
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
-% Redefines (sub)paragraphs to behave more like sections
-\ifx\paragraph\undefined\else
-\let\oldparagraph\paragraph
-\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
-\fi
-\ifx\subparagraph\undefined\else
-\let\oldsubparagraph\subparagraph
-\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
-\fi
-
-%%% Use protect on footnotes to avoid problems with footnotes in titles
-\let\rmarkdownfootnote\footnote%
-\def\footnote{\protect\rmarkdownfootnote}
-
-%%% Change title format to be more compact
-\usepackage{titling}
-
-% Create subtitle command for use in maketitle
-\providecommand{\subtitle}[1]{
-  \posttitle{
-    \begin{center}\large#1\end{center}
-    }
-}
-
-\setlength{\droptitle}{-2em}
-
-  \title{OV\_Histotypes: Report of Statistical Findings}
-    \pretitle{\vspace{\droptitle}\centering\huge}
-  \posttitle{\par}
-    \author{Derek Chiu}
-    \preauthor{\centering\large\emph}
-  \postauthor{\par}
-      \predate{\centering\large\emph}
-  \postdate{\par}
-    \date{2019-10-08}
-
-\let\paragraph\oldparagraph
-\let\subparagraph\oldsubparagraph
-
 \usepackage{titlesec, blindtext, color}
 
 \titleformat{\chapter}[display]
@@ -111,12 +90,18 @@
 \titlespacing*{\chapter}{0pt}{0pt}{40pt}
 
 \renewcommand{\bibname}{References}
+\usepackage[]{natbib}
+\bibliographystyle{apalike}
+
+\title{OV\_Histotypes: Report of Statistical Findings}
+\author{Derek Chiu}
+\date{2020-01-06}
 
 \begin{document}
 \maketitle
 
 {
-\hypersetup{linkcolor=black}
+\hypersetup{linkcolor=}
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
@@ -142,6 +127,8 @@ The supervised learning is performed under a consensus framework: we consider va
 \hypertarget{methods}{%
 \chapter{Methods}\label{methods}}
 
+\begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/setup-02-1} \end{center}
+
 \hypertarget{data-processing}{%
 \section{Data Processing}\label{data-processing}}
 
@@ -150,7 +137,7 @@ There are 3 NanoString CodeSets:
 \begin{itemize}
 \tightlist
 \item
-  CS 1: OvCa2103\_C953
+  CS1: OvCa2103\_C953
 
   \begin{itemize}
   \tightlist
@@ -160,7 +147,7 @@ There are 3 NanoString CodeSets:
     Genes = 275
   \end{itemize}
 \item
-  CS 2: PrOTYPE2\_v2\_C1645
+  CS2: PrOTYPE2\_v2\_C1645
 
   \begin{itemize}
   \tightlist
@@ -170,7 +157,7 @@ There are 3 NanoString CodeSets:
     Genes = 384
   \end{itemize}
 \item
-  CS 3: OTTA2014\_C2822
+  CS3: OTTA2014\_C2822
 
   \begin{itemize}
   \tightlist
@@ -191,7 +178,7 @@ The first normalization step is to normalize all endogenous genes to housekeepin
 \begin{itemize}
 \tightlist
 \item
-  CS 1: OvCa2103\_C953
+  CS1: OvCa2103\_C953
 
   \begin{itemize}
   \tightlist
@@ -201,7 +188,7 @@ The first normalization step is to normalize all endogenous genes to housekeepin
     Genes = 256
   \end{itemize}
 \item
-  CS 2: PrOTYPE2\_v2\_C1645
+  CS2: PrOTYPE2\_v2\_C1645
 
   \begin{itemize}
   \tightlist
@@ -211,7 +198,7 @@ The first normalization step is to normalize all endogenous genes to housekeepin
     Genes = 365
   \end{itemize}
 \item
-  CS 3: OTTA2014\_C2822
+  CS3: OTTA2014\_C2822
 
   \begin{itemize}
   \tightlist
@@ -232,7 +219,7 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
 \begin{itemize}
 \tightlist
 \item
-  CS 1: OvCa2103\_C953
+  CS1: OvCa2103\_C953
 
   \begin{itemize}
   \tightlist
@@ -242,7 +229,7 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
     Genes = 72
   \end{itemize}
 \item
-  CS 2: PrOTYPE2\_v2\_C1645
+  CS2: PrOTYPE2\_v2\_C1645
 
   \begin{itemize}
   \tightlist
@@ -252,7 +239,7 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
     Genes = 72
   \end{itemize}
 \item
-  CS 3: OTTA2014\_C2822
+  CS3: OTTA2014\_C2822
 
   \begin{itemize}
   \tightlist
@@ -263,11 +250,82 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
   \end{itemize}
 \end{itemize}
 
+\hypertarget{cs1-training-set-generation}{%
+\section{CS1 Training Set Generation}\label{cs1-training-set-generation}}
+
+We use the reference method to normalize CS1 to CS3.
+
+\begin{itemize}
+\tightlist
+\item
+  CS1 reference set: duplicate samples from CS1
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 25
+  \item
+    Genes = 72
+  \end{itemize}
+\item
+  CS3 reference set: corresponding samples in CS3 also found in CS1 reference set
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 20
+  \item
+    Genes = 72
+  \end{itemize}
+\item
+  CS1 validation set: remaining CS1 samples with reference set removed
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 387
+  \item
+    Genes = 72
+  \end{itemize}
+\end{itemize}
+
+The final CS1 training set has 304 samples on 72 genes after normalization and keeping only the major histotypes of interest.
+
+\hypertarget{cs2-training-set-generation}{%
+\section{CS2 Training Set Generation}\label{cs2-training-set-generation}}
+
+We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOTYPE normalization when there are available pools.
+
+\begin{itemize}
+\tightlist
+\item
+  CS3 pools:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 22
+  \item
+    Genes = 513
+  \end{itemize}
+\item
+  CS2 pools:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 10
+  \item
+    Genes = 365
+  \end{itemize}
+\end{itemize}
+
+The final CS2 training set has 945 samples on 136 (common) genes after normalization
+and keeping ony the major histotypes of interest.
+
 \hypertarget{results}{%
 \chapter{Results}\label{results}}
 
-\bibliography{packages.bib}
-\addcontentsline{toc}{chapter}{\bibname}
-
+  \bibliography{packages.bib}
 
 \end{document}
