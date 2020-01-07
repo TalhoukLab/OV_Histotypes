@@ -5,10 +5,10 @@ library(magrittr)
 # Data Processing ---------------------------------------------------------
 
 # Read in raw data
-annot <- readr::read_csv(here::here("data-raw/annot.csv"))
-cs1 <- readr::read_csv(here::here("data-raw/cs1.csv"))
-cs2 <- readr::read_csv(here::here("data-raw/cs2.csv"))
-cs3 <- readr::read_csv(here::here("data-raw/cs3.csv"))
+annot <- readr::read_csv(here::here("data-raw/annot.csv"), col_types = readr::cols())
+cs1 <- readr::read_csv(here::here("data-raw/cs1.csv"), col_types = readr::cols())
+cs2 <- readr::read_csv(here::here("data-raw/cs2.csv"), col_types = readr::cols())
+cs3 <- readr::read_csv(here::here("data-raw/cs3.csv"), col_types = readr::cols())
 pools <- readxl::read_excel(here::here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
 ref_pools <- readRDS(here::here("data/van_pools_cs3.rds"))
 
