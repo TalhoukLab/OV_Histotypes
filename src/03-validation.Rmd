@@ -113,24 +113,31 @@ layers <- list(
                    ") vs. Corresponding CS3 Samples")
   )
 )
+```
 
+```{r cs2-none-vs-cs3, fig.cap='Gene Expression CS2 No Normalization vs. CS3'}
 # Scatterplots of each CS2 dataset vs CS3
 p0 <- ggplot(cs_combined, aes(cs2_val_norm0, cs3_val_norm0)) +
   xlab("CS2 No Normalization") +
   layers
 print(p0)
+```
 
+```{r cs2-pools-vs-cs3, fig.cap='Gene Expression CS2 Pools Normalization vs. CS3'}
 p1 <- ggplot(cs_combined, aes(cs2_val_norm1, cs3_val_norm0)) +
   xlab("CS2 Pools Normalization") +
   layers
 print(p1)
+```
 
+```{r cs2-reference-vs-cs3, fig.cap='Gene Expression CS2 Reference Normalization vs. CS3'}
 p2 <- ggplot(cs_combined, aes(cs2_val_norm2, cs3_val_norm0)) +
   xlab("CS2 Reference Normalization") +
   layers
 print(p2)
+```
 
-
+```{r cc-hist, fig.cap='Concordance Histograms'}
 # Concordance Histograms --------------------------------------------------
 
 # Concordance measures between samples of same gene, for each dataset comparison
@@ -164,29 +171,35 @@ p <- ggplot(all_metrics, aes(Expression)) +
 print(p)
 ```
 
-```{r distributions}
+```{r dist-all-gr}
 # Histotype Distributions -------------------------------------------------
-
-# All CodeSet Counts
 all_hist <- hist %>% dplyr::filter(!is.na(revHist))
-
 all_hist %>%
   dplyr::count(CodeSet, hist_gr) %>%
   tidyr::spread(CodeSet, n, fill = 0L) %>% 
   knitr::kable(caption = "All CodeSet Histotype Groups")
+```
 
+```{r dist-all}
 all_counts <- all_hist %>% dplyr::count(CodeSet, revHist)
 all_counts %>%
   tidyr::spread(CodeSet, n, fill = 0L) %>% 
   knitr::kable(caption = "All CodeSet Histotypes")
+```
 
-# Counts by CodeSet
+```{r dist-cs1}
 all_counts %>% 
   dplyr::filter(CodeSet == "CS1") %>% 
   knitr::kable(caption = "CS1 Histotypes")
+```
+
+```{r dist-cs2}
 all_counts %>% 
   dplyr::filter(CodeSet == "CS2") %>% 
   knitr::kable(caption = "CS2 Histotypes")
+```
+
+```{r dist-cs3}
 all_counts %>% 
   dplyr::filter(CodeSet == "CS3") %>% 
   knitr::kable(caption = "CS3 Histotypes")
