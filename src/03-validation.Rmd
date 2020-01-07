@@ -1,23 +1,10 @@
----
-title: "CodeSet 2 Validation"
-output: 
-  pdf_document: 
-    fig_height: 8
-    fig_width: 8
----
+# Validation
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-	echo = FALSE,
-	message = FALSE,
-	warning = FALSE
-)
-```
-
-```{r processing}
-# CodeSet Processing ------------------------------------------------------
+```{r setup-03}
 source(here::here("validation/cs_process.R"))
 ```
+
+First we'd like to validate the CS2 normalization process.
 
 ```{r methods}
 # Dataset Split -----------------------------------------------------------
