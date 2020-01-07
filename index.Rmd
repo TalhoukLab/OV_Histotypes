@@ -1,5 +1,5 @@
 ---
-title: 'OV_Histotypes: Report of Statistical Findings'
+title: 'Ovarian Cancer Histotypes: Report of Statistical Findings'
 author: Derek Chiu
 date: '`r format(Sys.Date())`'
 site: bookdown::bookdown_site
