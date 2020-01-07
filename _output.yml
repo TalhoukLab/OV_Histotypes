@@ -1,5 +1,5 @@
 bookdown::gitbook:
-  lib_dir: assets
+  lib_dir: lib
   split_by: chapter+number
 bookdown::pdf_book:
   keep_tex: true
