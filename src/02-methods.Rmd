@@ -86,3 +86,17 @@ The final CS2 training set has `r nrow(cs2_data)` samples on `r ncol(cs2_data)` 
 and keeping ony the major histotypes of interest.
 
 ## Classification
+
+We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1.
+
+- Classifiers:
+  - Random Forest
+  - Adaboost
+  - LDA
+  - SVM
+  - K-Nearest Neighbours
+- Subsampling:
+  - None
+  - Down-sampling
+  - Up-sampling
+  - SMOTE
