@@ -136,7 +136,6 @@ p <- ggplot(all_metrics, aes(Expression)) +
        title = "CS2 Cross-Method Concordance Measure Distributions") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
-print(p)
 
 
 # Add Histotype -----------------------------------------------------------

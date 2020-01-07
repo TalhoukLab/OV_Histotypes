@@ -7,6 +7,10 @@ source(here::here("validation/cs2_generate.R"))
 
 ## Data Processing
 
+Normalizing CS2 to CS3 can easily follow the PrOTYPE method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
+
+### Raw Data
+
 There are 3 NanoString CodeSets:
 
 * CS1: OvCa2103_C953
@@ -21,7 +25,7 @@ There are 3 NanoString CodeSets:
   
 These datasets contain raw counts extracted straight from NanoString RCC files.
 
-## Housekeeping Genes
+### Housekeeping Genes
 
 The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log2 housekeeping gene expression from the log2 endogenous gene expression. The updated CodeSet dimensions are now:
 
@@ -37,7 +41,7 @@ The first normalization step is to normalize all endogenous genes to housekeepin
 
 The number of genes are reduced by 19: 5 housekeeping, 8 negative, 6 positive (the latter 2 types are not used).
 
-## Common Samples and Genes
+### Common Samples and Genes
 
 Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found `r length(common_genes)` common genes. Using the `summaryID` identifer, we found `r length(common_id)` common summary IDs, which translated to `r length(common_samples)` samples. The number of samples that were found in each CodeSet differed:
 
@@ -51,7 +55,7 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
   * Samples = `r nrow(cs3_clean)`
   * Genes = `r ncol(cs3_clean) - 2`
   
-## CS1 Training Set Generation
+### CS1 Training Set Generation
 
 We use the reference method to normalize CS1 to CS3.
 
@@ -67,7 +71,7 @@ We use the reference method to normalize CS1 to CS3.
 
 The final CS1 training set has `r nrow(cs1_data)` samples on `r ncol(cs1_data)` genes after normalization and keeping only the major histotypes of interest.
 
-## CS2 Training Set Generation
+### CS2 Training Set Generation
 
 We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOTYPE normalization when there are available pools.
 
@@ -80,3 +84,5 @@ We use the pool method to normalize CS2 to CS3 so we can be consistent with the 
 
 The final CS2 training set has `r nrow(cs2_data)` samples on `r ncol(cs2_data)` (common) genes after normalization
 and keeping ony the major histotypes of interest.
+
+## Classification
