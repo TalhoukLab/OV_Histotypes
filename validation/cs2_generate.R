@@ -1,7 +1,3 @@
-# CodeSet Processing ------------------------------------------------------
-source(here::here("validation/cs_process.R"))
-
-
 # Pool Method -------------------------------------------------------------
 
 # Pool set: pool samples from CS2

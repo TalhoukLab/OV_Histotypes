@@ -1,6 +1,7 @@
 # Methods
 
 ```{r setup-02}
+source(here::here("validation/cs_process.R"))
 source(here::here("validation/cs1_generate.R"))
 source(here::here("validation/cs2_generate.R"))
 ```
