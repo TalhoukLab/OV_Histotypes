@@ -34,7 +34,11 @@ hist <- annot_cs_all %>%
   dplyr::transmute(
     FileName = RCC.File.Name,
     CodeSet,
-    revHist,
+    revHist = dplyr::case_when(
+      revHist == "CCC" ~ "CCOC",
+      revHist == "ENOCa" ~ "ENOC",
+      TRUE ~ revHist
+    ),
     hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC")
   )
 

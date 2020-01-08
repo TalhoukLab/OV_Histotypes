@@ -77,7 +77,7 @@ cs1_norm_ref <-
   tibble::as_tibble() %>%
   tibble::add_column(FileName = cs1_val[["FileName"]], .before = 1) %>%
   dplyr::inner_join(hist, by = "FileName") %>%
-  dplyr::filter(revHist %in% c("CCC", "ENOCa", "HGSC", "LGSC", "MUC")) %>%
+  dplyr::filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   tibble::column_to_rownames("FileName")
 
 # Counts
