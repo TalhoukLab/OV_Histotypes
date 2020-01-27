@@ -19,7 +19,7 @@ for dataset in "${dataSets[@]}"; do
     R_file=$RSubDir/$dataset/iv_summary.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
-    echo 'source("pipeline/3-iv_summary.R")' >> $R_file
+    echo 'source("3-iv_summary.R")' >> $R_file
 
     # Content of sh file
     sh_file=$shSubDir/$dataset/iv_summary.sh
