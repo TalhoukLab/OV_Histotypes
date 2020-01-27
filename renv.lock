@@ -442,9 +442,14 @@
     "diceR": {
       "Package": "diceR",
       "Version": "0.6.0.9000",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f4fa23c3193f6103ea5e878931cb0206"
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "AlineTalhouk",
+      "RemoteRepo": "diceR",
+      "RemoteRef": "master",
+      "RemoteSha": "93baa5aaa25850c620b9744a1d839821fba75868",
+      "Hash": "b55bacad812c0435ea089ab9df7568cf"
     },
     "digest": {
       "Package": "digest",
