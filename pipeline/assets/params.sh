@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Supervised parameters
-dataSets=(cs1)
+dataSets=(cs2)
 reps=500
 algs=(rf adaboost combined)
 samps=(none up down smote)
