@@ -29,7 +29,7 @@ for dataset in "${dataSets[@]}"; do
                 echo 'norm_by <- "'$norm_by'"' >> $R_file
                 echo 'norm_type <- "'$norm_type'"' >> $R_file
                 echo "min_var <- '$min_var'" >> $R_file
-                echo 'source("pipeline/1-train_eval.R")' >> $R_file
+                echo 'source("1-train_eval.R")' >> $R_file
 
                 # Content of sh file
                 sh_file=$shSubDir/$dataset/$alg"_"$samp"_"$s.sh

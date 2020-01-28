@@ -254,15 +254,10 @@
     },
     "bookdown": {
       "Package": "bookdown",
-      "Version": "0.16.5",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "bookdown",
-      "RemoteUsername": "rstudio",
-      "RemoteRef": "master",
-      "RemoteSha": "70f9c07b2049f772b377956047421172069193d9",
-      "Hash": "10c46185c7a1a32ec804f1d61cc9da3c"
+      "Version": "0.17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "727f96578043896024c9d309718fda73"
     },
     "boot": {
       "Package": "boot",
@@ -442,9 +437,14 @@
     "diceR": {
       "Package": "diceR",
       "Version": "0.6.0.9000",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f4fa23c3193f6103ea5e878931cb0206"
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "AlineTalhouk",
+      "RemoteRepo": "diceR",
+      "RemoteRef": "master",
+      "RemoteSha": "93baa5aaa25850c620b9744a1d839821fba75868",
+      "Hash": "b55bacad812c0435ea089ab9df7568cf"
     },
     "digest": {
       "Package": "digest",
@@ -520,13 +520,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "e1e33215c942e78d2128221079b5dc35"
-    },
-    "fastmap": {
-      "Package": "fastmap",
-      "Version": "1.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "83ab58a0518afe3d17e41da01af13b60"
     },
     "fdrtool": {
       "Package": "fdrtool",
@@ -731,10 +724,10 @@
     },
     "httpuv": {
       "Package": "httpuv",
-      "Version": "1.5.2",
+      "Version": "1.4.5.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f793dad2c9ae14fbb1d22f16f23f8326"
+      "Hash": "6db7d2196b1c704ea0f0877860fe3cf8"
     },
     "httr": {
       "Package": "httr",
@@ -1332,10 +1325,10 @@
     },
     "shiny": {
       "Package": "shiny",
-      "Version": "1.4.0",
+      "Version": "1.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6ca23724bb2c804c1d0b3db4862a39c7"
+      "Hash": "4dad5c94a7fcd08d9e29192d9bb80a3b"
     },
     "sigclust": {
       "Package": "sigclust",
@@ -1490,10 +1483,10 @@
     },
     "xgboost": {
       "Package": "xgboost",
-      "Version": "0.90.0.2",
+      "Version": "0.71.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "1f29db60e440a590f98511b44595f0f3"
+      "Hash": "a8807d3b38022b2abb1bee269442600e"
     },
     "xml2": {
       "Package": "xml2",

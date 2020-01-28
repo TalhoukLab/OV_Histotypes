@@ -1,6 +1,6 @@
 bookdown::gitbook:
-  lib_dir: lib
-  split_by: chapter+number
+  lib_dir: assets
+  split_by: chapter
   config:
     download: pdf
 bookdown::pdf_book:

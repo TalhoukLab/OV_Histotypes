@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Supervised parameters
-dataSets=(cs1)
+dataSets=(cs2)
 reps=500
 algs=(rf adaboost combined)
 samps=(none up down smote)
@@ -11,13 +11,13 @@ min_var=0
 
 # Directory parameters
 user="$(whoami)"
-rootDir="/extscratch/shahlab/huntsman"/$user
+rootDir="/scratch/ovcare"/$user
 inputDir=$rootDir"/Projects/histotype/data"
-scriptDir=$rootDir"/histotype/scripts"
+scriptDir=$rootDir"/results/histotype/scripts"
 RDir=$scriptDir"/R"
 shDir=$scriptDir"/sh"
-outputDir=$rootDir"/histotype/outputs"
-logDir=$rootDir"/histotype/logs"
+outputDir=$rootDir"/results/histotype/outputs"
+logDir=$rootDir"/results/histotype/logs"
 
 # Bash parameters
 RPath="$(which R | sort | tail -n 1)"
