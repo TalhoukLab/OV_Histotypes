@@ -44,7 +44,7 @@ The number of genes are reduced by 19: 5 housekeeping, 8 negative, 6 positive (t
 
 ### Common Samples and Genes
 
-Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found `r length(common_genes)` common genes. Using the `summaryID` identifer, we also found `r length(common_id)` common summary IDs, translating to `r length(common_samples)` samples. The number of samples that were matched to each CodeSet differed:
+Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found `r length(common_genes)` common genes. Using the `summaryID` identifier, we also found `r length(common_id)` common summary IDs, translating to `r length(common_samples)` samples. The number of samples that were matched to each CodeSet differed:
 
 * CS1: OvCa2103_C953
   * Samples = `r nrow(cs1_clean)`
@@ -90,7 +90,7 @@ The final CS2 training set has `r nrow(cs2_data)` samples on `r ncol(cs2_data)` 
 
 ## Classification
 
-We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Imeplementations of the techniques below were called from the [splendid](https://alinetalhouk.github.io/splendid/) package. 
+We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the [splendid](https://alinetalhouk.github.io/splendid/) package. 
 
 - Classifiers:
   - Random Forest
