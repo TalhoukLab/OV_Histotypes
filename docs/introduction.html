@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2020-01-28" />
+<meta name="date" content="2020-01-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -80,7 +80,12 @@
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="methods.html"><a href="methods.html#classification"><i class="fa fa-check"></i><b>2.2</b> Classification</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="validation.html"><a href="validation.html"><i class="fa fa-check"></i><b>3</b> Validation</a></li>
+<li class="chapter" data-level="3" data-path="validation.html"><a href="validation.html"><i class="fa fa-check"></i><b>3</b> Validation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="validation.html"><a href="validation.html#concordance"><i class="fa fa-check"></i><b>3.1</b> Concordance</a></li>
+<li class="chapter" data-level="3.2" data-path="validation.html"><a href="validation.html#full-data-distributions"><i class="fa fa-check"></i><b>3.2</b> Full Data Distributions</a></li>
+<li class="chapter" data-level="3.3" data-path="validation.html"><a href="validation.html#training-set-distributions"><i class="fa fa-check"></i><b>3.3</b> Training Set Distributions</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#cs1"><i class="fa fa-check"></i><b>4.1</b> CS1</a>
@@ -114,9 +119,9 @@
             <section class="normal" id="section-">
 <div id="introduction" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
-<p>Ovarian cancer has five major histotypes: high-grade serous carcinoma (HGSC), low-grade serous carcinoma (LGSC), endometrioid carcinoma (ENOC), mucinous carcinoma (MUC), and clear cell carcinoma (CCOC). A common problem with classifying these histotypes is that there is a class imbalance issue. HGSC dominates the distribution, commonly accounting for 70% of cases in many patient cohorts, while the other four histotypes are spread over the rest.</p>
+<p>Ovarian cancer has five major histotypes: high-grade serous carcinoma (HGSC), low-grade serous carcinoma (LGSC), endometrioid carcinoma (ENOC), mucinous carcinoma (MUC), and clear cell carcinoma (CCOC). A common problem with classifying these histotypes is that there is a class imbalance issue. HGSC dominates the distribution, commonly accounting for 70% of cases in many patient cohorts, while the other four histotypes are spread over the rest of the cases.</p>
 <p>In the NanoString CodeSets, we also run into a problem with trying to find suitable control pools to normalize the gene expression. For prospective NanoString runs, the pools can be specifically chosen, but for retrospective runs, we have to utilize a combination of common samples and common genes as references for normalization.</p>
-<p>The supervised learning is performed under a consensus framework: we consider various classification algorithms and use evaluation metrics to help making decisions of which methods to carry forward.</p>
+<p>The supervised learning is performed under a consensus framework: we consider various classification algorithms and use evaluation metrics to help make decisions of which methods to carry forward for downstream analysis.</p>
 
 </div>
             </section>

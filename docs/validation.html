@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2020-01-28" />
+<meta name="date" content="2020-01-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -80,7 +80,12 @@
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="methods.html"><a href="methods.html#classification"><i class="fa fa-check"></i><b>2.2</b> Classification</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="validation.html"><a href="validation.html"><i class="fa fa-check"></i><b>3</b> Validation</a></li>
+<li class="chapter" data-level="3" data-path="validation.html"><a href="validation.html"><i class="fa fa-check"></i><b>3</b> Validation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="validation.html"><a href="validation.html#concordance"><i class="fa fa-check"></i><b>3.1</b> Concordance</a></li>
+<li class="chapter" data-level="3.2" data-path="validation.html"><a href="validation.html#full-data-distributions"><i class="fa fa-check"></i><b>3.2</b> Full Data Distributions</a></li>
+<li class="chapter" data-level="3.3" data-path="validation.html"><a href="validation.html#training-set-distributions"><i class="fa fa-check"></i><b>3.3</b> Training Set Distributions</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#cs1"><i class="fa fa-check"></i><b>4.1</b> CS1</a>
@@ -114,7 +119,14 @@
             <section class="normal" id="section-">
 <div id="validation" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Validation</h1>
-<p>First we’d like to validate the CS2 normalization process.</p>
+<div id="concordance" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Concordance</h2>
+<p>First we validate the CS2 normalization process by looking at the distribution of CS3 non-normalized samples with:</p>
+<ul>
+<li>CS2 non-normalized</li>
+<li>CS2 pools-normalized</li>
+<li>CS2 reference-normalized</li>
+</ul>
 <div class="figure" style="text-align: center"><span id="fig:cs2-none-vs-cs3"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs2-none-vs-cs3-1.png" alt="Gene Expression CS2 No Normalization vs. CS3" width="768" />
 <p class="caption">
@@ -139,6 +151,10 @@ Figure 3.3: Gene Expression CS2 Reference Normalization vs. CS3
 Figure 3.4: Concordance Histograms
 </p>
 </div>
+</div>
+<div id="full-data-distributions" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Full Data Distributions</h2>
+<p>The histotype distributions on the full data are shown below.</p>
 <table>
 <caption><span id="tab:dist-all-gr">Table 3.1: </span>All CodeSet Histotype Groups</caption>
 <thead>
@@ -590,7 +606,74 @@ Figure 3.4: Concordance Histograms
 </tr>
 </tbody>
 </table>
+</div>
+<div id="training-set-distributions" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Training Set Distributions</h2>
+<p>The training set distributions for CS1 and CS2 are shown below.</p>
+<table>
+<caption><span id="tab:training-dist-cs1">Table 3.6: </span>CS1 Training Set Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">histotype</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCC</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">ENOCa</td>
+<td align="right">59</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">156</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">16</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:training-dist-cs2">Table 3.7: </span>CS2 Training Set Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">histotype</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">68</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">30</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">757</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">29</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">61</td>
+</tr>
+</tbody>
+</table>
 
+</div>
 </div>
             </section>
 

@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-01-28}
+\date{2020-01-29}
 
 \begin{document}
 \maketitle
@@ -118,11 +118,11 @@ Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang imp
 \hypertarget{introduction}{%
 \chapter{Introduction}\label{introduction}}
 
-Ovarian cancer has five major histotypes: high-grade serous carcinoma (HGSC), low-grade serous carcinoma (LGSC), endometrioid carcinoma (ENOC), mucinous carcinoma (MUC), and clear cell carcinoma (CCOC). A common problem with classifying these histotypes is that there is a class imbalance issue. HGSC dominates the distribution, commonly accounting for 70\% of cases in many patient cohorts, while the other four histotypes are spread over the rest.
+Ovarian cancer has five major histotypes: high-grade serous carcinoma (HGSC), low-grade serous carcinoma (LGSC), endometrioid carcinoma (ENOC), mucinous carcinoma (MUC), and clear cell carcinoma (CCOC). A common problem with classifying these histotypes is that there is a class imbalance issue. HGSC dominates the distribution, commonly accounting for 70\% of cases in many patient cohorts, while the other four histotypes are spread over the rest of the cases.
 
 In the NanoString CodeSets, we also run into a problem with trying to find suitable control pools to normalize the gene expression. For prospective NanoString runs, the pools can be specifically chosen, but for retrospective runs, we have to utilize a combination of common samples and common genes as references for normalization.
 
-The supervised learning is performed under a consensus framework: we consider various classification algorithms and use evaluation metrics to help making decisions of which methods to carry forward.
+The supervised learning is performed under a consensus framework: we consider various classification algorithms and use evaluation metrics to help make decisions of which methods to carry forward for downstream analysis.
 
 \hypertarget{methods}{%
 \chapter{Methods}\label{methods}}
@@ -130,7 +130,7 @@ The supervised learning is performed under a consensus framework: we consider va
 \hypertarget{data-processing}{%
 \section{Data Processing}\label{data-processing}}
 
-Normalizing CS2 to CS3 can easily follow the PrOTYPE method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
+Normalizing CS2 to CS3 can easily follow the \href{https://dchiu911.shinyapps.io/PrOType/}{PrOType} method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
 
 \hypertarget{raw-data}{%
 \subsection{Raw Data}\label{raw-data}}
@@ -176,7 +176,7 @@ These datasets contain raw counts extracted straight from NanoString RCC files.
 \hypertarget{housekeeping-genes}{%
 \subsection{Housekeeping Genes}\label{housekeeping-genes}}
 
-The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log2 housekeeping gene expression from the log2 endogenous gene expression. The updated CodeSet dimensions are now:
+The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log\textsubscript{2} housekeeping gene expression from the log\textsubscript{2} endogenous gene expression. The updated CodeSet dimensions are now:
 
 \begin{itemize}
 \tightlist
@@ -217,7 +217,7 @@ The number of genes are reduced by 19: 5 housekeeping, 8 negative, 6 positive (t
 \hypertarget{common-samples-and-genes}{%
 \subsection{Common Samples and Genes}\label{common-samples-and-genes}}
 
-Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found 72 common genes. Using the \texttt{summaryID} identifer, we found 78 common summary IDs, which translated to 320 samples. The number of samples that were found in each CodeSet differed:
+Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found 72 common genes. Using the \texttt{summaryID} identifier, we also found 78 common summary IDs, translating to 320 samples. The number of samples that were matched to each CodeSet differed:
 
 \begin{itemize}
 \tightlist
@@ -297,39 +297,48 @@ The final CS1 training set has 304 samples on 72 genes after normalization and k
 \hypertarget{cs2-training-set-generation}{%
 \subsection{CS2 Training Set Generation}\label{cs2-training-set-generation}}
 
-We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOTYPE normalization when there are available pools.
+We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOType normalization when there are available pools.
 
 \begin{itemize}
 \tightlist
-\item
-  CS3 pools:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Samples = 22
-  \item
-    Genes = 513
-  \end{itemize}
 \item
   CS2 pools:
 
   \begin{itemize}
   \tightlist
   \item
-    Samples = 10
+    Samples = 9 (Pool 1 = 3, Pool 2 = 3, Pool 3 = 3)
+  \item
+    Genes = 365
+  \end{itemize}
+\item
+  CS3 pools:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 22 (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5)
+  \item
+    Genes = 513
+  \end{itemize}
+\item
+  CS2 validation set: CS2 samples with pools removed
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 1214
   \item
     Genes = 365
   \end{itemize}
 \end{itemize}
 
-The final CS2 training set has 945 samples on 136 (common) genes after normalization
-and keeping ony the major histotypes of interest.
+The final CS2 training set has 945 samples on 136 (common) genes after normalization and keeping only the major histotypes of interest.
 
 \hypertarget{classification}{%
 \section{Classification}\label{classification}}
 
-We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1.
+We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the \href{https://alinetalhouk.github.io/splendid/}{splendid} package.
 
 \begin{itemize}
 \tightlist
@@ -342,6 +351,8 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
     Random Forest
   \item
     Adaboost
+  \item
+    XGBoost
   \item
     LDA
   \item
@@ -368,7 +379,20 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
 \hypertarget{validation}{%
 \chapter{Validation}\label{validation}}
 
-First we'd like to validate the CS2 normalization process.
+\hypertarget{concordance}{%
+\section{Concordance}\label{concordance}}
+
+First we validate the CS2 normalization process by looking at the distribution of CS3 non-normalized samples with:
+
+\begin{itemize}
+\tightlist
+\item
+  CS2 non-normalized
+\item
+  CS2 pools-normalized
+\item
+  CS2 reference-normalized
+\end{itemize}
 
 \begin{figure}
 
@@ -405,6 +429,11 @@ First we'd like to validate the CS2 normalization process.
 
 \caption{Concordance Histograms}\label{fig:cc-hist}
 \end{figure}
+
+\hypertarget{full-data-distributions}{%
+\section{Full Data Distributions}\label{full-data-distributions}}
+
+The histotype distributions on the full data are shown below.
 
 \begin{table}
 
@@ -601,6 +630,53 @@ CS3 & SBOT & 3\\
 CS3 & Serous & 2\\
 \hline
 CS3 & serous LMP & 1\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{training-set-distributions}{%
+\section{Training Set Distributions}\label{training-set-distributions}}
+
+The training set distributions for CS1 and CS2 are shown below.
+
+\begin{table}
+
+\caption{\label{tab:training-dist-cs1}CS1 Training Set Histotypes}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+histotype & n\\
+\hline
+CCC & 57\\
+\hline
+ENOCa & 59\\
+\hline
+HGSC & 156\\
+\hline
+LGSC & 16\\
+\hline
+MUC & 16\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:training-dist-cs2}CS2 Training Set Histotypes}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+histotype & n\\
+\hline
+CCOC & 68\\
+\hline
+ENOC & 30\\
+\hline
+HGSC & 757\\
+\hline
+LGSC & 29\\
+\hline
+MUC & 61\\
 \hline
 \end{tabular}
 \end{table}
