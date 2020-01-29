@@ -8,7 +8,7 @@ source(here::here("validation/cs2_generate.R"))
 
 ## Data Processing
 
-Normalizing CS2 to CS3 can easily follow the PrOTYPE method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
+Normalizing CS2 to CS3 can easily follow the [PrOType](https://dchiu911.shinyapps.io/PrOType/) method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
 
 ### Raw Data
 
