@@ -1,1 +1,113 @@
 # Results
+
+```{r setup-04}
+# Load packages and data
+library(ggplot2)
+library(magrittr)
+ivs1 <- readRDS(here::here("data/iv_summary_cs1.rds"))
+ivs2 <- readRDS(here::here("data/iv_summary_cs2.rds"))
+```
+
+Here we show internal validation summaries for both CS1 and CS2. The accuracy and F1-scores are the measures of interest. Algorithms are sorted by descending value. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
+
+## CS1
+
+### Accuracy
+
+```{r cs1-accuracy}
+ivs1_accuracy <- ivs1 %>%
+  dplyr::filter(measure == "accuracy") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivs1_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Accuracy",
+    color = "Subsampling",
+    title = "CS1 Overall Accuracy by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+### F1-Score
+
+```{r cs1-f1}
+ivs1_f1 <- ivs1 %>%
+  dplyr::filter(measure == "macro_f1") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivs1_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "F1-Score",
+    color = "Subsampling",
+    title = "CS1 Macro-Averaged F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+## CS2
+
+### Accuracy
+
+```{r cs2-accuracy}
+ivs2_accuracy <- ivs2 %>%
+  filter(measure == "accuracy") %>%
+  mutate(sampling = forcats::fct_inorder(sampling),
+         algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50))
+
+p2 <-
+  ggplot(ivs2_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Accuracy",
+    color = "Subsampling",
+    title = "CS2 Overall Accuracy by Algorithm and Subsampling Method"
+  )
+print(p2)
+```
+
+### F1-Score
+
+```{r cs2-f1}
+ivs2_f1 <- ivs2 %>%
+  dplyr::filter(measure == "macro_f1") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivs2_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "F1-Score",
+    color = "Subsampling",
+    title = "CS2 Macro-Averaged F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
