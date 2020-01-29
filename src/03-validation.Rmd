@@ -115,7 +115,7 @@ layers <- list(
 )
 ```
 
-```{r cs2-none-vs-cs3, fig.cap='Gene Expression CS2 No Normalization vs. CS3'}
+```{r cs2-none-vs-cs3, fig.cap='Gene Expression CS2 No Normalization vs. CS3', fig.height=8, fig.width=8}
 # Scatterplots of each CS2 dataset vs CS3
 p0 <- ggplot(cs_combined, aes(cs2_val_norm0, cs3_val_norm0)) +
   xlab("CS2 No Normalization") +
@@ -123,14 +123,14 @@ p0 <- ggplot(cs_combined, aes(cs2_val_norm0, cs3_val_norm0)) +
 print(p0)
 ```
 
-```{r cs2-pools-vs-cs3, fig.cap='Gene Expression CS2 Pools Normalization vs. CS3'}
+```{r cs2-pools-vs-cs3, fig.cap='Gene Expression CS2 Pools Normalization vs. CS3', fig.height=8, fig.width=8}
 p1 <- ggplot(cs_combined, aes(cs2_val_norm1, cs3_val_norm0)) +
   xlab("CS2 Pools Normalization") +
   layers
 print(p1)
 ```
 
-```{r cs2-reference-vs-cs3, fig.cap='Gene Expression CS2 Reference Normalization vs. CS3'}
+```{r cs2-reference-vs-cs3, fig.cap='Gene Expression CS2 Reference Normalization vs. CS3', fig.height=8, fig.width=8}
 p2 <- ggplot(cs_combined, aes(cs2_val_norm2, cs3_val_norm0)) +
   xlab("CS2 Reference Normalization") +
   layers
