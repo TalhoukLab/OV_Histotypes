@@ -2,9 +2,17 @@
 
 ```{r setup-03}
 source(here::here("validation/cs_process.R"))
+cs1_class <- readRDS(here::here("data/cs1_class.rds"))
+cs2_class <- readRDS(here::here("data/cs2_class.rds"))
 ```
 
-First we'd like to validate the CS2 normalization process.
+## Concordance
+
+First we validate the CS2 normalization process by looking at the distribution of CS3 non-normalized samples with:
+
+- CS2 non-normalized
+- CS2 pools-normalized
+- CS2 reference-normalized
 
 ```{r methods}
 # Dataset Split -----------------------------------------------------------
@@ -171,6 +179,10 @@ p <- ggplot(all_metrics, aes(Expression)) +
 print(p)
 ```
 
+## Full Data Distributions
+
+The histotype distributions on the full data are shown below.
+
 ```{r dist-all-gr}
 # Histotype Distributions -------------------------------------------------
 all_hist <- hist %>% dplyr::filter(!is.na(revHist))
@@ -203,4 +215,22 @@ all_counts %>%
 all_counts %>% 
   dplyr::filter(CodeSet == "CS3") %>% 
   knitr::kable(caption = "CS3 Histotypes")
+```
+
+## Training Set Distributions
+
+The training set distributions for CS1 and CS2 are shown below.
+
+```{r training-dist-cs1}
+cs1_class %>% 
+  tibble::enframe(value = "histotype") %>% 
+  dplyr::count(histotype) %>% 
+  knitr::kable(caption = "CS1 Training Set Histotypes")
+```
+
+```{r training-dist-cs2}
+cs2_class %>% 
+  tibble::enframe(value = "histotype") %>% 
+  dplyr::count(histotype) %>% 
+  knitr::kable(caption = "CS2 Training Set Histotypes")
 ```
