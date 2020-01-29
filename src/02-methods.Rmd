@@ -28,7 +28,7 @@ These datasets contain raw counts extracted straight from NanoString RCC files.
 
 ### Housekeeping Genes
 
-The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log2 housekeeping gene expression from the log2 endogenous gene expression. The updated CodeSet dimensions are now:
+The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log~2~ housekeeping gene expression from the log~2~ endogenous gene expression. The updated CodeSet dimensions are now:
 
 * CS1: OvCa2103_C953
   * Samples = `r ncol(cs1_norm) - 3`
