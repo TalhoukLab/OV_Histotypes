@@ -87,16 +87,17 @@ p <-
 print(p)
 ```
 
-
 ## CS2
 
 ### Accuracy
 
 ```{r cs2-accuracy}
 ivs2_accuracy <- ivs2 %>%
-  filter(measure == "accuracy") %>%
-  mutate(sampling = forcats::fct_inorder(sampling),
-         algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50))
+  dplyr::filter(measure == "accuracy") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
 
 p2 <-
   ggplot(ivs2_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
