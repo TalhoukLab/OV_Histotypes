@@ -1059,7 +1059,7 @@
       "Version": "0.27",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "8335ad379288758814ecd045bb0c0cf7"
+      "Hash": "e671bacb7b6da4b837580eab11035132"
     },
     "plogr": {
       "Package": "plogr",
@@ -1239,7 +1239,7 @@
       "Version": "1.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "898252bc9feaf611a6292cfc87f93c2f"
+      "Hash": "06e1c5ec4fafe6bf3f5112c8d742f76d"
     },
     "robustbase": {
       "Package": "robustbase",
