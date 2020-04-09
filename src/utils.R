@@ -4,5 +4,6 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   results = "asis",
-  fig.align = "center"
+  fig.align = "center",
+  fig.pos = "H"
 )
