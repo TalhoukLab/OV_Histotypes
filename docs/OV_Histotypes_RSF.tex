@@ -73,7 +73,7 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
-\usepackage{titlesec, blindtext, color}
+\usepackage{titlesec, blindtext, color, float}
 
 \titleformat{\chapter}[display]
   {\Huge\bfseries}
@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-01-29}
+\date{2020-04-09}
 
 \begin{document}
 \maketitle
@@ -394,7 +394,7 @@ First we validate the CS2 normalization process by looking at the distribution o
   CS2 reference-normalized
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-none-vs-cs3-1} 
 
@@ -403,7 +403,7 @@ First we validate the CS2 normalization process by looking at the distribution o
 \caption{Gene Expression CS2 No Normalization vs. CS3}\label{fig:cs2-none-vs-cs3}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-pools-vs-cs3-1} 
 
@@ -412,7 +412,7 @@ First we validate the CS2 normalization process by looking at the distribution o
 \caption{Gene Expression CS2 Pools Normalization vs. CS3}\label{fig:cs2-pools-vs-cs3}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-reference-vs-cs3-1} 
 
@@ -421,7 +421,7 @@ First we validate the CS2 normalization process by looking at the distribution o
 \caption{Gene Expression CS2 Reference Normalization vs. CS3}\label{fig:cs2-reference-vs-cs3}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-hist-1} 
 
@@ -692,7 +692,7 @@ Here we show internal validation summaries for both CS1 and CS2. The accuracy an
 \hypertarget{accuracy}{%
 \subsection{Accuracy}\label{accuracy}}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-accuracy-1} 
 
@@ -704,7 +704,7 @@ Here we show internal validation summaries for both CS1 and CS2. The accuracy an
 \hypertarget{f1-score}{%
 \subsection{F1-Score}\label{f1-score}}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-f1-1} 
 
@@ -713,7 +713,7 @@ Here we show internal validation summaries for both CS1 and CS2. The accuracy an
 \caption{CS1 F1-Score}\label{fig:cs1-f1}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-f1-class-1} 
 
@@ -728,7 +728,7 @@ Here we show internal validation summaries for both CS1 and CS2. The accuracy an
 \hypertarget{accuracy-1}{%
 \subsection{Accuracy}\label{accuracy-1}}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-accuracy-1} 
 
@@ -740,7 +740,7 @@ Here we show internal validation summaries for both CS1 and CS2. The accuracy an
 \hypertarget{f1-score-1}{%
 \subsection{F1-Score}\label{f1-score-1}}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-f1-1} 
 
@@ -749,7 +749,7 @@ Here we show internal validation summaries for both CS1 and CS2. The accuracy an
 \caption{CS2 F1-Score}\label{fig:cs2-f1}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-f1-class-1} 
 
