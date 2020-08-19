@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-04-09}
+\date{2020-08-19}
 
 \begin{document}
 \maketitle
@@ -252,6 +252,18 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
     Genes = 72
   \end{itemize}
 \end{itemize}
+
+\hypertarget{overlap-of-common-samples-by-summary-id}{%
+\subsubsection{Overlap of common samples by summary ID}\label{overlap-of-common-samples-by-summary-id}}
+
+\includegraphics{venn_unique_in_cs.png}
+
+\hypertarget{overlap-of-common-genes}{%
+\subsubsection{Overlap of common genes}\label{overlap-of-common-genes}}
+
+\includegraphics{venn_genes_in_cs.png}
+
+*Excluding housekeeping genes and controls
 
 \hypertarget{cs1-training-set-generation}{%
 \subsection{CS1 Training Set Generation}\label{cs1-training-set-generation}}
@@ -511,6 +523,27 @@ serous LMP & 0 & 0 & 1\\
 SQAMOUS & 0 & 1 & 0\\
 \hline
 UNK & 0 & 4 & 0\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:dist-major-hist}All CodeSet Major Histotypes}
+\centering
+\begin{tabular}[t]{l|r|r|r|r|r|r}
+\hline
+revHist & CS1 & CS2 & CS3 & CS1\_percent & CS2\_percent & CS3\_percent\\
+\hline
+CCOC & 57 & 68 & 182 & 17.3 & 7.2 & 6.0\\
+\hline
+ENOC & 61 & 30 & 272 & 18.5 & 3.2 & 9.0\\
+\hline
+HGSC & 169 & 757 & 2453 & 51.4 & 80.1 & 80.9\\
+\hline
+LGSC & 22 & 29 & 50 & 6.7 & 3.1 & 1.6\\
+\hline
+MUC & 20 & 61 & 77 & 6.1 & 6.5 & 2.5\\
 \hline
 \end{tabular}
 \end{table}
