@@ -26,7 +26,7 @@ There are 3 NanoString CodeSets:
   
 These datasets contain raw counts extracted straight from NanoString RCC files.
 
-```{r setup unique venn diagrams, include=FALSE}
+```{r setup-unique-venn-diagrams, include=FALSE}
 library(VennDiagram)
 futile.logger::flog.threshold(futile.logger::ERROR, name = "VennDiagramLogger")
 
@@ -39,48 +39,52 @@ cs3_id <- cs_common[which(cs_common$CS3 != 0 & !is.na(cs_common$CS3) & !is.na(cs
 venn_id <- venn.diagram(
   x = list(cs1_id$summaryID, cs2_id$summaryID, cs3_id$summaryID),
   category.names = c("CodeSet1", "CodeSet2", "CodeSet3"),
-  filename = "venn_unique_in_cs.png",
-  output= TRUE,
-    imagetype="png" ,
-          height = 400 , 
-          width = 400 , 
-          resolution = 300,
-          compression = "lzw",
-          lwd = 1,
-          col=c("#440154ff", '#21908dff', '#fde725ff'),
-          fill = c(alpha("#440154ff",0.3), alpha('#21908dff',0.3), alpha('#fde725ff',0.3)),
-          cex = 0.5,
-          fontfamily = "sans",
-          cat.cex = 0.3,
-          cat.default.pos = "outer",
-          cat.pos = c(-27, 27, 135),
-          cat.dist = c(0.055, 0.055, 0.085),
-          cat.fontfamily = "sans",
-          #cat.col = c("#440154ff", '#21908dff', '#fde725ff'),
-          rotation = 1) 
+  filename = NULL,
+  output = TRUE,
+  imagetype = "png",
+  height = 400,
+  width = 400,
+  resolution = 300, 
+  compression = "lzw",
+  lwd = 1,
+  col = c("#440154ff", '#21908dff', '#fde725ff'), 
+  fill = c(alpha("#440154ff", 0.3),
+           alpha('#21908dff', 0.3),
+           alpha('#fde725ff', 0.3)),
+  cex = 2,
+  fontfamily = "sans",
+  cat.cex = 1.5,
+  cat.default.pos = "outer",
+  cat.pos = c(-27, 27, 135),
+  cat.dist = c(0.055, 0.055, 0.085),
+  cat.fontfamily = "sans",
+  rotation = 1
+) 
 
 venn_genes <- venn.diagram(
   x = list(cs1_norm$Name, cs2_norm$Name, cs3_norm$Name),
   category.names = c("CodeSet1", "CodeSet2", "CodeSet3"),
-  filename = "venn_genes_in_cs.png",
-  output= TRUE,
-    imagetype="png" ,
-          height = 400 , 
-          width = 400 , 
-          resolution = 300,
-          compression = "lzw",
-          lwd = 1,
-          col=c("#440154ff", '#21908dff', '#fde725ff'),
-          fill = c(alpha("#440154ff",0.3), alpha('#21908dff',0.3), alpha('#fde725ff',0.3)),
-          cex = 0.5,
-          fontfamily = "sans",
-          cat.cex = 0.3,
-          cat.default.pos = "outer",
-          cat.pos = c(-27, 27, 135),
-          cat.dist = c(0.055, 0.055, 0.085),
-          cat.fontfamily = "sans",
-          #cat.col = c("#440154ff", '#21908dff', '#fde725ff'),
-          rotation = 1) 
+  filename = NULL,
+  output = TRUE,
+  imagetype = "png",
+  height = 400, 
+  width = 400, 
+  resolution = 300,
+  compression = "lzw",
+  lwd = 1,
+  col = c("#440154ff", '#21908dff', '#fde725ff'), 
+  fill = c(alpha("#440154ff", 0.3),
+           alpha('#21908dff', 0.3),
+           alpha('#fde725ff', 0.3)), 
+  cex = 2,
+  fontfamily = "sans",
+  cat.cex = 1.5,
+  cat.default.pos = "outer",
+  cat.pos = c(-27, 27, 135),
+  cat.dist = c(0.055, 0.055, 0.085),
+  cat.fontfamily = "sans",
+  rotation = 1
+) 
 ```
 
 ### Housekeeping Genes
@@ -114,10 +118,16 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
   * Genes = `r ncol(cs3_clean) - 2`
 
 #### Overlap of common samples by summary ID
-![](venn_unique_in_cs.png)
+
+```{r venn-id}
+grid.draw(venn_id)
+```
 
 #### Overlap of common genes
-![](venn_genes_in_cs.png)
+
+```{r venn-genes}
+grid.draw(venn_genes)
+```
 
 *Excluding housekeeping genes and controls
   
