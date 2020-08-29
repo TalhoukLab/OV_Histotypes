@@ -199,6 +199,15 @@ all_counts %>%
   knitr::kable(caption = "All CodeSet Histotypes")
 ```
 
+```{r dist-common}
+common_counts <- all_hist %>%
+  dplyr::filter(FileName %in% common_samples) %>% 
+  dplyr::count(CodeSet, revHist)
+common_counts %>% 
+  tidyr::spread(CodeSet, n, fill = 0L) %>% 
+  knitr::kable(caption = "Common Summary ID CodeSet Histotypes")
+```
+
 ```{r dist-major-hist}
 all_maj_counts <- all_hist %>% 
   dplyr::filter(revHist %in% c("HGSC", "LGSC", "ENOC", "CCOC", "MUC")) %>% 
@@ -210,7 +219,6 @@ all_maj_counts %>%
   dplyr::mutate(CS3_percent = CS3 /sum(CS3) * 100, CS3_percent = round(CS3_percent,1))  %>% 
   knitr::kable(caption = "All CodeSet Major Histotypes")
 ```
-
 
 ```{r dist-cs1}
 all_counts %>% 
