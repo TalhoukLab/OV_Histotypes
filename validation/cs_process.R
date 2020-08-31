@@ -1,27 +1,31 @@
-library(ggplot2)
-library(magrittr)
+# Load Packages -----------------------------------------------------------
+
+library(tidyverse)
+library(readxl)
+library(nanostringr)
+library(here)
 
 
 # Data Processing ---------------------------------------------------------
 
 # Read in raw data
-annot <- readr::read_csv(here::here("data-raw/annot.csv"), col_types = readr::cols())
-cs1 <- readr::read_csv(here::here("data-raw/cs1.csv"), col_types = readr::cols())
-cs2 <- readr::read_csv(here::here("data-raw/cs2.csv"), col_types = readr::cols())
-cs3 <- readr::read_csv(here::here("data-raw/cs3.csv"), col_types = readr::cols())
-pools <- readxl::read_excel(here::here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
-ref_pools <- readRDS(here::here("data/van_pools_cs3.rds"))
+annot <- read_csv(here("data-raw/annot.csv"), col_types = cols())
+cs1 <- read_csv(here("data-raw/cs1.csv"), col_types = cols())
+cs2 <- read_csv(here("data-raw/cs2.csv"), col_types = cols())
+cs3 <- read_csv(here("data-raw/cs3.csv"), col_types = cols())
+pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
+ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 
 # Normalize to housekeeping genes
-cs1_norm <- nanostringr::HKnorm(cs1)
-cs2_norm <- nanostringr::HKnorm(cs2)
-cs3_norm <- nanostringr::HKnorm(cs3)
+cs1_norm <- HKnorm(cs1)
+cs2_norm <- HKnorm(cs2)
+cs3_norm <- HKnorm(cs3)
 
 # Filter annotations for CS 1, 2, 3
 annot_cs_all <- annot %>%
-  dplyr::filter(RCC.geneRLF %in% c("OvCa2103_C953", "PrOTYPE2_v2_C1645", "OTTA2014_C2822")) %>%
-  dplyr::mutate(
-    CodeSet = dplyr::recode_factor(
+  filter(RCC.geneRLF %in% c("OvCa2103_C953", "PrOTYPE2_v2_C1645", "OTTA2014_C2822")) %>%
+  mutate(
+    CodeSet = recode_factor(
       RCC.geneRLF,
       `OvCa2103_C953` = "CS1",
       `PrOTYPE2_v2_C1645` = "CS2",
@@ -31,10 +35,10 @@ annot_cs_all <- annot %>%
 
 # Histotypes
 hist <- annot_cs_all %>%
-  dplyr::transmute(
+  transmute(
     FileName = RCC.File.Name,
     CodeSet,
-    revHist = dplyr::case_when(
+    revHist = case_when(
       revHist == "CCC" ~ "CCOC",
       revHist == "ENOCa" ~ "ENOC",
       TRUE ~ revHist
@@ -44,12 +48,12 @@ hist <- annot_cs_all %>%
 
 # Find summaryID common to all CS
 cs_common <- annot_cs_all %>%
-  dplyr::count(CodeSet, summaryID) %>%
-  tidyr::spread(CodeSet, n, fill = 0) %>%
-  dplyr::mutate(
+  count(CodeSet, summaryID) %>%
+  spread(CodeSet, n, fill = 0) %>%
+  mutate(
     all_codesets = rowSums(.[, -1]),
-    in_all_cs = dplyr::select(., 2:4) %>%
-      purrr::pmap_lgl(~ purrr::every(list(..1, ..2, ..3), ~ . != 0))
+    in_all_cs = select(., 2:4) %>%
+      pmap_lgl(~ every(list(..1, ..2, ..3), ~ . != 0))
   )
 
 # Find common summaryID
@@ -57,39 +61,39 @@ common_id <- with(cs_common, summaryID[in_all_cs])
 
 # Find common samples
 common_samples <- annot_cs_all %>%
-  dplyr::filter(summaryID %in% common_id) %>%
-  dplyr::pull(RCC.File.Name)
+  filter(summaryID %in% common_id) %>%
+  pull(RCC.File.Name)
 
 # Find common genes
 common_genes <- list(cs1_norm, cs2_norm, cs3_norm) %>%
-  purrr::map(dplyr::filter, Code.Class == "Endogenous") %>%
-  purrr::map("Name") %>%
-  purrr::reduce(intersect)
+  map(filter, Code.Class == "Endogenous") %>%
+  map("Name") %>%
+  reduce(intersect)
 
 # Clean data by keeping common samples and genes, add ottaID
 cs1_clean <- cs1_norm %>%
-  dplyr::rename_all(~ gsub("^X", "", .)) %>%
-  dplyr::filter(Name %in% common_genes) %>%
-  dplyr::select_if(names(.) %in% c("Name", common_samples)) %>%
-  dplyr::mutate(Name = forcats::fct_inorder(Name)) %>%
-  tidyr::gather(FileName, value, -Name) %>%
-  dplyr::mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
-  tidyr::spread(Name, value)
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
+  spread(Name, value)
 
 cs2_clean <- cs2_norm %>%
-  dplyr::rename_all(~ gsub("^X", "", .)) %>%
-  dplyr::filter(Name %in% common_genes) %>%
-  dplyr::select_if(names(.) %in% c("Name", common_samples)) %>%
-  dplyr::mutate(Name = forcats::fct_inorder(Name)) %>%
-  tidyr::gather(FileName, value, -Name) %>%
-  dplyr::mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
-  tidyr::spread(Name, value)
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
+  spread(Name, value)
 
 cs3_clean <- cs3_norm %>%
-  dplyr::rename_all(~ gsub("^X", "", .)) %>%
-  dplyr::filter(Name %in% common_genes) %>%
-  dplyr::select_if(names(.) %in% c("Name", common_samples)) %>%
-  dplyr::mutate(Name = forcats::fct_inorder(Name)) %>%
-  tidyr::gather(FileName, value, -Name) %>%
-  dplyr::mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
-  tidyr::spread(Name, value)
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
+  spread(Name, value)
