@@ -10,11 +10,36 @@ library(here)
 
 # Read in raw data
 annot <- read_csv(here("data-raw/annot.csv"), col_types = cols())
+cohorts <- read_excel(here("data-raw/bc-842_avail_cosp_2020-08-31.xlsx"),
+                      sheet = "data")
 cs1 <- read_csv(here("data-raw/cs1.csv"), col_types = cols())
 cs2 <- read_csv(here("data-raw/cs2.csv"), col_types = cols())
 cs3 <- read_csv(here("data-raw/cs3.csv"), col_types = cols())
 pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
 ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
+
+# Filter for specific cohorts
+cs1_samples <- cohorts %>%
+  filter(file_source == "cs1",
+         cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL")) %>%
+  pull(col_name)
+
+cs2_samples <- cohorts %>%
+  filter(file_source == "cs2",
+         cohort %in% c("MAYO", "OOU", "OOUE", "OVAR3", "VOA", "ICON7", "JAPAN", "MTL")) %>%
+  pull(col_name)
+
+cs3_samples <- cohorts %>%
+  filter(file_source == "cs3",
+         cohort %in% c("DOVE", "OOU", "OOUE", "TNCO", "VOA")) %>%
+  pull(col_name)
+
+cs1 <- cs1 %>%
+  select(all_of(c("Code.Class", "Name", "Accession", cs1_samples)))
+cs2 <- cs2 %>%
+  select(all_of(c("Code.Class", "Name", "Accession", cs2_samples)))
+cs3 <- cs3 %>%
+  select(all_of(c("Code.Class", "Name", "Accession", cs3_samples)))
 
 # Normalize to housekeeping genes
 cs1_norm <- HKnorm(cs1)
