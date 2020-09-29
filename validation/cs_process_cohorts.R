@@ -26,12 +26,12 @@ cs1_samples <- cohorts %>%
 
 cs2_samples <- cohorts %>%
   filter(file_source == "cs2",
-         cohort %in% c("MAYO", "OOU", "OOUE", "OVAR3", "VOA", "ICON7", "JAPAN", "MTL")) %>%
+         cohort %in% c("MAYO", "OOU", "OOUE", "OVAR3", "VOA", "ICON7", "JAPAN", "MTL", "POOL-CTRL")) %>%
   pull(col_name)
 
 cs3_samples <- cohorts %>%
   filter(file_source == "cs3",
-         cohort %in% c("DOVE", "OOU", "OOUE", "TNCO", "VOA")) %>%
+         cohort %in% c("DOVE", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3")) %>%
   pull(col_name)
 
 cs1 <- cs1 %>%
