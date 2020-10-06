@@ -65,11 +65,17 @@ all_metrics <- all_codesets %>%
     }) %>%
       mutate(Sites = .y)
   }) %>%
-  gather(key = "Metric", value = "Expression", -Sites)
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
 
 # Plot all combinations of cross-codeset concordance measure histograms
 p <- ggplot(all_metrics, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 15, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "Random3 Concordance Measure Distributions") +
@@ -143,11 +149,17 @@ all_metrics <- all_codesets %>%
     }) %>%
       mutate(Sites = .y)
   }) %>%
-  gather(key = "Metric", value = "Expression", -Sites)
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
 
 # Plot all combinations of cross-codeset concordance measure histograms
 p <- ggplot(all_metrics, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 15, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "Random2 Concordance Measure Distributions") +
@@ -221,11 +233,17 @@ all_metrics <- all_codesets %>%
     }) %>%
       mutate(Sites = .y)
   }) %>%
-  gather(key = "Metric", value = "Expression", -Sites)
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
 
 # Plot all combinations of cross-codeset concordance measure histograms
 p <- ggplot(all_metrics, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 15, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "Random1 Concordance Measure Distributions") +
