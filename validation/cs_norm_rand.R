@@ -5,7 +5,9 @@ source(here::here("src/funs.R"))
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand3 <- hist %>%
-  filter(ottaID %in% reduce(list(cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID), intersect)) %>%
+  filter(ottaID %in% unique(c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  ))) %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 3) %>%
@@ -89,7 +91,9 @@ print(p)
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand2 <- hist %>%
-  filter(ottaID %in% reduce(list(cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID), intersect)) %>%
+  filter(ottaID %in% unique(c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  ))) %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 2) %>%
@@ -173,7 +177,9 @@ print(p)
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand1 <- hist %>%
-  filter(ottaID %in% reduce(list(cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID), intersect)) %>%
+  filter(ottaID %in% unique(c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  ))) %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 1) %>%
