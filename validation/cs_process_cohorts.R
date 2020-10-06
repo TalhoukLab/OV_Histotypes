@@ -103,8 +103,9 @@ cs1_clean <- cs1_norm %>%
   select_if(names(.) %in% c("Name", common_samples)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
-  mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
-  spread(Name, value)
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr))
 
 cs2_clean <- cs2_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
@@ -112,8 +113,9 @@ cs2_clean <- cs2_norm %>%
   select_if(names(.) %in% c("Name", common_samples)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
-  mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
-  spread(Name, value)
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr))
 
 cs3_clean <- cs3_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
@@ -121,5 +123,6 @@ cs3_clean <- cs3_norm %>%
   select_if(names(.) %in% c("Name", common_samples)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
-  mutate(ottaID = annot_cs_all$ottaID[match(FileName, annot_cs_all$RCC.File.Name)]) %>%
-  spread(Name, value)
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr))
