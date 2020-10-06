@@ -1,4 +1,13 @@
+# Setup -------------------------------------------------------------------
+
 source(here::here("src/funs.R"))
+
+# Pairwise CodeSet comparisons
+codesets <- c("CS1", "CS2", "CS3")
+all_codesets <- combn(codesets, 2) %>%
+  as_tibble() %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
+
 
 # Reference Method: 3 Common Samples --------------------------------------
 
@@ -14,43 +23,38 @@ hist_rand3 <- hist %>%
   ungroup()
 
 # Gene expression from random common samples, preserving gene order
-cs1_rand <- join_avg(cs1_clean, hist_rand3, "ottaID", "keep")
-cs2_rand <- join_avg(cs2_clean, hist_rand3, "ottaID", "keep")
-cs3_rand <- join_avg(cs3_clean, hist_rand3, "ottaID", "keep")
+cs1_rand3 <- join_avg(cs1_clean, hist_rand3, "ottaID", "keep")
+cs2_rand3 <- join_avg(cs2_clean, hist_rand3, "ottaID", "keep")
+cs3_rand3 <- join_avg(cs3_clean, hist_rand3, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
-cs1_norm_counts <- join_avg(cs1_clean, hist_rand3, "ottaID", "discard")
-cs2_norm_counts <- join_avg(cs2_clean, hist_rand3, "ottaID", "discard")
-cs3_norm_counts <- join_avg(cs3_clean, hist_rand3, "ottaID", "discard")
+cs1_counts3 <- join_avg(cs1_clean, hist_rand3, "ottaID", "discard")
+cs2_counts3 <- join_avg(cs2_clean, hist_rand3, "ottaID", "discard")
+cs3_counts3 <- join_avg(cs3_clean, hist_rand3, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand3 <-
-  refMethod(cs1_norm_counts, cs1_rand, cs3_rand) %>%
+  refMethod(cs1_counts3, cs1_rand3, cs3_rand3) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand3 <-
-  refMethod(cs2_norm_counts, cs2_rand, cs3_rand) %>%
+  refMethod(cs2_counts3, cs2_rand3, cs3_rand3) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs3_norm_rand3 <-
-  refMethod(cs3_norm_counts, cs3_rand, cs2_rand) %>%
+  refMethod(cs3_counts3, cs3_rand3, cs2_rand3) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 # Combined gene expression
-codesets <- c("CS1", "CS2", "CS3")
-all_codesets <- combn(codesets, 2) %>%
-  as_tibble() %>%
-  set_names(map_chr(., paste, collapse = "_vs_"))
-
 norm_rand3 <- list(cs1_norm_rand3, cs2_norm_rand3, cs3_norm_rand3) %>%
   set_names(codesets) %>%
   map(~ select(., -"revHist"))
@@ -100,43 +104,38 @@ hist_rand2 <- hist %>%
   ungroup()
 
 # Gene expression from random common samples, preserving gene order
-cs1_rand <- join_avg(cs1_clean, hist_rand2, "ottaID", "keep")
-cs2_rand <- join_avg(cs2_clean, hist_rand2, "ottaID", "keep")
-cs3_rand <- join_avg(cs3_clean, hist_rand2, "ottaID", "keep")
+cs1_rand2 <- join_avg(cs1_clean, hist_rand2, "ottaID", "keep")
+cs2_rand2 <- join_avg(cs2_clean, hist_rand2, "ottaID", "keep")
+cs3_rand2 <- join_avg(cs3_clean, hist_rand2, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
-cs1_norm_counts <- join_avg(cs1_clean, hist_rand2, "ottaID", "discard")
-cs2_norm_counts <- join_avg(cs2_clean, hist_rand2, "ottaID", "discard")
-cs3_norm_counts <- join_avg(cs3_clean, hist_rand2, "ottaID", "discard")
+cs1_counts2 <- join_avg(cs1_clean, hist_rand2, "ottaID", "discard")
+cs2_counts2 <- join_avg(cs2_clean, hist_rand2, "ottaID", "discard")
+cs3_counts2 <- join_avg(cs3_clean, hist_rand2, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand2 <-
-  refMethod(cs1_norm_counts, cs1_rand, cs3_rand) %>%
+  refMethod(cs1_counts2, cs1_rand2, cs3_rand2) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand2 <-
-  refMethod(cs2_norm_counts, cs2_rand, cs3_rand) %>%
+  refMethod(cs2_counts2, cs2_rand2, cs3_rand2) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs3_norm_rand2 <-
-  refMethod(cs3_norm_counts, cs3_rand, cs2_rand) %>%
+  refMethod(cs3_counts2, cs3_rand2, cs2_rand2) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 # Combined gene expression
-codesets <- c("CS1", "CS2", "CS3")
-all_codesets <- combn(codesets, 2) %>%
-  as_tibble() %>%
-  set_names(map_chr(., paste, collapse = "_vs_"))
-
 norm_rand2 <- list(cs1_norm_rand2, cs2_norm_rand2, cs3_norm_rand2) %>%
   set_names(codesets) %>%
   map(~ select(., -"revHist"))
@@ -186,43 +185,38 @@ hist_rand1 <- hist %>%
   ungroup()
 
 # Gene expression from random common samples, preserving gene order
-cs1_rand <- join_avg(cs1_clean, hist_rand1, "ottaID", "keep")
-cs2_rand <- join_avg(cs2_clean, hist_rand1, "ottaID", "keep")
-cs3_rand <- join_avg(cs3_clean, hist_rand1, "ottaID", "keep")
+cs1_rand1 <- join_avg(cs1_clean, hist_rand1, "ottaID", "keep")
+cs2_rand1 <- join_avg(cs2_clean, hist_rand1, "ottaID", "keep")
+cs3_rand1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
-cs1_norm_counts <- join_avg(cs1_clean, hist_rand1, "ottaID", "discard")
-cs2_norm_counts <- join_avg(cs2_clean, hist_rand1, "ottaID", "discard")
-cs3_norm_counts <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
+cs1_counts1 <- join_avg(cs1_clean, hist_rand1, "ottaID", "discard")
+cs2_counts1 <- join_avg(cs2_clean, hist_rand1, "ottaID", "discard")
+cs3_counts1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand1 <-
-  refMethod(cs1_norm_counts, cs1_rand, cs3_rand) %>%
+  refMethod(cs1_counts1, cs1_rand1, cs3_rand1) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand1 <-
-  refMethod(cs2_norm_counts, cs2_rand, cs3_rand) %>%
+  refMethod(cs2_counts1, cs2_rand1, cs3_rand1) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs3_norm_rand1 <-
-  refMethod(cs3_norm_counts, cs3_rand, cs2_rand) %>%
+  refMethod(cs3_counts1, cs3_rand1, cs2_rand1) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 # Combined gene expression
-codesets <- c("CS1", "CS2", "CS3")
-all_codesets <- combn(codesets, 2) %>%
-  as_tibble() %>%
-  set_names(map_chr(., paste, collapse = "_vs_"))
-
 norm_rand1 <- list(cs1_norm_rand1, cs2_norm_rand1, cs3_norm_rand1) %>%
   set_names(codesets) %>%
   map(~ select(., -"revHist"))
