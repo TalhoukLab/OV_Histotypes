@@ -62,6 +62,7 @@ annot_cs_all <- annot %>%
 hist <- annot_cs_all %>%
   transmute(
     FileName = RCC.File.Name,
+    ottaID,
     CodeSet,
     revHist = case_when(
       revHist == "CCC" ~ "CCOC",
