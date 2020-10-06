@@ -55,12 +55,30 @@ cs3_norm_rand3 <-
   column_to_rownames("ottaID")
 
 # Combined gene expression
+counts3 <-
+  set_names(list(cs1_counts3, cs2_counts3, cs3_counts3), codesets)
 norm_rand3 <- list(cs1_norm_rand3, cs2_norm_rand3, cs3_norm_rand3) %>%
   set_names(codesets) %>%
   map(~ select(., -"revHist"))
 
 # Concordance measures for all genes averaged across samples
-all_metrics <- all_codesets %>%
+metrics_non3 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(counts3[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+metrics_rand3 <- all_codesets %>%
   imap_dfr(~ {
     pmap_dfr(norm_rand3[.x], ~ {
       R2 <- cor(.x, .y) ^ 2
@@ -77,17 +95,29 @@ all_metrics <- all_codesets %>%
   ungroup()
 
 # Plot all combinations of cross-codeset concordance measure histograms
-p <- ggplot(all_metrics, aes(Expression)) +
+p_non3 <- ggplot(metrics_non3, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 30, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random3 Non-Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_non3)
+
+p_rand3 <- ggplot(metrics_rand3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 15, label = Median),
             hjust = 0,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
-       title = "Random3 Concordance Measure Distributions") +
+       title = "Random3 Normalized Concordance Measure Distributions") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
-print(p)
+print(p_rand3)
 
 
 # Reference Method: 2 Common Samples --------------------------------------
@@ -136,12 +166,30 @@ cs3_norm_rand2 <-
   column_to_rownames("ottaID")
 
 # Combined gene expression
+counts2 <-
+  set_names(list(cs1_counts2, cs2_counts2, cs3_counts2), codesets)
 norm_rand2 <- list(cs1_norm_rand2, cs2_norm_rand2, cs3_norm_rand2) %>%
   set_names(codesets) %>%
   map(~ select(., -"revHist"))
 
 # Concordance measures for all genes averaged across samples
-all_metrics <- all_codesets %>%
+metrics_non2 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(counts2[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+metrics_rand2 <- all_codesets %>%
   imap_dfr(~ {
     pmap_dfr(norm_rand2[.x], ~ {
       R2 <- cor(.x, .y) ^ 2
@@ -158,14 +206,26 @@ all_metrics <- all_codesets %>%
   ungroup()
 
 # Plot all combinations of cross-codeset concordance measure histograms
-p <- ggplot(all_metrics, aes(Expression)) +
+p_non2 <- ggplot(metrics_non2, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 30, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random2 Non-Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_non2)
+
+p_rand2 <- ggplot(metrics_rand2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 15, label = Median),
             hjust = 0,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
-       title = "Random2 Concordance Measure Distributions") +
+       title = "Random2 Normalized Concordance Measure Distributions") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p)
@@ -217,12 +277,30 @@ cs3_norm_rand1 <-
   column_to_rownames("ottaID")
 
 # Combined gene expression
+counts1 <-
+  set_names(list(cs1_counts1, cs2_counts1, cs3_counts1), codesets)
 norm_rand1 <- list(cs1_norm_rand1, cs2_norm_rand1, cs3_norm_rand1) %>%
   set_names(codesets) %>%
   map(~ select(., -"revHist"))
 
 # Concordance measures for all genes averaged across samples
-all_metrics <- all_codesets %>%
+metrics_non1 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(counts1[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+metrics_rand1 <- all_codesets %>%
   imap_dfr(~ {
     pmap_dfr(norm_rand1[.x], ~ {
       R2 <- cor(.x, .y) ^ 2
@@ -239,14 +317,26 @@ all_metrics <- all_codesets %>%
   ungroup()
 
 # Plot all combinations of cross-codeset concordance measure histograms
-p <- ggplot(all_metrics, aes(Expression)) +
+p_non1 <- ggplot(metrics_non1, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 30, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random1 Non-Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_non1)
+
+p_rand1 <- ggplot(metrics_rand1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 15, label = Median),
             hjust = 0,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
-       title = "Random1 Concordance Measure Distributions") +
+       title = "Random1 Normalized Concordance Measure Distributions") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
-print(p)
+print(p_rand1)
