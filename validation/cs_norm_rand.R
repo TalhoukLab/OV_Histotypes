@@ -1,78 +1,81 @@
+source(here::here("src/funs.R"))
+
 # Reference Method: 3 Common Samples --------------------------------------
 
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand3 <- hist %>%
-  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
-  group_by(CodeSet, revHist) %>%
+  filter(ottaID %in% reduce(list(cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID), intersect)) %>%
+  distinct(ottaID, revHist) %>%
+  group_by(revHist) %>%
   slice_sample(n = 3) %>%
   ungroup()
 
 # Gene expression from random common samples, preserving gene order
-cs1_rand <- cs1_clean %>%
-  inner_join(hist_rand3, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs2_rand <- cs2_clean %>%
-  inner_join(hist_rand3, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs3_rand <- cs3_clean %>%
-  inner_join(hist_rand3, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
+cs1_rand <- join_avg(cs1_clean, hist_rand3, "ottaID", "keep")
+cs2_rand <- join_avg(cs2_clean, hist_rand3, "ottaID", "keep")
+cs3_rand <- join_avg(cs3_clean, hist_rand3, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
-cs1_norm_counts <- cs1_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs1_rand)))) %>%
-  gather(FileName, exp, -1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs2_norm_counts <- cs2_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs2_rand)))) %>%
-  gather(FileName, exp, -1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs3_norm_counts <- cs3_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs3_rand)))) %>%
-  gather(FileName, exp,-1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
+cs1_norm_counts <- join_avg(cs1_clean, hist_rand3, "ottaID", "discard")
+cs2_norm_counts <- join_avg(cs2_clean, hist_rand3, "ottaID", "discard")
+cs3_norm_counts <- join_avg(cs3_clean, hist_rand3, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand3 <-
   refMethod(cs1_norm_counts, cs1_rand, cs3_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
 
 cs2_norm_rand3 <-
   refMethod(cs2_norm_counts, cs2_rand, cs3_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
 
 cs3_norm_rand3 <-
   refMethod(cs3_norm_counts, cs3_rand, cs2_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+# Combined gene expression
+codesets <- c("CS1", "CS2", "CS3")
+all_codesets <- combn(codesets, 2) %>%
+  as_tibble() %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
+
+norm_rand3 <- list(cs1_norm_rand3, cs2_norm_rand3, cs3_norm_rand3) %>%
+  set_names(codesets) %>%
+  map(~ select(., -"revHist"))
+
+# Concordance measures for all genes averaged across samples
+all_metrics <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(norm_rand3[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites)
+
+# Plot all combinations of cross-codeset concordance measure histograms
+p <- ggplot(all_metrics, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random3 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p)
 
 
 # Reference Method: 2 Common Samples --------------------------------------
@@ -80,76 +83,77 @@ cs3_norm_rand3 <-
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand2 <- hist %>%
-  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
-  group_by(CodeSet, revHist) %>%
+  filter(ottaID %in% reduce(list(cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID), intersect)) %>%
+  distinct(ottaID, revHist) %>%
+  group_by(revHist) %>%
   slice_sample(n = 2) %>%
   ungroup()
 
 # Gene expression from random common samples, preserving gene order
-cs1_rand <- cs1_clean %>%
-  inner_join(hist_rand2, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs2_rand <- cs2_clean %>%
-  inner_join(hist_rand2, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs3_rand <- cs3_clean %>%
-  inner_join(hist_rand2, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
+cs1_rand <- join_avg(cs1_clean, hist_rand2, "ottaID", "keep")
+cs2_rand <- join_avg(cs2_clean, hist_rand2, "ottaID", "keep")
+cs3_rand <- join_avg(cs3_clean, hist_rand2, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
-cs1_norm_counts <- cs1_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs1_rand)))) %>%
-  gather(FileName, exp, -1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs2_norm_counts <- cs2_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs2_rand)))) %>%
-  gather(FileName, exp, -1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs3_norm_counts <- cs3_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs3_rand)))) %>%
-  gather(FileName, exp,-1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
+cs1_norm_counts <- join_avg(cs1_clean, hist_rand2, "ottaID", "discard")
+cs2_norm_counts <- join_avg(cs2_clean, hist_rand2, "ottaID", "discard")
+cs3_norm_counts <- join_avg(cs3_clean, hist_rand2, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand2 <-
   refMethod(cs1_norm_counts, cs1_rand, cs3_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
 
 cs2_norm_rand2 <-
   refMethod(cs2_norm_counts, cs2_rand, cs3_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
 
 cs3_norm_rand2 <-
   refMethod(cs3_norm_counts, cs3_rand, cs2_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+# Combined gene expression
+codesets <- c("CS1", "CS2", "CS3")
+all_codesets <- combn(codesets, 2) %>%
+  as_tibble() %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
+
+norm_rand2 <- list(cs1_norm_rand2, cs2_norm_rand2, cs3_norm_rand2) %>%
+  set_names(codesets) %>%
+  map(~ select(., -"revHist"))
+
+# Concordance measures for all genes averaged across samples
+all_metrics <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(norm_rand2[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites)
+
+# Plot all combinations of cross-codeset concordance measure histograms
+p <- ggplot(all_metrics, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random2 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p)
 
 
 # Reference Method: 1 Common Sample ---------------------------------------
@@ -157,73 +161,74 @@ cs3_norm_rand2 <-
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand1 <- hist %>%
-  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
-  group_by(CodeSet, revHist) %>%
+  filter(ottaID %in% reduce(list(cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID), intersect)) %>%
+  distinct(ottaID, revHist) %>%
+  group_by(revHist) %>%
   slice_sample(n = 1) %>%
   ungroup()
 
 # Gene expression from random common samples, preserving gene order
-cs1_rand <- cs1_clean %>%
-  inner_join(hist_rand1, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs2_rand <- cs2_clean %>%
-  inner_join(hist_rand1, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs3_rand <- cs3_clean %>%
-  inner_join(hist_rand1, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
+cs1_rand <- join_avg(cs1_clean, hist_rand1, "ottaID", "keep")
+cs2_rand <- join_avg(cs2_clean, hist_rand1, "ottaID", "keep")
+cs3_rand <- join_avg(cs3_clean, hist_rand1, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
-cs1_norm_counts <- cs1_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs1_rand)))) %>%
-  gather(FileName, exp, -1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs2_norm_counts <- cs2_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs2_rand)))) %>%
-  gather(FileName, exp, -1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
-
-cs3_norm_counts <- cs3_norm %>%
-  select(-c(Code.Class, Accession, paste0("X", rownames(cs3_rand)))) %>%
-  gather(FileName, exp,-1) %>%
-  spread(Name, exp) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes))
+cs1_norm_counts <- join_avg(cs1_clean, hist_rand1, "ottaID", "discard")
+cs2_norm_counts <- join_avg(cs2_clean, hist_rand1, "ottaID", "discard")
+cs3_norm_counts <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand1 <-
   refMethod(cs1_norm_counts, cs1_rand, cs3_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
 
 cs2_norm_rand1 <-
   refMethod(cs2_norm_counts, cs2_rand, cs3_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
 
 cs3_norm_rand1 <-
   refMethod(cs3_norm_counts, cs3_rand, cs2_rand) %>%
   as.data.frame() %>%
-  rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+# Combined gene expression
+codesets <- c("CS1", "CS2", "CS3")
+all_codesets <- combn(codesets, 2) %>%
+  as_tibble() %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
+
+norm_rand1 <- list(cs1_norm_rand1, cs2_norm_rand1, cs3_norm_rand1) %>%
+  set_names(codesets) %>%
+  map(~ select(., -"revHist"))
+
+# Concordance measures for all genes averaged across samples
+all_metrics <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(norm_rand1[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites)
+
+# Plot all combinations of cross-codeset concordance measure histograms
+p <- ggplot(all_metrics, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random1 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p)
