@@ -105,7 +105,7 @@ cs1_clean <- cs1_norm %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr))
+  select(FileName, ottaID, all_of(common_genes))
 
 cs2_clean <- cs2_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
@@ -115,7 +115,7 @@ cs2_clean <- cs2_norm %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr))
+  select(FileName, ottaID, all_of(common_genes))
 
 cs3_clean <- cs3_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
@@ -125,4 +125,4 @@ cs3_clean <- cs3_norm %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr))
+  select(FileName, ottaID, all_of(common_genes))
