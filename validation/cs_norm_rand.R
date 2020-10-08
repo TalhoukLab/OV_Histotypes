@@ -228,7 +228,7 @@ p_rand2 <- ggplot(metrics_rand2, aes(Expression)) +
        title = "Random2 Normalized Concordance Measure Distributions") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
-print(p)
+print(p_rand2)
 
 
 # Reference Method: 1 Common Sample ---------------------------------------
