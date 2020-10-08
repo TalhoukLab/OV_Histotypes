@@ -361,7 +361,7 @@ metrics_rand3 <- all_codesets %>%
   ungroup()
 ```
 
-```{r cc-non3}
+```{r cc-non3, fig.cap='Random3 Non-Normalized Concordance Measure Distributions'}
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non3 <- ggplot(metrics_non3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
@@ -376,7 +376,7 @@ p_non3 <- ggplot(metrics_non3, aes(Expression)) +
 print(p_non3)
 ```
 
-```{r cc-rand3}
+```{r cc-rand3, fig.cap='Random3 Normalized Concordance Measure Distributions'}
 p_rand3 <- ggplot(metrics_rand3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 15, label = Median),
@@ -475,7 +475,7 @@ metrics_rand2 <- all_codesets %>%
   ungroup()
 ```
 
-```{r cc-non2}
+```{r cc-non2, fig.cap='Random2 Non-Normalized Concordance Measure Distributions'}
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non2 <- ggplot(metrics_non2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
@@ -490,7 +490,7 @@ p_non2 <- ggplot(metrics_non2, aes(Expression)) +
 print(p_non2)
 ```
 
-```{r cc-rand2}
+```{r cc-rand2, fig.cap='Random2 Normalized Concordance Measure Distributions'}
 p_rand2 <- ggplot(metrics_rand2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 15, label = Median),
@@ -589,7 +589,7 @@ metrics_rand1 <- all_codesets %>%
   ungroup()
 ```
 
-```{r cc-non1}
+```{r cc-non1, fig.cap='Random1 Non-Normalized Concordance Measure Distributions'}
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non1 <- ggplot(metrics_non1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
@@ -604,7 +604,7 @@ p_non1 <- ggplot(metrics_non1, aes(Expression)) +
 print(p_non1)
 ```
 
-```{r cc-rand1}
+```{r cc-rand1, fig.cap='Random1 Normalized Concordance Measure Distributions'}
 p_rand1 <- ggplot(metrics_rand1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 15, label = Median),
@@ -754,7 +754,7 @@ metrics_pools <- all_comps %>%
   ungroup()
 ```
 
-```{r cc-pools}
+```{r cc-pools, fig.cap='Pools Normalized Concordance Measure Distributions'}
 # Plot concordance measure histograms
 p_pools <- ggplot(metrics_pools, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
