@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-08-28}
+\date{2020-10-08}
 
 \begin{document}
 \maketitle
@@ -736,6 +736,80 @@ MUC & 61\\
 \hline
 \end{tabular}
 \end{table}
+
+\hypertarget{normalization}{%
+\section{Normalization}\label{normalization}}
+
+\hypertarget{reference-method}{%
+\subsection{Reference Method}\label{reference-method}}
+
+We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-non3-1} 
+
+}
+
+\caption{Random3 Non-Normalized Concordance Measure Distributions}\label{fig:cc-non3}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-rand3-1} 
+
+}
+
+\caption{Random3 Normalized Concordance Measure Distributions}\label{fig:cc-rand3}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-non2-1} 
+
+}
+
+\caption{Random2 Non-Normalized Concordance Measure Distributions}\label{fig:cc-non2}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-rand2-1} 
+
+}
+
+\caption{Random2 Normalized Concordance Measure Distributions}\label{fig:cc-rand2}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-non1-1} 
+
+}
+
+\caption{Random1 Non-Normalized Concordance Measure Distributions}\label{fig:cc-non1}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-rand1-1} 
+
+}
+
+\caption{Random1 Normalized Concordance Measure Distributions}\label{fig:cc-rand1}
+\end{figure}
+
+\hypertarget{pool-method}{%
+\subsection{Pool Method}\label{pool-method}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-pools-1} 
+
+}
+
+\caption{Pools Normalized Concordance Measure Distributions}\label{fig:cc-pools}
+\end{figure}
 
 \hypertarget{results}{%
 \chapter{Results}\label{results}}
