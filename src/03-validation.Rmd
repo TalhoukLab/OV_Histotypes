@@ -367,6 +367,7 @@ p_non3 <- ggplot(metrics_non3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 30, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -379,8 +380,9 @@ print(p_non3)
 ```{r cc-rand3, fig.cap='Random3 Normalized Concordance Measure Distributions'}
 p_rand3 <- ggplot(metrics_rand3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 15, label = Median),
+  geom_text(aes(x = 0, y = 30, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -481,6 +483,7 @@ p_non2 <- ggplot(metrics_non2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 30, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -493,8 +496,9 @@ print(p_non2)
 ```{r cc-rand2, fig.cap='Random2 Normalized Concordance Measure Distributions'}
 p_rand2 <- ggplot(metrics_rand2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 15, label = Median),
+  geom_text(aes(x = 0, y = 30, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -595,6 +599,7 @@ p_non1 <- ggplot(metrics_non1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 30, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -607,8 +612,9 @@ print(p_non1)
 ```{r cc-rand1, fig.cap='Random1 Normalized Concordance Measure Distributions'}
 p_rand1 <- ggplot(metrics_rand1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 15, label = Median),
+  geom_text(aes(x = 0, y = 30, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
