@@ -774,3 +774,26 @@ p_pools <- ggplot(metrics_pools, aes(Expression)) +
   theme(panel.grid.minor = element_blank())
 print(p_pools)
 ```
+
+## Common Sample Distributions
+
+```{r common-dist-all}
+common_dist_all <- hist %>% 
+  filter(ottaID %in% c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  )) %>% 
+  count(CodeSet, revHist) %>% 
+  pivot_wider(names_from = "CodeSet", values_from = "n")
+knitr::kable(common_dist_all, caption = "All Common Samples Histotype Distribution")
+```
+
+```{r common-dist-distinct}
+common_dist_distinct <- hist %>% 
+  filter(ottaID %in% c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  )) %>% 
+  distinct(ottaID, CodeSet, revHist) %>% 
+  count(CodeSet, revHist) %>% 
+  pivot_wider(names_from = "CodeSet", values_from = "n")
+knitr::kable(common_dist_distinct, caption = "Distinct Common Samples Histotype Distribution")
+```
