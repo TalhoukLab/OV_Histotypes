@@ -258,22 +258,106 @@ cs2_class %>%
 
 ## Normalization
 
-### Reference Method
-
-We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression.
-
 ```{r process-cohorts}
 source(here::here("validation/cs_process_cohorts.R"))
-```
-
-```{r cs-norm-rand}
-source(here::here("src/funs.R"))
-
 # Pairwise CodeSet comparisons
 codesets <- c("CS1", "CS2", "CS3")
 all_codesets <- combn(codesets, 2) %>%
   as_tibble() %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
+```
+
+```{r cs-raw}
+cs1_raw <- cs1 %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes))
+
+cs2_raw <- cs2 %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes))
+
+cs3_raw <- cs3 %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes))
+
+cs1_raw_avg <- cs1_raw %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+cs2_raw_avg <- cs2_raw %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+cs3_raw_avg <- cs3_raw %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+raw_list <-
+  set_names(list(cs1_raw_avg, cs2_raw_avg, cs3_raw_avg), codesets)
+```
+
+```{r cc-raw}
+metrics_raw <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(raw_list[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+# Plot all combinations of cross-codeset concordance measure histograms
+p_raw <- ggplot(metrics_raw, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 30, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Raw Non-Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_raw)
+```
+
+### Reference Method
+
+We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression.
+
+```{r cs-norm-rand}
+source(here::here("src/funs.R"))
 ```
 
 ```{r cs-norm-rand3}
