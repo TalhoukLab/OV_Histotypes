@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-10-08}
+\date{2020-10-09}
 
 \begin{document}
 \maketitle
@@ -740,6 +740,8 @@ MUC & 61\\
 \hypertarget{normalization}{%
 \section{Normalization}\label{normalization}}
 
+\begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-raw-1} \end{center}
+
 \hypertarget{reference-method}{%
 \subsection{Reference Method}\label{reference-method}}
 
@@ -810,6 +812,51 @@ We employ a new normalization technique using randomly selected samples common t
 
 \caption{Pools Normalized Concordance Measure Distributions}\label{fig:cc-pools}
 \end{figure}
+
+\hypertarget{common-sample-distributions}{%
+\section{Common Sample Distributions}\label{common-sample-distributions}}
+
+\begin{table}
+
+\caption{\label{tab:common-dist-all}All Common Samples Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+revHist & CS1 & CS2 & CS3\\
+\hline
+CCOC & 3 & 4 & 9\\
+\hline
+ENOC & 4 & 4 & 9\\
+\hline
+HGSC & 59 & 62 & 95\\
+\hline
+LGSC & 7 & 5 & 8\\
+\hline
+MUC & 7 & 5 & 11\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:common-dist-distinct}Distinct Common Samples Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+revHist & CS1 & CS2 & CS3\\
+\hline
+CCOC & 3 & 3 & 3\\
+\hline
+ENOC & 3 & 3 & 3\\
+\hline
+HGSC & 57 & 57 & 57\\
+\hline
+LGSC & 4 & 4 & 4\\
+\hline
+MUC & 5 & 5 & 5\\
+\hline
+\end{tabular}
+\end{table}
 
 \hypertarget{results}{%
 \chapter{Results}\label{results}}
