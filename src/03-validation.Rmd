@@ -708,6 +708,94 @@ p_rand1 <- ggplot(metrics_rand1, aes(Expression)) +
 print(p_rand1)
 ```
 
+```{r cs-norm-hgsc3}
+# Random selection of common samples with equal number of histotypes
+set.seed(2020)
+hist_rand <- hist %>%
+  filter(ottaID %in% unique(c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  ))) %>%
+  distinct(ottaID, revHist) %>%
+  filter(revHist == "HGSC") %>%
+  slice_sample(n = 3)
+
+# Gene expression from random common samples, preserving gene order
+cs1_rand <- join_avg(cs1_clean, hist_rand, "ottaID", "keep")
+cs2_rand <- join_avg(cs2_clean, hist_rand, "ottaID", "keep")
+cs3_rand <- join_avg(cs3_clean, hist_rand, "ottaID", "keep")
+
+# Remove common samples from CS1, preserving gene order
+cs1_counts <- join_avg(cs1_clean, hist_rand, "ottaID", "discard")
+cs2_counts <- join_avg(cs2_clean, hist_rand, "ottaID", "discard")
+cs3_counts <- join_avg(cs3_clean, hist_rand, "ottaID", "discard")
+
+# Normalize by reference method using common samples, add histotypes from annot
+cs1_norm_rand <-
+  refMethod(cs1_counts, cs1_rand, cs3_rand) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+cs2_norm_rand <-
+  refMethod(cs2_counts, cs2_rand, cs3_rand) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+cs3_norm_rand <-
+  refMethod(cs3_counts, cs3_rand, cs2_rand) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+norm_rand <- list(cs1_norm_rand, cs2_norm_rand, cs3_norm_rand) %>%
+  set_names(codesets)
+
+metrics_rand <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(norm_rand[.x], ~ {
+      .x <- .x %>% 
+      # .x <- .x %>% select(-"revHist")
+      # .y <- .y %>% select(-"revHist")
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+```
+
+```{r cc-rand, fig.cap='Random3 HGSC Normalized Concordance Measure Distributions'}
+p_rand <- ggplot(metrics_rand, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 30, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random3 HGSC Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_rand)
+```
+
+```{r hgsc3-table}
+tmp <- list(cs1_norm_rand, cs2_norm_rand, cs3_norm_rand) %>%
+  set_names(codesets) %>% 
+  map(pivot_longer, names_to = "gene", values_to = "exp", cols = -revHist)
+```
+
+
 ### Pool Method
 
 ```{r cs-norm-pools}
@@ -812,7 +900,9 @@ cs3_common_non <- cs3_norm_counts %>%
 # Combined gene expression
 all_comps <- tibble(
   `CS2Non_vs_CS3Non` = c("CS2Non", "CS3Non"),
-  `CS2Pools_vs_CS3Pools` = c("CS2Pools", "CS3Pools")
+  `CS2Pools_vs_CS3Pools` = c("CS2Pools", "CS3Pools"),
+  `CS2Non_vs_CS2Pools` = c("CS2Non", "CS2Pools"),
+  `CS3Non_vs_CS3Pools` = c("CS3Non", "CS3Pools")
 )
 common_gx <-
   set_names(
