@@ -384,21 +384,21 @@ cs3_counts3 <- join_avg(cs3_clean, hist_rand3, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand3 <-
-  refMethod(cs1_counts3, cs1_rand3, cs3_rand3) %>%
+  refMethod(cs1_counts3, cs3_rand3, cs1_rand3) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand3 <-
-  refMethod(cs2_counts3, cs2_rand3, cs3_rand3) %>%
+  refMethod(cs2_counts3, cs3_rand3, cs2_rand3) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs3_norm_rand3 <-
-  refMethod(cs3_counts3, cs3_rand3, cs2_rand3) %>%
+  refMethod(cs3_counts3, cs2_rand3, cs3_rand3) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
@@ -500,21 +500,21 @@ cs3_counts2 <- join_avg(cs3_clean, hist_rand2, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand2 <-
-  refMethod(cs1_counts2, cs1_rand2, cs3_rand2) %>%
+  refMethod(cs1_counts2, cs3_rand2, cs1_rand2) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand2 <-
-  refMethod(cs2_counts2, cs2_rand2, cs3_rand2) %>%
+  refMethod(cs2_counts2, cs3_rand2, cs2_rand2) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs3_norm_rand2 <-
-  refMethod(cs3_counts2, cs3_rand2, cs2_rand2) %>%
+  refMethod(cs3_counts2, cs2_rand2, cs3_rand2) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
@@ -616,21 +616,21 @@ cs3_counts1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand1 <-
-  refMethod(cs1_counts1, cs1_rand1, cs3_rand1) %>%
+  refMethod(cs1_counts1, cs3_rand1, cs1_rand1) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand1 <-
-  refMethod(cs2_counts1, cs2_rand1, cs3_rand1) %>%
+  refMethod(cs2_counts1, cs3_rand1, cs2_rand1) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs3_norm_rand1 <-
-  refMethod(cs3_counts1, cs3_rand1, cs2_rand1) %>%
+  refMethod(cs3_counts1, cs2_rand1, cs3_rand1) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
@@ -731,21 +731,21 @@ cs3_counts <- join_avg(cs3_clean, hist_rand, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand <-
-  refMethod(cs1_counts, cs1_rand, cs3_rand) %>%
+  refMethod(cs1_counts, cs3_rand, cs1_rand) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand <-
-  refMethod(cs2_counts, cs2_rand, cs3_rand) %>%
+  refMethod(cs2_counts, cs3_rand, cs2_rand) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs3_norm_rand <-
-  refMethod(cs3_counts, cs3_rand, cs2_rand) %>%
+  refMethod(cs3_counts, cs2_rand, cs3_rand) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
