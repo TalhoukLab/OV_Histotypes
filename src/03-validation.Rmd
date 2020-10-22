@@ -752,14 +752,12 @@ cs3_norm_rand <-
   column_to_rownames("ottaID")
 
 norm_rand <- list(cs1_norm_rand, cs2_norm_rand, cs3_norm_rand) %>%
-  set_names(codesets)
+  set_names(codesets) %>% 
+  map(~ select(., -"revHist"))
 
 metrics_rand <- all_codesets %>%
   imap_dfr(~ {
     pmap_dfr(norm_rand[.x], ~ {
-      .x <- .x %>% 
-      # .x <- .x %>% select(-"revHist")
-      # .y <- .y %>% select(-"revHist")
       R2 <- cor(.x, .y) ^ 2
       ccc <- epiR::epi.ccc(.x, .y)
       Ca <- pluck(ccc, "C.b")
@@ -788,13 +786,6 @@ p_rand <- ggplot(metrics_rand, aes(Expression)) +
   theme(panel.grid.minor = element_blank())
 print(p_rand)
 ```
-
-```{r hgsc3-table}
-tmp <- list(cs1_norm_rand, cs2_norm_rand, cs3_norm_rand) %>%
-  set_names(codesets) %>% 
-  map(pivot_longer, names_to = "gene", values_to = "exp", cols = -revHist)
-```
-
 
 ### Pool Method
 
