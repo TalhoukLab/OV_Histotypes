@@ -972,10 +972,16 @@ metrics_pools <- all_comps %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
   mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
-  ungroup()
+  ungroup() %>% 
+  mutate(Sites = factor(Sites, levels = c(
+    "CS2Non_vs_CS2Pools",
+    "CS3Non_vs_CS3Pools",
+    "CS2Non_vs_CS3Non",
+    "CS2Pools_vs_CS3Pools"
+  )))
 ```
 
-```{r cc-pools, fig.cap='Pools Normalized Concordance Measure Distributions'}
+```{r cc-pools, fig.cap='Pools Normalized Concordance Measure Distributions', fig.height=7}
 # Plot concordance measure histograms
 p_pools <- ggplot(metrics_pools, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
