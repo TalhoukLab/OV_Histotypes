@@ -268,7 +268,7 @@ all_codesets <- combn(codesets, 2) %>%
 ```
 
 ```{r cs-raw}
-cs1_raw <- cs1 %>%
+cs1_raw_avg <- cs1 %>%
   rename_all(~ gsub("^X", "", .)) %>%
   filter(Name %in% common_genes) %>%
   select_if(names(.) %in% c("Name", common_samples)) %>%
@@ -276,41 +276,35 @@ cs1_raw <- cs1 %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(FileName, ottaID, all_of(common_genes))
-
-cs2_raw <- cs2 %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  filter(Name %in% common_genes) %>%
-  select_if(names(.) %in% c("Name", common_samples)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(FileName, ottaID, all_of(common_genes))
-
-cs3_raw <- cs3 %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  filter(Name %in% common_genes) %>%
-  select_if(names(.) %in% c("Name", common_samples)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(FileName, ottaID, all_of(common_genes))
-
-cs1_raw_avg <- cs1_raw %>% 
+  select(FileName, ottaID, all_of(common_genes)) %>% 
   group_by(ottaID) %>% 
   summarize_if(is.double, mean) %>% 
   ungroup() %>% 
   column_to_rownames("ottaID")
 
-cs2_raw_avg <- cs2_raw %>% 
+cs2_raw_avg <- cs2 %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
   group_by(ottaID) %>% 
   summarize_if(is.double, mean) %>% 
   ungroup() %>% 
   column_to_rownames("ottaID")
 
-cs3_raw_avg <- cs3_raw %>% 
+cs3_raw_avg <- cs3 %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
   group_by(ottaID) %>% 
   summarize_if(is.double, mean) %>% 
   ungroup() %>% 
@@ -350,6 +344,85 @@ p_raw <- ggplot(metrics_raw, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_raw)
+```
+
+```{r cs-hknorm}
+cs1_hknorm_avg <- cs1_norm %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+cs2_hknorm_avg <- cs2_norm %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+cs3_hknorm_avg <- cs3_norm %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+hknorm_list <-
+  set_names(list(cs1_hknorm_avg, cs2_hknorm_avg, cs3_hknorm_avg), codesets)
+```
+
+```{r cc-hknorm}
+metrics_hknorm <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(hknorm_list[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+# Plot all combinations of cross-codeset concordance measure histograms
+p_hknorm <- ggplot(metrics_hknorm, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 30, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "HK genes Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_hknorm)
 ```
 
 ### Reference Method
