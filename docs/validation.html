@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2020-10-22" />
+<meta name="date" content="2020-10-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -792,6 +792,7 @@ Figure 3.4: Concordance Histograms
 <div id="normalization" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> Normalization</h2>
 <p><img src="OV_Histotypes_RSF_files/figure-html/cc-raw-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="OV_Histotypes_RSF_files/figure-html/cc-hknorm-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="reference-method" class="section level3" number="3.4.1">
 <h3><span class="header-section-number">3.4.1</span> Reference Method</h3>
 <p>We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression.</p>
@@ -837,6 +838,92 @@ Figure 3.10: Random1 Normalized Concordance Measure Distributions
 Figure 3.11: Random3 HGSC Normalized Concordance Measure Distributions
 </p>
 </div>
+<table>
+<caption><span id="tab:cs1-vs-cs3-by-hist">Table 3.10: </span>CS1 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2</th>
+<th align="right">Ca</th>
+<th align="right">Rc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">0.6650906</td>
+<td align="right">0.4145728</td>
+<td align="right">0.2129671</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">0.8898320</td>
+<td align="right">0.7382573</td>
+<td align="right">0.6817998</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.7727918</td>
+<td align="right">0.9362431</td>
+<td align="right">0.7940035</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.9436509</td>
+<td align="right">0.8071844</td>
+<td align="right">0.6871428</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.7627693</td>
+<td align="right">0.8758880</td>
+<td align="right">0.6834129</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:cs2-vs-cs3-by-hist">Table 3.11: </span>CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2</th>
+<th align="right">Ca</th>
+<th align="right">Rc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">0.6909534</td>
+<td align="right">0.5330670</td>
+<td align="right">0.2745700</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">0.8472959</td>
+<td align="right">0.7162819</td>
+<td align="right">0.6342219</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.8244025</td>
+<td align="right">0.9394632</td>
+<td align="right">0.8327582</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.9765871</td>
+<td align="right">0.8149184</td>
+<td align="right">0.7891646</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.7717966</td>
+<td align="right">0.8147197</td>
+<td align="right">0.5958569</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="pool-method" class="section level3" number="3.4.2">
 <h3><span class="header-section-number">3.4.2</span> Pool Method</h3>
@@ -851,7 +938,7 @@ Figure 3.12: Pools Normalized Concordance Measure Distributions
 <div id="common-sample-distributions" class="section level2" number="3.5">
 <h2><span class="header-section-number">3.5</span> Common Sample Distributions</h2>
 <table>
-<caption><span id="tab:common-dist-all">Table 3.10: </span>All Common Samples Histotype Distribution</caption>
+<caption><span id="tab:common-dist-all">Table 3.12: </span>All Common Samples Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -894,7 +981,7 @@ Figure 3.12: Pools Normalized Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-dist-distinct">Table 3.11: </span>Distinct Common Samples Histotype Distribution</caption>
+<caption><span id="tab:common-dist-distinct">Table 3.13: </span>Distinct Common Samples Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>

@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-10-09}
+\date{2020-10-23}
 
 \begin{document}
 \maketitle
@@ -742,6 +742,8 @@ MUC & 61\\
 
 \begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-raw-1} \end{center}
 
+\begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-hknorm-1} \end{center}
+
 \hypertarget{reference-method}{%
 \subsection{Reference Method}\label{reference-method}}
 
@@ -800,6 +802,57 @@ We employ a new normalization technique using randomly selected samples common t
 
 \caption{Random1 Normalized Concordance Measure Distributions}\label{fig:cc-rand1}
 \end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-rand-1} 
+
+}
+
+\caption{Random3 HGSC Normalized Concordance Measure Distributions}\label{fig:cc-rand}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:cs1-vs-cs3-by-hist}CS1 vs. CS3 Median Concordance Measures by Histotypes}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+hist & R2 & Ca & Rc\\
+\hline
+CCOC & 0.6650906 & 0.4145728 & 0.2129671\\
+\hline
+ENOC & 0.8898320 & 0.7382573 & 0.6817998\\
+\hline
+HGSC & 0.7727918 & 0.9362431 & 0.7940035\\
+\hline
+LGSC & 0.9436509 & 0.8071844 & 0.6871428\\
+\hline
+MUC & 0.7627693 & 0.8758880 & 0.6834129\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:cs2-vs-cs3-by-hist}CS2 vs. CS3 Median Concordance Measures by Histotypes}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+hist & R2 & Ca & Rc\\
+\hline
+CCOC & 0.6909534 & 0.5330670 & 0.2745700\\
+\hline
+ENOC & 0.8472959 & 0.7162819 & 0.6342219\\
+\hline
+HGSC & 0.8244025 & 0.9394632 & 0.8327582\\
+\hline
+LGSC & 0.9765871 & 0.8149184 & 0.7891646\\
+\hline
+MUC & 0.7717966 & 0.8147197 & 0.5958569\\
+\hline
+\end{tabular}
+\end{table}
 
 \hypertarget{pool-method}{%
 \subsection{Pool Method}\label{pool-method}}
