@@ -752,8 +752,8 @@ cs3_norm_rand <-
   column_to_rownames("ottaID")
 
 norm_rand <- list(cs1_norm_rand, cs2_norm_rand, cs3_norm_rand) %>%
-  set_names(codesets) %>% 
-  map(~ select(., -"revHist"))
+  set_names(codesets) %>%
+  map(select, -"revHist")
 
 metrics_rand <- all_codesets %>%
   imap_dfr(~ {
@@ -785,6 +785,56 @@ p_rand <- ggplot(metrics_rand, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_rand)
+```
+
+```{r cc-by-hist}
+cs1_byhist <- cs1_norm_rand %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs2_byhist <- cs2_norm_rand %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs3_byhist <- cs3_norm_rand %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+```
+
+```{r cs1-vs-cs3-by-hist}
+cs1_vs_cs3 <- list(cs1_byhist, cs3_byhist) %>%
+  transpose() %>%
+  map_dfr(function(x)
+    pmap_df(x, ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }, .id = "gene"),
+    .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup()
+
+knitr::kable(cs1_vs_cs3, caption = "CS1 vs. CS3 Median Concordance Measures by Histotypes")
+```
+
+```{r cs2-vs-cs3-by-hist}
+cs2_vs_cs3 <- list(cs2_byhist, cs3_byhist) %>%
+  transpose() %>%
+  map_dfr(function(x)
+    pmap_df(x, ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }, .id = "gene"),
+    .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup()
+
+knitr::kable(cs2_vs_cs3, caption = "CS2 vs. CS3 Median Concordance Measures by Histotypes")
 ```
 
 ### Pool Method
