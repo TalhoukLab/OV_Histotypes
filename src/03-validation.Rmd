@@ -916,90 +916,57 @@ cs2_normalized_data_pools <-
   transmute(Name = fct_inorder(Name), FileName, exp = be + exp) %>%
   spread(Name, exp)
 
-# Extract cs3 norm counts (not pools)
-cs3_norm_counts <- cs3_norm %>% select(-one_of(names(ref_pools)))
-
-# Normalize each gene by adding batch effect (diff in mean gx)
-cs3_normalized_data_pools <-
-  inner_join(cs2_pools_mgx, cs3_pools_mgx, by = "Name") %>%
-  transmute(Name, be = cs2_exp - cs3_exp) %>%
-  inner_join(cs3_norm_counts, by = "Name") %>%
-  gather(FileName, exp, -1:-4) %>%
-  transmute(Name = fct_inorder(Name), FileName, exp = be + exp) %>%
-  spread(Name, exp)
-
 ## Summary
 # CS2 pools: 9 samples, 365 genes # dim(t(cs2_pools))
 # CS3 pools: 22 samples, 513 genes # dim(t(ref_pools))
-# CS2 normalized: 1214 samples (1223 original - 9 from pools), 136 common genes # dim(cs2_normalized_data_pools)
-# CS3 normalized: 1295 samples (1317 original - 22 from pools), 136 common genes # dim(cs2_normalized_data_pools)
+# CS2 normalized: 894 samples (903 original - 9 from pools), 136 common genes # dim(cs2_normalized_data_pools)
 
 
 # Keep only common samples between codesets, average out duplicates
-tmp2 <- cs2_normalized_data_pools %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName")
-
-tmp3 <- cs3_normalized_data_pools %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName")
-
-cs2_common_pools <- tmp2 %>%
-  semi_join(tmp3, by = "ottaID") %>%
-  group_by(ottaID) %>%
-  summarize_if(is.double, mean) %>%
-  ungroup()
-
-cs3_common_pools <- tmp3 %>%
-  semi_join(tmp2, by = "ottaID") %>%
-  group_by(ottaID) %>%
-  summarize_if(is.double, mean) %>%
-  ungroup()
-
-# Keep common samples/genes for the non-normalized data
-cs2_common_non <- cs2_norm_counts %>%
+tmp2 <- cs2_norm_counts %>%
   gather(FileName, exp, -1:-3) %>%
   mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  semi_join(cs2_common_pools, by = "ottaID") %>%
-  filter(Name %in% names(cs2_common_pools)[-1]) %>%
-  mutate(Name = factor(Name, levels = names(cs2_common_pools)[-1])) %>%
+  inner_join(hist, by = "FileName") %>% 
+  filter(Name %in% names(cs2_normalized_data_pools)[-1]) %>%
+  mutate(Name = factor(Name, levels = names(cs2_normalized_data_pools)[-1])) %>%
   select(Name, ottaID, exp) %>%
   group_by(Name, ottaID) %>%
   summarize(exp = mean(exp)) %>%
   ungroup() %>%
   spread(Name, exp)
 
-cs3_common_non <- cs3_norm_counts %>%
+tmp3 <- cs3_norm %>%
+  select(-one_of(names(ref_pools))) %>%
   gather(FileName, exp, -1:-3) %>%
   mutate(FileName = gsub("^X", "", FileName)) %>%
-  inner_join(hist, by = "FileName") %>%
-  semi_join(cs3_common_pools, by = "ottaID") %>%
-  filter(Name %in% names(cs3_common_pools)[-1]) %>%
-  mutate(Name = factor(Name, levels = names(cs3_common_pools)[-1])) %>%
+  inner_join(hist, by = "FileName") %>% 
+  filter(Name %in% names(cs2_normalized_data_pools)[-1]) %>%
+  mutate(Name = factor(Name, levels = names(cs2_normalized_data_pools)[-1])) %>%
   select(Name, ottaID, exp) %>%
   group_by(Name, ottaID) %>%
   summarize(exp = mean(exp)) %>%
   ungroup() %>%
   spread(Name, exp)
+
+cs2_common_non <- semi_join(tmp2, tmp3, by = "ottaID")
+cs3_common_non <- semi_join(tmp3, tmp2, by = "ottaID")
+
+# Extract cs2 common pools-normalized
+cs2_common_pools <- cs2_normalized_data_pools %>%
+  mutate(FileName = gsub("^X", "", FileName)) %>%
+  inner_join(hist, by = "FileName") %>% 
+  group_by(ottaID) %>%
+  summarize_if(is.double, mean) %>%
+  ungroup() %>% 
+  semi_join(cs3_common_non, by = "ottaID")
 
 # Combined gene expression
-all_comps <- tibble(
-  `CS2Non_vs_CS3Non` = c("CS2Non", "CS3Non"),
-  `CS2Pools_vs_CS3Pools` = c("CS2Pools", "CS3Pools"),
-  `CS2Non_vs_CS2Pools` = c("CS2Non", "CS2Pools"),
-  `CS3Non_vs_CS3Pools` = c("CS3Non", "CS3Pools")
-)
+sets <- c("CS2Non", "CS2Pools", "CS3Non")
+all_comps <- combn(sets, 2) %>%
+  as_tibble() %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx <-
-  set_names(
-    list(
-      cs2_common_non,
-      cs3_common_non,
-      cs2_common_pools,
-      cs3_common_pools
-    ),
-    c("CS2Non", "CS3Non", "CS2Pools", "CS3Pools")
-  ) %>%
+  set_names(list(cs2_common_non, cs2_common_pools, cs3_common_non), sets) %>%
   map(column_to_rownames, "ottaID")
 
 # Concordance measures for all genes averaged across samples
@@ -1018,15 +985,10 @@ metrics_pools <- all_comps %>%
   group_by(Sites, Metric) %>%
   mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
   ungroup() %>% 
-  mutate(Sites = factor(Sites, levels = c(
-    "CS2Non_vs_CS2Pools",
-    "CS3Non_vs_CS3Pools",
-    "CS2Non_vs_CS3Non",
-    "CS2Pools_vs_CS3Pools"
-  )))
+  mutate(Sites = factor(Sites, levels = names(all_comps)))
 ```
 
-```{r cc-pools, fig.cap='Pools Normalized Concordance Measure Distributions', fig.height=7}
+```{r cc-pools, fig.cap='Pools Normalized Concordance Measure Distributions', fig.height=6}
 # Plot concordance measure histograms
 p_pools <- ggplot(metrics_pools, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
