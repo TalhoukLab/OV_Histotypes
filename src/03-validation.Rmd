@@ -860,7 +860,7 @@ cs1_vs_cs3 <- list(cs1_byhist, cs3_byhist) %>%
   summarize_if(is.double, median) %>%
   ungroup()
 
-knitr::kable(cs1_vs_cs3, caption = "CS1 vs. CS3 Median Concordance Measures by Histotypes")
+knitr::kable(cs1_vs_cs3, caption = "CS1 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
 ```
 
 ```{r cs2-vs-cs3-by-hist}
@@ -879,7 +879,7 @@ cs2_vs_cs3 <- list(cs2_byhist, cs3_byhist) %>%
   summarize_if(is.double, median) %>%
   ungroup()
 
-knitr::kable(cs2_vs_cs3, caption = "CS2 vs. CS3 Median Concordance Measures by Histotypes")
+knitr::kable(cs2_vs_cs3, caption = "CS2 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
 ```
 
 ### Pool Method
