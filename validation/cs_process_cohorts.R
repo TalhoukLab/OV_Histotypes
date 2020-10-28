@@ -3,12 +3,15 @@
 library(tidyverse)
 library(readxl)
 library(nanostringr)
+library(ottaOvca)
 library(here)
 
 
 # Data Processing ---------------------------------------------------------
 
 # Read in raw data
+data("od.otta")
+od.otta <- to_native_type(od.otta)
 annot <- read_csv(here("data-raw/annot.csv"), col_types = cols())
 cohorts <- read_excel(here("data-raw/bc-842_avail_cosp_2020-08-31.xlsx"),
                       sheet = "data")
@@ -58,15 +61,34 @@ annot_cs_all <- annot %>%
     )
   )
 
+# Gold standard histotypes for OVAR3 and ICON7 cohorts
+hist_stan <- od.otta %>%
+  mutate(otta_id = as.character(otta_id)) %>%
+  filter(cohort %in% c("OVAR3", "ICON7")) %>%
+  select(ottaID = otta_id, cohort, hist_rev) %>%
+  mutate(
+    hist_rev = case_when(
+      hist_rev == "high-grade serous" ~ "HGSC",
+      hist_rev == "low-grade serous" ~ "LGSC",
+      hist_rev == "mucinous" ~ "MUC",
+      hist_rev == "endometrioid" ~ "ENOC",
+      hist_rev == "clear cell" ~ "CCOC",
+      hist_rev == "serous borderline tumour" ~ "SBOT",
+      TRUE ~ NA_character_
+    )
+  )
+
 # Histotypes
 hist <- annot_cs_all %>%
+  left_join(hist_stan, by = "ottaID") %>%
   transmute(
     FileName = RCC.File.Name,
     ottaID,
     CodeSet,
     revHist = case_when(
-      revHist == "CCC" ~ "CCOC",
-      revHist == "ENOCa" ~ "ENOC",
+      !is.na(cohort) ~ hist_rev,
+      is.na(cohort) & revHist == "CCC" ~ "CCOC",
+      is.na(cohort) & revHist == "ENOCa" ~ "ENOC",
       TRUE ~ revHist
     ),
     hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC")
