@@ -14,3 +14,12 @@ join_avg <- function(cs, hist, id, type = c("keep", "discard")) {
     dplyr::ungroup() %>%
     tibble::column_to_rownames(id)
 }
+
+# Calculate squared correlation and concordance correlation
+cor_stats <- function(x, y) {
+  R2 <- cor(x, y) ^ 2
+  ccc <- epiR::epi.ccc(x, y)
+  Ca <- pluck(ccc, "C.b")
+  Rc <- pluck(ccc, "rho.c", "est")
+  lst(R2, Ca, Rc)
+}
