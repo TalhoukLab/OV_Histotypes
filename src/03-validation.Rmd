@@ -1,6 +1,7 @@
 # Validation
 
 ```{r setup-03}
+source(here::here("src/funs.R"))
 source(here::here("validation/cs_process.R"))
 cs1_class <- readRDS(here::here("data/cs1_class.rds"))
 cs2_class <- readRDS(here::here("data/cs2_class.rds"))
@@ -414,10 +415,6 @@ print(p_hknorm)
 ### Reference Method
 
 We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression.
-
-```{r cs-norm-rand}
-source(here::here("src/funs.R"))
-```
 
 ```{r cs-norm-rand3}
 # Random selection of common samples with equal number of histotypes
