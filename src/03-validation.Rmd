@@ -815,7 +815,10 @@ cs1_byhist <- cs1_norm_rand %>%
 cs2_byhist <- cs2_norm_rand %>%
   split(.$revHist) %>%
   map(select, -"revHist")
-cs3_byhist <- cs3_norm_rand %>%
+cs3_byhist <- cs3_counts %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
   split(.$revHist) %>%
   map(select, -"revHist")
 ```
