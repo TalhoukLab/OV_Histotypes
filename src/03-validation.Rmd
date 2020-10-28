@@ -760,6 +760,63 @@ p_rand1 <- ggplot(metrics_rand1, aes(Expression)) +
 print(p_rand1)
 ```
 
+```{r rand1-cc-by-hist}
+cs1_norm_rand1_byhist <- cs1_norm_rand1 %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs2_norm_rand1_byhist <- cs2_norm_rand1 %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs3_counts1_byhist <- cs3_counts1 %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+```
+
+```{r rand1-cs1-vs-cs3}
+rand1_cs1_vs_cs3 <- list(cs1_norm_rand1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(function(x)
+    pmap_df(x, ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }, .id = "gene"),
+    .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup()
+
+knitr::kable(rand1_cs1_vs_cs3,
+             caption = "Random1 CS1 vs. CS3 Median Concordance Measures by Histotypes",
+             digits = 2)
+```
+
+```{r rand1-cs2-vs-cs3}
+rand1_cs2_vs_cs3 <- list(cs2_norm_rand1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(function(x)
+    pmap_df(x, ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }, .id = "gene"),
+    .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup()
+
+knitr::kable(rand1_cs2_vs_cs3,
+             caption = "Random1 CS2 vs. CS3 Median Concordance Measures by Histotypes",
+             digits = 2)
+```
+
 ```{r cs-norm-hgsc3}
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
@@ -832,7 +889,7 @@ p_rand <- ggplot(metrics_rand, aes(Expression)) +
 print(p_rand)
 ```
 
-```{r cc-by-hist}
+```{r rand3-hgsc-cc-by-hist}
 cs1_byhist <- cs1_norm_rand %>%
   split(.$revHist) %>%
   map(select, -"revHist")
@@ -844,8 +901,8 @@ cs3_byhist <- cs3_norm_rand %>%
   map(select, -"revHist")
 ```
 
-```{r cs1-vs-cs3-by-hist}
-cs1_vs_cs3 <- list(cs1_byhist, cs3_byhist) %>%
+```{r rand3-hgsc-cs1-vs-cs3}
+rand3_hgsc_cs1_vs_cs3 <- list(cs1_byhist, cs3_byhist) %>%
   transpose() %>%
   map_dfr(function(x)
     pmap_df(x, ~ {
@@ -860,11 +917,11 @@ cs1_vs_cs3 <- list(cs1_byhist, cs3_byhist) %>%
   summarize_if(is.double, median) %>%
   ungroup()
 
-knitr::kable(cs1_vs_cs3, caption = "CS1 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
+knitr::kable(rand3_hgsc_cs1_vs_cs3, caption = "Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
 ```
 
-```{r cs2-vs-cs3-by-hist}
-cs2_vs_cs3 <- list(cs2_byhist, cs3_byhist) %>%
+```{r rand3-hgsc-cs2-vs-cs3}
+rand3_hgsc_cs2_vs_cs3 <- list(cs2_byhist, cs3_byhist) %>%
   transpose() %>%
   map_dfr(function(x)
     pmap_df(x, ~ {
@@ -879,7 +936,7 @@ cs2_vs_cs3 <- list(cs2_byhist, cs3_byhist) %>%
   summarize_if(is.double, median) %>%
   ungroup()
 
-knitr::kable(cs2_vs_cs3, caption = "CS2 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
+knitr::kable(rand3_hgsc_cs2_vs_cs3, caption = "Random3 HGSC CS2 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
 ```
 
 ### Pool Method
@@ -929,8 +986,8 @@ tmp2 <- cs2_norm_counts %>%
   inner_join(hist, by = "FileName") %>% 
   filter(Name %in% names(cs2_normalized_data_pools)[-1]) %>%
   mutate(Name = factor(Name, levels = names(cs2_normalized_data_pools)[-1])) %>%
-  select(Name, ottaID, exp) %>%
-  group_by(Name, ottaID) %>%
+  select(Name, ottaID, revHist, exp) %>% 
+  group_by(Name, ottaID, revHist) %>%
   summarize(exp = mean(exp)) %>%
   ungroup() %>%
   spread(Name, exp)
@@ -942,8 +999,8 @@ tmp3 <- cs3_norm %>%
   inner_join(hist, by = "FileName") %>% 
   filter(Name %in% names(cs2_normalized_data_pools)[-1]) %>%
   mutate(Name = factor(Name, levels = names(cs2_normalized_data_pools)[-1])) %>%
-  select(Name, ottaID, exp) %>%
-  group_by(Name, ottaID) %>%
+  select(Name, ottaID, revHist, exp) %>% 
+  group_by(Name, ottaID, revHist) %>%
   summarize(exp = mean(exp)) %>%
   ungroup() %>%
   spread(Name, exp)
@@ -955,7 +1012,7 @@ cs3_common_non <- semi_join(tmp3, tmp2, by = "ottaID")
 cs2_common_pools <- cs2_normalized_data_pools %>%
   mutate(FileName = gsub("^X", "", FileName)) %>%
   inner_join(hist, by = "FileName") %>% 
-  group_by(ottaID) %>%
+  group_by(ottaID, revHist) %>%
   summarize_if(is.double, mean) %>%
   ungroup() %>% 
   semi_join(cs3_common_non, by = "ottaID")
@@ -967,7 +1024,8 @@ all_comps <- combn(sets, 2) %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx <-
   set_names(list(cs2_common_non, cs2_common_pools, cs3_common_non), sets) %>%
-  map(column_to_rownames, "ottaID")
+  map(column_to_rownames, "ottaID") %>% 
+  map(select, -"revHist")
 
 # Concordance measures for all genes averaged across samples
 metrics_pools <- all_comps %>%
@@ -1001,6 +1059,63 @@ p_pools <- ggplot(metrics_pools, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools)
+```
+
+```{r pools-cc-by-hist}
+cs2_common_non_byhist <- cs2_common_non %>%
+  split(.$revHist) %>%
+  map(column_to_rownames, "ottaID") %>% 
+  map(select, -"revHist")
+cs2_common_pools_byhist <- cs2_common_pools %>%
+  split(.$revHist) %>%
+  map(column_to_rownames, "ottaID") %>% 
+  map(select, -"revHist")
+cs3_common_non_byhist <- cs3_common_non %>%
+  split(.$revHist) %>%
+  map(column_to_rownames, "ottaID") %>% 
+  map(select, -"revHist")
+```
+
+```{r pools-cs2non-vs-cs3}
+pools_cs2non_vs_cs3 <- list(cs2_common_non_byhist, cs3_common_non_byhist) %>%
+  transpose() %>%
+  map_dfr(function(x)
+    pmap_df(x, ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }, .id = "gene"),
+    .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup()
+
+knitr::kable(pools_cs2non_vs_cs3,
+             caption = "Pools Non-Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes",
+             digits = 2)
+```
+
+```{r pools-cs2norm-vs-cs3}
+pools_cs2norm_vs_cs3 <- list(cs2_common_pools_byhist, cs3_common_non_byhist) %>%
+  transpose() %>%
+  map_dfr(function(x)
+    pmap_df(x, ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- pluck(ccc, "C.b")
+      Rc <- pluck(ccc, "rho.c", "est")
+      lst(R2, Ca, Rc)
+    }, .id = "gene"),
+    .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup()
+
+knitr::kable(pools_cs2norm_vs_cs3,
+             caption = "Pools Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes",
+             digits = 2)
 ```
 
 ## Common Sample Distributions
