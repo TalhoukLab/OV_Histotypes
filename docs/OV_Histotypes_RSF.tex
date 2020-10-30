@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-10-28}
+\date{2020-10-30}
 
 \begin{document}
 \maketitle
@@ -807,19 +807,19 @@ We employ a new normalization technique using randomly selected samples common t
 
 \caption{\label{tab:rand1-cs1-vs-cs3}Random1 CS1 vs. CS3 Median Concordance Measures by Histotypes}
 \centering
-\begin{tabular}[t]{l|r|r|r}
+\begin{tabular}[t]{l|r|r|r|r|r|r}
 \hline
-hist & R2 & Ca & Rc\\
+hist & R2-Non & Ca-Non & Rc-Non & R2-Norm & Ca-Norm & Rc-Norm\\
 \hline
-CCOC & 1.00 & 0.28 & 0.09\\
+CCOC & 1.00 & 0.30 & 0.08 & 1.00 & 0.28 & 0.09\\
 \hline
-ENOC & 1.00 & 0.61 & 0.61\\
+ENOC & 1.00 & 0.54 & 0.54 & 1.00 & 0.61 & 0.61\\
 \hline
-HGSC & 0.78 & 0.97 & 0.86\\
+HGSC & 0.78 & 0.98 & 0.85 & 0.78 & 0.97 & 0.86\\
 \hline
-LGSC & 0.97 & 0.90 & 0.87\\
+LGSC & 0.97 & 0.87 & 0.81 & 0.97 & 0.90 & 0.87\\
 \hline
-MUC & 0.75 & 0.82 & 0.64\\
+MUC & 0.75 & 0.85 & 0.68 & 0.75 & 0.82 & 0.64\\
 \hline
 \end{tabular}
 \end{table}
@@ -828,19 +828,19 @@ MUC & 0.75 & 0.82 & 0.64\\
 
 \caption{\label{tab:rand1-cs2-vs-cs3}Random1 CS2 vs. CS3 Median Concordance Measures by Histotypes}
 \centering
-\begin{tabular}[t]{l|r|r|r}
+\begin{tabular}[t]{l|r|r|r|r|r|r}
 \hline
-hist & R2 & Ca & Rc\\
+hist & R2-Non & Ca-Non & Rc-Non & R2-Norm & Ca-Norm & Rc-Norm\\
 \hline
-CCOC & 1.00 & 0.27 & 0.09\\
+CCOC & 1.00 & 0.20 & 0.04 & 1.00 & 0.27 & 0.09\\
 \hline
-ENOC & 1.00 & 0.64 & 0.61\\
+ENOC & 1.00 & 0.67 & 0.64 & 1.00 & 0.64 & 0.61\\
 \hline
-HGSC & 0.83 & 0.99 & 0.89\\
+HGSC & 0.83 & 0.96 & 0.86 & 0.83 & 0.99 & 0.89\\
 \hline
-LGSC & 0.99 & 0.96 & 0.94\\
+LGSC & 0.99 & 0.92 & 0.91 & 0.99 & 0.96 & 0.94\\
 \hline
-MUC & 0.70 & 0.86 & 0.57\\
+MUC & 0.70 & 0.78 & 0.55 & 0.70 & 0.86 & 0.57\\
 \hline
 \end{tabular}
 \end{table}
@@ -858,19 +858,19 @@ MUC & 0.70 & 0.86 & 0.57\\
 
 \caption{\label{tab:rand3-hgsc-cs1-vs-cs3}Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes}
 \centering
-\begin{tabular}[t]{l|r|r|r}
+\begin{tabular}[t]{l|r|r|r|r|r|r}
 \hline
-hist & R2 & Ca & Rc\\
+hist & R2-Non & Ca-Non & Rc-Non & R2-Norm & Ca-Norm & Rc-Norm\\
 \hline
-CCOC & 0.67 & 0.63 & 0.26\\
+CCOC & 0.67 & 0.58 & 0.29 & 0.67 & 0.63 & 0.26\\
 \hline
-ENOC & 0.89 & 0.80 & 0.74\\
+ENOC & 0.89 & 0.80 & 0.71 & 0.89 & 0.80 & 0.74\\
 \hline
-HGSC & 0.77 & 0.99 & 0.87\\
+HGSC & 0.77 & 0.98 & 0.85 & 0.77 & 0.99 & 0.87\\
 \hline
-LGSC & 0.94 & 0.88 & 0.83\\
+LGSC & 0.94 & 0.85 & 0.79 & 0.94 & 0.88 & 0.83\\
 \hline
-MUC & 0.76 & 0.93 & 0.79\\
+MUC & 0.76 & 0.93 & 0.73 & 0.76 & 0.93 & 0.79\\
 \hline
 \end{tabular}
 \end{table}
@@ -879,19 +879,19 @@ MUC & 0.76 & 0.93 & 0.79\\
 
 \caption{\label{tab:rand3-hgsc-cs2-vs-cs3}Random3 HGSC CS2 vs. CS3 Median Concordance Measures by Histotypes}
 \centering
-\begin{tabular}[t]{l|r|r|r}
+\begin{tabular}[t]{l|r|r|r|r|r|r}
 \hline
-hist & R2 & Ca & Rc\\
+hist & R2-Non & Ca-Non & Rc-Non & R2-Norm & Ca-Norm & Rc-Norm\\
 \hline
-CCOC & 0.69 & 0.64 & 0.39\\
+CCOC & 0.69 & 0.54 & 0.35 & 0.69 & 0.64 & 0.39\\
 \hline
-ENOC & 0.85 & 0.86 & 0.76\\
+ENOC & 0.85 & 0.77 & 0.66 & 0.85 & 0.86 & 0.76\\
 \hline
-HGSC & 0.82 & 0.99 & 0.90\\
+HGSC & 0.82 & 0.96 & 0.86 & 0.82 & 0.99 & 0.90\\
 \hline
-LGSC & 0.98 & 0.94 & 0.92\\
+LGSC & 0.98 & 0.95 & 0.92 & 0.98 & 0.94 & 0.92\\
 \hline
-MUC & 0.77 & 0.92 & 0.70\\
+MUC & 0.77 & 0.89 & 0.73 & 0.77 & 0.92 & 0.70\\
 \hline
 \end{tabular}
 \end{table}
