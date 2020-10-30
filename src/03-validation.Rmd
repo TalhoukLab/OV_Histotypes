@@ -708,6 +708,19 @@ cs1_norm_rand1_byhist <- cs1_norm_rand1 %>%
 cs2_norm_rand1_byhist <- cs2_norm_rand1 %>%
   split(.$revHist) %>%
   map(select, -"revHist")
+
+cs1_counts1_byhist <- cs1_counts1 %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs2_counts1_byhist <- cs2_counts1 %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
 cs3_counts1_byhist <- cs3_counts1 %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
@@ -717,12 +730,22 @@ cs3_counts1_byhist <- cs3_counts1 %>%
 ```
 
 ```{r rand1-cs1-vs-cs3}
-rand1_cs1_vs_cs3 <- list(cs1_norm_rand1_byhist, cs3_counts1_byhist) %>%
+rand1_cs1_vs_cs3_non <- list(cs1_counts1_byhist, cs3_counts1_byhist) %>%
   transpose() %>%
   map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
   group_by(hist) %>%
   summarize_if(is.double, median) %>%
-  ungroup()
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+rand1_cs1_vs_cs3_norm <- list(cs1_norm_rand1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Norm"))
+rand1_cs1_vs_cs3 <-
+  inner_join(rand1_cs1_vs_cs3_non, rand1_cs1_vs_cs3_norm, by = "hist")
 
 knitr::kable(rand1_cs1_vs_cs3,
              caption = "Random1 CS1 vs. CS3 Median Concordance Measures by Histotypes",
@@ -730,12 +753,22 @@ knitr::kable(rand1_cs1_vs_cs3,
 ```
 
 ```{r rand1-cs2-vs-cs3}
-rand1_cs2_vs_cs3 <- list(cs2_norm_rand1_byhist, cs3_counts1_byhist) %>%
+rand1_cs2_vs_cs3_non <- list(cs2_counts1_byhist, cs3_counts1_byhist) %>%
   transpose() %>%
   map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
   group_by(hist) %>%
   summarize_if(is.double, median) %>%
-  ungroup()
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+rand1_cs2_vs_cs3_norm <- list(cs2_norm_rand1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Norm"))
+rand1_cs2_vs_cs3 <-
+  inner_join(rand1_cs2_vs_cs3_non, rand1_cs2_vs_cs3_norm, by = "hist")
 
 knitr::kable(rand1_cs2_vs_cs3,
              caption = "Random1 CS2 vs. CS3 Median Concordance Measures by Histotypes",
@@ -809,10 +842,23 @@ print(p_rand)
 ```
 
 ```{r rand3-hgsc-cc-by-hist}
-cs1_byhist <- cs1_norm_rand %>%
+cs1_norm_byhist <- cs1_norm_rand %>%
   split(.$revHist) %>%
   map(select, -"revHist")
-cs2_byhist <- cs2_norm_rand %>%
+cs2_norm_byhist <- cs2_norm_rand %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs1_byhist <- cs1_counts %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs2_byhist <- cs2_counts %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
   split(.$revHist) %>%
   map(select, -"revHist")
 cs3_byhist <- cs3_counts %>%
@@ -824,25 +870,47 @@ cs3_byhist <- cs3_counts %>%
 ```
 
 ```{r rand3-hgsc-cs1-vs-cs3}
-rand3_hgsc_cs1_vs_cs3 <- list(cs1_byhist, cs3_byhist) %>%
+rand3_hgsc_cs1_vs_cs3_non <- list(cs1_byhist, cs3_byhist) %>%
   transpose() %>%
   map_dfr(~ pmap_df(.x, ~ cor_stats(.x, .y), .id = "gene"),
           .id = "hist") %>%
   group_by(hist) %>%
   summarize_if(is.double, median) %>%
-  ungroup()
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+rand3_hgsc_cs1_vs_cs3_norm <- list(cs1_norm_byhist, cs3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, ~ cor_stats(.x, .y), .id = "gene"),
+          .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Norm"))
+rand3_hgsc_cs1_vs_cs3 <- 
+  inner_join(rand3_hgsc_cs1_vs_cs3_non, rand3_hgsc_cs1_vs_cs3_norm, by = "hist")
 
 knitr::kable(rand3_hgsc_cs1_vs_cs3, caption = "Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
 ```
 
 ```{r rand3-hgsc-cs2-vs-cs3}
-rand3_hgsc_cs2_vs_cs3 <- list(cs2_byhist, cs3_byhist) %>%
+rand3_hgsc_cs2_vs_cs3_non <- list(cs2_byhist, cs3_byhist) %>%
   transpose() %>%
   map_dfr(~ pmap_df(.x, ~ cor_stats(.x, .y), .id = "gene"),
           .id = "hist") %>%
   group_by(hist) %>%
   summarize_if(is.double, median) %>%
-  ungroup()
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+rand3_hgsc_cs2_vs_cs3_norm <- list(cs2_norm_byhist, cs3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, ~ cor_stats(.x, .y), .id = "gene"),
+          .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Norm"))
+rand3_hgsc_cs2_vs_cs3 <- 
+  inner_join(rand3_hgsc_cs2_vs_cs3_non, rand3_hgsc_cs2_vs_cs3_norm, by = "hist")
 
 knitr::kable(rand3_hgsc_cs2_vs_cs3, caption = "Random3 HGSC CS2 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
 ```
