@@ -163,6 +163,19 @@ We use the pool method to normalize CS2 to CS3 so we can be consistent with the 
 
 The final CS2 training set has `r nrow(cs2_data)` samples on `r ncol(cs2_data)` (common) genes after normalization and keeping only the major histotypes of interest.
 
+### Cohort Distribution
+
+```{r cohort-dist}
+source(here::here("validation/cs_process_cohorts.R"))
+cohort_dist <- cohorts %>% 
+  filter(col_name %in% c(cs1_samples, cs2_samples, cs3_samples)) %>% 
+  count(file_source, cohort) %>% 
+  pivot_wider(names_from = "file_source", values_from = "n")
+
+knitr::kable(cohort_dist,
+             caption = "Cohort Distribution amongst CodeSets")
+```
+
 ## Classification
 
 We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the [splendid](https://alinetalhouk.github.io/splendid/) package. 
