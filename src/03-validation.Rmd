@@ -919,9 +919,10 @@ knitr::kable(rand3_hgsc_cs2_vs_cs3, caption = "Random3 HGSC CS2 vs. CS3 Median C
 
 ```{r cs-norm-pools}
 # Pool set: pool samples from CS2
-pool_samples <-
-  gsub("-|\\.RCC", "", grep("POOL", pools[["CS2-FileName"]], value = TRUE))
-cs2_pools <- select(cs2_norm, Name, paste0("X", pool_samples))
+pool_samples <- cohorts %>% 
+  filter(file_source == "cs2", cohort == "POOL-CTRL") %>% 
+  pull(col_name)
+cs2_pools <- select(cs2_norm, Name, all_of(pool_samples))
 
 # Locked down reference pools weights
 weights <- c("Pool1", "Pool2", "Pool3") %>%
@@ -952,7 +953,7 @@ cs2_normalized_data_pools <-
 ## Summary
 # CS2 pools: 9 samples, 365 genes # dim(t(cs2_pools))
 # CS3 pools: 22 samples, 513 genes # dim(t(ref_pools))
-# CS2 normalized: 894 samples (903 original - 9 from pools), 136 common genes # dim(cs2_normalized_data_pools)
+# CS2 normalized: 891 samples (903 original - 12 from pools), 136 common genes # dim(cs2_normalized_data_pools)
 
 
 # Keep only common samples between codesets, average out duplicates
