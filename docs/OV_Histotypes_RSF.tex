@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-10-30}
+\date{2020-11-05}
 
 \begin{document}
 \maketitle
@@ -346,6 +346,46 @@ We use the pool method to normalize CS2 to CS3 so we can be consistent with the 
 \end{itemize}
 
 The final CS2 training set has 945 samples on 136 (common) genes after normalization and keeping only the major histotypes of interest.
+
+\hypertarget{cohort-distribution}{%
+\subsection{Cohort Distribution}\label{cohort-distribution}}
+
+\begin{table}
+
+\caption{\label{tab:cohort-dist}Cohort Distribution amongst CodeSets}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+cohort & cs1 & cs2 & cs3\\
+\hline
+MAYO & 6 & 63 & NA\\
+\hline
+MTL & 3 & 59 & NA\\
+\hline
+OOU & 108 & 43 & 19\\
+\hline
+OOUE & 32 & 30 & 11\\
+\hline
+VOA & 145 & 122 & 538\\
+\hline
+ICON7 & NA & 416 & NA\\
+\hline
+JAPAN & NA & 8 & NA\\
+\hline
+OVAR3 & NA & 150 & NA\\
+\hline
+POOL-CTRL & NA & 12 & NA\\
+\hline
+POOL-1 & NA & NA & 31\\
+\hline
+POOL-2 & NA & NA & 14\\
+\hline
+POOL-3 & NA & NA & 13\\
+\hline
+TNCO & NA & NA & 691\\
+\hline
+\end{tabular}
+\end{table}
 
 \hypertarget{classification}{%
 \section{Classification}\label{classification}}
@@ -898,6 +938,33 @@ MUC & 0.77 & 0.89 & 0.73 & 0.77 & 0.92 & 0.70\\
 
 \hypertarget{pool-method}{%
 \subsection{Pool Method}\label{pool-method}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-cs2non-vs-cs2pools-1} 
+
+}
+
+\caption{CS2Non vs. CS2Pools Concordance Measure Distributions}\label{fig:cc-cs2non-vs-cs2pools}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-cs2non-vs-cs3-1} 
+
+}
+
+\caption{CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions}\label{fig:cc-cs2non-vs-cs3}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-cs2pools-vs-cs3-1} 
+
+}
+
+\caption{CS2 Normalized Pools vs. CS3 Concordance Measure Distributions}\label{fig:cc-cs2pools-vs-cs3}
+\end{figure}
 
 \begin{figure}[H]
 
