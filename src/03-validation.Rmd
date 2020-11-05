@@ -1063,21 +1063,6 @@ p_cs2pools_vs_cs3 <-
 print(p_cs2pools_vs_cs3)
 ```
 
-```{r cc-pools, fig.cap='Pools Normalized Concordance Measure Distributions', fig.height=6}
-# Plot concordance measure histograms
-p_pools <- ggplot(metrics_pools, aes(Expression)) +
-  geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 40, label = Median),
-            hjust = 0,
-            check_overlap = TRUE) +
-  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
-  labs(y = "Count",
-       title = "Pools Normalized Concordance Measure Distributions") +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank())
-print(p_pools)
-```
-
 ```{r pools-cc-by-hist}
 cs2_common_non_byhist <- cs2_common_non %>%
   split(.$revHist) %>%
