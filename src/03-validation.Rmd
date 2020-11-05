@@ -328,7 +328,7 @@ metrics_raw <- all_codesets %>%
 # Plot all combinations of cross-codeset concordance measure histograms
 p_raw <- ggplot(metrics_raw, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -400,7 +400,7 @@ metrics_hknorm <- all_codesets %>%
 # Plot all combinations of cross-codeset concordance measure histograms
 p_hknorm <- ggplot(metrics_hknorm, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -484,7 +484,7 @@ metrics_rand3 <- all_codesets %>%
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non3 <- ggplot(metrics_non3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -499,7 +499,7 @@ print(p_non3)
 ```{r cc-rand3, fig.cap='Random3 Normalized Concordance Measure Distributions'}
 p_rand3 <- ggplot(metrics_rand3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -579,7 +579,7 @@ metrics_rand2 <- all_codesets %>%
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non2 <- ggplot(metrics_non2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -594,7 +594,7 @@ print(p_non2)
 ```{r cc-rand2, fig.cap='Random2 Normalized Concordance Measure Distributions'}
 p_rand2 <- ggplot(metrics_rand2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -674,7 +674,7 @@ metrics_rand1 <- all_codesets %>%
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non1 <- ggplot(metrics_non1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -689,7 +689,7 @@ print(p_non1)
 ```{r cc-rand1, fig.cap='Random1 Normalized Concordance Measure Distributions'}
 p_rand1 <- ggplot(metrics_rand1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -829,7 +829,7 @@ metrics_rand <- all_codesets %>%
 ```{r cc-rand, fig.cap='Random3 HGSC Normalized Concordance Measure Distributions'}
 p_rand <- ggplot(metrics_rand, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -1015,11 +1015,59 @@ metrics_pools <- all_comps %>%
   mutate(Sites = factor(Sites, levels = names(all_comps)))
 ```
 
+```{r cc-cs2non-vs-cs2pools, fig.cap='CS2Non vs. CS2Pools Concordance Measure Distributions'}
+p_cs2non_vs_cs2pools <-
+  ggplot(metrics_pools %>% filter(Sites == "CS2Non_vs_CS2Pools"),
+         aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 120, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2Non vs. CS2Pools Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs2non_vs_cs2pools)
+```
+
+```{r cc-cs2non-vs-cs3, fig.cap='CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions'}
+p_cs2non_vs_cs3 <-
+  ggplot(metrics_pools %>% filter(Sites == "CS2Non_vs_CS3Non"),
+         aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs2non_vs_cs3)
+```
+
+```{r cc-cs2pools-vs-cs3, fig.cap='CS2 Normalized Pools vs. CS3 Concordance Measure Distributions'}
+p_cs2pools_vs_cs3 <-
+  ggplot(metrics_pools %>% filter(Sites == "CS2Pools_vs_CS3Non"),
+         aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2 Normalized Pools vs. CS3 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs2pools_vs_cs3)
+```
+
 ```{r cc-pools, fig.cap='Pools Normalized Concordance Measure Distributions', fig.height=6}
 # Plot concordance measure histograms
 p_pools <- ggplot(metrics_pools, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
