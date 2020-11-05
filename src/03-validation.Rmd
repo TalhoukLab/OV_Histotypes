@@ -594,7 +594,7 @@ print(p_non2)
 ```{r cc-rand2, fig.cap='Random2 Normalized Concordance Measure Distributions'}
 p_rand2 <- ggplot(metrics_rand2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 40, label = Median),
+  geom_text(aes(x = 0, y = 50, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
