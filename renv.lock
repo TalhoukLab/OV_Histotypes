@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.2",
+    "Version": "4.0.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -958,10 +958,10 @@
     },
     "mgcv": {
       "Package": "mgcv",
-      "Version": "1.8-31",
+      "Version": "1.8-33",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4bb7e0c4f3557583e1e8d3c9ffb8ba5c"
+      "Hash": "eb7b6439bc6d812eed2cddba5edc6be3"
     },
     "microbenchmark": {
       "Package": "microbenchmark",
@@ -1046,6 +1046,12 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "49f7258fd86ebeaea1df24d9ded00478"
+    },
+    "ottaOvca": {
+      "Package": "ottaOvca",
+      "Version": "1.5",
+      "Source": "Local",
+      "Hash": "93798da89d630faac0226ebe7488c40c"
     },
     "pROC": {
       "Package": "pROC",
