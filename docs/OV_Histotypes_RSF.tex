@@ -319,7 +319,7 @@ We use the pool method to normalize CS2 to CS3 so we can be consistent with the 
   \begin{itemize}
   \tightlist
   \item
-    Samples = 9 (Pool 1 = 3, Pool 2 = 3, Pool 3 = 3)
+    Samples = 12 (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4)
   \item
     Genes = 365
   \end{itemize}
@@ -350,6 +350,8 @@ The final CS2 training set has 945 samples on 136 (common) genes after normaliza
 \hypertarget{cohort-distribution}{%
 \subsection{Cohort Distribution}\label{cohort-distribution}}
 
+Note that the CS3 pools sample total (n=58) shown here include those that are not used as reference pools, following previous normalization methods. In particular, the distribution of CS3 pools actually used for normalization (n=22) is POOL1 = 12, POOL2 = 5, POOL3 = 5.
+
 \begin{table}
 
 \caption{\label{tab:cohort-dist}Cohort Distribution amongst CodeSets}
@@ -375,6 +377,8 @@ JAPAN & NA & 8 & NA\\
 OVAR3 & NA & 150 & NA\\
 \hline
 POOL-CTRL & NA & 12 & NA\\
+\hline
+DOVE4 & NA & NA & 1160\\
 \hline
 POOL-1 & NA & NA & 31\\
 \hline
@@ -966,15 +970,6 @@ MUC & 0.77 & 0.89 & 0.73 & 0.77 & 0.92 & 0.70\\
 \caption{CS2 Normalized Pools vs. CS3 Concordance Measure Distributions}\label{fig:cc-cs2pools-vs-cs3}
 \end{figure}
 
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-pools-1} 
-
-}
-
-\caption{Pools Normalized Concordance Measure Distributions}\label{fig:cc-pools}
-\end{figure}
-
 \begin{table}
 
 \caption{\label{tab:pools-cs2non-vs-cs3}Pools Non-Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes}
@@ -1004,13 +999,13 @@ MUC & 0.75 & 0.86 & 0.69\\
 \hline
 hist & R2 & Ca & Rc\\
 \hline
-CCOC & 0.66 & 0.60 & 0.30\\
+CCOC & 0.66 & 0.62 & 0.31\\
 \hline
-ENOC & 0.87 & 0.77 & 0.68\\
+ENOC & 0.87 & 0.74 & 0.67\\
 \hline
-HGSC & 0.77 & 0.95 & 0.82\\
+HGSC & 0.77 & 0.94 & 0.82\\
 \hline
-LGSC & 0.98 & 0.95 & 0.92\\
+LGSC & 0.98 & 0.96 & 0.93\\
 \hline
 MUC & 0.75 & 0.91 & 0.70\\
 \hline
