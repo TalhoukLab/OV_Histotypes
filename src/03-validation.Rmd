@@ -1015,7 +1015,7 @@ metrics_pools <- all_comps %>%
   mutate(Sites = factor(Sites, levels = names(all_comps)))
 ```
 
-```{r cc-cs2non-vs-cs2pools, fig.cap='CS2Non vs. CS2Pools Concordance Measure Distributions'}
+```{r cc-cs2non-vs-cs2pools, fig.cap='CS2Non vs. CS2Pools Concordance Measure Distributions', fig.height=2}
 p_cs2non_vs_cs2pools <-
   ggplot(metrics_pools %>% filter(Sites == "CS2Non_vs_CS2Pools"),
          aes(Expression)) +
@@ -1031,7 +1031,7 @@ p_cs2non_vs_cs2pools <-
 print(p_cs2non_vs_cs2pools)
 ```
 
-```{r cc-cs2non-vs-cs3, fig.cap='CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions'}
+```{r cc-cs2non-vs-cs3, fig.cap='CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions', fig.height=2}
 p_cs2non_vs_cs3 <-
   ggplot(metrics_pools %>% filter(Sites == "CS2Non_vs_CS3Non"),
          aes(Expression)) +
@@ -1047,7 +1047,7 @@ p_cs2non_vs_cs3 <-
 print(p_cs2non_vs_cs3)
 ```
 
-```{r cc-cs2pools-vs-cs3, fig.cap='CS2 Normalized Pools vs. CS3 Concordance Measure Distributions'}
+```{r cc-cs2pools-vs-cs3, fig.cap='CS2 Normalized Pools vs. CS3 Concordance Measure Distributions', fig.height=2}
 p_cs2pools_vs_cs3 <-
   ggplot(metrics_pools %>% filter(Sites == "CS2Pools_vs_CS3Non"),
          aes(Expression)) +
