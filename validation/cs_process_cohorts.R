@@ -34,7 +34,7 @@ cs2_samples <- cohorts %>%
 
 cs3_samples <- cohorts %>%
   filter(file_source == "cs3",
-         cohort %in% c("DOVE", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3")) %>%
+         cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3")) %>%
   pull(col_name)
 
 cs1 <- cs1 %>%
