@@ -6,7 +6,7 @@ source(here::here("validation/cs_process.R"))
 cs1_class <- readRDS(here::here("data/cs1_class.rds"))
 cs2_class <- readRDS(here::here("data/cs2_class.rds"))
 ```
-
+<!--
 ## Concordance
 
 First we validate the CS2 normalization process by looking at the distribution of CS3 non-normalized samples with:
@@ -179,7 +179,7 @@ p <- ggplot(all_metrics, aes(Expression)) +
   theme(panel.grid.minor = element_blank())
 print(p)
 ```
-
+-->
 ## Full Data Distributions
 
 The histotype distributions on the full data are shown below.
