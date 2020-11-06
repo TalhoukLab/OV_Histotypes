@@ -8,9 +8,11 @@ source(here::here("validation/cs2_generate.R"))
 
 ## Data Processing
 
-Normalizing CS2 to CS3 can easily follow the [PrOType](https://dchiu911.shinyapps.io/PrOType/) method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
+RNA was extracted from FFPE ovarian carcinoma samples and expression was quantified using NanoString nCounter. Samples were run in three CodeSets. Some samples or pools of samples were repeated across CodeSets for expression normalization. Normalizing CS2 to CS3 can easily follow the [PrOType](https://dchiu911.shinyapps.io/PrOType/) method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing across CS1, CS2, and CS3 where we use common samples and genes as reference sets.
 
 ### Raw Data
+
+NanoString CodeSets contained a mix of all probes of interest, six positive controls spiked-in at fixed proportional concentrations (0.125- 128 fM), and eight negative controls (probes without a corresponding target). Gene targets also included 5 housekeeping genes: POLR1B, SDHA, PGK1, ACTB, RPL19. Gene selection was made from top ranked differential gene expression analysis between ovarian cancer histotypes and molecular subtypes of HGSC, as well as containing some genes of interest from unrelated projects. Gene targets in each subsequent CodeSet were re-curated, where non-informative genes were dropped and new potential differentiating genes were added.
 
 There are 3 NanoString CodeSets:
 
@@ -89,7 +91,11 @@ venn_genes <- venn.diagram(
 
 ### Housekeeping Genes
 
-The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log~2~ housekeeping gene expression from the log~2~ endogenous gene expression. The updated CodeSet dimensions are now:
+The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log~2~ housekeeping gene expression from the log~2~ endogenous gene expression. 
+
+`log2(endogenous expression) - log2⁡(average housekeeping expression) = relative expression`
+
+The updated CodeSet dimensions are now:
 
 * CS1: OvCa2103_C953
   * Samples = `r ncol(cs1_norm) - 3`
@@ -165,7 +171,7 @@ The final CS2 training set has `r nrow(cs2_data)` samples on `r ncol(cs2_data)` 
 
 ### Cohort Distribution
 
-Note that the CS3 pools sample total (n=58) shown here include those that are not used as reference pools, following previous normalization methods. In particular, the distribution of CS3 pools actually used for normalization (n=22) is POOL1 = 12, POOL2 = 5, POOL3 = 5.
+CodeSets comprised samples from sites collected internationally as shown below. Note that the CS3 pools sample total (n=58) shown here include those that are not used as reference pools, following previous normalization methods. In particular, the distribution of CS3 pools actually used for normalization (n=22) is POOL1 = 12, POOL2 = 5, POOL3 = 5.
 
 ```{r cohort-dist}
 source(here::here("validation/cs_process_cohorts.R"))
@@ -178,7 +184,23 @@ knitr::kable(cohort_dist,
              caption = "Cohort Distribution amongst CodeSets")
 ```
 
-## Classification
+## Normalization Between CodeSets
+
+After normalization to housekeeping genes and filtering for the five major histotypes of interest, as determined by pathology review and/or IHC, two methods were used to normalize data between CodeSets. 
+
+### Common Samples Method
+
+The common samples method was used to normalize CodeSet1, 2, and 3, where common samples and genes were used as reference sets. Among the samples repeated in all CodeSets we normalized using either: a random set of 3 samples from each major histotype (random3; n=15), a random set of 2 samples from each major histotype (random2; n=10), or a random set of 1 sample from each major histotype (random1; n=5). In each case CodeSet3 expression (`X^3`) was held fixed, while CodeSet1/2 expression (`X^1`  and `X^2`) were normalized to CodeSet3 by subtracting the average gene expression from the CodeSet1/2 reference set (`R^1`  or `R^2`)  and adding the average gene expression of the CodeSet3 reference set (`R^3`). Alternatively, `X^1(norm) = X^1 - R^1 + R^3` would calibrate CodeSet1 to CodeSet3.
+
+### Pools Method
+
+The pools method was used to normalize CodeSet2 and CodeSet3. The three reference pools, regularly assayed mixes of samples representing all histotypes, were run in CodeSet2 and CodeSet3 only. CodeSet2 contained 12 reference pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4) and CodeSet3 contained 22 reference pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). Similar to the common samples method, CodeSet2 was normalized to CodeSet3 via: `X^2(norm) = X^2 - R^2 + R^3` where R is the average expression of the reference pool samples in the respective CodeSet. This method of pool normalization was also used by PrOType to classify HGSC subtypes
+
+### Concordance Comparison
+
+Concordance between CodeSets using the different normalization strategies was compared in common samples, excluding those used for the normalization, using Pearson’s correlation coefficient (`R2`), coefficient of accuracy (`Ca`), and Lin’s concordance correlation (`Rc= R2⋅Ca`).
+
+## Histotype Classification
 
 We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the [splendid](https://alinetalhouk.github.io/splendid/) package. 
 
