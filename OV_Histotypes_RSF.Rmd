@@ -1,0 +1,1608 @@
+---
+title: 'Ovarian Cancer Histotypes: Report of Statistical Findings'
+author: Derek Chiu
+date: '`r format(Sys.Date())`'
+site: bookdown::bookdown_site
+documentclass: report
+geometry: margin=1in
+colorlinks: true
+lof: true
+lot: true
+bibliography: packages.bib
+biblio-style: apalike
+link-citations: true
+---
+```{r include=FALSE, cache=FALSE}
+# knitr options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  results = "asis",
+  fig.align = "center",
+  fig.pos = "H"
+)
+```
+
+# Preface {-}
+
+This report of statistical findings describes the classification of ovarian cancer histotypes using data from NanoString CodeSets.
+
+Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang implemented class imbalance techniques, Derek Chiu conducted the normalization and statistical analysis, and Aline Talhouk lead the project.
+
+<!--chapter:end:index.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+# knitr options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  results = "asis",
+  fig.align = "center",
+  fig.pos = "H"
+)
+```
+# Introduction
+
+Ovarian cancer has five major histotypes: high-grade serous carcinoma (HGSC), low-grade serous carcinoma (LGSC), endometrioid carcinoma (ENOC), mucinous carcinoma (MUC), and clear cell carcinoma (CCOC). A common problem with classifying these histotypes is that there is a class imbalance issue. HGSC dominates the distribution, commonly accounting for 70% of cases in many patient cohorts, while the other four histotypes are spread over the rest of the cases.
+
+In the NanoString CodeSets, we also run into a problem with trying to find suitable control pools to normalize the gene expression. For prospective NanoString runs, the pools can be specifically chosen, but for retrospective runs, we have to utilize a combination of common samples and common genes as references for normalization.
+
+The supervised learning is performed under a consensus framework: we consider various classification algorithms and use evaluation metrics to help make decisions of which methods to carry forward for downstream analysis.
+
+<!--chapter:end:src/01-introduction.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+# knitr options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  results = "asis",
+  fig.align = "center",
+  fig.pos = "H"
+)
+```
+# Methods
+
+```{r setup-02}
+source(here::here("validation/cs_process.R"))
+source(here::here("validation/cs1_generate.R"))
+source(here::here("validation/cs2_generate.R"))
+```
+
+## Data Processing
+
+Normalizing CS2 to CS3 can easily follow the [PrOType](https://dchiu911.shinyapps.io/PrOType/) method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
+
+### Raw Data
+
+There are 3 NanoString CodeSets:
+
+* CS1: OvCa2103_C953
+  * Samples = `r ncol(cs1) - 3`
+  * Genes = `r nrow(cs1)`
+* CS2: PrOTYPE2_v2_C1645
+  * Samples = `r ncol(cs2) - 3`
+  * Genes = `r nrow(cs2)`
+* CS3: OTTA2014_C2822
+  * Samples = `r ncol(cs3) - 3`
+  * Genes = `r nrow(cs3)`
+  
+These datasets contain raw counts extracted straight from NanoString RCC files.
+
+```{r setup-unique-venn-diagrams, include=FALSE}
+library(VennDiagram)
+futile.logger::flog.threshold(futile.logger::ERROR, name = "VennDiagramLogger")
+
+cs1_id <- cs_common[which(cs_common$CS1 != 0 & !is.na(cs_common$CS1)),]
+cs2_id <- cs_common[which(cs_common$CS2 != 0 & !is.na(cs_common$CS2)),]
+cs3_id <- cs_common[which(cs_common$CS3 != 0 & !is.na(cs_common$CS3) & !is.na(cs_common$summaryID)),]
+
+#venn diagram of overlap between CodeSet samples by summary ID
+#does not include total count of duplicate samples
+venn_id <- venn.diagram(
+  x = list(cs1_id$summaryID, cs2_id$summaryID, cs3_id$summaryID),
+  category.names = c("CodeSet1", "CodeSet2", "CodeSet3"),
+  filename = NULL,
+  output = TRUE,
+  imagetype = "png",
+  height = 400,
+  width = 400,
+  resolution = 300, 
+  compression = "lzw",
+  lwd = 1,
+  col = c("#440154ff", '#21908dff', '#fde725ff'), 
+  fill = c(alpha("#440154ff", 0.3),
+           alpha('#21908dff', 0.3),
+           alpha('#fde725ff', 0.3)),
+  cex = 2,
+  fontfamily = "sans",
+  cat.cex = 1.5,
+  cat.default.pos = "outer",
+  cat.pos = c(-27, 27, 135),
+  cat.dist = c(0.055, 0.055, 0.085),
+  cat.fontfamily = "sans",
+  rotation = 1
+) 
+
+venn_genes <- venn.diagram(
+  x = list(cs1_norm$Name, cs2_norm$Name, cs3_norm$Name),
+  category.names = c("CodeSet1", "CodeSet2", "CodeSet3"),
+  filename = NULL,
+  output = TRUE,
+  imagetype = "png",
+  height = 400, 
+  width = 400, 
+  resolution = 300,
+  compression = "lzw",
+  lwd = 1,
+  col = c("#440154ff", '#21908dff', '#fde725ff'), 
+  fill = c(alpha("#440154ff", 0.3),
+           alpha('#21908dff', 0.3),
+           alpha('#fde725ff', 0.3)), 
+  cex = 2,
+  fontfamily = "sans",
+  cat.cex = 1.5,
+  cat.default.pos = "outer",
+  cat.pos = c(-27, 27, 135),
+  cat.dist = c(0.055, 0.055, 0.085),
+  cat.fontfamily = "sans",
+  rotation = 1
+) 
+```
+
+### Housekeeping Genes
+
+The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log~2~ housekeeping gene expression from the log~2~ endogenous gene expression. The updated CodeSet dimensions are now:
+
+* CS1: OvCa2103_C953
+  * Samples = `r ncol(cs1_norm) - 3`
+  * Genes = `r nrow(cs1_norm)`
+* CS2: PrOTYPE2_v2_C1645
+  * Samples = `r ncol(cs2_norm) - 3`
+  * Genes = `r nrow(cs2_norm)`
+* CS3: OTTA2014_C2822
+  * Samples = `r ncol(cs3_norm) - 3`
+  * Genes = `r nrow(cs3_norm)`
+
+The number of genes are reduced by 19: 5 housekeeping, 8 negative, 6 positive (the latter 2 types are not used).
+
+### Common Samples and Genes
+
+Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found `r length(common_genes)` common genes. Using the `summaryID` identifier, we also found `r length(common_id)` common summary IDs, translating to `r length(common_samples)` samples. The number of samples that were matched to each CodeSet differed:
+
+* CS1: OvCa2103_C953
+  * Samples = `r nrow(cs1_clean)`
+  * Genes = `r ncol(cs1_clean) - 2`
+* CS2: PrOTYPE2_v2_C1645
+  * Samples = `r nrow(cs2_clean)`
+  * Genes = `r ncol(cs2_clean) - 2`
+* CS3: OTTA2014_C2822
+  * Samples = `r nrow(cs3_clean)`
+  * Genes = `r ncol(cs3_clean) - 2`
+
+#### Overlap of common samples by summary ID
+
+```{r venn-id}
+grid.draw(venn_id)
+```
+
+#### Overlap of common genes
+
+```{r venn-genes}
+grid.draw(venn_genes)
+```
+
+*Excluding housekeeping genes and controls
+  
+### CS1 Training Set Generation
+
+We use the reference method to normalize CS1 to CS3.
+
+* CS1 reference set: duplicate samples from CS1
+  * Samples = `r nrow(cs1_ref2)`
+  * Genes = `r ncol(cs1_ref2)`
+* CS3 reference set: corresponding samples in CS3 also found in CS1 reference set
+  * Samples = `r nrow(cs3_ref)`
+  * Genes = `r ncol(cs3_ref)`
+* CS1 validation set: remaining CS1 samples with reference set removed
+  * Samples = `r nrow(cs1_val2)`
+  * Genes = `r ncol(cs1_val2)`
+
+The final CS1 training set has `r nrow(cs1_data)` samples on `r ncol(cs1_data)` genes after normalization and keeping only the major histotypes of interest.
+
+### CS2 Training Set Generation
+
+We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOType normalization when there are available pools.
+
+* CS2 pools:
+  * Samples = 12 (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4)
+  * Genes = `r nrow(cs2_pools)`
+* CS3 pools:
+  * Samples = `r ncol(ref_pools)` (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5)
+  * Genes = `r nrow(ref_pools)`
+* CS2 validation set: CS2 samples with pools removed
+  * Samples = `r ncol(cs2_norm) - 3 - 9`
+  * Genes = `r nrow(cs2_norm)`
+
+The final CS2 training set has `r nrow(cs2_data)` samples on `r ncol(cs2_data)` (common) genes after normalization and keeping only the major histotypes of interest.
+
+### Cohort Distribution
+
+Note that the CS3 pools sample total (n=58) shown here include those that are not used as reference pools, following previous normalization methods. In particular, the distribution of CS3 pools actually used for normalization (n=22) is POOL1 = 12, POOL2 = 5, POOL3 = 5.
+
+```{r cohort-dist}
+source(here::here("validation/cs_process_cohorts.R"))
+cohort_dist <- cohorts %>% 
+  filter(col_name %in% c(cs1_samples, cs2_samples, cs3_samples)) %>% 
+  count(file_source, cohort) %>% 
+  pivot_wider(names_from = "file_source", values_from = "n")
+
+knitr::kable(cohort_dist,
+             caption = "Cohort Distribution amongst CodeSets")
+```
+
+## Classification
+
+We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the [splendid](https://alinetalhouk.github.io/splendid/) package. 
+
+- Classifiers:
+  - Random Forest
+  - Adaboost
+  - XGBoost
+  - LDA
+  - SVM
+  - K-Nearest Neighbours
+- Subsampling:
+  - None
+  - Down-sampling
+  - Up-sampling
+  - SMOTE
+
+<!--chapter:end:src/02-methods.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+# knitr options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  results = "asis",
+  fig.align = "center",
+  fig.pos = "H"
+)
+```
+# Validation
+
+```{r setup-03}
+source(here::here("src/funs.R"))
+source(here::here("validation/cs_process.R"))
+cs1_class <- readRDS(here::here("data/cs1_class.rds"))
+cs2_class <- readRDS(here::here("data/cs2_class.rds"))
+```
+
+## Concordance
+
+First we validate the CS2 normalization process by looking at the distribution of CS3 non-normalized samples with:
+
+- CS2 non-normalized
+- CS2 pools-normalized
+- CS2 reference-normalized
+
+```{r methods}
+# Dataset Split -----------------------------------------------------------
+
+# CS2 gene order
+cs2_genes <- names(cs2_clean)[-1:-2]
+
+# Split CS2 common samples into Reference and Validation sets
+# Reference set: duplicate samples
+cs2_ref <- cs2_clean %>%
+  dplyr::filter(duplicated(ottaID) | duplicated(ottaID, fromLast = TRUE)) %>%
+  dplyr::select(-FileName)
+
+# Validation set: unique samples
+cs2_val <- dplyr::anti_join(cs2_clean, cs2_ref, by = "ottaID") %>%
+  dplyr::select(-FileName)
+
+
+# No Normalization --------------------------------------------------------
+
+# Sort CS2 validation set without normalization to preserve sample order
+cs2_val_norm0 <- dplyr::arrange(cs2_val, ottaID)
+
+# Extract CS3 samples corresponding to CS2 validation set without normalization
+# Averaged gene expression within duplicates
+cs3_val_norm0 <- cs3_clean %>%
+  dplyr::select(names(cs2_val_norm0)) %>%
+  dplyr::semi_join(cs2_val_norm0, by = "ottaID") %>%
+  dplyr::group_by(ottaID) %>%
+  dplyr::summarize_if(is.double, mean)
+
+
+# Pool Method -------------------------------------------------------------
+
+# Pool set: pool samples from CS2
+pool_samples <-
+  gsub("-|\\.RCC", "", grep("POOL", pools[["CS2-FileName"]], value = TRUE))
+cs2_pools <- dplyr::select(cs2_norm, Name, paste0("X", pool_samples))
+
+# Locked down reference pools weights
+weights <- c("Pool1", "Pool2", "Pool3") %>%
+  purrr::set_names() %>%
+  purrr::map_dbl(~ mean(grepl(., names(ref_pools), ignore.case = TRUE)))
+
+# Weighted mean gene expression for CS2 pools (using reference pools weights)
+cs2_pools_mgx <- weights %>%
+  purrr::imap_dfc(~ .x * rowMeans(dplyr::select(cs2_pools, dplyr::matches(.y)))) %>%
+  dplyr::transmute(Name = cs2_pools[["Name"]], cs2_exp = rowSums(.))
+
+# Mean gene expression for CS3 reference pools
+cs3_pools_mgx <-
+  tibble::enframe(rowMeans(ref_pools), name = "Name", value = "cs3_exp")
+
+# Transposed validation set
+cs2_val_t <- cs2_val %>%
+  tidyr::gather(Name, value, -1) %>%
+  tidyr::spread(ottaID, value)
+
+# Normalize each gene by adding batch effect (diff in mean gx)
+cs2_val_norm1 <-
+  dplyr::inner_join(cs3_pools_mgx, cs2_pools_mgx, by = "Name") %>%
+  dplyr::transmute(Name, be = cs3_exp - cs2_exp) %>%
+  dplyr::inner_join(cs2_val_t, by = "Name") %>%
+  tidyr::gather(ottaID, exp, -1:-2) %>%
+  dplyr::transmute(Name = factor(Name, levels = cs2_genes), ottaID, exp = be + exp) %>%
+  tidyr::spread(Name, exp)
+
+
+# Reference Method --------------------------------------------------------
+
+# Corresponding samples in CS3 found in CS2 reference set
+cs3_ref <- cs3_clean %>%
+  dplyr::semi_join(cs2_ref, by = "ottaID") %>%
+  dplyr::select(cs2_genes)
+
+# Remove non-numeric column names
+cs2_ref2 <- dplyr::select_if(cs2_ref, is.double)
+cs2_val2 <- dplyr::select_if(cs2_val, is.double)
+
+# Normalize by reference method using reference samples
+cs2_val_norm2 <- nanostringr::refMethod(cs2_val2, cs2_ref2, cs3_ref) %>%
+  tibble::as_tibble() %>%
+  tibble::add_column(ottaID = cs2_val[["ottaID"]], .before = 1) %>%
+  dplyr::arrange(ottaID)
+```
+
+```{r validation}
+# Method Comparisons ------------------------------------------------------
+
+# Compare cs2_val_norm0, cs2_val_norm1, cs2_val_norm2, with cs3_val_norm0
+cs_combined <-
+  tibble::lst(cs2_val_norm0, cs2_val_norm1, cs2_val_norm2, cs3_val_norm0) %>%
+  dplyr::bind_rows(.id = "dataset") %>%
+  tidyr::gather(gene, exp, -1:-2, factor_key = TRUE) %>%
+  tidyr::spread(dataset, exp)
+
+# Common plotting layers
+n_samples <- dplyr::n_distinct(cs_combined[["ottaID"]])
+layers <- list(
+  geom_point(alpha = 0.3),
+  geom_abline(slope = 1, intercept = 0, color = "blue"),
+  facet_wrap(~ gene, nrow = 8, ncol = 9),
+  labs(
+    y = "CS3 No Normalization",
+    title = paste0("CS2 Validation Set (n=", n_samples,
+                   ") vs. Corresponding CS3 Samples")
+  )
+)
+```
+
+```{r cs2-none-vs-cs3, fig.cap='Gene Expression CS2 No Normalization vs. CS3', fig.height=8, fig.width=8}
+# Scatterplots of each CS2 dataset vs CS3
+p0 <- ggplot(cs_combined, aes(cs2_val_norm0, cs3_val_norm0)) +
+  xlab("CS2 No Normalization") +
+  layers
+print(p0)
+```
+
+```{r cs2-pools-vs-cs3, fig.cap='Gene Expression CS2 Pools Normalization vs. CS3', fig.height=8, fig.width=8}
+p1 <- ggplot(cs_combined, aes(cs2_val_norm1, cs3_val_norm0)) +
+  xlab("CS2 Pools Normalization") +
+  layers
+print(p1)
+```
+
+```{r cs2-reference-vs-cs3, fig.cap='Gene Expression CS2 Reference Normalization vs. CS3', fig.height=8, fig.width=8}
+p2 <- ggplot(cs_combined, aes(cs2_val_norm2, cs3_val_norm0)) +
+  xlab("CS2 Reference Normalization") +
+  layers
+print(p2)
+```
+
+```{r cc-hist, fig.cap='Concordance Histograms'}
+# Concordance Histograms --------------------------------------------------
+
+# Concordance measures between samples of same gene, for each dataset comparison
+all_metrics <- cs_combined %>%
+  tidyr::gather(Methods, cs2_val_norm, dplyr::matches("cs2")) %>%
+  dplyr::mutate(
+    Methods = dplyr::recode_factor(
+      Methods,
+      cs2_val_norm0 = "CS2 None vs. CS3 None",
+      cs2_val_norm1 = "CS2 Pools vs. CS3 None",
+      cs2_val_norm2 = "CS2 Common vs. CS3 None"
+    )
+  ) %>%
+  dplyr::group_by(Methods, ottaID) %>%
+  dplyr::summarize(
+    R2 = cor(cs2_val_norm, cs3_val_norm0) ^ 2,
+    Ca = epiR::epi.ccc(cs2_val_norm, cs3_val_norm0)[["C.b"]],
+    Rc = epiR::epi.ccc(cs2_val_norm, cs3_val_norm0)[["rho.c"]][["est"]]
+  ) %>%
+  dplyr::ungroup() %>%
+  tidyr::gather(Metric, Expression, c("R2", "Ca", "Rc"), factor_key = TRUE)
+
+# Plot all combinations of cross-dataset concordance measure histograms
+p <- ggplot(all_metrics, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  facet_grid(rows = vars(Methods), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2 Datasets vs. CS3 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p)
+```
+
+## Full Data Distributions
+
+The histotype distributions on the full data are shown below.
+
+```{r dist-all-gr}
+# Histotype Distributions -------------------------------------------------
+all_hist <- hist %>% dplyr::filter(!is.na(revHist))
+all_hist %>%
+  dplyr::count(CodeSet, hist_gr) %>%
+  tidyr::spread(CodeSet, n, fill = 0L) %>% 
+  knitr::kable(caption = "All CodeSet Histotype Groups")
+```
+
+```{r dist-all}
+all_counts <- all_hist %>% dplyr::count(CodeSet, revHist)
+all_counts %>%
+  tidyr::spread(CodeSet, n, fill = 0L) %>% 
+  knitr::kable(caption = "All CodeSet Histotypes")
+```
+
+```{r dist-common}
+common_counts <- all_hist %>%
+  dplyr::filter(FileName %in% common_samples) %>% 
+  dplyr::count(CodeSet, revHist)
+common_counts %>% 
+  tidyr::spread(CodeSet, n, fill = 0L) %>% 
+  knitr::kable(caption = "Common Summary ID CodeSet Histotypes")
+```
+
+```{r dist-major-hist}
+all_maj_counts <- all_hist %>% 
+  dplyr::filter(revHist %in% c("HGSC", "LGSC", "ENOC", "CCOC", "MUC")) %>% 
+  dplyr::count(CodeSet, revHist)
+all_maj_counts %>% 
+  tidyr::spread(CodeSet, n, fill = 0L) %>% 
+  dplyr::mutate(CS1_percent = CS1 /sum(CS1) * 100, CS1_percent = round(CS1_percent,1))  %>% 
+  dplyr::mutate(CS2_percent = CS2 /sum(CS2) * 100, CS2_percent = round(CS2_percent,1))  %>% 
+  dplyr::mutate(CS3_percent = CS3 /sum(CS3) * 100, CS3_percent = round(CS3_percent,1))  %>% 
+  knitr::kable(caption = "All CodeSet Major Histotypes")
+```
+
+```{r dist-cs1}
+all_counts %>% 
+  dplyr::filter(CodeSet == "CS1") %>% 
+  knitr::kable(caption = "CS1 Histotypes")
+```
+
+```{r dist-cs2}
+all_counts %>% 
+  dplyr::filter(CodeSet == "CS2") %>% 
+  knitr::kable(caption = "CS2 Histotypes")
+```
+
+```{r dist-cs3}
+all_counts %>% 
+  dplyr::filter(CodeSet == "CS3") %>% 
+  knitr::kable(caption = "CS3 Histotypes")
+```
+
+## Training Set Distributions
+
+The training set distributions for CS1 and CS2 are shown below.
+
+```{r training-dist-cs1}
+cs1_class %>% 
+  tibble::enframe(value = "histotype") %>% 
+  dplyr::count(histotype) %>% 
+  knitr::kable(caption = "CS1 Training Set Histotypes")
+```
+
+```{r training-dist-cs2}
+cs2_class %>% 
+  tibble::enframe(value = "histotype") %>% 
+  dplyr::count(histotype) %>% 
+  knitr::kable(caption = "CS2 Training Set Histotypes")
+```
+
+## Normalization
+
+```{r process-cohorts}
+source(here::here("validation/cs_process_cohorts.R"))
+# Pairwise CodeSet comparisons
+codesets <- c("CS1", "CS2", "CS3")
+all_codesets <- combn(codesets, 2) %>%
+  as_tibble() %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
+```
+
+```{r cs-raw}
+cs1_raw_avg <- cs1 %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+cs2_raw_avg <- cs2 %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+cs3_raw_avg <- cs3 %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+raw_list <-
+  set_names(list(cs1_raw_avg, cs2_raw_avg, cs3_raw_avg), codesets)
+```
+
+```{r cc-raw}
+metrics_raw <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(raw_list[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+# Plot all combinations of cross-codeset concordance measure histograms
+p_raw <- ggplot(metrics_raw, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Raw Non-Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_raw)
+```
+
+```{r cs-hknorm}
+cs1_hknorm_avg <- cs1_norm %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+cs2_hknorm_avg <- cs2_norm %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+cs3_hknorm_avg <- cs3_norm %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  filter(Name %in% common_genes) %>%
+  select_if(names(.) %in% c("Name", common_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(FileName, ottaID, all_of(common_genes)) %>% 
+  group_by(ottaID) %>% 
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
+  column_to_rownames("ottaID")
+
+hknorm_list <-
+  set_names(list(cs1_hknorm_avg, cs2_hknorm_avg, cs3_hknorm_avg), codesets)
+```
+
+```{r cc-hknorm}
+metrics_hknorm <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(hknorm_list[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+# Plot all combinations of cross-codeset concordance measure histograms
+p_hknorm <- ggplot(metrics_hknorm, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "HK genes Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_hknorm)
+```
+
+### Reference Method
+
+We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression.
+
+```{r cs-norm-rand3}
+# Random selection of common samples with equal number of histotypes
+set.seed(2020)
+hist_rand3 <- hist %>%
+  filter(ottaID %in% unique(c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  ))) %>%
+  distinct(ottaID, revHist) %>%
+  group_by(revHist) %>%
+  slice_sample(n = 3) %>%
+  ungroup()
+
+# Gene expression from random common samples, preserving gene order
+cs1_rand3 <- join_avg(cs1_clean, hist_rand3, "ottaID", "keep")
+cs2_rand3 <- join_avg(cs2_clean, hist_rand3, "ottaID", "keep")
+cs3_rand3 <- join_avg(cs3_clean, hist_rand3, "ottaID", "keep")
+
+# Remove common samples from CS1, preserving gene order
+cs1_counts3 <- join_avg(cs1_clean, hist_rand3, "ottaID", "discard")
+cs2_counts3 <- join_avg(cs2_clean, hist_rand3, "ottaID", "discard")
+cs3_counts3 <- join_avg(cs3_clean, hist_rand3, "ottaID", "discard")
+
+# Normalize by reference method using common samples, add histotypes from annot
+cs1_norm_rand3 <-
+  refMethod(cs1_counts3, cs3_rand3, cs1_rand3) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+cs2_norm_rand3 <-
+  refMethod(cs2_counts3, cs3_rand3, cs2_rand3) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+# Combined gene expression
+counts3 <-
+  set_names(list(cs1_counts3, cs2_counts3, cs3_counts3), codesets)
+norm_rand3 <- list(cs1_norm_rand3, cs2_norm_rand3, cs3_counts3) %>%
+  set_names(codesets) %>%
+  map_at(1:2, select, -"revHist")
+
+# Concordance measures for all genes averaged across samples
+metrics_non3 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(counts3[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+metrics_rand3 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(norm_rand3[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+```
+
+```{r cc-non3, fig.cap='Random3 Non-Normalized Concordance Measure Distributions'}
+# Plot all combinations of cross-codeset concordance measure histograms
+p_non3 <- ggplot(metrics_non3, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random3 Non-Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_non3)
+```
+
+```{r cc-rand3, fig.cap='Random3 Normalized Concordance Measure Distributions'}
+p_rand3 <- ggplot(metrics_rand3, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random3 Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_rand3)
+```
+
+```{r cs-norm-rand2}
+# Random selection of common samples with equal number of histotypes
+set.seed(2020)
+hist_rand2 <- hist %>%
+  filter(ottaID %in% unique(c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  ))) %>%
+  distinct(ottaID, revHist) %>%
+  group_by(revHist) %>%
+  slice_sample(n = 2) %>%
+  ungroup()
+
+# Gene expression from random common samples, preserving gene order
+cs1_rand2 <- join_avg(cs1_clean, hist_rand2, "ottaID", "keep")
+cs2_rand2 <- join_avg(cs2_clean, hist_rand2, "ottaID", "keep")
+cs3_rand2 <- join_avg(cs3_clean, hist_rand2, "ottaID", "keep")
+
+# Remove common samples from CS1, preserving gene order
+cs1_counts2 <- join_avg(cs1_clean, hist_rand2, "ottaID", "discard")
+cs2_counts2 <- join_avg(cs2_clean, hist_rand2, "ottaID", "discard")
+cs3_counts2 <- join_avg(cs3_clean, hist_rand2, "ottaID", "discard")
+
+# Normalize by reference method using common samples, add histotypes from annot
+cs1_norm_rand2 <-
+  refMethod(cs1_counts2, cs3_rand2, cs1_rand2) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+cs2_norm_rand2 <-
+  refMethod(cs2_counts2, cs3_rand2, cs2_rand2) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+# Combined gene expression
+counts2 <-
+  set_names(list(cs1_counts2, cs2_counts2, cs3_counts2), codesets)
+norm_rand2 <- list(cs1_norm_rand2, cs2_norm_rand2, cs3_counts2) %>%
+  set_names(codesets) %>%
+  map_at(1:2, select, -"revHist")
+
+# Concordance measures for all genes averaged across samples
+metrics_non2 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(counts2[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+metrics_rand2 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(norm_rand2[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+```
+
+```{r cc-non2, fig.cap='Random2 Non-Normalized Concordance Measure Distributions'}
+# Plot all combinations of cross-codeset concordance measure histograms
+p_non2 <- ggplot(metrics_non2, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random2 Non-Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_non2)
+```
+
+```{r cc-rand2, fig.cap='Random2 Normalized Concordance Measure Distributions'}
+p_rand2 <- ggplot(metrics_rand2, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 50, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random2 Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_rand2)
+```
+
+```{r cs-norm-rand1}
+# Random selection of common samples with equal number of histotypes
+set.seed(2020)
+hist_rand1 <- hist %>%
+  filter(ottaID %in% unique(c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  ))) %>%
+  distinct(ottaID, revHist) %>%
+  group_by(revHist) %>%
+  slice_sample(n = 1) %>%
+  ungroup()
+
+# Gene expression from random common samples, preserving gene order
+cs1_rand1 <- join_avg(cs1_clean, hist_rand1, "ottaID", "keep")
+cs2_rand1 <- join_avg(cs2_clean, hist_rand1, "ottaID", "keep")
+cs3_rand1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "keep")
+
+# Remove common samples from CS1, preserving gene order
+cs1_counts1 <- join_avg(cs1_clean, hist_rand1, "ottaID", "discard")
+cs2_counts1 <- join_avg(cs2_clean, hist_rand1, "ottaID", "discard")
+cs3_counts1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
+
+# Normalize by reference method using common samples, add histotypes from annot
+cs1_norm_rand1 <-
+  refMethod(cs1_counts1, cs3_rand1, cs1_rand1) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+cs2_norm_rand1 <-
+  refMethod(cs2_counts1, cs3_rand1, cs2_rand1) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+# Combined gene expression
+counts1 <-
+  set_names(list(cs1_counts1, cs2_counts1, cs3_counts1), codesets)
+norm_rand1 <- list(cs1_norm_rand1, cs2_norm_rand1, cs3_counts1) %>%
+  set_names(codesets) %>%
+  map_at(1:2, select, -"revHist")
+
+# Concordance measures for all genes averaged across samples
+metrics_non1 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(counts1[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+metrics_rand1 <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(norm_rand1[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+```
+
+```{r cc-non1, fig.cap='Random1 Non-Normalized Concordance Measure Distributions'}
+# Plot all combinations of cross-codeset concordance measure histograms
+p_non1 <- ggplot(metrics_non1, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random1 Non-Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_non1)
+```
+
+```{r cc-rand1, fig.cap='Random1 Normalized Concordance Measure Distributions'}
+p_rand1 <- ggplot(metrics_rand1, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random1 Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_rand1)
+```
+
+```{r rand1-cc-by-hist}
+cs1_norm_rand1_byhist <- cs1_norm_rand1 %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs2_norm_rand1_byhist <- cs2_norm_rand1 %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs1_counts1_byhist <- cs1_counts1 %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs2_counts1_byhist <- cs2_counts1 %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs3_counts1_byhist <- cs3_counts1 %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+```
+
+```{r rand1-cs1-vs-cs3}
+rand1_cs1_vs_cs3_non <- list(cs1_counts1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+rand1_cs1_vs_cs3_norm <- list(cs1_norm_rand1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Norm"))
+rand1_cs1_vs_cs3 <-
+  inner_join(rand1_cs1_vs_cs3_non, rand1_cs1_vs_cs3_norm, by = "hist")
+
+knitr::kable(rand1_cs1_vs_cs3,
+             caption = "Random1 CS1 vs. CS3 Median Concordance Measures by Histotypes",
+             digits = 2)
+```
+
+```{r rand1-cs2-vs-cs3}
+rand1_cs2_vs_cs3_non <- list(cs2_counts1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+rand1_cs2_vs_cs3_norm <- list(cs2_norm_rand1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Norm"))
+rand1_cs2_vs_cs3 <-
+  inner_join(rand1_cs2_vs_cs3_non, rand1_cs2_vs_cs3_norm, by = "hist")
+
+knitr::kable(rand1_cs2_vs_cs3,
+             caption = "Random1 CS2 vs. CS3 Median Concordance Measures by Histotypes",
+             digits = 2)
+```
+
+```{r cs-norm-hgsc3}
+# Random selection of common samples with equal number of histotypes
+set.seed(2020)
+hist_rand <- hist %>%
+  filter(ottaID %in% unique(c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  ))) %>%
+  distinct(ottaID, revHist) %>%
+  filter(revHist == "HGSC") %>%
+  slice_sample(n = 3)
+
+# Gene expression from random common samples, preserving gene order
+cs1_rand <- join_avg(cs1_clean, hist_rand, "ottaID", "keep")
+cs2_rand <- join_avg(cs2_clean, hist_rand, "ottaID", "keep")
+cs3_rand <- join_avg(cs3_clean, hist_rand, "ottaID", "keep")
+
+# Remove common samples from CS1, preserving gene order
+cs1_counts <- join_avg(cs1_clean, hist_rand, "ottaID", "discard")
+cs2_counts <- join_avg(cs2_clean, hist_rand, "ottaID", "discard")
+cs3_counts <- join_avg(cs3_clean, hist_rand, "ottaID", "discard")
+
+# Normalize by reference method using common samples, add histotypes from annot
+cs1_norm_rand <-
+  refMethod(cs1_counts, cs3_rand, cs1_rand) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+cs2_norm_rand <-
+  refMethod(cs2_counts, cs3_rand, cs2_rand) %>%
+  as.data.frame() %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID")
+
+norm_rand <- list(cs1_norm_rand, cs2_norm_rand, cs3_counts) %>%
+  set_names(codesets) %>%
+  map_at(1:2, select, -"revHist")
+
+metrics_rand <- all_codesets %>%
+  imap_dfr(~ {
+    pmap_dfr(norm_rand[.x], ~ cor_stats(.x, .y)) %>%
+      mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+```
+
+```{r cc-rand, fig.cap='Random3 HGSC Normalized Concordance Measure Distributions'}
+p_rand <- ggplot(metrics_rand, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Random3 HGSC Normalized Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_rand)
+```
+
+```{r rand3-hgsc-cc-by-hist}
+cs1_norm_byhist <- cs1_norm_rand %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs2_norm_byhist <- cs2_norm_rand %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs1_byhist <- cs1_counts %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs2_byhist <- cs2_counts %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+cs3_byhist <- cs3_counts %>%
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+```
+
+```{r rand3-hgsc-cs1-vs-cs3}
+rand3_hgsc_cs1_vs_cs3_non <- list(cs1_byhist, cs3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, ~ cor_stats(.x, .y), .id = "gene"),
+          .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+rand3_hgsc_cs1_vs_cs3_norm <- list(cs1_norm_byhist, cs3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, ~ cor_stats(.x, .y), .id = "gene"),
+          .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Norm"))
+rand3_hgsc_cs1_vs_cs3 <- 
+  inner_join(rand3_hgsc_cs1_vs_cs3_non, rand3_hgsc_cs1_vs_cs3_norm, by = "hist")
+
+knitr::kable(rand3_hgsc_cs1_vs_cs3, caption = "Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
+```
+
+```{r rand3-hgsc-cs2-vs-cs3}
+rand3_hgsc_cs2_vs_cs3_non <- list(cs2_byhist, cs3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, ~ cor_stats(.x, .y), .id = "gene"),
+          .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+rand3_hgsc_cs2_vs_cs3_norm <- list(cs2_norm_byhist, cs3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, ~ cor_stats(.x, .y), .id = "gene"),
+          .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Norm"))
+rand3_hgsc_cs2_vs_cs3 <- 
+  inner_join(rand3_hgsc_cs2_vs_cs3_non, rand3_hgsc_cs2_vs_cs3_norm, by = "hist")
+
+knitr::kable(rand3_hgsc_cs2_vs_cs3, caption = "Random3 HGSC CS2 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
+```
+
+### Pool Method
+
+```{r cs-norm-pools}
+# Pool set: pool samples from CS2
+pool_samples <- cohorts %>% 
+  filter(file_source == "cs2", cohort == "POOL-CTRL") %>% 
+  pull(col_name)
+cs2_pools <- select(cs2_norm, Name, all_of(pool_samples))
+
+# Locked down reference pools weights
+weights <- c("Pool1", "Pool2", "Pool3") %>%
+  set_names() %>%
+  map_dbl(~ mean(grepl(., names(ref_pools), ignore.case = TRUE)))
+
+# Weighted mean gene expression for CS2 pools (using reference pools weights)
+cs2_pools_mgx <- weights %>%
+  imap_dfc(~ .x * rowMeans(select(cs2_pools, matches(.y)))) %>%
+  transmute(Name = cs2_pools[["Name"]], cs2_exp = rowSums(.))
+
+# Mean gene expression for CS3 reference pools
+cs3_pools_mgx <-
+  enframe(rowMeans(ref_pools), name = "Name", value = "cs3_exp")
+
+# Extract cs2 norm counts (not pools)
+cs2_norm_counts <- cs2_norm %>% select(-one_of(names(cs2_pools)[-1]))
+
+# Normalize each gene by adding batch effect (diff in mean gx)
+cs2_normalized_data_pools <-
+  inner_join(cs2_pools_mgx, cs3_pools_mgx, by = "Name") %>%
+  transmute(Name, be = cs3_exp - cs2_exp) %>%
+  inner_join(cs2_norm_counts, by = "Name") %>%
+  gather(FileName, exp, -1:-4) %>%
+  transmute(Name = fct_inorder(Name), FileName, exp = be + exp) %>%
+  spread(Name, exp)
+
+## Summary
+# CS2 pools: 9 samples, 365 genes # dim(t(cs2_pools))
+# CS3 pools: 22 samples, 513 genes # dim(t(ref_pools))
+# CS2 normalized: 891 samples (903 original - 12 from pools), 136 common genes # dim(cs2_normalized_data_pools)
+
+
+# Keep only common samples between codesets, average out duplicates
+tmp2 <- cs2_norm_counts %>%
+  gather(FileName, exp, -1:-3) %>%
+  mutate(FileName = gsub("^X", "", FileName)) %>%
+  inner_join(hist, by = "FileName") %>% 
+  filter(Name %in% names(cs2_normalized_data_pools)[-1]) %>%
+  mutate(Name = factor(Name, levels = names(cs2_normalized_data_pools)[-1])) %>%
+  select(Name, ottaID, revHist, exp) %>% 
+  group_by(Name, ottaID, revHist) %>%
+  summarize(exp = mean(exp)) %>%
+  ungroup() %>%
+  spread(Name, exp)
+
+tmp3 <- cs3_norm %>%
+  select(-one_of(names(ref_pools))) %>%
+  gather(FileName, exp, -1:-3) %>%
+  mutate(FileName = gsub("^X", "", FileName)) %>%
+  inner_join(hist, by = "FileName") %>% 
+  filter(Name %in% names(cs2_normalized_data_pools)[-1]) %>%
+  mutate(Name = factor(Name, levels = names(cs2_normalized_data_pools)[-1])) %>%
+  select(Name, ottaID, revHist, exp) %>% 
+  group_by(Name, ottaID, revHist) %>%
+  summarize(exp = mean(exp)) %>%
+  ungroup() %>%
+  spread(Name, exp)
+
+cs2_common_non <- semi_join(tmp2, tmp3, by = "ottaID")
+cs3_common_non <- semi_join(tmp3, tmp2, by = "ottaID")
+
+# Extract cs2 common pools-normalized
+cs2_common_pools <- cs2_normalized_data_pools %>%
+  mutate(FileName = gsub("^X", "", FileName)) %>%
+  inner_join(hist, by = "FileName") %>% 
+  group_by(ottaID, revHist) %>%
+  summarize_if(is.double, mean) %>%
+  ungroup() %>% 
+  semi_join(cs3_common_non, by = "ottaID")
+
+# Combined gene expression
+sets <- c("CS2Non", "CS2Pools", "CS3Non")
+all_comps <- combn(sets, 2) %>%
+  as_tibble() %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
+common_gx <-
+  set_names(list(cs2_common_non, cs2_common_pools, cs3_common_non), sets) %>%
+  map(column_to_rownames, "ottaID") %>% 
+  map(select, -"revHist")
+
+# Concordance measures for all genes averaged across samples
+metrics_pools <- all_comps %>%
+  imap_dfr(~ {
+    pmap_dfr(common_gx[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>% 
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup() %>% 
+  mutate(Sites = factor(Sites, levels = names(all_comps)))
+```
+
+```{r cc-cs2non-vs-cs2pools, fig.cap='CS2Non vs. CS2Pools Concordance Measure Distributions', fig.height=2}
+p_cs2non_vs_cs2pools <-
+  ggplot(metrics_pools %>% filter(Sites == "CS2Non_vs_CS2Pools"),
+         aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 120, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2Non vs. CS2Pools Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs2non_vs_cs2pools)
+```
+
+```{r cc-cs2non-vs-cs3, fig.cap='CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions', fig.height=2}
+p_cs2non_vs_cs3 <-
+  ggplot(metrics_pools %>% filter(Sites == "CS2Non_vs_CS3Non"),
+         aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs2non_vs_cs3)
+```
+
+```{r cc-cs2pools-vs-cs3, fig.cap='CS2 Normalized Pools vs. CS3 Concordance Measure Distributions', fig.height=2}
+p_cs2pools_vs_cs3 <-
+  ggplot(metrics_pools %>% filter(Sites == "CS2Pools_vs_CS3Non"),
+         aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            check_overlap = TRUE) +
+  facet_grid(cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2 Normalized Pools vs. CS3 Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs2pools_vs_cs3)
+```
+
+```{r pools-cc-by-hist}
+cs2_common_non_byhist <- cs2_common_non %>%
+  split(.$revHist) %>%
+  map(column_to_rownames, "ottaID") %>% 
+  map(select, -"revHist")
+cs2_common_pools_byhist <- cs2_common_pools %>%
+  split(.$revHist) %>%
+  map(column_to_rownames, "ottaID") %>% 
+  map(select, -"revHist")
+cs3_common_non_byhist <- cs3_common_non %>%
+  split(.$revHist) %>%
+  map(column_to_rownames, "ottaID") %>% 
+  map(select, -"revHist")
+```
+
+```{r pools-cs2non-vs-cs3}
+pools_cs2non_vs_cs3 <- list(cs2_common_non_byhist,
+                            cs3_common_non_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup()
+
+knitr::kable(pools_cs2non_vs_cs3,
+             caption = "Pools Non-Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes",
+             digits = 2)
+```
+
+```{r pools-cs2norm-vs-cs3}
+pools_cs2norm_vs_cs3 <- list(cs2_common_pools_byhist,
+                             cs3_common_non_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup()
+
+knitr::kable(pools_cs2norm_vs_cs3,
+             caption = "Pools Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes",
+             digits = 2)
+```
+
+## Common Sample Distributions
+
+```{r common-dist-all}
+common_dist_all <- hist %>% 
+  filter(ottaID %in% c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  )) %>% 
+  count(CodeSet, revHist) %>% 
+  pivot_wider(names_from = "CodeSet", values_from = "n")
+knitr::kable(common_dist_all, caption = "All Common Samples Histotype Distribution")
+```
+
+```{r common-dist-distinct}
+common_dist_distinct <- hist %>% 
+  filter(ottaID %in% c(
+    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
+  )) %>% 
+  distinct(ottaID, CodeSet, revHist) %>% 
+  count(CodeSet, revHist) %>% 
+  pivot_wider(names_from = "CodeSet", values_from = "n")
+knitr::kable(common_dist_distinct, caption = "Distinct Common Samples Histotype Distribution")
+```
+
+<!--chapter:end:src/03-validation.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+# knitr options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  results = "asis",
+  fig.align = "center",
+  fig.pos = "H"
+)
+```
+# Results
+
+```{r setup-04}
+# Load packages and data
+library(ggplot2)
+library(magrittr)
+ivs1 <- readRDS(here::here("data/iv_summary_cs1.rds"))
+ivs2 <- readRDS(here::here("data/iv_summary_cs2.rds"))
+```
+
+Here we show internal validation summaries for both CS1 and CS2. The accuracy and F1-scores are the measures of interest. Algorithms are sorted by descending value. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
+
+## CS1
+
+### Accuracy
+
+```{r cs1-accuracy, fig.cap='CS1 Accuracy'}
+ivs1_accuracy <- ivs1 %>%
+  dplyr::filter(measure == "accuracy") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivs1_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Accuracy",
+    color = "Subsampling",
+    title = "CS1 Overall Accuracy by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+### F1-Score
+
+```{r cs1-f1, fig.cap='CS1 F1-Score'}
+ivs1_f1 <- ivs1 %>%
+  dplyr::filter(measure == "macro_f1") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivs1_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "F1-Score",
+    color = "Subsampling",
+    title = "CS1 Macro-Averaged F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+```{r cs1-f1-class, fig.cap='CS1 Class-Specific F1-Score'}
+ivs1_f1_class <- ivs1 %>%
+  dplyr::filter(grepl("f1\\.", measure)) %>%
+  dplyr::mutate(
+    measure = gsub("f1\\.", "", measure),
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivs1_f1_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.8)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  facet_wrap(vars(measure), ncol = 2) +
+  labs(
+    x = "Algorithm",
+    y = "F1-Score",
+    color = "Subsampling",
+    title = "CS1 Class-Specific F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+## CS2
+
+### Accuracy
+
+```{r cs2-accuracy, fig.cap='CS2 Accuracy'}
+ivs2_accuracy <- ivs2 %>%
+  dplyr::filter(measure == "accuracy") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p2 <-
+  ggplot(ivs2_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Accuracy",
+    color = "Subsampling",
+    title = "CS2 Overall Accuracy by Algorithm and Subsampling Method"
+  )
+print(p2)
+```
+
+### F1-Score
+
+```{r cs2-f1, fig.cap='CS2 F1-Score'}
+ivs2_f1 <- ivs2 %>%
+  dplyr::filter(measure == "macro_f1") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivs2_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "F1-Score",
+    color = "Subsampling",
+    title = "CS2 Macro-Averaged F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+```{r cs2-f1-class, fig.cap='CS2 Class-Specific F1-Score'}
+ivs2_f1_class <- ivs2 %>%
+  dplyr::filter(grepl("f1\\.", measure)) %>%
+  dplyr::mutate(
+    measure = gsub("f1\\.", "", measure),
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivs2_f1_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.8)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  facet_wrap(vars(measure), ncol = 2) +
+  labs(
+    x = "Algorithm",
+    y = "F1-Score",
+    color = "Subsampling",
+    title = "CS2 Class-Specific F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+<!--chapter:end:src/04-results.Rmd-->
+
+```{r include=FALSE, cache=FALSE}
+# knitr options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  results = "asis",
+  fig.align = "center",
+  fig.pos = "H"
+)
+```
+`r if (knitr::is_html_output()) '# References {-}'`
+
+```{r include = FALSE}
+knitr::write_bib(c(.packages(), "bookdown"), "packages.bib")
+```
+
+<!--chapter:end:src/99-references.Rmd-->
+
