@@ -6,7 +6,7 @@ source(here::here("validation/cs_process.R"))
 cs1_class <- readRDS(here::here("data/cs1_class.rds"))
 cs2_class <- readRDS(here::here("data/cs2_class.rds"))
 ```
-
+<!--
 ## Concordance
 
 First we validate the CS2 normalization process by looking at the distribution of CS3 non-normalized samples with:
@@ -179,7 +179,7 @@ p <- ggplot(all_metrics, aes(Expression)) +
   theme(panel.grid.minor = element_blank())
 print(p)
 ```
-
+-->
 ## Full Data Distributions
 
 The histotype distributions on the full data are shown below.
@@ -412,9 +412,14 @@ p_hknorm <- ggplot(metrics_hknorm, aes(Expression)) +
 print(p_hknorm)
 ```
 
-### Reference Method
+### Common Samples Method
 
-We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression.
+We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression. n=72 common samples.
+
+CodeSets 1 and 2 are calibrated to CodeSet3 as follows:  
+`X^1(norm) = X^1 - R^1 + R^3`  
+`X^2(norm) = X^2 - R^2 + R^3`  
+`X^3(norm) = X^3`
 
 ```{r cs-norm-rand3}
 # Random selection of common samples with equal number of histotypes
@@ -915,7 +920,13 @@ rand3_hgsc_cs2_vs_cs3 <-
 knitr::kable(rand3_hgsc_cs2_vs_cs3, caption = "Random3 HGSC CS2 vs. CS3 Median Concordance Measures by Histotypes", digits = 2)
 ```
 
-### Pool Method
+### Pools Method
+
+CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=86 common samples.
+
+CodeSet2 is calibrated to CodeSet3 as follows:  
+`X^2(norm) = X^2 - R^2 + R^3`  
+`X^3(norm) = X^3`  
 
 ```{r cs-norm-pools}
 # Pool set: pool samples from CS2
