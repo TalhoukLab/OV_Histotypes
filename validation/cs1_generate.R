@@ -69,7 +69,7 @@ cs1_val2 <- dplyr::select_if(cs1_val, is.double)
 # Corresponding samples in CS3 found in CS1 reference set
 cs3_ref <- cs3_clean %>%
   dplyr::semi_join(cs1_ref, by = "ottaID") %>%
-  dplyr::select(cs1_genes)
+  dplyr::select(all_of(cs1_genes))
 
 # Normalize by reference method using reference samples, add histotypes from annot
 cs1_norm_ref <-
