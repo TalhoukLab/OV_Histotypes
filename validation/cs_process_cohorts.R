@@ -12,7 +12,21 @@ library(here)
 # Read in raw data
 data("od.otta")
 od.otta <- to_native_type(od.otta)
-annot <- read_csv(here("data-raw/annot.csv"), col_types = cols())
+annot <- read_csv(
+  here("data-raw/annot.csv"),
+  col_types = list(
+    cartridge.lot = "c",
+    washplate.lot = "c",
+    hyb.buffer = "d",
+    Oligo.conc = "d",
+    Oligo.fconc = "d",
+    Oligo.aliquot = "d",
+    cutting.date = "D",
+    time.to.extraction = "d",
+    reviewCompletionDate = col_date(format = "%Y-%m-%d")
+  ),
+  na = c("", "NA", "n/a", "N/A", "Unk")
+)
 cohorts <- read_excel(here("data-raw/bc-842_avail_cosp_2020-08-31.xlsx"),
                       sheet = "data")
 cs1 <- read_csv(here("data-raw/cs1.csv"), col_types = cols())

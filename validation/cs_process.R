@@ -9,7 +9,21 @@ library(here)
 # Data Processing ---------------------------------------------------------
 
 # Read in raw data
-annot <- read_csv(here("data-raw/annot.csv"), col_types = cols())
+annot <- read_csv(
+  here("data-raw/annot.csv"),
+  col_types = list(
+    cartridge.lot = "c",
+    washplate.lot = "c",
+    hyb.buffer = "d",
+    Oligo.conc = "d",
+    Oligo.fconc = "d",
+    Oligo.aliquot = "d",
+    cutting.date = "D",
+    time.to.extraction = "d",
+    reviewCompletionDate = col_date(format = "%Y-%m-%d")
+  ),
+  na = c("", "NA", "n/a", "N/A", "Unk")
+)
 cs1 <- read_csv(here("data-raw/cs1.csv"), col_types = cols())
 cs2 <- read_csv(here("data-raw/cs2.csv"), col_types = cols())
 cs3 <- read_csv(here("data-raw/cs3.csv"), col_types = cols())
