@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-11-05}
+\date{2020-11-06}
 
 \begin{document}
 \maketitle
@@ -130,15 +130,16 @@ The supervised learning is performed under a consensus framework: we consider va
 \hypertarget{data-processing}{%
 \section{Data Processing}\label{data-processing}}
 
-Normalizing CS2 to CS3 can easily follow the \href{https://dchiu911.shinyapps.io/PrOType/}{PrOType} method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing CS1 to CS3 where we use common samples and genes as reference sets.
+RNA was extracted from FFPE ovarian carcinoma samples and expression was quantified using NanoString nCounter. Samples were run in three CodeSets. Some samples or pools of samples were repeated across CodeSets for expression normalization. Normalizing CS2 to CS3 can easily follow the \href{https://dchiu911.shinyapps.io/PrOType/}{PrOType} method for HGSC subtypes because both CodeSets have pool samples. A different technique is implemented when normalizing across CS1, CS2, and CS3 where we use common samples and genes as reference sets.
 
 \hypertarget{raw-data}{%
 \subsection{Raw Data}\label{raw-data}}
 
+NanoString CodeSets contained a mix of all probes of interest, six positive controls spiked-in at fixed proportional concentrations (0.125- 128 fM), and eight negative controls (probes without a corresponding target). Gene targets also included 5 housekeeping genes: POLR1B, SDHA, PGK1, ACTB, RPL19. Gene selection was made from top ranked differential gene expression analysis between ovarian cancer histotypes and molecular subtypes of HGSC, as well as containing some genes of interest from unrelated projects. Gene targets in each subsequent CodeSet were re-curated, where non-informative genes were dropped and new potential differentiating genes were added.
+
 There are 3 NanoString CodeSets:
 
 \begin{itemize}
-\tightlist
 \item
   CS1: OvCa2103\_C953
 
@@ -176,10 +177,13 @@ These datasets contain raw counts extracted straight from NanoString RCC files.
 \hypertarget{housekeeping-genes}{%
 \subsection{Housekeeping Genes}\label{housekeeping-genes}}
 
-The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log\textsubscript{2} housekeeping gene expression from the log\textsubscript{2} endogenous gene expression. The updated CodeSet dimensions are now:
+The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log\textsubscript{2} housekeeping gene expression from the log\textsubscript{2} endogenous gene expression:
+
+log\textsubscript{2} endogenous expression - log\textsubscript{2} average housekeeping expression = relative expression
+
+The updated CodeSet dimensions are now:
 
 \begin{itemize}
-\tightlist
 \item
   CS1: OvCa2103\_C953
 
@@ -220,7 +224,6 @@ The number of genes are reduced by 19: 5 housekeeping, 8 negative, 6 positive (t
 Since the reference pool samples only exist in CS2 and CS3, we need to find an alternative method to normalize all three CodeSets. One method is to select common samples and common genes that exist in all three. We found 72 common genes. Using the \texttt{summaryID} identifier, we also found 78 common summary IDs, translating to 320 samples. The number of samples that were matched to each CodeSet differed:
 
 \begin{itemize}
-\tightlist
 \item
   CS1: OvCa2103\_C953
 
@@ -271,7 +274,6 @@ Since the reference pool samples only exist in CS2 and CS3, we need to find an a
 We use the reference method to normalize CS1 to CS3.
 
 \begin{itemize}
-\tightlist
 \item
   CS1 reference set: duplicate samples from CS1
 
@@ -312,7 +314,6 @@ The final CS1 training set has 304 samples on 72 genes after normalization and k
 We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOType normalization when there are available pools.
 
 \begin{itemize}
-\tightlist
 \item
   CS2 pools:
 
@@ -350,7 +351,7 @@ The final CS2 training set has 945 samples on 136 (common) genes after normaliza
 \hypertarget{cohort-distribution}{%
 \subsection{Cohort Distribution}\label{cohort-distribution}}
 
-Note that the CS3 pools sample total (n=58) shown here include those that are not used as reference pools, following previous normalization methods. In particular, the distribution of CS3 pools actually used for normalization (n=22) is POOL1 = 12, POOL2 = 5, POOL3 = 5.
+CodeSets comprised samples from sites collected internationally as shown below. Note that the CS3 pools sample total (n=58) shown here include those that are not used as reference pools, following previous normalization methods. In particular, the distribution of CS3 pools actually used for normalization (n=22) is POOL1 = 12, POOL2 = 5, POOL3 = 5.
 
 \begin{table}
 
@@ -391,13 +392,32 @@ TNCO & NA & NA & 691\\
 \end{tabular}
 \end{table}
 
-\hypertarget{classification}{%
-\section{Classification}\label{classification}}
+\hypertarget{normalization-between-codesets}{%
+\section{Normalization Between CodeSets}\label{normalization-between-codesets}}
+
+After normalization to housekeeping genes and filtering for the five major histotypes of interest, as determined by pathology review and/or IHC, two methods were used to normalize data between CodeSets.
+
+\hypertarget{common-samples-method}{%
+\subsection{Common Samples Method}\label{common-samples-method}}
+
+The common samples method was used to normalize CodeSet1, 2, and 3, where common samples and genes were used as reference sets. Among the samples repeated in all CodeSets we normalized using either: a random set of 3 samples from each major histotype (random3; n=15), a random set of 2 samples from each major histotype (random2; n=10), or a random set of 1 sample from each major histotype (random1; n=5). In each case CodeSet3 expression (X\textsubscript{3}) was held fixed, while CodeSet1/2 expression (X\textsubscript{1} and X\textsubscript{2}) were normalized to CodeSet3 by subtracting the average gene expression from the CodeSet1/2 reference set (R\textsubscript{1} or R\textsubscript{2}) and adding the average gene expression of the CodeSet3 reference set (R\textsubscript{3}). Alternatively, X\textsubscript{1} (norm) = X\textsubscript{1} - R\textsubscript{1} + R\textsubscript{3} would calibrate CodeSet1 to CodeSet3.
+
+\hypertarget{pools-method}{%
+\subsection{Pools Method}\label{pools-method}}
+
+The pools method was used to normalize CodeSet2 and CodeSet3. The three reference pools, regularly assayed mixes of samples representing all histotypes, were run in CodeSet2 and CodeSet3 only. CodeSet2 contained 12 reference pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4) and CodeSet3 contained 22 reference pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). Similar to the common samples method, CodeSet2 was normalized to CodeSet3 via: X\textsubscript{2} (norm) = X\textsubscript{2} - R\textsubscript{2} + R\textsubscript{3} where R is the average expression of the reference pool samples in the respective CodeSet. This method of pool normalization was also used by PrOType to classify HGSC subtypes
+
+\hypertarget{concordance-comparison}{%
+\subsection{Concordance Comparison}\label{concordance-comparison}}
+
+Concordance between CodeSets using the different normalization strategies was compared in common samples, excluding those used for the normalization, using Pearson's correlation coefficient (R\textsuperscript{2}), coefficient of accuracy (Ca), and Lin's concordance correlation (Rc = R\textsuperscript{2} x Ca).
+
+\hypertarget{histotype-classification}{%
+\section{Histotype Classification}\label{histotype-classification}}
 
 We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the \href{https://alinetalhouk.github.io/splendid/}{splendid} package.
 
 \begin{itemize}
-\tightlist
 \item
   Classifiers:
 
@@ -434,57 +454,6 @@ We use 6 classification algorithms and 4 subsampling methods across 500 repetiti
 
 \hypertarget{validation}{%
 \chapter{Validation}\label{validation}}
-
-\hypertarget{concordance}{%
-\section{Concordance}\label{concordance}}
-
-First we validate the CS2 normalization process by looking at the distribution of CS3 non-normalized samples with:
-
-\begin{itemize}
-\tightlist
-\item
-  CS2 non-normalized
-\item
-  CS2 pools-normalized
-\item
-  CS2 reference-normalized
-\end{itemize}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-none-vs-cs3-1} 
-
-}
-
-\caption{Gene Expression CS2 No Normalization vs. CS3}\label{fig:cs2-none-vs-cs3}
-\end{figure}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-pools-vs-cs3-1} 
-
-}
-
-\caption{Gene Expression CS2 Pools Normalization vs. CS3}\label{fig:cs2-pools-vs-cs3}
-\end{figure}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-reference-vs-cs3-1} 
-
-}
-
-\caption{Gene Expression CS2 Reference Normalization vs. CS3}\label{fig:cs2-reference-vs-cs3}
-\end{figure}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-hist-1} 
-
-}
-
-\caption{Concordance Histograms}\label{fig:cc-hist}
-\end{figure}
 
 \hypertarget{full-data-distributions}{%
 \section{Full Data Distributions}\label{full-data-distributions}}
@@ -788,10 +757,15 @@ MUC & 61\\
 
 \begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-hknorm-1} \end{center}
 
-\hypertarget{reference-method}{%
-\subsection{Reference Method}\label{reference-method}}
+\hypertarget{common-samples-method-1}{%
+\subsection{Common Samples Method}\label{common-samples-method-1}}
 
-We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression.
+We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression. n=72 common samples.
+
+CodeSets 1 and 2 are calibrated to CodeSet3 as follows:\\
+\texttt{X\^{}1(norm)\ =\ X\^{}1\ -\ R\^{}1\ +\ R\^{}3}~\\
+\texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
+\texttt{X\^{}3(norm)\ =\ X\^{}3}
 
 \begin{figure}[H]
 
@@ -940,8 +914,14 @@ MUC & 0.77 & 0.89 & 0.73 & 0.77 & 0.92 & 0.70\\
 \end{tabular}
 \end{table}
 
-\hypertarget{pool-method}{%
-\subsection{Pool Method}\label{pool-method}}
+\hypertarget{pools-method-1}{%
+\subsection{Pools Method}\label{pools-method-1}}
+
+CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=86 common samples.
+
+CodeSet2 is calibrated to CodeSet3 as follows:\\
+\texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
+\texttt{X\^{}3(norm)\ =\ X\^{}3}
 
 \begin{figure}[H]
 
