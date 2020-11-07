@@ -51,10 +51,10 @@ venn_id <- venn.diagram(
   imagetype = "png",
   height = 400,
   width = 400,
-  resolution = 300, 
+  resolution = 300,
   compression = "lzw",
   lwd = 1,
-  col = c("#440154ff", '#21908dff', '#fde725ff'), 
+  col = c("#440154ff", '#21908dff', '#fde725ff'),
   fill = c(alpha("#440154ff", 0.3),
            alpha('#21908dff', 0.3),
            alpha('#fde725ff', 0.3)),
@@ -66,7 +66,7 @@ venn_id <- venn.diagram(
   cat.dist = c(0.055, 0.055, 0.085),
   cat.fontfamily = "sans",
   rotation = 1
-) 
+)
 
 venn_genes <- venn.diagram(
   x = list(cs1_norm$Name, cs2_norm$Name, cs3_norm$Name),
@@ -74,15 +74,15 @@ venn_genes <- venn.diagram(
   filename = NULL,
   output = TRUE,
   imagetype = "png",
-  height = 400, 
-  width = 400, 
+  height = 400,
+  width = 400,
   resolution = 300,
   compression = "lzw",
   lwd = 1,
-  col = c("#440154ff", '#21908dff', '#fde725ff'), 
+  col = c("#440154ff", '#21908dff', '#fde725ff'),
   fill = c(alpha("#440154ff", 0.3),
            alpha('#21908dff', 0.3),
-           alpha('#fde725ff', 0.3)), 
+           alpha('#fde725ff', 0.3)),
   cex = 2,
   fontfamily = "sans",
   cat.cex = 1.5,
@@ -91,14 +91,14 @@ venn_genes <- venn.diagram(
   cat.dist = c(0.055, 0.055, 0.085),
   cat.fontfamily = "sans",
   rotation = 1
-) 
+)
 ```
 
 ### Housekeeping Genes
 
-The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log~2~ housekeeping gene expression from the log~2~ endogenous gene expression.
+The first normalization step is to normalize all endogenous genes to housekeeping genes (POLR1B, SDHA, PGK1, ACTB, RPL19; reference genes expressed in all cells). We normalize by subtracting the average log~2~ housekeeping gene expression from the log~2~ endogenous gene expression:
 
-`log2(endogenous expression) - log2⁡(average housekeeping expression) = relative expression`
+log~2~ endogenous expression - log~2~ average housekeeping expression = relative expression
 
 The updated CodeSet dimensions are now:
 
@@ -200,9 +200,9 @@ CodeSets comprised samples from sites collected internationally as shown below. 
 
 ```{r cohort-dist}
 source(here::here("validation/cs_process_cohorts.R"))
-cohort_dist <- cohorts %>% 
-  filter(col_name %in% c(cs1_samples, cs2_samples, cs3_samples)) %>% 
-  count(file_source, cohort) %>% 
+cohort_dist <- cohorts %>%
+  filter(col_name %in% c(cs1_samples, cs2_samples, cs3_samples)) %>%
+  count(file_source, cohort) %>%
   pivot_wider(names_from = "file_source", values_from = "n")
 
 knitr::kable(cohort_dist,
