@@ -95,7 +95,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-11-06}
+\date{2020-11-20}
 
 \begin{document}
 \maketitle
@@ -760,12 +760,24 @@ MUC & 61\\
 \hypertarget{common-samples-method-1}{%
 \subsection{Common Samples Method}\label{common-samples-method-1}}
 
-We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression. n=72 common samples.
+We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression. There are n=72 common samples.
 
-CodeSets 1 and 2 are calibrated to CodeSet3 as follows:\\
-\texttt{X\^{}1(norm)\ =\ X\^{}1\ -\ R\^{}1\ +\ R\^{}3}~\\
-\texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
-\texttt{X\^{}3(norm)\ =\ X\^{}3}
+CodeSets 1 and 2 are calibrated to CodeSet3 as follows:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{X\^{}1(norm)\ =\ X\^{}1\ -\ R\^{}1\ +\ R\^{}3}~\\
+\item
+  \texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
+\item
+  \texttt{X\^{}3(norm)\ =\ X\^{}3}
+\end{itemize}
+
+\hypertarget{random3}{%
+\subsubsection{Random3}\label{random3}}
+
+Randomly choose 3 samples from each of the 5 histotypes as the reference set (n=15). The rest are validated.
 
 \begin{figure}[H]
 
@@ -785,6 +797,11 @@ CodeSets 1 and 2 are calibrated to CodeSet3 as follows:\\
 \caption{Random3 Normalized Concordance Measure Distributions}\label{fig:cc-rand3}
 \end{figure}
 
+\hypertarget{random2}{%
+\subsubsection{Random2}\label{random2}}
+
+Randomly choose 2 samples from each of the 5 histotypes as the reference set (n=10). The rest are validated.
+
 \begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-non2-1} 
@@ -802,6 +819,11 @@ CodeSets 1 and 2 are calibrated to CodeSet3 as follows:\\
 
 \caption{Random2 Normalized Concordance Measure Distributions}\label{fig:cc-rand2}
 \end{figure}
+
+\hypertarget{random1}{%
+\subsubsection{Random1}\label{random1}}
+
+Randomly choose 1 sample from each of the 5 histotypes as the reference set (n=5). The rest are validated.
 
 \begin{figure}[H]
 
@@ -821,6 +843,8 @@ CodeSets 1 and 2 are calibrated to CodeSet3 as follows:\\
 \caption{Random1 Normalized Concordance Measure Distributions}\label{fig:cc-rand1}
 \end{figure}
 
+In Tables \ref{tab:rand1-cs1-vs-cs3} and \ref{tab:rand1-cs2-vs-cs3}, we calculate the concordance measures for CS1 vs.~CS3 and CS2 cs. CS3, respectively. The measures are calculated for both non-normalized and normalized datasets (CS1, CS2), and split by histotype.
+
 \begin{table}
 
 \caption{\label{tab:rand1-cs1-vs-cs3}Random1 CS1 vs. CS3 Median Concordance Measures by Histotypes}
@@ -829,15 +853,15 @@ CodeSets 1 and 2 are calibrated to CodeSet3 as follows:\\
 \hline
 hist & R2-Non & Ca-Non & Rc-Non & R2-Norm & Ca-Norm & Rc-Norm\\
 \hline
-CCOC & 1.00 & 0.30 & 0.08 & 1.00 & 0.28 & 0.09\\
+CCOC & 1.00 & 0.29 & 0.12 & 1.00 & 0.29 & 0.10\\
 \hline
-ENOC & 1.00 & 0.54 & 0.54 & 1.00 & 0.61 & 0.61\\
+ENOC & 1.00 & 0.54 & 0.54 & 1.00 & 0.62 & 0.62\\
 \hline
-HGSC & 0.78 & 0.98 & 0.85 & 0.78 & 0.97 & 0.86\\
+HGSC & 0.79 & 0.98 & 0.85 & 0.79 & 0.97 & 0.87\\
 \hline
-LGSC & 0.97 & 0.87 & 0.81 & 0.97 & 0.90 & 0.87\\
+LGSC & 0.96 & 0.89 & 0.82 & 0.96 & 0.91 & 0.87\\
 \hline
-MUC & 0.75 & 0.85 & 0.68 & 0.75 & 0.82 & 0.64\\
+MUC & 0.77 & 0.86 & 0.68 & 0.77 & 0.81 & 0.63\\
 \hline
 \end{tabular}
 \end{table}
@@ -850,18 +874,23 @@ MUC & 0.75 & 0.85 & 0.68 & 0.75 & 0.82 & 0.64\\
 \hline
 hist & R2-Non & Ca-Non & Rc-Non & R2-Norm & Ca-Norm & Rc-Norm\\
 \hline
-CCOC & 1.00 & 0.20 & 0.04 & 1.00 & 0.27 & 0.09\\
+CCOC & 1.00 & 0.23 & 0.08 & 1.00 & 0.27 & 0.16\\
 \hline
-ENOC & 1.00 & 0.67 & 0.64 & 1.00 & 0.64 & 0.61\\
+ENOC & 1.00 & 0.63 & 0.61 & 1.00 & 0.61 & 0.57\\
 \hline
-HGSC & 0.83 & 0.96 & 0.86 & 0.83 & 0.99 & 0.89\\
+HGSC & 0.83 & 0.96 & 0.86 & 0.83 & 0.98 & 0.89\\
 \hline
-LGSC & 0.99 & 0.92 & 0.91 & 0.99 & 0.96 & 0.94\\
+LGSC & 0.98 & 0.92 & 0.90 & 0.98 & 0.95 & 0.93\\
 \hline
-MUC & 0.70 & 0.78 & 0.55 & 0.70 & 0.86 & 0.57\\
+MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61\\
 \hline
 \end{tabular}
 \end{table}
+
+\hypertarget{random3-hgsc}{%
+\subsubsection{Random3 HGSC}\label{random3-hgsc}}
+
+Randomly choose n=3 HGSC samples as the reference set, and use the rest as validation. This was tried in lieu of the fact that some non-HGSC histotypes have at most n=3 samples in total, so using Random3 or even Random2 would leave no samples remaining in the validation set for these histotypes.
 
 \begin{figure}[H]
 
@@ -872,6 +901,8 @@ MUC & 0.70 & 0.78 & 0.55 & 0.70 & 0.86 & 0.57\\
 \caption{Random3 HGSC Normalized Concordance Measure Distributions}\label{fig:cc-rand}
 \end{figure}
 
+In Tables \ref{tab:rand3-hgsc--cs1-vs-cs3} and \ref{tab:rand3-hgsc-cs2-vs-cs3}, we calculate the concordance measures for CS1 vs.~CS3 and CS2 cs. CS3, respectively. The measures are calculated for both non-normalized and normalized datasets (CS1, CS2), and split by histotype.
+
 \begin{table}
 
 \caption{\label{tab:rand3-hgsc-cs1-vs-cs3}Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes}
@@ -880,15 +911,15 @@ MUC & 0.70 & 0.78 & 0.55 & 0.70 & 0.86 & 0.57\\
 \hline
 hist & R2-Non & Ca-Non & Rc-Non & R2-Norm & Ca-Norm & Rc-Norm\\
 \hline
-CCOC & 0.67 & 0.58 & 0.29 & 0.67 & 0.63 & 0.26\\
+CCOC & 0.62 & 0.62 & 0.32 & 0.62 & 0.68 & 0.27\\
 \hline
-ENOC & 0.89 & 0.80 & 0.71 & 0.89 & 0.80 & 0.74\\
+ENOC & 0.88 & 0.76 & 0.66 & 0.88 & 0.77 & 0.70\\
 \hline
-HGSC & 0.77 & 0.98 & 0.85 & 0.77 & 0.99 & 0.87\\
+HGSC & 0.77 & 0.97 & 0.85 & 0.77 & 0.99 & 0.87\\
 \hline
-LGSC & 0.94 & 0.85 & 0.79 & 0.94 & 0.88 & 0.83\\
+LGSC & 0.94 & 0.85 & 0.80 & 0.94 & 0.90 & 0.84\\
 \hline
-MUC & 0.76 & 0.93 & 0.73 & 0.76 & 0.93 & 0.79\\
+MUC & 0.74 & 0.92 & 0.72 & 0.74 & 0.93 & 0.78\\
 \hline
 \end{tabular}
 \end{table}
@@ -901,21 +932,40 @@ MUC & 0.76 & 0.93 & 0.73 & 0.76 & 0.93 & 0.79\\
 \hline
 hist & R2-Non & Ca-Non & Rc-Non & R2-Norm & Ca-Norm & Rc-Norm\\
 \hline
-CCOC & 0.69 & 0.54 & 0.35 & 0.69 & 0.64 & 0.39\\
+CCOC & 0.66 & 0.56 & 0.35 & 0.66 & 0.59 & 0.42\\
 \hline
-ENOC & 0.85 & 0.77 & 0.66 & 0.85 & 0.86 & 0.76\\
+ENOC & 0.85 & 0.76 & 0.66 & 0.85 & 0.85 & 0.76\\
 \hline
 HGSC & 0.82 & 0.96 & 0.86 & 0.82 & 0.99 & 0.90\\
 \hline
-LGSC & 0.98 & 0.95 & 0.92 & 0.98 & 0.94 & 0.92\\
+LGSC & 0.97 & 0.95 & 0.92 & 0.97 & 0.92 & 0.90\\
 \hline
-MUC & 0.77 & 0.89 & 0.73 & 0.77 & 0.92 & 0.70\\
+MUC & 0.74 & 0.89 & 0.72 & 0.74 & 0.93 & 0.72\\
 \hline
 \end{tabular}
 \end{table}
 
+\hypertarget{random1-for-sites}{%
+\subsubsection{Random1 for Sites}\label{random1-for-sites}}
+
+We use the Random1 method to normalize CS3-USC and CS3-AOC to CS3-VAN. There aren't enough samples in the USC and AOC cohorts to perform Random2 or Random3.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-site-non1-1} 
+
+}
+
+\caption{Cross-Site Random1 Non-Normalized Concordance Measure Distributions}\label{fig:cc-site-non1}
+\end{figure}
+
+\begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-site-rand1-1} \end{center}
+
 \hypertarget{pools-method-1}{%
 \subsection{Pools Method}\label{pools-method-1}}
+
+\hypertarget{cs2-vs.-cs3}{%
+\subsubsection{CS2 vs.~CS3}\label{cs2-vs.-cs3}}
 
 CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=86 common samples.
 
@@ -962,7 +1012,7 @@ CCOC & 0.66 & 0.51 & 0.29\\
 \hline
 ENOC & 0.87 & 0.74 & 0.64\\
 \hline
-HGSC & 0.77 & 0.94 & 0.80\\
+HGSC & 0.79 & 0.94 & 0.81\\
 \hline
 LGSC & 0.98 & 0.94 & 0.92\\
 \hline
@@ -983,7 +1033,7 @@ CCOC & 0.66 & 0.62 & 0.31\\
 \hline
 ENOC & 0.87 & 0.74 & 0.67\\
 \hline
-HGSC & 0.77 & 0.94 & 0.82\\
+HGSC & 0.79 & 0.95 & 0.84\\
 \hline
 LGSC & 0.98 & 0.96 & 0.93\\
 \hline
@@ -991,6 +1041,110 @@ MUC & 0.75 & 0.91 & 0.70\\
 \hline
 \end{tabular}
 \end{table}
+
+\hypertarget{usc-vs.-van}{%
+\subsubsection{USC vs.~VAN}\label{usc-vs.-van}}
+
+In CodeSet 3, we normalize the USC and AOC cohorts to the VAN cohort which is used as the reference dataset.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-uscnon-vs-uscpools-1} 
+
+}
+
+\caption{USC-Non vs. USC-Pools Concordance Measure Distributions}\label{fig:cc-uscnon-vs-uscpools}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-uscnon-vs-vannon-1} 
+
+}
+
+\caption{USC-Non vs. VAN-Non Concordance Measure Distributions}\label{fig:cc-uscnon-vs-vannon}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-uscpools-vs-vannon-1} 
+
+}
+
+\caption{USC-Pools vs. VAN-Non Concordance Measure Distributions}\label{fig:cc-uscpools-vs-vannon}
+\end{figure}
+
+\hypertarget{aoc-vs.-van}{%
+\subsubsection{AOC vs.~VAN}\label{aoc-vs.-van}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-aocnon-vs-aocpools-1} 
+
+}
+
+\caption{AOC-Non vs. AOC-Pools Concordance Measure Distributions}\label{fig:cc-aocnon-vs-aocpools}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-aocnon-vs-vannon-1} 
+
+}
+
+\caption{AOC-Non vs. VAN-Non Concordance Measure Distributions}\label{fig:cc-aocnon-vs-vannon}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-aocpools-vs-vannon-1} 
+
+}
+
+\caption{AOC-Pools vs. VAN-Non Concordance Measure Distributions}\label{fig:cc-aocpools-vs-vannon}
+\end{figure}
+
+\hypertarget{common-samples-vs.-pools-comparison}{%
+\subsection{Common Samples vs.~Pools Comparison}\label{common-samples-vs.-pools-comparison}}
+
+Since only CS2 and CS3 have pools, we make three comparisons between these two CodeSets:
+
+\begin{itemize}
+\tightlist
+\item
+  Non-Normalized
+\item
+  Common Samples Method
+\item
+  Pools Method
+\end{itemize}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/rand3-vs-pools-1} 
+
+}
+
+\caption{Random3 Samples Comparisons of Concordance Measure Distributions}\label{fig:rand3-vs-pools}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/rand2-vs-pools-1} 
+
+}
+
+\caption{Random2 Samples Comparisons of Concordance Measure Distributions}\label{fig:rand2-vs-pools}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/rand1-vs-pools-1} 
+
+}
+
+\caption{Random1 Samples Comparisons of Concordance Measure Distributions}\label{fig:rand1-vs-pools}
+\end{figure}
 
 \hypertarget{common-sample-distributions}{%
 \section{Common Sample Distributions}\label{common-sample-distributions}}
@@ -1003,15 +1157,15 @@ MUC & 0.75 & 0.91 & 0.70\\
 \hline
 revHist & CS1 & CS2 & CS3\\
 \hline
-CCOC & 3 & 4 & 9\\
+CCOC & 3 & 4 & 3\\
 \hline
-ENOC & 4 & 4 & 9\\
+ENOC & 4 & 4 & 3\\
 \hline
-HGSC & 59 & 62 & 95\\
+HGSC & 59 & 62 & 75\\
 \hline
-LGSC & 7 & 5 & 8\\
+LGSC & 7 & 5 & 4\\
 \hline
-MUC & 7 & 5 & 11\\
+MUC & 7 & 5 & 5\\
 \hline
 \end{tabular}
 \end{table}
@@ -1033,6 +1187,27 @@ HGSC & 57 & 57 & 57\\
 LGSC & 4 & 4 & 4\\
 \hline
 MUC & 5 & 5 & 5\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:common-dist-sites}Common Samples Across Sites Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+revHist & AOC & USC & Vancouver\\
+\hline
+CCOC & 3 & 3 & 3\\
+\hline
+ENOC & 3 & 3 & 3\\
+\hline
+HGSC & 13 & 13 & 27\\
+\hline
+LGSC & 2 & 2 & 2\\
+\hline
+MUC & 3 & 3 & 3\\
 \hline
 \end{tabular}
 \end{table}

@@ -35,6 +35,12 @@ cs3 <- read_csv(here("data-raw/cs3.csv"), col_types = cols())
 pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
 ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 
+# Combinations of cross-site gene expression
+sites <- c("USC", "AOC", "VAN")
+all_xsites <- combn(sites, 2) %>%
+  as_tibble() %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
+
 # Filter for specific cohorts
 cs1_samples <- cohorts %>%
   filter(file_source == "cs1",
@@ -51,12 +57,9 @@ cs3_samples <- cohorts %>%
          cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3")) %>%
   pull(col_name)
 
-cs1 <- cs1 %>%
-  select(all_of(c("Code.Class", "Name", "Accession", cs1_samples)))
-cs2 <- cs2 %>%
-  select(all_of(c("Code.Class", "Name", "Accession", cs2_samples)))
-cs3 <- cs3 %>%
-  select(all_of(c("Code.Class", "Name", "Accession", cs3_samples)))
+cs1 <- select(cs1, Code.Class, Name, Accession, all_of(cs1_samples))
+cs2 <- select(cs2, Code.Class, Name, Accession, all_of(cs2_samples))
+cs3 <- select(cs3, Code.Class, Name, Accession, all_of(cs3_samples))
 
 # Normalize to housekeeping genes
 cs1_norm <- HKnorm(cs1)
@@ -65,7 +68,6 @@ cs3_norm <- HKnorm(cs3)
 
 # Filter annotations for CS 1, 2, 3
 annot_cs_all <- annot %>%
-  filter(RCC.geneRLF %in% c("OvCa2103_C953", "PrOTYPE2_v2_C1645", "OTTA2014_C2822")) %>%
   mutate(
     CodeSet = recode_factor(
       RCC.geneRLF,
@@ -73,7 +75,9 @@ annot_cs_all <- annot %>%
       `PrOTYPE2_v2_C1645` = "CS2",
       `OTTA2014_C2822` = "CS3"
     )
-  )
+  ) %>%
+  filter(RCC.File.Name %in% gsub("X", "", c(cs1_samples, cs2_samples, cs3_samples))) %>%
+  droplevels()
 
 # Gold standard histotypes for OVAR3 and ICON7 cohorts
 hist_stan <- od.otta %>%
@@ -105,11 +109,70 @@ hist <- annot_cs_all %>%
       is.na(cohort) & revHist == "ENOCa" ~ "ENOC",
       TRUE ~ revHist
     ),
-    hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC")
+    hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
+    site = RCC.nanostring.site
   )
 
+# CS3 site-specific samples
+## Van
+van_samples <- hist %>%
+  filter(CodeSet == "CS3", site == "Vancouver") %>%
+  pull(FileName)
+
+cs3_norm_van <- select(cs3_norm, 1:3, any_of(paste0("X", van_samples)))
+
+cs3_van <- cs3_norm_van %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select(-c(Code.Class, Accession)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))
+
+cs3_van_X <- cs3_norm_van %>% select(Name, !matches("POOL"))
+cs3_van_R <- cs3_norm_van %>% select(Name, matches("POOL"))
+
+## AOC
+aoc_samples <- hist %>%
+  filter(CodeSet == "CS3", site == "AOC") %>%
+  pull(FileName)
+
+cs3_norm_aoc <- select(cs3_norm, 1:3, any_of(paste0("X", aoc_samples)))
+
+cs3_aoc <- cs3_norm_aoc %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select(-c(Code.Class, Accession)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))
+
+cs3_aoc_X <- cs3_norm_aoc %>% select(Name, !matches("POOL"))
+cs3_aoc_R <- cs3_norm_aoc %>% select(Name, matches("POOL"))
+
+## USC
+usc_samples <- hist %>%
+  filter(CodeSet == "CS3", site == "USC") %>%
+  pull(FileName)
+
+cs3_norm_usc <- select(cs3_norm, 1:3, any_of(paste0("X", usc_samples)))
+
+cs3_usc <- cs3_norm_usc %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select(-c(Code.Class, Accession)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))
+
+cs3_usc_X <- cs3_norm_usc %>% select(Name, !matches("POOL"))
+cs3_usc_R <- cs3_norm_usc %>% select(Name, matches("POOL"))
+
 # Find summaryID common to all CS
-cs_common <- annot_cs_all %>%
+common_cs <- annot_cs_all %>%
   count(CodeSet, summaryID) %>%
   spread(CodeSet, n, fill = 0) %>%
   mutate(
@@ -119,15 +182,15 @@ cs_common <- annot_cs_all %>%
   )
 
 # Find common summaryID
-common_id <- with(cs_common, summaryID[in_all_cs])
+common_id <- with(common_cs, summaryID[in_all_cs])
 
 # Find common samples
-common_samples <- annot_cs_all %>%
-  filter(summaryID %in% common_id) %>%
-  pull(RCC.File.Name)
+common_samples <- hist %>%
+  filter(ottaID %in% common_id, site == "Vancouver") %>%
+  pull(FileName)
 
 # Find common genes
-common_genes <- list(cs1_norm, cs2_norm, cs3_norm) %>%
+common_genes <- list(cs1_norm, cs2_norm, cs3_norm_van) %>%
   map(filter, Code.Class == "Endogenous") %>%
   map("Name") %>%
   reduce(intersect)
@@ -153,7 +216,7 @@ cs2_clean <- cs2_norm %>%
   spread(Name, value) %>%
   select(FileName, ottaID, all_of(common_genes))
 
-cs3_clean <- cs3_norm %>%
+cs3_clean <- cs3_norm_van %>%
   rename_all(~ gsub("^X", "", .)) %>%
   filter(Name %in% common_genes) %>%
   select_if(names(.) %in% c("Name", common_samples)) %>%
@@ -162,3 +225,49 @@ cs3_clean <- cs3_norm %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
   select(FileName, ottaID, all_of(common_genes))
+
+# Find summaryID common to all site
+common_site <- annot_cs_all %>%
+  count(RCC.nanostring.site, summaryID) %>%
+  spread(RCC.nanostring.site, n, fill = 0) %>%
+  mutate(
+    all_sites = rowSums(.[, -1]),
+    in_all_sites = select(., 2:4) %>%
+      pmap_lgl(~ every(list(..1, ..2, ..3), ~ . != 0))
+  )
+
+# Find common summaryID
+common_site_id <- with(common_site, summaryID[in_all_sites])
+
+# Find common samples
+common_site_samples <- hist %>%
+  filter(ottaID %in% common_site_id) %>%
+  pull(FileName)
+
+# Clean data by keeping common samples and genes, add ottaID
+cs3_clean_van <- cs3_norm_van %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select_if(names(.) %in% c("Name", common_site_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))
+
+cs3_clean_aoc <- cs3_norm_aoc %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select_if(names(.) %in% c("Name", common_site_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))
+
+cs3_clean_usc <- cs3_norm_usc %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select_if(names(.) %in% c("Name", common_site_samples)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))

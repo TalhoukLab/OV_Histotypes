@@ -14,9 +14,7 @@ all_codesets <- combn(codesets, 2) %>%
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand3 <- hist %>%
-  filter(ottaID %in% unique(c(
-    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
-  ))) %>%
+  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 3) %>%
@@ -34,21 +32,14 @@ cs3_counts3 <- join_avg(cs3_clean, hist_rand3, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand3 <-
-  refMethod(cs1_counts3, cs1_rand3, cs3_rand3) %>%
+  refMethod(cs1_counts3, cs3_rand3, cs1_rand3) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand3 <-
-  refMethod(cs2_counts3, cs2_rand3, cs3_rand3) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
-
-cs3_norm_rand3 <-
-  refMethod(cs3_counts3, cs3_rand3, cs2_rand3) %>%
+  refMethod(cs2_counts3, cs3_rand3, cs2_rand3) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
@@ -57,21 +48,14 @@ cs3_norm_rand3 <-
 # Combined gene expression
 counts3 <-
   set_names(list(cs1_counts3, cs2_counts3, cs3_counts3), codesets)
-norm_rand3 <- list(cs1_norm_rand3, cs2_norm_rand3, cs3_norm_rand3) %>%
+norm_rand3 <- list(cs1_norm_rand3, cs2_norm_rand3, cs3_counts3) %>%
   set_names(codesets) %>%
-  map(~ select(., -"revHist"))
+  map_at(1:2, select, -"revHist")
 
 # Concordance measures for all genes averaged across samples
 metrics_non3 <- all_codesets %>%
   imap_dfr(~ {
-    pmap_dfr(counts3[.x], ~ {
-      R2 <- cor(.x, .y) ^ 2
-      ccc <- epiR::epi.ccc(.x, .y)
-      Ca <- pluck(ccc, "C.b")
-      Rc <- pluck(ccc, "rho.c", "est")
-      lst(R2, Ca, Rc)
-    }) %>%
-      mutate(Sites = .y)
+    pmap_dfr(counts3[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
@@ -80,14 +64,7 @@ metrics_non3 <- all_codesets %>%
 
 metrics_rand3 <- all_codesets %>%
   imap_dfr(~ {
-    pmap_dfr(norm_rand3[.x], ~ {
-      R2 <- cor(.x, .y) ^ 2
-      ccc <- epiR::epi.ccc(.x, .y)
-      Ca <- pluck(ccc, "C.b")
-      Rc <- pluck(ccc, "rho.c", "est")
-      lst(R2, Ca, Rc)
-    }) %>%
-      mutate(Sites = .y)
+    pmap_dfr(norm_rand3[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
@@ -97,8 +74,9 @@ metrics_rand3 <- all_codesets %>%
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non3 <- ggplot(metrics_non3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -109,8 +87,9 @@ print(p_non3)
 
 p_rand3 <- ggplot(metrics_rand3, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 15, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -125,9 +104,7 @@ print(p_rand3)
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand2 <- hist %>%
-  filter(ottaID %in% unique(c(
-    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
-  ))) %>%
+  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 2) %>%
@@ -145,21 +122,14 @@ cs3_counts2 <- join_avg(cs3_clean, hist_rand2, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand2 <-
-  refMethod(cs1_counts2, cs1_rand2, cs3_rand2) %>%
+  refMethod(cs1_counts2, cs3_rand2, cs1_rand2) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand2 <-
-  refMethod(cs2_counts2, cs2_rand2, cs3_rand2) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
-
-cs3_norm_rand2 <-
-  refMethod(cs3_counts2, cs3_rand2, cs2_rand2) %>%
+  refMethod(cs2_counts2, cs3_rand2, cs2_rand2) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
@@ -168,21 +138,14 @@ cs3_norm_rand2 <-
 # Combined gene expression
 counts2 <-
   set_names(list(cs1_counts2, cs2_counts2, cs3_counts2), codesets)
-norm_rand2 <- list(cs1_norm_rand2, cs2_norm_rand2, cs3_norm_rand2) %>%
+norm_rand2 <- list(cs1_norm_rand2, cs2_norm_rand2, cs3_counts2) %>%
   set_names(codesets) %>%
-  map(~ select(., -"revHist"))
+  map_at(1:2, select, -"revHist")
 
 # Concordance measures for all genes averaged across samples
 metrics_non2 <- all_codesets %>%
   imap_dfr(~ {
-    pmap_dfr(counts2[.x], ~ {
-      R2 <- cor(.x, .y) ^ 2
-      ccc <- epiR::epi.ccc(.x, .y)
-      Ca <- pluck(ccc, "C.b")
-      Rc <- pluck(ccc, "rho.c", "est")
-      lst(R2, Ca, Rc)
-    }) %>%
-      mutate(Sites = .y)
+    pmap_dfr(counts2[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
@@ -191,14 +154,7 @@ metrics_non2 <- all_codesets %>%
 
 metrics_rand2 <- all_codesets %>%
   imap_dfr(~ {
-    pmap_dfr(norm_rand2[.x], ~ {
-      R2 <- cor(.x, .y) ^ 2
-      ccc <- epiR::epi.ccc(.x, .y)
-      Ca <- pluck(ccc, "C.b")
-      Rc <- pluck(ccc, "rho.c", "est")
-      lst(R2, Ca, Rc)
-    }) %>%
-      mutate(Sites = .y)
+    pmap_dfr(norm_rand2[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
@@ -208,8 +164,9 @@ metrics_rand2 <- all_codesets %>%
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non2 <- ggplot(metrics_non2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -220,8 +177,9 @@ print(p_non2)
 
 p_rand2 <- ggplot(metrics_rand2, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 15, label = Median),
+  geom_text(aes(x = 0, y = 50, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -236,9 +194,7 @@ print(p_rand2)
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand1 <- hist %>%
-  filter(ottaID %in% unique(c(
-    cs1_clean$ottaID, cs2_clean$ottaID, cs3_clean$ottaID
-  ))) %>%
+  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 1) %>%
@@ -256,21 +212,14 @@ cs3_counts1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand1 <-
-  refMethod(cs1_counts1, cs1_rand1, cs3_rand1) %>%
+  refMethod(cs1_counts1, cs3_rand1, cs1_rand1) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
   column_to_rownames("ottaID")
 
 cs2_norm_rand1 <-
-  refMethod(cs2_counts1, cs2_rand1, cs3_rand1) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
-
-cs3_norm_rand1 <-
-  refMethod(cs3_counts1, cs3_rand1, cs2_rand1) %>%
+  refMethod(cs2_counts1, cs3_rand1, cs2_rand1) %>%
   as.data.frame() %>%
   rownames_to_column("ottaID") %>%
   inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
@@ -279,21 +228,14 @@ cs3_norm_rand1 <-
 # Combined gene expression
 counts1 <-
   set_names(list(cs1_counts1, cs2_counts1, cs3_counts1), codesets)
-norm_rand1 <- list(cs1_norm_rand1, cs2_norm_rand1, cs3_norm_rand1) %>%
+norm_rand1 <- list(cs1_norm_rand1, cs2_norm_rand1, cs3_counts1) %>%
   set_names(codesets) %>%
-  map(~ select(., -"revHist"))
+  map_at(1:2, select, -"revHist")
 
 # Concordance measures for all genes averaged across samples
 metrics_non1 <- all_codesets %>%
   imap_dfr(~ {
-    pmap_dfr(counts1[.x], ~ {
-      R2 <- cor(.x, .y) ^ 2
-      ccc <- epiR::epi.ccc(.x, .y)
-      Ca <- pluck(ccc, "C.b")
-      Rc <- pluck(ccc, "rho.c", "est")
-      lst(R2, Ca, Rc)
-    }) %>%
-      mutate(Sites = .y)
+    pmap_dfr(counts1[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
@@ -302,14 +244,7 @@ metrics_non1 <- all_codesets %>%
 
 metrics_rand1 <- all_codesets %>%
   imap_dfr(~ {
-    pmap_dfr(norm_rand1[.x], ~ {
-      R2 <- cor(.x, .y) ^ 2
-      ccc <- epiR::epi.ccc(.x, .y)
-      Ca <- pluck(ccc, "C.b")
-      Rc <- pluck(ccc, "rho.c", "est")
-      lst(R2, Ca, Rc)
-    }) %>%
-      mutate(Sites = .y)
+    pmap_dfr(norm_rand1[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
@@ -319,8 +254,9 @@ metrics_rand1 <- all_codesets %>%
 # Plot all combinations of cross-codeset concordance measure histograms
 p_non1 <- ggplot(metrics_non1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 30, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
@@ -331,8 +267,9 @@ print(p_non1)
 
 p_rand1 <- ggplot(metrics_rand1, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 15, label = Median),
+  geom_text(aes(x = 0, y = 40, label = Median),
             hjust = 0,
+            vjust = 1,
             check_overlap = TRUE) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
