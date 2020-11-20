@@ -1511,7 +1511,7 @@ Since only CS2 and CS3 have pools, we make three comparisons between these two C
 - Common Samples Method
 - Pools Method
 
-```{r rand3-vs-pools}
+```{r rand3-vs-pools, fig.cap='Random3 Samples Comparisons of Concordance Measure Distributions'}
 cs2_vs_cs3_non3 <- metrics_non3 %>%
   filter(Sites == "CS2_vs_CS3") %>%
   add_column(Method = "Non-Normalized")
@@ -1563,7 +1563,7 @@ p_comps3 <- ggplot(cs2_vs_cs3_comps3, aes(Expression)) +
 print(p_comps3)
 ```
 
-```{r rand2-vs-pools}
+```{r rand2-vs-pools, fig.cap='Random2 Samples Comparisons of Concordance Measure Distributions'}
 cs2_vs_cs3_non2 <- metrics_non2 %>%
   filter(Sites == "CS2_vs_CS3") %>%
   add_column(Method = "Non-Normalized")
@@ -1615,7 +1615,7 @@ p_comps2 <- ggplot(cs2_vs_cs3_comps2, aes(Expression)) +
 print(p_comps2)
 ```
 
-```{r rand1-vs-pools}
+```{r rand1-vs-pools, fig.cap='Random1 Samples Comparisons of Concordance Measure Distributions'}
 cs2_vs_cs3_non1 <- metrics_non1 %>%
   filter(Sites == "CS2_vs_CS3") %>%
   add_column(Method = "Non-Normalized")
