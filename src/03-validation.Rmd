@@ -1306,7 +1306,7 @@ sets <- c("USC-Non", "USC-Pools", "VAN-Non")
 all_comps <- combn(sets, 2) %>%
   as_tibble() %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
-common_gx <-
+common_gx_usc_van <-
   set_names(list(usc_X_common, cs3_usc_common_pools, van_X_common), sets) %>%
   map(column_to_rownames, "ottaID") %>%
   map(select, -"revHist")
@@ -1314,7 +1314,7 @@ common_gx <-
 # Concordance measures for all genes averaged across samples
 metrics_sites_pools <- all_comps %>%
   imap_dfr(~ {
-    pmap_dfr(common_gx[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+    pmap_dfr(common_gx_usc_van[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
@@ -1438,7 +1438,7 @@ sets <- c("AOC-Non", "AOC-Pools", "VAN-Non")
 all_comps <- combn(sets, 2) %>%
   as_tibble() %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
-common_gx <-
+common_gx_aoc_van <-
   set_names(list(aoc_X_common, cs3_aoc_common_pools, van_X_common), sets) %>%
   map(column_to_rownames, "ottaID") %>%
   map(select, -"revHist")
@@ -1446,7 +1446,7 @@ common_gx <-
 # Concordance measures for all genes averaged across samples
 metrics_sites_pools <- all_comps %>%
   imap_dfr(~ {
-    pmap_dfr(common_gx[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+    pmap_dfr(common_gx_aoc_van[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
   group_by(Sites, Metric) %>%
