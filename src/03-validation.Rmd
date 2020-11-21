@@ -1269,7 +1269,8 @@ tmp_usc_X <- cs3_usc_X %>%
   gather(FileName, exp, -1:-3) %>%
   mutate(FileName = gsub("^X", "", FileName)) %>%
   inner_join(hist, by = "FileName") %>%
-  filter(Name %in% names(cs3_usc_normalized_data_pools)[-1]) %>%
+  filter(Name %in% names(cs3_usc_normalized_data_pools)[-1],
+         FileName %in% common_site_samples) %>%
   mutate(Name = factor(Name, levels = names(cs3_usc_normalized_data_pools)[-1])) %>%
   select(Name, ottaID, revHist, exp) %>%
   group_by(Name, ottaID, revHist) %>%
@@ -1281,7 +1282,8 @@ tmp_van_X <- cs3_van_X %>%
   gather(FileName, exp, -1:-3) %>%
   mutate(FileName = gsub("^X", "", FileName)) %>%
   inner_join(hist, by = "FileName") %>%
-  filter(Name %in% names(cs3_usc_normalized_data_pools)[-1]) %>%
+  filter(Name %in% names(cs3_usc_normalized_data_pools)[-1],
+         FileName %in% common_site_samples) %>%
   mutate(Name = factor(Name, levels = names(cs3_usc_normalized_data_pools)[-1])) %>%
   select(Name, ottaID, revHist, exp) %>%
   group_by(Name, ottaID, revHist) %>%
@@ -1401,7 +1403,8 @@ tmp_aoc_X <- cs3_aoc_X %>%
   gather(FileName, exp, -1:-3) %>%
   mutate(FileName = gsub("^X", "", FileName)) %>%
   inner_join(hist, by = "FileName") %>%
-  filter(Name %in% names(cs3_aoc_normalized_data_pools)[-1]) %>%
+  filter(Name %in% names(cs3_aoc_normalized_data_pools)[-1],
+         FileName %in% common_site_samples) %>%
   mutate(Name = factor(Name, levels = names(cs3_aoc_normalized_data_pools)[-1])) %>%
   select(Name, ottaID, revHist, exp) %>%
   group_by(Name, ottaID, revHist) %>%
@@ -1413,7 +1416,8 @@ tmp_van_X <- cs3_van_X %>%
   gather(FileName, exp, -1:-3) %>%
   mutate(FileName = gsub("^X", "", FileName)) %>%
   inner_join(hist, by = "FileName") %>%
-  filter(Name %in% names(cs3_aoc_normalized_data_pools)[-1]) %>%
+  filter(Name %in% names(cs3_aoc_normalized_data_pools)[-1],
+         FileName %in% common_site_samples) %>%
   mutate(Name = factor(Name, levels = names(cs3_aoc_normalized_data_pools)[-1])) %>%
   select(Name, ottaID, revHist, exp) %>%
   group_by(Name, ottaID, revHist) %>%
