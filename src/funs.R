@@ -23,3 +23,13 @@ cor_stats <- function(x, y) {
   Rc <- pluck(ccc, "rho.c", "est")
   lst(R2, Ca, Rc)
 }
+
+# Split gene expression data by histotype
+split_hist <- function(data, hist_df) {
+  data %>%
+    tibble::rownames_to_column("ottaID") %>%
+    dplyr::inner_join(hist_df, by = "ottaID") %>%
+    tibble::column_to_rownames("ottaID")%>%
+    split(.$revHist) %>%
+    purrr::map(dplyr::select, -"revHist")
+}

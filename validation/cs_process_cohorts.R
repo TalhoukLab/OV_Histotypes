@@ -113,6 +113,9 @@ hist <- annot_cs_all %>%
     site = RCC.nanostring.site
   )
 
+# Histotypes for each distinct ottaID
+hist_df <- distinct(hist, ottaID, revHist)
+
 # CS3 site-specific samples
 ## Van
 van_samples <- hist %>%
