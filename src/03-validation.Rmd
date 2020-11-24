@@ -1489,32 +1489,19 @@ cs2_counts3_byhist <- split_hist(cs2_counts3, hist_df)
 cs2_counts3_pools_byhist <- split(cs2_counts3_pools, hist_df)
 cs3_counts3_byhist <- split_hist(cs3_counts3, hist_df)
 
-rand3_stats_non <- list(cs2_counts3_byhist, cs3_counts3_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Non"))
-
-rand3_stats_common <- list(cs2_norm_rand3_byhist, cs3_counts3_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Common"))
-
-rand3_stats_pools <- list(cs2_counts3_pools_byhist, cs3_counts3_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Pools"))
-
 rand3_stats <-
-  list(rand3_stats_non, rand3_stats_common, rand3_stats_pools) %>% 
+  list(Non = cs2_counts3_byhist,
+       Common = cs2_norm_rand3_byhist,
+       Pools = cs2_counts3_pools_byhist) %>%
+  imap(function(x, y) {
+    list(x, cs3_counts3_byhist) %>%
+      transpose() %>%
+      map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+      group_by(hist) %>%
+      summarize_if(is.double, median) %>%
+      ungroup() %>%
+      rename_if(is.double, ~ paste(., y, sep = "-"))
+  }) %>%
   reduce(inner_join, by = "hist")
 
 knitr::kable(rand3_stats,
@@ -1580,32 +1567,19 @@ cs2_counts2_byhist <- split_hist(cs2_counts2, hist_df)
 cs2_counts2_pools_byhist <- split(cs2_counts2_pools, hist_df)
 cs3_counts2_byhist <- split_hist(cs3_counts2, hist_df)
 
-rand2_stats_non <- list(cs2_counts2_byhist, cs3_counts2_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Non"))
-
-rand2_stats_common <- list(cs2_norm_rand2_byhist, cs3_counts2_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Common"))
-
-rand2_stats_pools <- list(cs2_counts2_pools_byhist, cs3_counts2_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Pools"))
-
 rand2_stats <-
-  list(rand2_stats_non, rand2_stats_common, rand2_stats_pools) %>% 
+  list(Non = cs2_counts2_byhist,
+       Common = cs2_norm_rand2_byhist,
+       Pools = cs2_counts2_pools_byhist) %>%
+  imap(function(x, y) {
+    list(x, cs3_counts2_byhist) %>%
+      transpose() %>%
+      map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+      group_by(hist) %>%
+      summarize_if(is.double, median) %>%
+      ungroup() %>%
+      rename_if(is.double, ~ paste(., y, sep = "-"))
+  }) %>%
   reduce(inner_join, by = "hist")
 
 knitr::kable(rand2_stats,
@@ -1671,32 +1645,19 @@ cs2_counts1_byhist <- split_hist(cs2_counts1, hist_df)
 cs2_counts1_pools_byhist <- split(cs2_counts1_pools, hist_df)
 cs3_counts1_byhist <- split_hist(cs3_counts1, hist_df)
 
-rand1_stats_non <- list(cs2_counts1_byhist, cs3_counts1_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Non"))
-
-rand1_stats_common <- list(cs2_norm_rand1_byhist, cs3_counts1_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Common"))
-
-rand1_stats_pools <- list(cs2_counts1_pools_byhist, cs3_counts1_byhist) %>%
-  transpose() %>%
-  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
-  group_by(hist) %>%
-  summarize_if(is.double, median) %>%
-  ungroup() %>% 
-  rename_if(is.double, ~ paste0(., "-Pools"))
-
 rand1_stats <-
-  list(rand1_stats_non, rand1_stats_common, rand1_stats_pools) %>% 
+  list(Non = cs2_counts1_byhist,
+       Common = cs2_norm_rand1_byhist,
+       Pools = cs2_counts1_pools_byhist) %>%
+  imap(function(x, y) {
+    list(x, cs3_counts1_byhist) %>%
+      transpose() %>%
+      map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+      group_by(hist) %>%
+      summarize_if(is.double, median) %>%
+      ungroup() %>%
+      rename_if(is.double, ~ paste(., y, sep = "-"))
+  }) %>%
   reduce(inner_join, by = "hist")
 
 knitr::kable(rand1_stats,
