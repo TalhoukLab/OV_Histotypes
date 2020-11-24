@@ -1567,6 +1567,65 @@ p_comps3 <- ggplot(cs2_vs_cs3_comps3, aes(Expression)) +
 print(p_comps3)
 ```
 
+```{r rand3-vs-pools-stats}
+cs2_norm_rand3_byhist <- cs2_norm_rand3 %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs2_counts3_byhist <- cs2_counts3 %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs2_counts3_pools_byhist <- cs2_counts3_pools %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs3_counts3_byhist <- cs3_counts3 %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+rand3_stats_non <- list(cs2_counts3_byhist, cs3_counts3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+
+rand3_stats_common <- list(cs2_norm_rand3_byhist, cs3_counts3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Common"))
+
+rand3_stats_pools <- list(cs2_counts3_pools_byhist, cs3_counts3_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Pools"))
+
+rand3_stats <-
+  list(rand3_stats_non, rand3_stats_common, rand3_stats_pools) %>% 
+  reduce(inner_join, by = "hist")
+
+knitr::kable(rand3_stats,
+             caption = "Random3 Samples Comparisons Statistics by Histotypes",
+             digits = 2)
+```
+
 ```{r rand2-vs-pools, fig.cap='Random2 Samples Comparisons of Concordance Measure Distributions'}
 cs2_vs_cs3_non2 <- metrics_non2 %>%
   filter(Sites == "CS2_vs_CS3") %>%
@@ -1617,6 +1676,66 @@ p_comps2 <- ggplot(cs2_vs_cs3_comps2, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_comps2)
+```
+
+```{r rand2-vs-pools-stats}
+##### Random2
+cs2_norm_rand2_byhist <- cs2_norm_rand2 %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs2_counts2_byhist <- cs2_counts2 %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs2_counts2_pools_byhist <- cs2_counts2_pools %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs3_counts2_byhist <- cs3_counts2 %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+rand2_stats_non <- list(cs2_counts2_byhist, cs3_counts2_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+
+rand2_stats_common <- list(cs2_norm_rand2_byhist, cs3_counts2_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Common"))
+
+rand2_stats_pools <- list(cs2_counts2_pools_byhist, cs3_counts2_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Pools"))
+
+rand2_stats <-
+  list(rand2_stats_non, rand2_stats_common, rand2_stats_pools) %>% 
+  reduce(inner_join, by = "hist")
+
+knitr::kable(rand2_stats,
+             caption = "Random2 Samples Comparisons Statistics by Histotypes",
+             digits = 2)
 ```
 
 ```{r rand1-vs-pools, fig.cap='Random1 Samples Comparisons of Concordance Measure Distributions'}
@@ -1671,6 +1790,64 @@ p_comps1 <- ggplot(cs2_vs_cs3_comps1, aes(Expression)) +
 print(p_comps1)
 ```
 
+```{r rand1-vs-pools-stats}
+cs2_norm_rand1_byhist <- cs2_norm_rand1 %>%
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs2_counts1_byhist <- cs2_counts1 %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs2_counts1_pools_byhist <- cs2_counts1_pools %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+cs3_counts1_byhist <- cs3_counts1 %>% 
+  rownames_to_column("ottaID") %>%
+  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
+  column_to_rownames("ottaID") %>% 
+  split(.$revHist) %>%
+  map(select, -"revHist")
+
+rand1_stats_non <- list(cs2_counts1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Non"))
+
+rand1_stats_common <- list(cs2_norm_rand1_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Common"))
+
+rand1_stats_pools <- list(cs2_counts1_pools_byhist, cs3_counts1_byhist) %>%
+  transpose() %>%
+  map_dfr(~ pmap_df(.x, cor_stats, .id = "gene"), .id = "hist") %>%
+  group_by(hist) %>%
+  summarize_if(is.double, median) %>%
+  ungroup() %>% 
+  rename_if(is.double, ~ paste0(., "-Pools"))
+
+rand1_stats <-
+  list(rand1_stats_non, rand1_stats_common, rand1_stats_pools) %>% 
+  reduce(inner_join, by = "hist")
+
+knitr::kable(rand1_stats,
+             caption = "Random1 Samples Comparisons Statistics by Histotypes",
+             digits = 2)
+```
 
 ## Common Sample Distributions
 
