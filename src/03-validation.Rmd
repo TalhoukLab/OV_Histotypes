@@ -1885,3 +1885,18 @@ common_dist_sites <- hist %>%
   pivot_wider(names_from = "site", values_from = "n")
 knitr::kable(common_dist_sites, caption = "Common Samples Across Sites Histotype Distribution")
 ```
+
+```{r common-dist-sites-distinct}
+common_dist_sites_distinct <- hist %>%
+  filter(
+    FileName %in% c(
+      cs3_clean_van$FileName,
+      cs3_clean_aoc$FileName,
+      cs3_clean_usc$FileName
+    )
+  ) %>%
+  distinct(ottaID, site, revHist) %>% 
+  count(site, revHist) %>%
+  pivot_wider(names_from = "site", values_from = "n")
+knitr::kable(common_dist_sites_distinct, caption = "Distinct Common Samples Across Sites Histotype Distribution")
+```
