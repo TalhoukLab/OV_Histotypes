@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2020-11-20" />
+<meta name="date" content="2020-11-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -991,7 +991,7 @@ Figure 3.6: Random1 Normalized Concordance Measure Distributions
 Figure 3.7: Random3 HGSC Normalized Concordance Measure Distributions
 </p>
 </div>
-<p>In Tables @ref(tab:rand3-hgsc–cs1-vs-cs3) and <a href="validation.html#tab:rand3-hgsc-cs2-vs-cs3">3.13</a>, we calculate the concordance measures for CS1 vs. CS3 and CS2 cs. CS3, respectively. The measures are calculated for both non-normalized and normalized datasets (CS1, CS2), and split by histotype.</p>
+<p>In Tables <a href="validation.html#tab:rand3-hgsc-cs1-vs-cs3">3.12</a> and <a href="validation.html#tab:rand3-hgsc-cs2-vs-cs3">3.13</a>, we calculate the concordance measures for CS1 vs. CS3 and CS2 cs. CS3, respectively. The measures are calculated for both non-normalized and normalized datasets (CS1, CS2), and split by histotype.</p>
 <table>
 <caption><span id="tab:rand3-hgsc-cs1-vs-cs3">Table 3.12: </span>Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes</caption>
 <thead>
@@ -1298,24 +1298,237 @@ Figure 3.17: AOC-Pools vs. VAN-Non Concordance Measure Distributions
 Figure 3.18: Random3 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
+<table>
+<caption><span id="tab:rand3-vs-pools-stats">Table 3.16: </span>Random3 Samples Comparisons Statistics by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Common</th>
+<th align="right">Ca-Common</th>
+<th align="right">Rc-Common</th>
+<th align="right">R2-Pools</th>
+<th align="right">Ca-Pools</th>
+<th align="right">Rc-Pools</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.84</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+<td align="right">0.84</td>
+<td align="right">0.99</td>
+<td align="right">0.90</td>
+<td align="right">0.84</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">1.00</td>
+<td align="right">0.49</td>
+<td align="right">0.44</td>
+<td align="right">1.00</td>
+<td align="right">0.62</td>
+<td align="right">0.52</td>
+<td align="right">1.00</td>
+<td align="right">0.46</td>
+<td align="right">0.42</td>
+</tr>
+</tbody>
+</table>
 <div class="figure" style="text-align: center"><span id="fig:rand2-vs-pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/rand2-vs-pools-1.png" alt="Random2 Samples Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.19: Random2 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
+<table>
+<caption><span id="tab:rand2-vs-pools-stats">Table 3.17: </span>Random2 Samples Comparisons Statistics by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Common</th>
+<th align="right">Ca-Common</th>
+<th align="right">Rc-Common</th>
+<th align="right">R2-Pools</th>
+<th align="right">Ca-Pools</th>
+<th align="right">Rc-Pools</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.84</td>
+<td align="right">0.96</td>
+<td align="right">0.87</td>
+<td align="right">0.84</td>
+<td align="right">0.98</td>
+<td align="right">0.89</td>
+<td align="right">0.84</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">1.00</td>
+<td align="right">0.88</td>
+<td align="right">0.87</td>
+<td align="right">1.00</td>
+<td align="right">0.88</td>
+<td align="right">0.88</td>
+<td align="right">1.00</td>
+<td align="right">0.85</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.97</td>
+<td align="right">0.95</td>
+<td align="right">0.91</td>
+<td align="right">0.97</td>
+<td align="right">0.94</td>
+<td align="right">0.90</td>
+<td align="right">0.97</td>
+<td align="right">0.96</td>
+<td align="right">0.92</td>
+</tr>
+</tbody>
+</table>
 <div class="figure" style="text-align: center"><span id="fig:rand1-vs-pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/rand1-vs-pools-1.png" alt="Random1 Samples Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.20: Random1 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
+<table>
+<caption><span id="tab:rand1-vs-pools-stats">Table 3.18: </span>Random1 Samples Comparisons Statistics by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Common</th>
+<th align="right">Ca-Common</th>
+<th align="right">Rc-Common</th>
+<th align="right">R2-Pools</th>
+<th align="right">Ca-Pools</th>
+<th align="right">Rc-Pools</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">1.00</td>
+<td align="right">0.23</td>
+<td align="right">0.08</td>
+<td align="right">1.00</td>
+<td align="right">0.27</td>
+<td align="right">0.16</td>
+<td align="right">1.00</td>
+<td align="right">0.15</td>
+<td align="right">0.09</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">1.00</td>
+<td align="right">0.63</td>
+<td align="right">0.61</td>
+<td align="right">1.00</td>
+<td align="right">0.61</td>
+<td align="right">0.57</td>
+<td align="right">1.00</td>
+<td align="right">0.61</td>
+<td align="right">0.61</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.83</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+<td align="right">0.83</td>
+<td align="right">0.98</td>
+<td align="right">0.89</td>
+<td align="right">0.83</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.98</td>
+<td align="right">0.92</td>
+<td align="right">0.90</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.93</td>
+<td align="right">0.98</td>
+<td align="right">0.92</td>
+<td align="right">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.68</td>
+<td align="right">0.77</td>
+<td align="right">0.55</td>
+<td align="right">0.68</td>
+<td align="right">0.86</td>
+<td align="right">0.61</td>
+<td align="right">0.68</td>
+<td align="right">0.78</td>
+<td align="right">0.51</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="common-sample-distributions" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> Common Sample Distributions</h2>
 <table>
-<caption><span id="tab:common-dist-all">Table 3.16: </span>All Common Samples Histotype Distribution</caption>
+<caption><span id="tab:common-dist-all">Table 3.19: </span>All Common Samples Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1358,7 +1571,7 @@ Figure 3.20: Random1 Samples Comparisons of Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-dist-distinct">Table 3.17: </span>Distinct Common Samples Histotype Distribution</caption>
+<caption><span id="tab:common-dist-distinct">Table 3.20: </span>Distinct Common Samples Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1401,7 +1614,7 @@ Figure 3.20: Random1 Samples Comparisons of Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-dist-sites">Table 3.18: </span>Common Samples Across Sites Histotype Distribution</caption>
+<caption><span id="tab:common-dist-sites">Table 3.21: </span>Common Samples Across Sites Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1428,6 +1641,49 @@ Figure 3.20: Random1 Samples Comparisons of Concordance Measure Distributions
 <td align="right">13</td>
 <td align="right">13</td>
 <td align="right">27</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:common-dist-sites-distinct">Table 3.22: </span>Distinct Common Samples Across Sites Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">AOC</th>
+<th align="right">USC</th>
+<th align="right">Vancouver</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
 </tr>
 <tr class="even">
 <td align="left">LGSC</td>
