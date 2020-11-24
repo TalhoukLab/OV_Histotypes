@@ -769,9 +769,8 @@ cs1_norm_rand <-
 cs2_norm_rand <-
   as.data.frame(refMethod(cs2_counts, cs3_rand, cs2_rand))
 
-norm_rand <- list(cs1_norm_rand, cs2_norm_rand, cs3_counts) %>%
-  set_names(codesets) %>%
-  map_at(1:2, select, -"revHist")
+norm_rand <-
+  set_names(list(cs1_norm_rand, cs2_norm_rand, cs3_counts), codesets)
 
 metrics_rand <- all_codesets %>%
   imap_dfr(~ {
@@ -1055,9 +1054,7 @@ all_comps <- combn(sets, 2) %>%
   as_tibble() %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx <-
-  set_names(list(cs2_common_non, cs2_common_pools, cs3_common_non), sets) %>%
-  map(column_to_rownames, "ottaID") %>% 
-  map(select, -"revHist")
+  set_names(list(cs2_common_non, cs2_common_pools, cs3_common_non), sets)
 
 # Concordance measures for all genes averaged across samples
 metrics_pools <- all_comps %>%
@@ -1486,7 +1483,7 @@ print(p_comps3)
 ```{r rand3-vs-pools-stats}
 cs2_norm_rand3_byhist <- split_hist(cs2_norm_rand3, hist_df)
 cs2_counts3_byhist <- split_hist(cs2_counts3, hist_df)
-cs2_counts3_pools_byhist <- split(cs2_counts3_pools, hist_df)
+cs2_counts3_pools_byhist <- split_hist(cs2_counts3_pools, hist_df)
 cs3_counts3_byhist <- split_hist(cs3_counts3, hist_df)
 
 rand3_stats <-
@@ -1564,7 +1561,7 @@ print(p_comps2)
 ```{r rand2-vs-pools-stats}
 cs2_norm_rand2_byhist <- split_hist(cs2_norm_rand2, hist_df)
 cs2_counts2_byhist <- split_hist(cs2_counts2, hist_df)
-cs2_counts2_pools_byhist <- split(cs2_counts2_pools, hist_df)
+cs2_counts2_pools_byhist <- split_hist(cs2_counts2_pools, hist_df)
 cs3_counts2_byhist <- split_hist(cs3_counts2, hist_df)
 
 rand2_stats <-
@@ -1642,7 +1639,7 @@ print(p_comps1)
 ```{r rand1-vs-pools-stats}
 cs2_norm_rand1_byhist <- split_hist(cs2_norm_rand1, hist_df)
 cs2_counts1_byhist <- split_hist(cs2_counts1, hist_df)
-cs2_counts1_pools_byhist <- split(cs2_counts1_pools, hist_df)
+cs2_counts1_pools_byhist <- split_hist(cs2_counts1_pools, hist_df)
 cs3_counts1_byhist <- split_hist(cs3_counts1, hist_df)
 
 rand1_stats <-
