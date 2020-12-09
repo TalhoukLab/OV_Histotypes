@@ -1018,7 +1018,7 @@ tmp2 <- cs2_norm_counts %>%
   ungroup() %>%
   spread(Name, exp)
 
-tmp3 <- cs3_norm %>%
+tmp3 <- cs3_norm_van %>%
   select(-one_of(names(ref_pools))) %>%
   gather(FileName, exp, -1:-3) %>%
   mutate(FileName = gsub("^X", "", FileName)) %>%
