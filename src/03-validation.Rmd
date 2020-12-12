@@ -960,7 +960,7 @@ print(p_site_rand1)
 
 #### CS2 vs. CS3
 
-CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=86 common samples.
+CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=84 common samples.
 
 CodeSet2 is calibrated to CodeSet3 as follows:  
 `X^2(norm) = X^2 - R^2 + R^3`  
@@ -1227,7 +1227,7 @@ common_gx_usc_van <-
   map(select, -"revHist")
 
 # Concordance measures for all genes averaged across samples
-metrics_sites_pools <- all_comps %>%
+metrics_sites_usc_van <- all_comps %>%
   imap_dfr(~ {
     pmap_dfr(common_gx_usc_van[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
@@ -1240,7 +1240,7 @@ metrics_sites_pools <- all_comps %>%
 
 ```{r cc-uscnon-vs-uscpools, fig.cap='USC-Non vs. USC-Pools Concordance Measure Distributions', fig.height=2}
 p_uscnon_vs_uscpools <-
-  ggplot(metrics_sites_pools %>% filter(Sites == "USC-Non_vs_USC-Pools"),
+  ggplot(metrics_sites_usc_van %>% filter(Sites == "USC-Non_vs_USC-Pools"),
          aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 500, label = Median),
@@ -1256,7 +1256,7 @@ print(p_uscnon_vs_uscpools)
 
 ```{r cc-uscnon-vs-vannon, fig.cap='USC-Non vs. VAN-Non Concordance Measure Distributions', fig.height=2}
 p_uscnon_vs_vannon <-
-  ggplot(metrics_sites_pools %>% filter(Sites == "USC-Non_vs_VAN-Non"),
+  ggplot(metrics_sites_usc_van %>% filter(Sites == "USC-Non_vs_VAN-Non"),
          aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 500, label = Median),
@@ -1272,7 +1272,7 @@ print(p_uscnon_vs_vannon)
 
 ```{r cc-uscpools-vs-vannon, fig.cap='USC-Pools vs. VAN-Non Concordance Measure Distributions', fig.height=2}
 p_uscpools_vs_vannon <-
-  ggplot(metrics_sites_pools %>% filter(Sites == "USC-Pools_vs_VAN-Non"),
+  ggplot(metrics_sites_usc_van %>% filter(Sites == "USC-Pools_vs_VAN-Non"),
          aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 500, label = Median),
@@ -1284,6 +1284,39 @@ p_uscpools_vs_vannon <-
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_uscpools_vs_vannon)
+```
+
+```{r usc-vs-van-comps, fig.cap='USC vs. VAN Comparisons of Concordance Measure Distributions'}
+usc_vs_van_non1 <- metrics_site_non1 %>%
+  filter(Sites == "USC_vs_VAN") %>%
+  add_column(Method = "Non-Normalized")
+
+usc_vs_van_rand1 <- metrics_site_rand1 %>%
+  filter(Sites == "USC_vs_VAN") %>%
+  add_column(Method = "Common Samples")
+
+usc_vs_van_pool <- metrics_sites_usc_van %>%
+  filter(Sites == "USC-Pools_vs_VAN-Non") %>%
+  add_column(Method = "Pools")
+
+usc_vs_van_comps <-
+  bind_rows(usc_vs_van_non1, usc_vs_van_rand1, usc_vs_van_pool) %>%
+  mutate(Method = factor(Method, levels = c(
+    "Non-Normalized", "Common Samples", "Pools"
+  )))
+
+p_usc_vs_van <- ggplot(usc_vs_van_comps, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 400, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Method), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "USC vs. VAN Comparisons of Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_usc_vs_van)
 ```
 
 #### AOC vs. VAN
@@ -1361,7 +1394,7 @@ common_gx_aoc_van <-
   map(select, -"revHist")
 
 # Concordance measures for all genes averaged across samples
-metrics_sites_pools <- all_comps %>%
+metrics_sites_aoc_van <- all_comps %>%
   imap_dfr(~ {
     pmap_dfr(common_gx_aoc_van[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
@@ -1374,7 +1407,7 @@ metrics_sites_pools <- all_comps %>%
 
 ```{r cc-aocnon-vs-aocpools, fig.cap='AOC-Non vs. AOC-Pools Concordance Measure Distributions', fig.height=2}
 p_aocnon_vs_aocpools <-
-  ggplot(metrics_sites_pools %>% filter(Sites == "AOC-Non_vs_AOC-Pools"),
+  ggplot(metrics_sites_aoc_van %>% filter(Sites == "AOC-Non_vs_AOC-Pools"),
          aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 500, label = Median),
@@ -1390,7 +1423,7 @@ print(p_aocnon_vs_aocpools)
 
 ```{r cc-aocnon-vs-vannon, fig.cap='AOC-Non vs. VAN-Non Concordance Measure Distributions', fig.height=2}
 p_aocnon_vs_vannon <-
-  ggplot(metrics_sites_pools %>% filter(Sites == "AOC-Non_vs_VAN-Non"),
+  ggplot(metrics_sites_aoc_van %>% filter(Sites == "AOC-Non_vs_VAN-Non"),
          aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 500, label = Median),
@@ -1406,7 +1439,7 @@ print(p_aocnon_vs_vannon)
 
 ```{r cc-aocpools-vs-vannon, fig.cap='AOC-Pools vs. VAN-Non Concordance Measure Distributions', fig.height=2}
 p_aocpools_vs_vannon <-
-  ggplot(metrics_sites_pools %>% filter(Sites == "AOC-Pools_vs_VAN-Non"),
+  ggplot(metrics_sites_aoc_van %>% filter(Sites == "AOC-Pools_vs_VAN-Non"),
          aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 500, label = Median),
@@ -1418,6 +1451,39 @@ p_aocpools_vs_vannon <-
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_aocpools_vs_vannon)
+```
+
+```{r aoc-vs-van-comps, fig.cap='AOC vs. VAN Comparisons of Concordance Measure Distributions'}
+aoc_vs_van_non1 <- metrics_site_non1 %>%
+  filter(Sites == "AOC_vs_VAN") %>%
+  add_column(Method = "Non-Normalized")
+
+aoc_vs_van_rand1 <- metrics_site_rand1 %>%
+  filter(Sites == "AOC_vs_VAN") %>%
+  add_column(Method = "Common Samples")
+
+aoc_vs_van_pool <- metrics_sites_aoc_van %>%
+  filter(Sites == "AOC-Pools_vs_VAN-Non") %>%
+  add_column(Method = "Pools")
+
+aoc_vs_van_comps <-
+  bind_rows(aoc_vs_van_non1, aoc_vs_van_rand1, aoc_vs_van_pool) %>%
+  mutate(Method = factor(Method, levels = c(
+    "Non-Normalized", "Common Samples", "Pools"
+  )))
+
+p_aoc_vs_van <- ggplot(aoc_vs_van_comps, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 400, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Method), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "AOC vs. VAN Comparisons of Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_aoc_vs_van)
 ```
 
 ### Common Samples vs. Pools Comparison
@@ -1683,6 +1749,17 @@ common_dist_distinct <- hist %>%
   count(CodeSet, revHist) %>% 
   pivot_wider(names_from = "CodeSet", values_from = "n")
 knitr::kable(common_dist_distinct, caption = "Distinct Common Samples Histotype Distribution")
+```
+
+```{r common-cs2-cs3-dist-distinct}
+common_cs2_cs3_dist_distinct <- hist %>%
+  filter(ottaID %in% c(rownames(cs2_common_non),
+                       rownames(cs3_common_non))) %>%
+  distinct(ottaID, CodeSet, revHist) %>%
+  count(CodeSet, revHist) %>%
+  pivot_wider(names_from = "CodeSet", values_from = "n") %>%
+  select(-CS1)
+knitr::kable(common_cs2_cs3_dist_distinct, caption = "Distinct Common CS2 and CS3 Samples Histotype Distribution")
 ```
 
 ```{r common-dist-sites}
