@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings</title>
   <meta name="description" content="3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings" />
-  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2020-11-23" />
+<meta name="date" content="2020-12-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +33,8 @@
   
 <link rel="prev" href="methods.html"/>
 <link rel="next" href="results.html"/>
+<script src="assets/header-attrs-2.6/header-attrs.js"></script>
 <script src="assets/jquery-2.2.3/jquery.min.js"></script>
-<script src="assets/elevate-section-attrs-2.0/elevate-section-attrs.js"></script>
 <link href="assets/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="assets/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="assets/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -96,6 +96,7 @@
 <li class="chapter" data-level="3.3.1" data-path="validation.html"><a href="validation.html#common-samples-method-1"><i class="fa fa-check"></i><b>3.3.1</b> Common Samples Method</a></li>
 <li class="chapter" data-level="3.3.2" data-path="validation.html"><a href="validation.html#pools-method-1"><i class="fa fa-check"></i><b>3.3.2</b> Pools Method</a></li>
 <li class="chapter" data-level="3.3.3" data-path="validation.html"><a href="validation.html#common-samples-vs.-pools-comparison"><i class="fa fa-check"></i><b>3.3.3</b> Common Samples vs. Pools Comparison</a></li>
+<li class="chapter" data-level="3.3.4" data-path="validation.html"><a href="validation.html#codeset-chaining"><i class="fa fa-check"></i><b>3.3.4</b> CodeSet Chaining</a></li>
 </ul></li>
 <li class="chapter" data-level="3.4" data-path="validation.html"><a href="validation.html#common-sample-distributions"><i class="fa fa-check"></i><b>3.4</b> Common Sample Distributions</a></li>
 </ul></li>
@@ -1131,7 +1132,7 @@ Figure 3.8: Cross-Site Random1 Non-Normalized Concordance Measure Distributions
 <h3><span class="header-section-number">3.3.2</span> Pools Method</h3>
 <div id="cs2-vs.-cs3" class="section level4" number="3.3.2.1">
 <h4><span class="header-section-number">3.3.2.1</span> CS2 vs. CS3</h4>
-<p>CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=86 common samples.</p>
+<p>CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=84 common samples.</p>
 <p>CodeSet2 is calibrated to CodeSet3 as follows:<br />
 <code>X^2(norm) = X^2 - R^2 + R^3</code><br />
 <code>X^3(norm) = X^3</code></p>
@@ -1167,32 +1168,32 @@ Figure 3.11: CS2 Normalized Pools vs. CS3 Concordance Measure Distributions
 <tr class="odd">
 <td align="left">CCOC</td>
 <td align="right">0.66</td>
-<td align="right">0.51</td>
-<td align="right">0.29</td>
+<td align="right">0.53</td>
+<td align="right">0.26</td>
 </tr>
 <tr class="even">
 <td align="left">ENOC</td>
-<td align="right">0.87</td>
+<td align="right">0.88</td>
 <td align="right">0.74</td>
-<td align="right">0.64</td>
+<td align="right">0.63</td>
 </tr>
 <tr class="odd">
 <td align="left">HGSC</td>
-<td align="right">0.79</td>
+<td align="right">0.80</td>
 <td align="right">0.94</td>
 <td align="right">0.81</td>
 </tr>
 <tr class="even">
 <td align="left">LGSC</td>
 <td align="right">0.98</td>
-<td align="right">0.94</td>
+<td align="right">0.95</td>
 <td align="right">0.92</td>
 </tr>
 <tr class="odd">
 <td align="left">MUC</td>
-<td align="right">0.75</td>
+<td align="right">0.74</td>
 <td align="right">0.86</td>
-<td align="right">0.69</td>
+<td align="right">0.68</td>
 </tr>
 </tbody>
 </table>
@@ -1210,32 +1211,32 @@ Figure 3.11: CS2 Normalized Pools vs. CS3 Concordance Measure Distributions
 <tr class="odd">
 <td align="left">CCOC</td>
 <td align="right">0.66</td>
-<td align="right">0.62</td>
-<td align="right">0.31</td>
+<td align="right">0.60</td>
+<td align="right">0.32</td>
 </tr>
 <tr class="even">
 <td align="left">ENOC</td>
-<td align="right">0.87</td>
-<td align="right">0.74</td>
-<td align="right">0.67</td>
+<td align="right">0.88</td>
+<td align="right">0.76</td>
+<td align="right">0.68</td>
 </tr>
 <tr class="odd">
 <td align="left">HGSC</td>
-<td align="right">0.79</td>
+<td align="right">0.80</td>
 <td align="right">0.95</td>
 <td align="right">0.84</td>
 </tr>
 <tr class="even">
 <td align="left">LGSC</td>
 <td align="right">0.98</td>
-<td align="right">0.96</td>
+<td align="right">0.95</td>
 <td align="right">0.93</td>
 </tr>
 <tr class="odd">
 <td align="left">MUC</td>
-<td align="right">0.75</td>
+<td align="right">0.74</td>
 <td align="right">0.91</td>
-<td align="right">0.70</td>
+<td align="right">0.71</td>
 </tr>
 </tbody>
 </table>
@@ -1261,25 +1262,37 @@ Figure 3.13: USC-Non vs. VAN-Non Concordance Measure Distributions
 Figure 3.14: USC-Pools vs. VAN-Non Concordance Measure Distributions
 </p>
 </div>
+<div class="figure" style="text-align: center"><span id="fig:usc-vs-van-comps"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/usc-vs-van-comps-1.png" alt="USC vs. VAN Comparisons of Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.15: USC vs. VAN Comparisons of Concordance Measure Distributions
+</p>
+</div>
 </div>
 <div id="aoc-vs.-van" class="section level4" number="3.3.2.3">
 <h4><span class="header-section-number">3.3.2.3</span> AOC vs. VAN</h4>
 <div class="figure" style="text-align: center"><span id="fig:cc-aocnon-vs-aocpools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-aocnon-vs-aocpools-1.png" alt="AOC-Non vs. AOC-Pools Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.15: AOC-Non vs. AOC-Pools Concordance Measure Distributions
+Figure 3.16: AOC-Non vs. AOC-Pools Concordance Measure Distributions
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:cc-aocnon-vs-vannon"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-aocnon-vs-vannon-1.png" alt="AOC-Non vs. VAN-Non Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.16: AOC-Non vs. VAN-Non Concordance Measure Distributions
+Figure 3.17: AOC-Non vs. VAN-Non Concordance Measure Distributions
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:cc-aocpools-vs-vannon"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-aocpools-vs-vannon-1.png" alt="AOC-Pools vs. VAN-Non Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.17: AOC-Pools vs. VAN-Non Concordance Measure Distributions
+Figure 3.18: AOC-Pools vs. VAN-Non Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:aoc-vs-van-comps"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/aoc-vs-van-comps-1.png" alt="AOC vs. VAN Comparisons of Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.19: AOC vs. VAN Comparisons of Concordance Measure Distributions
 </p>
 </div>
 </div>
@@ -1295,7 +1308,7 @@ Figure 3.17: AOC-Pools vs. VAN-Non Concordance Measure Distributions
 <div class="figure" style="text-align: center"><span id="fig:rand3-vs-pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/rand3-vs-pools-1.png" alt="Random3 Samples Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.18: Random3 Samples Comparisons of Concordance Measure Distributions
+Figure 3.20: Random3 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
 <table>
@@ -1356,7 +1369,7 @@ Figure 3.18: Random3 Samples Comparisons of Concordance Measure Distributions
 <div class="figure" style="text-align: center"><span id="fig:rand2-vs-pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/rand2-vs-pools-1.png" alt="Random2 Samples Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.19: Random2 Samples Comparisons of Concordance Measure Distributions
+Figure 3.21: Random2 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
 <table>
@@ -1441,7 +1454,7 @@ Figure 3.19: Random2 Samples Comparisons of Concordance Measure Distributions
 <div class="figure" style="text-align: center"><span id="fig:rand1-vs-pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/rand1-vs-pools-1.png" alt="Random1 Samples Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.20: Random1 Samples Comparisons of Concordance Measure Distributions
+Figure 3.22: Random1 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
 <table>
@@ -1523,6 +1536,21 @@ Figure 3.20: Random1 Samples Comparisons of Concordance Measure Distributions
 </tr>
 </tbody>
 </table>
+</div>
+<div id="codeset-chaining" class="section level3" number="3.3.4">
+<h3><span class="header-section-number">3.3.4</span> CodeSet Chaining</h3>
+<div class="figure" style="text-align: center"><span id="fig:cs-chain-rand1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-1.png" alt="Random1 Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.23: Random1 Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs-chain-rand1-cs2pools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs2pools-1.png" alt="Random1 + Pools Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.24: Random1 + Pools Concordance Measure Distributions
+</p>
+</div>
 </div>
 </div>
 <div id="common-sample-distributions" class="section level2" number="3.4">
@@ -1614,7 +1642,44 @@ Figure 3.20: Random1 Samples Comparisons of Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-dist-sites">Table 3.21: </span>Common Samples Across Sites Histotype Distribution</caption>
+<caption><span id="tab:common-cs2-cs3-dist-distinct">Table 3.21: </span>Distinct Common CS2 and CS3 Samples Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">69</td>
+<td align="right">69</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">5</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:common-dist-sites">Table 3.22: </span>Common Samples Across Sites Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1657,7 +1722,7 @@ Figure 3.20: Random1 Samples Comparisons of Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-dist-sites-distinct">Table 3.22: </span>Distinct Common Samples Across Sites Histotype Distribution</caption>
+<caption><span id="tab:common-dist-sites-distinct">Table 3.23: </span>Distinct Common Samples Across Sites Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
