@@ -6,12 +6,13 @@
 \documentclass[
 ]{report}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
+\usepackage{amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
+  \usepackage{amssymb}
 \else % if luatex or xetex
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
@@ -48,6 +49,7 @@
 \urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
 \usepackage{longtable,booktabs}
+\usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
 \makeatletter
@@ -90,12 +92,15 @@
 \titlespacing*{\chapter}{0pt}{0pt}{40pt}
 
 \renewcommand{\bibname}{References}
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2020-11-23}
+\date{2020-12-16}
 
 \begin{document}
 \maketitle
@@ -388,6 +393,45 @@ POOL-2 & NA & NA & 14\\
 POOL-3 & NA & NA & 13\\
 \hline
 TNCO & NA & NA & 691\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:cohort-dist-distinct}Distinct Cohort Distribution amongst CodeSets}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+cohort & cs1 & cs2 & cs3\\
+\hline
+MAYO & 6 & 62 & NA\\
+\hline
+MTL & 3 & 59 & NA\\
+\hline
+OOU & 99 & 43 & 19\\
+\hline
+OOUE & 31 & 30 & 11\\
+\hline
+VOA & 136 & 107 & 452\\
+\hline
+ICON7 & NA & 383 & NA\\
+\hline
+JAPAN & NA & 8 & NA\\
+\hline
+OVAR3 & NA & 150 & NA\\
+\hline
+POOL-CTRL & NA & 3 & NA\\
+\hline
+DOVE4 & NA & NA & 1094\\
+\hline
+POOL-1 & NA & NA & 12\\
+\hline
+POOL-2 & NA & NA & 5\\
+\hline
+POOL-3 & NA & NA & 5\\
+\hline
+TNCO & NA & NA & 674\\
 \hline
 \end{tabular}
 \end{table}
@@ -967,7 +1011,7 @@ We use the Random1 method to normalize CS3-USC and CS3-AOC to CS3-VAN. There are
 \hypertarget{cs2-vs.-cs3}{%
 \subsubsection{CS2 vs.~CS3}\label{cs2-vs.-cs3}}
 
-CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=86 common samples.
+CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=84 common samples.
 
 CodeSet2 is calibrated to CodeSet3 as follows:\\
 \texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
@@ -1008,15 +1052,15 @@ CodeSet2 is calibrated to CodeSet3 as follows:\\
 \hline
 hist & R2 & Ca & Rc\\
 \hline
-CCOC & 0.66 & 0.51 & 0.29\\
+CCOC & 0.66 & 0.53 & 0.26\\
 \hline
-ENOC & 0.87 & 0.74 & 0.64\\
+ENOC & 0.88 & 0.74 & 0.63\\
 \hline
-HGSC & 0.79 & 0.94 & 0.81\\
+HGSC & 0.80 & 0.94 & 0.81\\
 \hline
-LGSC & 0.98 & 0.94 & 0.92\\
+LGSC & 0.98 & 0.95 & 0.92\\
 \hline
-MUC & 0.75 & 0.86 & 0.69\\
+MUC & 0.74 & 0.86 & 0.68\\
 \hline
 \end{tabular}
 \end{table}
@@ -1029,15 +1073,15 @@ MUC & 0.75 & 0.86 & 0.69\\
 \hline
 hist & R2 & Ca & Rc\\
 \hline
-CCOC & 0.66 & 0.62 & 0.31\\
+CCOC & 0.66 & 0.60 & 0.32\\
 \hline
-ENOC & 0.87 & 0.74 & 0.67\\
+ENOC & 0.88 & 0.76 & 0.68\\
 \hline
-HGSC & 0.79 & 0.95 & 0.84\\
+HGSC & 0.80 & 0.95 & 0.84\\
 \hline
-LGSC & 0.98 & 0.96 & 0.93\\
+LGSC & 0.98 & 0.95 & 0.93\\
 \hline
-MUC & 0.75 & 0.91 & 0.70\\
+MUC & 0.74 & 0.91 & 0.71\\
 \hline
 \end{tabular}
 \end{table}
@@ -1074,6 +1118,15 @@ In CodeSet 3, we normalize the USC and AOC cohorts to the VAN cohort which is us
 \caption{USC-Pools vs. VAN-Non Concordance Measure Distributions}\label{fig:cc-uscpools-vs-vannon}
 \end{figure}
 
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/usc-vs-van-comps-1} 
+
+}
+
+\caption{USC vs. VAN Comparisons of Concordance Measure Distributions}\label{fig:usc-vs-van-comps}
+\end{figure}
+
 \hypertarget{aoc-vs.-van}{%
 \subsubsection{AOC vs.~VAN}\label{aoc-vs.-van}}
 
@@ -1102,6 +1155,15 @@ In CodeSet 3, we normalize the USC and AOC cohorts to the VAN cohort which is us
 }
 
 \caption{AOC-Pools vs. VAN-Non Concordance Measure Distributions}\label{fig:cc-aocpools-vs-vannon}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/aoc-vs-van-comps-1} 
+
+}
+
+\caption{AOC vs. VAN Comparisons of Concordance Measure Distributions}\label{fig:aoc-vs-van-comps}
 \end{figure}
 
 \hypertarget{common-samples-vs.-pools-comparison}{%
@@ -1205,6 +1267,27 @@ MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61 & 0.68 & 0.78 & 0.51\\
 \end{tabular}
 \end{table}
 
+\hypertarget{codeset-chaining}{%
+\subsection{CodeSet Chaining}\label{codeset-chaining}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-rand1-1} 
+
+}
+
+\caption{Random1 Concordance Measure Distributions}\label{fig:cs-chain-rand1}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-rand1-cs2pools-1} 
+
+}
+
+\caption{Random1 + Pools Concordance Measure Distributions}\label{fig:cs-chain-rand1-cs2pools}
+\end{figure}
+
 \hypertarget{common-sample-distributions}{%
 \section{Common Sample Distributions}\label{common-sample-distributions}}
 
@@ -1246,6 +1329,27 @@ HGSC & 57 & 57 & 57\\
 LGSC & 4 & 4 & 4\\
 \hline
 MUC & 5 & 5 & 5\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:common-cs2-cs3-dist-distinct}Distinct Common CS2 and CS3 Samples Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r|r}
+\hline
+revHist & CS2 & CS3\\
+\hline
+CCOC & 3 & 3\\
+\hline
+ENOC & 3 & 3\\
+\hline
+HGSC & 69 & 69\\
+\hline
+LGSC & 4 & 4\\
+\hline
+MUC & 5 & 5\\
 \hline
 \end{tabular}
 \end{table}

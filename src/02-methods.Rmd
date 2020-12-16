@@ -209,6 +209,17 @@ knitr::kable(cohort_dist,
              caption = "Cohort Distribution amongst CodeSets")
 ```
 
+```{r cohort-dist-distinct}
+cohort_dist_distinct <- cohorts %>%
+  filter(col_name %in% c(cs1_samples, cs2_samples, cs3_samples)) %>% 
+  distinct(ottaID, file_source, cohort) %>% 
+  count(file_source, cohort) %>% 
+  pivot_wider(names_from = "file_source", values_from = "n")
+
+knitr::kable(cohort_dist_distinct,
+             caption = "Distinct Cohort Distribution amongst CodeSets")
+```
+
 ## Normalization Between CodeSets
 
 After normalization to housekeeping genes and filtering for the five major histotypes of interest, as determined by pathology review and/or IHC, two methods were used to normalize data between CodeSets.

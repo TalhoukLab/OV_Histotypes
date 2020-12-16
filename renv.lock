@@ -261,10 +261,10 @@
     },
     "bookdown": {
       "Package": "bookdown",
-      "Version": "0.17",
+      "Version": "0.21",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "727f96578043896024c9d309718fda73"
+      "Hash": "1bf627f1f77313e345f71e779b658578"
     },
     "boot": {
       "Package": "boot",
@@ -1230,10 +1230,10 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.11.0",
+      "Version": "0.12.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "1c3ef87cbb81c23ac96797781ec7aecc"
+      "Hash": "b5510c50c7f31d453c385c7b460af2b9"
     },
     "reprex": {
       "Package": "reprex",
@@ -1258,10 +1258,10 @@
     },
     "rmarkdown": {
       "Package": "rmarkdown",
-      "Version": "2.0",
+      "Version": "2.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "745a60d9256842b1abae2dcf7b64ebc1"
+      "Hash": "bc4bac38960b446c183957bfd563e763"
     },
     "rngtools": {
       "Package": "rngtools",
@@ -1505,10 +1505,10 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.11",
+      "Version": "0.19",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "9ec720c772e46177f8a78792939f4bef"
+      "Hash": "a42372606cb76f34da9d090326e9f955"
     },
     "xgboost": {
       "Package": "xgboost",
