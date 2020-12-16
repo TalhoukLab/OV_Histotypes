@@ -1,3 +1,5 @@
+source(here::here("src/funs.R"))
+
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand1 <- hist %>%
