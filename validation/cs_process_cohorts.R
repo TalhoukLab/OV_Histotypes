@@ -76,7 +76,7 @@ annot_cs_all <- annot %>%
       `OTTA2014_C2822` = "CS3"
     )
   ) %>%
-  filter(RCC.File.Name %in% gsub("X", "", c(cs1_samples, cs2_samples, cs3_samples))) %>%
+  filter(RCC.File.Name %in% gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))) %>%
   droplevels()
 
 # Gold standard histotypes for OVAR3 and ICON7 cohorts
