@@ -19,9 +19,9 @@ join_avg <- function(cs, hist, id, type = c("keep", "discard")) {
 cor_stats <- function(x, y) {
   R2 <- cor(x, y) ^ 2
   ccc <- epiR::epi.ccc(x, y)
-  Ca <- pluck(ccc, "C.b")
-  Rc <- pluck(ccc, "rho.c", "est")
-  lst(R2, Ca, Rc)
+  Ca <- purrr::pluck(ccc, "C.b")
+  Rc <- purrr::pluck(ccc, "rho.c", "est")
+  tibble::lst(R2, Ca, Rc)
 }
 
 # Split gene expression data by histotype
