@@ -105,7 +105,7 @@ USCRefs.gx2 <-
 # Combinations of cross-site gene expression
 sites <- c("USC", "AOC", "VAN")
 all_xsites <- combn(sites, 2) %>%
-  tibble::as_tibble() %>%
+  tibble::as_tibble(.name_repair = "unique") %>%
   purrr::set_names(purrr::map_chr(., paste, collapse = "_vs_"))
 
 # Combined gene expression

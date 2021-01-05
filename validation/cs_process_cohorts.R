@@ -38,7 +38,7 @@ ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 # Combinations of cross-site gene expression
 sites <- c("USC", "AOC", "VAN")
 all_xsites <- combn(sites, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 
 # Filter for specific cohorts

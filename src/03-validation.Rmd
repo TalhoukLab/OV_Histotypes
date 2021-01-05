@@ -264,7 +264,7 @@ source(here::here("validation/cs_process_cohorts.R"))
 # Pairwise CodeSet comparisons
 codesets <- c("CS1", "CS2", "CS3")
 all_codesets <- combn(codesets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 ```
 
@@ -1051,7 +1051,7 @@ cs3_common_non <- column_to_rownames(cs3_common_non, "ottaID")
 # Combined gene expression
 sets <- c("CS2Non", "CS2Pools", "CS3Non")
 all_comps <- combn(sets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx <-
   set_names(list(cs2_common_non, cs2_common_pools, cs3_common_non), sets)
@@ -1219,7 +1219,7 @@ cs3_usc_common_pools <- cs3_usc_normalized_data_pools %>%
 # Combined gene expression
 sets <- c("USC-Non", "USC-Pools", "VAN-Non")
 all_comps <- combn(sets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx_usc_van <-
   set_names(list(usc_X_common, cs3_usc_common_pools, van_X_common), sets) %>%
@@ -1386,7 +1386,7 @@ cs3_aoc_common_pools <- cs3_aoc_normalized_data_pools %>%
 # Combined gene expression
 sets <- c("AOC-Non", "AOC-Pools", "VAN-Non")
 all_comps <- combn(sets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx_aoc_van <-
   set_names(list(aoc_X_common, cs3_aoc_common_pools, van_X_common), sets) %>%
