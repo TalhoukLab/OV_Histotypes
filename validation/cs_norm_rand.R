@@ -5,7 +5,7 @@ source(here::here("src/funs.R"))
 # Pairwise CodeSet comparisons
 codesets <- c("CS1", "CS2", "CS3")
 all_codesets <- combn(codesets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 
 

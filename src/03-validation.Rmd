@@ -264,7 +264,7 @@ source(here::here("validation/cs_process_cohorts.R"))
 # Pairwise CodeSet comparisons
 codesets <- c("CS1", "CS2", "CS3")
 all_codesets <- combn(codesets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 ```
 
@@ -1051,7 +1051,7 @@ cs3_common_non <- column_to_rownames(cs3_common_non, "ottaID")
 # Combined gene expression
 sets <- c("CS2Non", "CS2Pools", "CS3Non")
 all_comps <- combn(sets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx <-
   set_names(list(cs2_common_non, cs2_common_pools, cs3_common_non), sets)
@@ -1219,7 +1219,7 @@ cs3_usc_common_pools <- cs3_usc_normalized_data_pools %>%
 # Combined gene expression
 sets <- c("USC-Non", "USC-Pools", "VAN-Non")
 all_comps <- combn(sets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx_usc_van <-
   set_names(list(usc_X_common, cs3_usc_common_pools, van_X_common), sets) %>%
@@ -1386,7 +1386,7 @@ cs3_aoc_common_pools <- cs3_aoc_normalized_data_pools %>%
 # Combined gene expression
 sets <- c("AOC-Non", "AOC-Pools", "VAN-Non")
 all_comps <- combn(sets, 2) %>%
-  as_tibble() %>%
+  as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 common_gx_aoc_van <-
   set_names(list(aoc_X_common, cs3_aoc_common_pools, van_X_common), sets) %>%
@@ -1752,13 +1752,10 @@ cs1_counts1 <- join_avg(cs1_clean, hist_rand1, "ottaID", "discard")
 cs2_counts1 <- join_avg(cs2_clean, hist_rand1, "ottaID", "discard")
 cs3_counts1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
 
-# Normalize by reference method using common samples, add histotypes from annot
+# Normalize by reference method using common samples
 cs1_norm_rand1 <-
-  refMethod(cs1_counts1, cs2_rand1, cs1_rand1) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  pivot_longer(names_to = "Name", values_to = "exp", -1) %>%
-  pivot_wider(names_from = "ottaID", values_from = "exp")
+  as.data.frame(refMethod(cs1_counts1, cs2_rand1, cs1_rand1))
+
 
 # Pools Method ------------------------------------------------------------
 
@@ -1782,10 +1779,14 @@ cs2_pools_mgx <- weights %>%
 cs3_pools_mgx <-
   enframe(rowMeans(ref_pools), name = "Name", value = "cs3_exp")
 
-# Extract cs2 norm counts (not pools)
+# Extract cs2 norm counts (not pools) and add cs1 norm counts
+cs1_norm_rand1_t <- cs1_norm_rand1 %>%
+  rownames_to_column("ottaID") %>%
+  pivot_longer(names_to = "Name", values_to = "exp", -1) %>%
+  pivot_wider(names_from = "ottaID", values_from = "exp")
 cs1_cs2_norm_counts <- cs2_norm %>%
   select(-one_of(names(cs2_pools)[-1])) %>%
-  inner_join(cs1_norm_rand1, by = "Name")
+  inner_join(cs1_norm_rand1_t, by = "Name")
 
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs1_cs2_normalized_data_pools <-
@@ -1798,11 +1799,7 @@ cs1_cs2_normalized_data_pools <-
 ```
 
 ```{r cs-chain-rand1, fig.cap='Random1 Concordance Measure Distributions'}
-counts1 <- cs1_norm_rand1 %>%
-  pivot_longer(names_to = "ottaID", values_to = "exp", -1) %>%
-  pivot_wider(names_from = "Name", values_from = "exp") %>%
-  column_to_rownames("ottaID") %>%
-  list(cs1_counts1, cs2_counts1, .) %>%
+counts1 <- list(cs1_counts1, cs2_counts1, cs1_norm_rand1) %>%
   set_names(c("CS1-Non", "CS2-Non", "CS1-Random1"))
 
 comps1 <- tibble(
@@ -1917,6 +1914,75 @@ p_rand1_pools <- ggplot(metrics_rand1_pools, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_rand1_pools)
+```
+
+```{r cs-chain-rand1-cs1v3, fig.cap='CS1 CodeSet Chaining Concordance Measure Distributions'}
+counts1v3 <-
+  list(cs1_counts1, cs1_norm_rand1, cs12_rand1_pools, cs3_common_rand1) %>%
+  set_names(c("CS1-Non", "CS1-Random1", "CS1-Random1+Pools", "CS3")) %>% 
+  map(select, names(cs3_common_rand1))
+
+comps1v3 <- tibble(
+  `CS1-Non` = c("CS1-Non", "CS3"),
+  `CS1-Random1` = c("CS1-Random1", "CS3"),
+  `CS1-Random1+Pools` = c("CS1-Random1+Pools", "CS3")
+)
+
+metrics_rand1v3 <- comps1v3 %>%
+  imap_dfr(~ {
+    pmap_dfr(counts1v3[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+p_rand1v3 <- ggplot(metrics_rand1v3, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS1 CodeSet Chaining Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_rand1v3)
+```
+
+```{r cs-chain-rand1-cs2v3, fig.cap='CS2 CodeSet Chaining Concordance Measure Distributions'}
+counts2v3 <-
+  list(cs2_counts1, cs3_common_rand1, cs2_common_pools, cs3_common_pools) %>%
+  set_names(c("CS2-Non", "CS3-VAN-Rand1", "CS2-Pools", "CS3-VAN-Pools")) %>% 
+  map_at(1, select, names(cs3_common_rand1))
+
+comps2v3 <- tibble(
+  `CS2-Non` = c("CS2-Non", "CS3-VAN-Rand1"),
+  `CS2-Pools` = c("CS2-Pools", "CS3-VAN-Pools")
+)
+
+metrics_rand2v3 <- comps2v3 %>%
+  imap_dfr(~ {
+    pmap_dfr(counts2v3[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup()
+
+p_rand2v3 <- ggplot(metrics_rand2v3, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS2 CodeSet Chaining Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_rand2v3)
 ```
 
 ## Common Sample Distributions
