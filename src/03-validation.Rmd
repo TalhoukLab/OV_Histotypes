@@ -1916,7 +1916,7 @@ p_rand1_pools <- ggplot(metrics_rand1_pools, aes(Expression)) +
 print(p_rand1_pools)
 ```
 
-```{r cs-chain-rand1-cs1v3}
+```{r cs-chain-rand1-cs1v3, fig.cap='CS1 CodeSet Chaining Concordance Measure Distributions'}
 counts1v3 <-
   list(cs1_counts1, cs1_norm_rand1, cs12_rand1_pools, cs3_common_rand1) %>%
   set_names(c("CS1-Non", "CS1-Random1", "CS1-Random1+Pools", "CS3")) %>% 
@@ -1951,7 +1951,7 @@ p_rand1v3 <- ggplot(metrics_rand1v3, aes(Expression)) +
 print(p_rand1v3)
 ```
 
-```{r cs-chain-rand1-cs2v3}
+```{r cs-chain-rand1-cs2v3, fig.cap='CS2 CodeSet Chaining Concordance Measure Distributions'}
 counts2v3 <-
   list(cs2_counts1, cs3_common_rand1, cs2_common_pools, cs3_common_pools) %>%
   set_names(c("CS2-Non", "CS3-VAN-Rand1", "CS2-Pools", "CS3-VAN-Pools")) %>% 
