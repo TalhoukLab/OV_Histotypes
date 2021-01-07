@@ -1953,13 +1953,14 @@ print(p_rand1v3)
 
 ```{r cs-chain-rand1-cs2v3, fig.cap='CS2 CodeSet Chaining Concordance Measure Distributions'}
 counts2v3 <-
-  list(cs2_counts1, cs3_common_rand1, cs2_common_pools, cs3_common_pools) %>%
-  set_names(c("CS2-Non", "CS3-VAN-Rand1", "CS2-Pools", "CS3-VAN-Pools")) %>% 
-  map_at(1, select, names(cs3_common_rand1))
+  list(cs2_counts1, cs3_common_rand1, cs2_common_pools) %>%
+  set_names(c("CS2-Non", "CS3-VAN", "CS2-Pools")) %>% 
+  map_at(1, select, names(cs3_common_rand1)) %>% 
+  map_at(3, `[`, rownames(cs2_counts1), )
 
 comps2v3 <- tibble(
-  `CS2-Non` = c("CS2-Non", "CS3-VAN-Rand1"),
-  `CS2-Pools` = c("CS2-Pools", "CS3-VAN-Pools")
+  `CS2-Non` = c("CS2-Non", "CS3-VAN"),
+  `CS2-Pools` = c("CS2-Pools", "CS3-VAN")
 )
 
 metrics_rand2v3 <- comps2v3 %>%
