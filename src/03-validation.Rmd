@@ -2096,7 +2096,7 @@ counts5_BA <-
   set_names(c("CS3-Non", "CS5-Non", "CS5-NormB", "CS5-NormA")) %>% 
   map_at(-1, ~ gather(., ottaID, exp, -Name) %>%
            spread(Name, exp) %>%
-           semi_join(tmp35, by = "ottaID")) %>% 
+           semi_join(cs35_norm, by = "ottaID")) %>% 
   map(column_to_rownames, "ottaID")
 
 comps5_BA <- tibble(
@@ -2336,7 +2336,7 @@ counts5_CA <-
   set_names(c("CS3-Non", "CS5-Non", "CS5-NormC", "CS5-NormA")) %>% 
   map_at(-1, ~ gather(., ottaID, exp, -Name) %>%
            spread(Name, exp) %>%
-           semi_join(tmp35, by = "ottaID")) %>% 
+           semi_join(cs35_norm, by = "ottaID")) %>% 
   map(column_to_rownames, "ottaID")
 
 comps5_CA <- tibble(
