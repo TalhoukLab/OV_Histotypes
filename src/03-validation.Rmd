@@ -2076,7 +2076,7 @@ cs4_norm_A <-
   spread(Name, exp)
 ```
 
-```{r cs-chain-cs5-setBA, fig.cap='CS5 Set B/A Chaining Concordance  Measure Distributions'}
+```{r cs-chain-cs5-setBA, fig.cap='CS5 Set B/A Chaining Concordance  Measure Distributions', fig.height=6}
 cs35_norm <- cs3_norm_van %>%
   select(-one_of(names(ref_pools))) %>%
   gather(FileName, exp, -1:-3) %>%
@@ -2316,7 +2316,7 @@ cs4_norm_A <-
   spread(Name, exp)
 ```
 
-```{r cs-chain-cs5-setCA, fig.cap='CS5 Set C/A Chaining Concordance  Measure Distributions'}
+```{r cs-chain-cs5-setCA, fig.cap='CS5 Set C/A Chaining Concordance  Measure Distributions', fig.height=6}
 cs35_norm <- cs3_norm_van %>%
   select(-one_of(names(ref_pools))) %>%
   gather(FileName, exp, -1:-3) %>%
