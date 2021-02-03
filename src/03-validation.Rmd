@@ -1990,7 +1990,14 @@ print(p_rand2v3)
 
 ```{r codeset-chaining-cs345-setBA}
 # Pool SetA and SetB from CS4
-cs4_dat <- HKnorm(cs4$raw)
+cs4_qc <- NanoStringQC(
+  raw = cs4$raw,
+  exp = cs4$exp,
+  detect = 50,
+  sn = 170
+)
+cs4_qc_failed <- filter(cs4_qc, normFlag == "Failed")[["File.Name"]]
+cs4_dat <- HKnorm(cs4$raw) %>% select(-any_of(cs4_qc_failed))
 cs4_pools <- cs4_dat %>% 
   select(Name, matches("pool", ignore.case = TRUE))
 cs4_poolsA <- cs4_pools %>% 
@@ -2001,7 +2008,15 @@ cs4_poolsB <- cs4_pools %>%
   column_to_rownames("Name")
 
 # Pool SetB from CS5
+cs5_qc <- NanoStringQC(
+  raw = cs5$raw,
+  exp = cs5$exp,
+  detect = 50,
+  sn = 170
+)
+cs5_qc_failed <- filter(cs5_qc, normFlag == "Failed", !grepl("POOL", File.Name))[["File.Name"]]
 cs5_dat <- HKnorm(cs5$raw) %>% 
+  select(-any_of(cs5_qc_failed)) %>% 
   mutate(Name = ifelse(Name == "CD3E", "CD3e", Name))
 cs5_pools <- select(cs5_dat, Name, matches("pool", ignore.case = TRUE))
 cs5_poolsB <- select(cs5_pools, Name, matches("POOL(9|10|11)"))
@@ -2110,8 +2125,10 @@ metrics_pools5_BA <- comps5_BA %>%
     pmap_dfr(counts5_BA[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
+  mutate(Sites = fct_inorder(Sites)) %>% 
   group_by(Sites, Metric) %>%
-  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
+  mutate(
+    Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
   ungroup()
 
 p_pools5_BA <- ggplot(metrics_pools5_BA, aes(Expression)) +
@@ -2176,7 +2193,7 @@ metrics_pools4_A <- comps4_A %>%
 
 p_pools4_A <- ggplot(metrics_pools4_A, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0, y = 40, label = Median),
+  geom_text(aes(x = 0, y = 100, label = Median),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -2350,6 +2367,7 @@ metrics_pools5_CA <- comps5_CA %>%
     pmap_dfr(counts5_CA[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
   }) %>%
   gather(key = "Metric", value = "Expression", -Sites) %>%
+  mutate(Sites = fct_inorder(Sites)) %>% 
   group_by(Sites, Metric) %>%
   mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
   ungroup()
@@ -2516,5 +2534,5 @@ cs345_pools <-
   pivot_longer(cols = -CodeSet, names_to = "Pool", values_to = "Samples") %>% 
   pivot_wider(names_from = "CodeSet", values_from = "Samples")
 
-knitr::kable(cs345_pools, caption = "CS3CS4/CS5 Pools Distribution")
+knitr::kable(cs345_pools, caption = "CS3/CS4/CS5 Pools Distribution")
 ```
