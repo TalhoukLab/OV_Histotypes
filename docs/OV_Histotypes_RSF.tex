@@ -100,7 +100,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2021-01-06}
+\date{2021-02-03}
 
 \begin{document}
 \maketitle
@@ -1270,6 +1270,9 @@ MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61 & 0.68 & 0.78 & 0.51\\
 \hypertarget{codeset-chaining}{%
 \subsection{CodeSet Chaining}\label{codeset-chaining}}
 
+\hypertarget{cs1-cs2-cs3}{%
+\subsubsection{CS1, CS2, CS3}\label{cs1-cs2-cs3}}
+
 \begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-rand1-1} 
@@ -1304,6 +1307,57 @@ MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61 & 0.68 & 0.78 & 0.51\\
 }
 
 \caption{CS2 CodeSet Chaining Concordance Measure Distributions}\label{fig:cs-chain-rand1-cs2v3}
+\end{figure}
+
+\hypertarget{cs3-cs4-cs5-using-set-ba}{%
+\subsubsection{CS3, CS4, CS5 using Set B/A}\label{cs3-cs4-cs5-using-set-ba}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-cs5-setBA-1} 
+
+}
+
+\caption{CS5 Set B/A Chaining Concordance  Measure Distributions}\label{fig:cs-chain-cs5-setBA}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-cs4-setA-1} 
+
+}
+
+\caption{CS4 Set A Chaining Concordance Measure Distributions}\label{fig:cs-chain-cs4-setA}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-cs5-cs4-B-1} 
+
+}
+
+\caption{CS4 and CS5 using Set B Concordance Measure Distributions}\label{fig:cs-chain-cs5-cs4-B}
+\end{figure}
+
+\hypertarget{cs3-cs4-cs5-using-set-ca}{%
+\subsubsection{CS3, CS4, CS5 using Set C/A}\label{cs3-cs4-cs5-using-set-ca}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-cs5-setCA-1} 
+
+}
+
+\caption{CS5 Set C/A Chaining Concordance  Measure Distributions}\label{fig:cs-chain-cs5-setCA}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-cs5-cs4-C-1} 
+
+}
+
+\caption{CS4 and CS5 using Set C Concordance Measure Distributions}\label{fig:cs-chain-cs5-cs4-C}
 \end{figure}
 
 \hypertarget{common-sample-distributions}{%
@@ -1410,6 +1464,52 @@ HGSC & 13 & 13 & 13\\
 LGSC & 2 & 2 & 2\\
 \hline
 MUC & 3 & 3 & 3\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:cs3-overlap-cs45}CS3 and CS4/5 Common Samples Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+revHist & CS3 & CS4 & CS5\\
+\hline
+HGSC & 45 & 45 & 45\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:cs345-pools}CS3CS4/CS5 Pools Distribution}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+Pool & CS3 & CS4 & CS5\\
+\hline
+Pool1 & 12 & 5 & 6\\
+\hline
+Pool2 & 5 & 5 & 4\\
+\hline
+Pool3 & 5 & 5 & 4\\
+\hline
+Pool4 & NA & 2 & NA\\
+\hline
+Pool5 & NA & 2 & NA\\
+\hline
+Pool6 & NA & 2 & NA\\
+\hline
+Pool7 & NA & 2 & NA\\
+\hline
+Pool8 & NA & 2 & NA\\
+\hline
+Pool9 & NA & 2 & NA\\
+\hline
+Pool10 & NA & 2 & NA\\
+\hline
+Pool11 & NA & 2 & NA\\
 \hline
 \end{tabular}
 \end{table}
