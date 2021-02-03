@@ -2503,9 +2503,12 @@ cs4_pool_counts <- paste0("^Pool", 1:11, "$") %>%
   map_df(~ sum(grepl(., cs4_pools_names, ignore.case = TRUE))) %>% 
   rename_all(~ gsub("\\^|\\$", "", .))
 
-cs5_pool_counts <- paste0("Pool", 1:3) %>%
+cs5_pools_names <- names(cs5_pools) %>% 
+   str_remove_all("\\.(x|y)| ")
+cs5_pool_counts <- paste0("^Pool", 1:11, "$") %>%
   set_names() %>%
-  map_df(~ sum(grepl(., names(cs5_pools), ignore.case = TRUE)))
+  map_df(~ sum(grepl(., cs5_pools_names, ignore.case = TRUE))) %>% 
+  rename_all(~ gsub("\\^|\\$", "", .))
 
 cs345_pools <- 
   bind_rows(cs3_pool_counts, cs4_pool_counts, cs5_pool_counts) %>% 
