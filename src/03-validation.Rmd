@@ -2240,15 +2240,15 @@ print(p_pools45_B)
 ```{r codeset-chaining-cs345-setCA}
 # Pool SetC from CS4
 cs4_poolsC <- cs4_pools %>% 
-  select(Name, matches("Pool ?[4-8].*")) %>% 
+  select(Name, matches("Pool ?[4-5|7-8].*")) %>% 
   column_to_rownames("Name")
 
 # Pool SetC from CS5
-cs5_poolsC <- select(cs5_pools, Name, matches("POOL[4-8]"))
+cs5_poolsC <- select(cs5_pools, Name, matches("POOL[4-5|7-8]"))
 
 ## Normalize CS5 to CS4 using Set C pools
 # CS4 Set B pools weights
-cs4_weightsC <- paste0("Pool ?", 4:8) %>%
+cs4_weightsC <- paste0("Pool ?", c(4:5, 7:8)) %>%
   set_names() %>%
   map_dbl(~ mean(grepl(., names(cs4_poolsC), ignore.case = TRUE)))
 
