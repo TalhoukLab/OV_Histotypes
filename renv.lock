@@ -1049,9 +1049,9 @@
     },
     "ottaOvca": {
       "Package": "ottaOvca",
-      "Version": "1.5",
+      "Version": "1.6",
       "Source": "Local",
-      "Hash": "93798da89d630faac0226ebe7488c40c"
+      "Hash": "dd7824e2abf6453d715a73e38a37b01f"
     },
     "pROC": {
       "Package": "pROC",
@@ -1230,10 +1230,10 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.12.3",
+      "Version": "0.12.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b5510c50c7f31d453c385c7b460af2b9"
+      "Hash": "5c0cdb37f063c58cdab3c7e9fbb8bd2c"
     },
     "reprex": {
       "Package": "reprex",
