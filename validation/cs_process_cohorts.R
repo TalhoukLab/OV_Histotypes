@@ -57,6 +57,8 @@ cs3_samples <- cohorts %>%
          cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3")) %>%
   pull(col_name)
 
+cs123_samples <- gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))
+
 cs1 <- select(cs1, Code.Class, Name, Accession, all_of(cs1_samples))
 cs2 <- select(cs2, Code.Class, Name, Accession, all_of(cs2_samples))
 cs3 <- select(cs3, Code.Class, Name, Accession, all_of(cs3_samples))
@@ -67,7 +69,7 @@ cs2_norm <- HKnorm(cs2)
 cs3_norm <- HKnorm(cs3)
 
 # Filter annotations for CS 1, 2, 3
-annot_cs_all <- annot %>%
+annot_all <- annot %>%
   mutate(
     CodeSet = recode_factor(
       RCC.geneRLF,
@@ -76,7 +78,11 @@ annot_cs_all <- annot %>%
       `OTTA2014_C2822` = "CS3"
     )
   ) %>%
-  filter(RCC.File.Name %in% gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))) %>%
+  rename(FileName = RCC.File.Name,
+         site = RCC.nanostring.site)
+
+annot_cs_all <- annot_all %>%
+  filter(FileName %in% cs123_samples) %>%
   droplevels()
 
 # Gold standard histotypes for OVAR3 and ICON7 cohorts
@@ -97,10 +103,10 @@ hist_stan <- od.otta %>%
   )
 
 # Histotypes
-hist <- annot_cs_all %>%
+hist_all <- annot_all %>%
   left_join(hist_stan, by = "ottaID") %>%
   transmute(
-    FileName = RCC.File.Name,
+    FileName,
     ottaID,
     CodeSet,
     revHist = case_when(
@@ -110,8 +116,12 @@ hist <- annot_cs_all %>%
       TRUE ~ revHist
     ),
     hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
-    site = RCC.nanostring.site
+    site
   )
+
+hist <- hist_all %>%
+  filter(FileName %in% cs123_samples) %>%
+  droplevels()
 
 # Histotypes for each distinct ottaID
 hist_df <- distinct(hist, ottaID, revHist)
@@ -121,8 +131,14 @@ hist_df <- distinct(hist, ottaID, revHist)
 van_samples <- hist %>%
   filter(CodeSet == "CS3", site == "Vancouver") %>%
   pull(FileName)
+full_samples <- hist_all %>%
+  filter(CodeSet == "CS3") %>%
+  pull(FileName)
 
 cs3_norm_van <- select(cs3_norm, 1:3, any_of(paste0("X", van_samples)))
+cs3_norm_full <- read_csv(here("data-raw/cs3.csv"), col_types = cols()) %>%
+  HKnorm() %>%
+  select(1:3, any_of(paste0("X", full_samples)))
 
 cs3_van <- cs3_norm_van %>%
   rename_all(~ gsub("^X", "", .)) %>%
@@ -231,8 +247,8 @@ cs3_clean <- cs3_norm_van %>%
 
 # Find summaryID common to all site
 common_site <- annot_cs_all %>%
-  count(RCC.nanostring.site, summaryID) %>%
-  spread(RCC.nanostring.site, n, fill = 0) %>%
+  count(site, summaryID) %>%
+  spread(site, n, fill = 0) %>%
   mutate(
     all_sites = rowSums(.[, -1]),
     in_all_sites = select(., 2:4) %>%
