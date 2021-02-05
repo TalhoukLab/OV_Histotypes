@@ -264,11 +264,6 @@ cs2_class %>%
 
 ```{r process-cohorts}
 source(here::here("validation/cs_process_cohorts.R"))
-# Pairwise CodeSet comparisons
-codesets <- c("CS1", "CS2", "CS3")
-all_codesets <- combn(codesets, 2) %>%
-  as_tibble(.name_repair = "unique") %>%
-  set_names(map_chr(., paste, collapse = "_vs_"))
 ```
 
 ```{r cs-raw}
@@ -282,7 +277,7 @@ cs1_raw_avg <- cs1 %>%
   spread(Name, value) %>%
   select(FileName, ottaID, all_of(common_genes)) %>% 
   group_by(ottaID) %>% 
-  summarize_if(is.double, mean) %>% 
+  summarize_if(is.integer, mean) %>% 
   ungroup() %>% 
   column_to_rownames("ottaID")
 
@@ -296,7 +291,7 @@ cs2_raw_avg <- cs2 %>%
   spread(Name, value) %>%
   select(FileName, ottaID, all_of(common_genes)) %>% 
   group_by(ottaID) %>% 
-  summarize_if(is.double, mean) %>% 
+  summarize_if(is.integer, mean) %>% 
   ungroup() %>% 
   column_to_rownames("ottaID")
 
@@ -310,7 +305,7 @@ cs3_raw_avg <- cs3 %>%
   spread(Name, value) %>%
   select(FileName, ottaID, all_of(common_genes)) %>% 
   group_by(ottaID) %>% 
-  summarize_if(is.double, mean) %>% 
+  summarize_if(is.integer, mean) %>% 
   ungroup() %>% 
   column_to_rownames("ottaID")
 

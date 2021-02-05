@@ -1,3 +1,6 @@
+# Process cohorts
+source(here::here("validation/cs_process_cohorts.R"))
+
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
 hist_rand1 <- hist %>%

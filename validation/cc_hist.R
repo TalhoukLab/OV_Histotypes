@@ -3,9 +3,11 @@
 library(tidyverse)
 library(nanostringr)
 library(magrittr)
+library(otta)
 library(here)
 source(here("src/funs.R"))
-cs3 <- read_csv(here("data-raw/cs3.csv"))
+data("rawOTTA")
+cs3 <- rawOTTA
 annot <- read_csv(here("data-raw/annot.csv"))
 
 # Format expression data

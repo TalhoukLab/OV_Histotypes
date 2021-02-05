@@ -9,9 +9,15 @@ library(here)
 
 # Data Processing ---------------------------------------------------------
 
-# Read in raw data
+# Read in raw OTTA data
+data("annot", "rawOVCA2", "rawPROT", "rawOTTA", package = "otta")
+cs1 <- rawOVCA2
+cs2 <- rawPROT
+cs3 <- rawOTTA
+
 data("od.otta")
 od.otta <- to_native_type(od.otta)
+
 annot <- read_csv(
   here("data-raw/annot.csv"),
   col_types = list(
@@ -29,19 +35,22 @@ annot <- read_csv(
 )
 cohorts <- read_excel(here("data-raw/bc-842_avail_cosp_2020-08-31.xlsx"),
                       sheet = "data")
-cs1 <- read_csv(here("data-raw/cs1.csv"), col_types = cols())
-cs2 <- read_csv(here("data-raw/cs2.csv"), col_types = cols())
-cs3 <- read_csv(here("data-raw/cs3.csv"), col_types = cols())
 pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
 ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 
-# Combinations of cross-site gene expression
+# Pairwise CodeSet comparisons
+codesets <- c("CS1", "CS2", "CS3")
+all_codesets <- combn(codesets, 2) %>%
+  as_tibble(.name_repair = "unique") %>%
+  set_names(map_chr(., paste, collapse = "_vs_"))
+
+# Pairwise site comparisons
 sites <- c("USC", "AOC", "VAN")
 all_xsites <- combn(sites, 2) %>%
   as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 
-# Filter for specific cohorts
+# Filter for specific cohorts and extract samples
 cs1_samples <- cohorts %>%
   filter(file_source == "cs1",
          cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL")) %>%
@@ -59,16 +68,17 @@ cs3_samples <- cohorts %>%
 
 cs123_samples <- gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))
 
-cs1 <- select(cs1, Code.Class, Name, Accession, all_of(cs1_samples))
-cs2 <- select(cs2, Code.Class, Name, Accession, all_of(cs2_samples))
-cs3 <- select(cs3, Code.Class, Name, Accession, all_of(cs3_samples))
+# Select only samples from these cohorts in the data
+cs1_coh <- select(cs1, Code.Class, Name, Accession, all_of(cs1_samples))
+cs2_coh <- select(cs2, Code.Class, Name, Accession, all_of(cs2_samples))
+cs3_coh <- select(cs3, Code.Class, Name, Accession, all_of(cs3_samples))
 
 # Normalize to housekeeping genes
-cs1_norm <- HKnorm(cs1)
-cs2_norm <- HKnorm(cs2)
-cs3_norm <- HKnorm(cs3)
+cs1_norm <- HKnorm(cs1_coh)
+cs2_norm <- HKnorm(cs2_coh)
+cs3_norm <- HKnorm(cs3_coh)
 
-# Filter annotations for CS 1, 2, 3
+# Recode annotation geneRLF and rename file name and site columns
 annot_all <- annot %>%
   mutate(
     CodeSet = recode_factor(
@@ -78,9 +88,9 @@ annot_all <- annot %>%
       `OTTA2014_C2822` = "CS3"
     )
   ) %>%
-  rename(FileName = RCC.File.Name,
-         site = RCC.nanostring.site)
+  rename(FileName = RCC.File.Name, site = RCC.nanostring.site)
 
+# Filter annotations for CS1/CS2/CS3 samples
 annot_cs_all <- annot_all %>%
   filter(FileName %in% cs123_samples) %>%
   droplevels()
@@ -136,7 +146,7 @@ full_samples <- hist_all %>%
   pull(FileName)
 
 cs3_norm_van <- select(cs3_norm, 1:3, any_of(paste0("X", van_samples)))
-cs3_norm_full <- read_csv(here("data-raw/cs3.csv"), col_types = cols()) %>%
+cs3_norm_full <- cs3 %>%
   HKnorm() %>%
   select(1:3, any_of(paste0("X", full_samples)))
 

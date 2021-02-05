@@ -3,10 +3,17 @@
 library(tidyverse)
 library(readxl)
 library(nanostringr)
+library(otta)
 library(here)
 
 
 # Data Processing ---------------------------------------------------------
+
+# Read in raw OTTA data
+data("annot", "rawOVCA2", "rawPROT", "rawOTTA", package = "otta")
+cs1 <- rawOVCA2
+cs2 <- rawPROT
+cs3 <- rawOTTA
 
 # Read in raw data
 annot <- read_csv(
@@ -24,9 +31,6 @@ annot <- read_csv(
   ),
   na = c("", "NA", "n/a", "N/A", "Unk")
 )
-cs1 <- read_csv(here("data-raw/cs1.csv"), col_types = cols())
-cs2 <- read_csv(here("data-raw/cs2.csv"), col_types = cols())
-cs3 <- read_csv(here("data-raw/cs3.csv"), col_types = cols())
 pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
 ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 
