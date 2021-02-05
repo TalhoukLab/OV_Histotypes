@@ -2532,7 +2532,7 @@ cs4_overlap_cs5 <-
 
 # CS3 overlaps 45 CS4/5
 cs3_overlap_cs45 <-
-  inner_join(annot_all, cs4_overlap_cs5, by = "ottaID") %>%
+  inner_join(hist_all, cs4_overlap_cs5, by = "ottaID") %>%
   filter(CodeSet == "CS3",
          ottaID %in% intersect(
            gsub("-N1|\\.(x|y)", "", names(cs4_dat)), names(cs5_dat)

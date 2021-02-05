@@ -16,21 +16,6 @@ cs2 <- rawPROT
 cs3 <- rawOTTA
 
 # Read in raw data
-annot <- read_csv(
-  here("data-raw/annot.csv"),
-  col_types = list(
-    cartridge.lot = "c",
-    washplate.lot = "c",
-    hyb.buffer = "d",
-    Oligo.conc = "d",
-    Oligo.fconc = "d",
-    Oligo.aliquot = "d",
-    cutting.date = "D",
-    time.to.extraction = "d",
-    reviewCompletionDate = col_date(format = "%Y-%m-%d")
-  ),
-  na = c("", "NA", "n/a", "N/A", "Unk")
-)
 pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
 ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 

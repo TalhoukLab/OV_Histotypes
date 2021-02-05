@@ -3,12 +3,10 @@
 library(tidyverse)
 library(nanostringr)
 library(magrittr)
-library(otta)
 library(here)
 source(here("src/funs.R"))
-data("rawOTTA")
+data("annot", "rawOTTA", package = "otta")
 cs3 <- rawOTTA
-annot <- read_csv(here("data-raw/annot.csv"))
 
 # Format expression data
 exp0 <- annot %>%
@@ -25,7 +23,7 @@ exp_CS3_all <- exp0 %>%
   NanoStringQC(raw = as.data.frame(cs3), exp = ., detect = 50, sn = 170)
 
 # Normalize CS3 to housekeeping genes
-cs3.norm <- HKnorm(cs3)
+cs3_norm <- HKnorm(cs3)
 
 # Pools data
 pools <- exp_CS3_all %>%
@@ -52,17 +50,17 @@ pools <- exp_CS3_all %>%
 vanpools <- pools %>%
   filter(nanostring.site == "Vancouver") %>%
   pull(File.Name) %>%
-  select(cs3.norm, .)
+  select(cs3_norm, .)
 
 AOCpools <- pools %>%
   filter(nanostring.site == "Melbourne") %>%
   pull(File.Name) %>%
-  select(cs3.norm, .)
+  select(cs3_norm, .)
 
 USCpools <- pools %>%
   filter(nanostring.site == "San Francisco") %>%
   pull(File.Name) %>%
-  select(cs3.norm, .)
+  select(cs3_norm, .)
 
 # Cross-site data
 cross.site <- exp_CS3_all %>%
@@ -88,19 +86,19 @@ VanRefs.gx <- cross.site %>%
   filter(nanostring.site == "Vancouver") %>%
   arrange(summaryID) %>%
   pull(File.Name) %>%
-  select(cs3.norm, .)
+  select(cs3_norm, .)
 
 AOCRefs.gx <- cross.site %>%
   filter(nanostring.site == "Melbourne") %>%
   arrange(summaryID) %>%
   pull(File.Name) %>%
-  select(cs3.norm, .)
+  select(cs3_norm, .)
 
 USCRefs.gx <- cross.site %>%
   filter(nanostring.site == "San Francisco") %>%
   arrange(summaryID) %>%
   pull(File.Name) %>%
-  select(cs3.norm, .)
+  select(cs3_norm, .)
 
 # Everything is calibrated to Vancouver
 AOCRefs.gx2 <-

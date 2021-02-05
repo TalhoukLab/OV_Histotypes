@@ -2,6 +2,7 @@
 
 library(tidyverse)
 library(readxl)
+library(naniar)
 library(nanostringr)
 library(ottaOvca)
 library(here)
@@ -18,21 +19,6 @@ cs3 <- rawOTTA
 data("od.otta")
 od.otta <- to_native_type(od.otta)
 
-annot <- read_csv(
-  here("data-raw/annot.csv"),
-  col_types = list(
-    cartridge.lot = "c",
-    washplate.lot = "c",
-    hyb.buffer = "d",
-    Oligo.conc = "d",
-    Oligo.fconc = "d",
-    Oligo.aliquot = "d",
-    cutting.date = "D",
-    time.to.extraction = "d",
-    reviewCompletionDate = col_date(format = "%Y-%m-%d")
-  ),
-  na = c("", "NA", "n/a", "N/A", "Unk")
-)
 cohorts <- read_excel(here("data-raw/bc-842_avail_cosp_2020-08-31.xlsx"),
                       sheet = "data")
 pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
@@ -80,6 +66,7 @@ cs3_norm <- HKnorm(cs3_coh)
 
 # Recode annotation geneRLF and rename file name and site columns
 annot_all <- annot %>%
+  replace_with_na(list(ottaID = c("", "N/A"))) %>%
   mutate(
     CodeSet = recode_factor(
       RCC.geneRLF,
@@ -91,16 +78,16 @@ annot_all <- annot %>%
   rename(FileName = RCC.File.Name, site = RCC.nanostring.site)
 
 # Filter annotations for CS1/CS2/CS3 samples
-annot_cs_all <- annot_all %>%
+annot_cs <- annot_all %>%
   filter(FileName %in% cs123_samples) %>%
   droplevels()
 
 # Gold standard histotypes for OVAR3 and ICON7 cohorts
 hist_stan <- od.otta %>%
-  mutate(otta_id = as.character(otta_id)) %>%
   filter(cohort %in% c("OVAR3", "ICON7")) %>%
-  select(ottaID = otta_id, cohort, hist_rev) %>%
-  mutate(
+  transmute(
+    ottaID = as.character(otta_id),
+    cohort,
     hist_rev = case_when(
       hist_rev == "high-grade serous" ~ "HGSC",
       hist_rev == "low-grade serous" ~ "LGSC",
@@ -123,12 +110,14 @@ hist_all <- annot_all %>%
       !is.na(cohort) ~ hist_rev,
       is.na(cohort) & revHist == "CCC" ~ "CCOC",
       is.na(cohort) & revHist == "ENOCa" ~ "ENOC",
+      revHist %in% c("", "UNK") ~ NA_character_,
       TRUE ~ revHist
     ),
     hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
     site
   )
 
+# Histotypes for CS1/CS2/CS3 samples
 hist <- hist_all %>%
   filter(FileName %in% cs123_samples) %>%
   droplevels()
@@ -201,7 +190,7 @@ cs3_usc_X <- cs3_norm_usc %>% select(Name, !matches("POOL"))
 cs3_usc_R <- cs3_norm_usc %>% select(Name, matches("POOL"))
 
 # Find summaryID common to all CS
-common_cs <- annot_cs_all %>%
+common_cs <- annot_cs %>%
   count(CodeSet, summaryID) %>%
   spread(CodeSet, n, fill = 0) %>%
   mutate(
@@ -256,7 +245,7 @@ cs3_clean <- cs3_norm_van %>%
   select(FileName, ottaID, all_of(common_genes))
 
 # Find summaryID common to all site
-common_site <- annot_cs_all %>%
+common_site <- annot_cs %>%
   count(site, summaryID) %>%
   spread(site, n, fill = 0) %>%
   mutate(
