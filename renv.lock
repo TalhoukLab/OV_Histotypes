@@ -177,6 +177,13 @@
       "Repository": "CRAN",
       "Hash": "fa1289136d3861f34dd0af6f7e9d7ac9"
     },
+    "UpSetR": {
+      "Package": "UpSetR",
+      "Version": "1.4.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f6ef89503aaff474873f8bc1823894e1"
+    },
     "VennDiagram": {
       "Package": "VennDiagram",
       "Version": "1.6.20",
@@ -1012,6 +1019,13 @@
       "Repository": "CRAN",
       "Hash": "fc2710274a168072900ab6ce44bc3b25"
     },
+    "naniar": {
+      "Package": "naniar",
+      "Version": "0.6.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7aa61e5aa2c4c09905885a10a14534c9"
+    },
     "nanostringr": {
       "Package": "nanostringr",
       "Version": "0.1.4",
@@ -1046,6 +1060,12 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "49f7258fd86ebeaea1df24d9ded00478"
+    },
+    "otta": {
+      "Package": "otta",
+      "Version": "0.1.10",
+      "Source": "Local",
+      "Hash": "28693822ecc878ed9fe5c4b249bdacb2"
     },
     "ottaOvca": {
       "Package": "ottaOvca",
@@ -1488,6 +1508,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ce4f6271baa94776db692f1cb2055bee"
+    },
+    "visdat": {
+      "Package": "visdat",
+      "Version": "0.5.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f62b960320b18fdffb2f0f76bb65dbaf"
     },
     "whisker": {
       "Package": "whisker",
