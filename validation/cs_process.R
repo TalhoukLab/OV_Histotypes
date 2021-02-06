@@ -2,6 +2,7 @@
 
 library(tidyverse)
 library(readxl)
+library(naniar)
 library(nanostringr)
 library(otta)
 library(here)
@@ -15,7 +16,6 @@ cs1 <- rawOVCA2
 cs2 <- rawPROT
 cs3 <- rawOTTA
 
-# Read in raw data
 pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
 ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 
@@ -26,6 +26,7 @@ cs3_norm <- HKnorm(cs3)
 
 # Filter annotations for CS 1, 2, 3
 annot_cs_all <- annot %>%
+  replace_with_na(list(ottaID = c("", "N/A"))) %>%
   filter(RCC.geneRLF %in% c("OvCa2103_C953", "PrOTYPE2_v2_C1645", "OTTA2014_C2822")) %>%
   mutate(
     CodeSet = recode_factor(
@@ -44,6 +45,7 @@ hist <- annot_cs_all %>%
     revHist = case_when(
       revHist == "CCC" ~ "CCOC",
       revHist == "ENOCa" ~ "ENOC",
+      revHist %in% c("", "UNK") ~ NA_character_,
       TRUE ~ revHist
     ),
     hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC")
