@@ -90,7 +90,7 @@ cs2_val_norm1 <-
 # Corresponding samples in CS3 found in CS2 reference set
 cs3_ref <- cs3_clean %>%
   dplyr::semi_join(cs2_ref, by = "ottaID") %>%
-  dplyr::select(cs2_genes)
+  dplyr::select(all_of(cs2_genes))
 
 # Remove non-numeric column names
 cs2_ref2 <- dplyr::select_if(cs2_ref, is.double)
