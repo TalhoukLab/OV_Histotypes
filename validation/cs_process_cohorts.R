@@ -11,10 +11,13 @@ library(here)
 # Data Processing ---------------------------------------------------------
 
 # Read in raw OTTA data
-data("annot", "rawOVCA2", "rawPROT", "rawOTTA", package = "otta")
+data("annot", "annotNEW", "rawOVCA2", "rawPROT", "rawOTTA",
+     "rawOTTA2", "rawOTTA3", package = "otta")
 cs1 <- rawOVCA2
 cs2 <- rawPROT
 cs3 <- rawOTTA
+cs4 <- rawOTTA2
+cs5 <- rawOTTA3
 
 data("od.otta")
 od.otta <- to_native_type(od.otta)

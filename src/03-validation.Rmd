@@ -5,9 +5,6 @@ source(here::here("src/funs.R"))
 source(here::here("validation/cs_process.R"))
 cs1_class <- readRDS(here::here("data/cs1_class.rds"))
 cs2_class <- readRDS(here::here("data/cs2_class.rds"))
-cs4 <- read_rcc(here("data-raw/OTTA2017_C6082/rcc"))
-cs5 <- read_rcc(here("data-raw/OTTA2018_C6830/rcc"))
-cs6 <- read_rcc(here("data-raw/OTTA2018_C8440/rcc"))
 ```
 <!--
 ## Concordance
@@ -1983,47 +1980,70 @@ print(p_rand2v3)
 
 #### CS3, CS4, CS5 using Set B/A
 
-```{r codeset-chaining-cs345-setBA}
-# Pool SetA and SetB from CS4
-cs4_qc <- NanoStringQC(
-  raw = cs4$raw,
-  exp = cs4$exp,
-  detect = 50,
-  sn = 170
-)
+```{r codeset-chaining-cs345}
+# Add ottaID and CodeSet to annotNEW
+annotNEW <- annotNEW %>%
+  mutate(
+    ottaID = gsub(".*_(.*)_[0-9]{2}$", "\\1", File.Name) %>%
+      gsub("-N1$", "", .),
+    CodeSet = recode_factor(
+      geneRLF,
+      OTTA2017_C6082 = "CS4",
+      OTTA2018_C6830 = "CS5",
+      OTTA2018_C8440 = "CS6"
+    )
+  )
+
+# CS4 data excluding samples that failed QC
+cs4_exp <- filter(annotNEW, CodeSet == "CS4")
+cs4_qc <- NanoStringQC(raw = cs4, exp = cs4_exp, detect = 50, sn = 170)
 cs4_qc_failed <- filter(cs4_qc, normFlag == "Failed")[["File.Name"]]
-cs4_dat <- HKnorm(cs4$raw) %>% select(-any_of(cs4_qc_failed))
+cs4_dat <- HKnorm(cs4) %>% select(-any_of(cs4_qc_failed))
+
+# Pools Set A, B, C from CS4
 cs4_pools <- cs4_dat %>% 
   select(Name, matches("pool", ignore.case = TRUE))
 cs4_poolsA <- cs4_pools %>% 
-  select(Name, matches("Pool ?[1-3](?!0|1)|[A-C].*", perl = TRUE)) %>% 
-  rename(Pool1A = `Pool A`, Pool2B = `Pool B`, Pool3C = `Pool C`)
+  select(Name, matches("Pool ?[1-3|A-C](?!0|1)", perl = TRUE)) %>% 
+  rename_with( ~ str_replace_all(
+    .,
+    c("A_" = "1A_", "B_" = "2B_", "C_" = "3C_", " " = "")
+  ))
 cs4_poolsB <- cs4_pools %>% 
   select(Name, matches("Pool ?(9|10|11).*")) %>% 
   column_to_rownames("Name")
+cs4_poolsC <- cs4_pools %>% 
+  select(Name, matches("Pool ?[4-5|7-8].*")) %>% 
+  column_to_rownames("Name")
 
-# Pool SetB from CS5
-cs5_qc <- NanoStringQC(
-  raw = cs5$raw,
-  exp = cs5$exp,
-  detect = 50,
-  sn = 170
-)
+# CS5 data excluding samples that failed QC
+cs5_exp <- filter(annotNEW, CodeSet == "CS5")
+cs5_qc <- NanoStringQC(raw = cs5, exp = cs5_exp, detect = 50, sn = 170)
 cs5_qc_failed <- filter(cs5_qc, normFlag == "Failed", !grepl("POOL", File.Name))[["File.Name"]]
-cs5_dat <- HKnorm(cs5$raw) %>% 
-  select(-any_of(cs5_qc_failed)) %>% 
-  mutate(Name = ifelse(Name == "CD3E", "CD3e", Name))
+cs5_dat <- HKnorm(cs5) %>% select(-any_of(cs5_qc_failed))
+
+# Pools Set B, C from CS5
 cs5_pools <- select(cs5_dat, Name, matches("pool", ignore.case = TRUE))
 cs5_poolsB <- select(cs5_pools, Name, matches("POOL(9|10|11)"))
+cs5_poolsC <- select(cs5_pools, Name, matches("POOL[4-5|7-8]"))
+```
 
-# Common genes
-cs345_common_samples <- hist_all %>%
-  filter(ottaID %in% intersect(
-    gsub("-N1|\\.(x|y)", "", names(cs4_dat)), names(cs5_dat)
-  )) %>%
-  pull(ottaID) %>%
-  unique()
+```{r codeset-chaining-cs345-setBA}
+# CS4/CS5 overlap 74 (removed 6 samples failed QC)
+cs45_overlap <-
+  inner_join(cs4_exp, cs5_exp, by = "ottaID", suffix = c(".CS4", ".CS5")) %>%
+  filter(!File.Name.CS4 %in% cs4_qc_failed, !File.Name.CS5 %in% cs5_qc_failed) %>%
+  select(ottaID, File.Name.CS4, File.Name.CS5)
+
+# Common samples and genes
+cs345_common_samples <- unique(cs45_overlap[["ottaID"]])
 cs345_common_genes <- cs5_dat[["Name"]]
+
+# Subtitle for common counts
+cs345_subtitle <-
+  paste0(c("Samples=", "Genes="),
+         c(length(cs345_common_samples), length(cs345_common_genes)),
+         collapse = ", ")
 
 ## Normalize CS5 to CS4 using Set B pools
 # CS4 Set B pools weights
@@ -2032,12 +2052,12 @@ cs4_weightsB <- c("Pool ?9.*", "Pool ?10.*", "Pool ?11.*") %>%
   map_dbl(~ mean(grepl(., names(cs4_poolsB), ignore.case = TRUE)))
 
 # Weighted mean gene expression for CS5 pools (using CS4 pools weights)
-cs5_pools_mgx <- cs4_weightsB %>%
+cs5_poolsB_mgx <- cs4_weightsB %>%
   imap_dfc(~ .x * rowMeans(select(cs5_poolsB, matches(.y)))) %>%
   transmute(Name = cs5_poolsB[["Name"]], cs5_exp = rowSums(.))
 
 # Mean gene expression for CS4 reference pools
-cs4_pools_mgx <-
+cs4_poolsB_mgx <-
   enframe(rowMeans(cs4_poolsB), name = "Name", value = "cs4_exp")
 
 # Extract cs5 norm counts (not pools)
@@ -2047,7 +2067,7 @@ cs5_norm_counts <- cs5_dat %>%
 
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs5_norm_B <-
-  inner_join(cs5_pools_mgx, cs4_pools_mgx, by = "Name") %>%
+  inner_join(cs5_poolsB_mgx, cs4_poolsB_mgx, by = "Name") %>%
   transmute(Name, be = cs4_exp - cs5_exp) %>%
   inner_join(cs5_norm_counts, by = "Name") %>%
   gather(FileName, exp, -1:-2) %>%
@@ -2062,7 +2082,7 @@ cs3_weights <- c("Pool ?1.*", "Pool ?2.*", "Pool ?3.*") %>%
   map_dbl(~ mean(grepl(., names(ref_pools), ignore.case = TRUE)))
 
 # Weighted mean gene expression for CS4 pools (using CS3 pools weights)
-cs4_pools_mgx <- cs3_weights %>%
+cs4_poolsA_mgx <- cs3_weights %>%
   imap_dfc(~ .x * rowMeans(select(cs4_poolsA, matches(.y)))) %>%
   transmute(Name = cs4_poolsA[["Name"]], cs4_exp = rowSums(.))
 
@@ -2072,7 +2092,7 @@ cs3_pools_mgx <-
 
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs5_norm_A <-
-  inner_join(cs4_pools_mgx, cs3_pools_mgx, by = "Name") %>%
+  inner_join(cs4_poolsA_mgx, cs3_pools_mgx, by = "Name") %>%
   transmute(Name, be = cs3_exp - cs4_exp) %>%
   inner_join(cs5_norm_B, by = "Name") %>%
   gather(FileName, exp, -1:-2) %>%
@@ -2089,7 +2109,7 @@ cs4_norm_counts <- cs4_dat %>%
 
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs4_norm_A <- 
-  inner_join(cs4_pools_mgx, cs3_pools_mgx, by = "Name") %>%
+  inner_join(cs4_poolsA_mgx, cs3_pools_mgx, by = "Name") %>%
   transmute(Name, be = cs3_exp - cs4_exp) %>%
   inner_join(cs4_norm_counts, by = "Name") %>%
   gather(FileName, exp, -1:-4) %>%
@@ -2115,9 +2135,14 @@ cs35_norm <- cs3_norm_full %>%
 counts5_BA <-
   list(cs35_norm, cs5_norm_counts, cs5_norm_B, cs5_norm_A) %>%
   set_names(c("CS3-Non", "CS5-Non", "CS5-NormB", "CS5-NormA")) %>% 
-  map_at(-1, ~ gather(., ottaID, exp, -Name) %>%
-           spread(Name, exp) %>%
-           semi_join(cs35_norm, by = "ottaID")) %>% 
+  map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
+           spread(Name, exp) %>% 
+           inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
+           select(-matches("File.Name")) %>% 
+           group_by(ottaID) %>% 
+           summarize_if(is.double, mean) %>% 
+           `rownames<-`(NULL)
+  ) %>% 
   map(column_to_rownames, "ottaID")
 
 comps5_BA <- tibble(
@@ -2137,11 +2162,6 @@ metrics_pools5_BA <- comps5_BA %>%
     Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
   ungroup()
 
-sub_pools5_BA <- counts5_BA %>%
-  map(dim) %>%
-  unique() %>%
-  unlist() %>%
-  paste0(c("Samples=", "Genes="), ., collapse = ", ")
 p_pools5_BA <- ggplot(metrics_pools5_BA, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 40, label = Median),
@@ -2151,7 +2171,7 @@ p_pools5_BA <- ggplot(metrics_pools5_BA, aes(Expression)) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "CS5 Set B/A Chaining Concordance Measure Distributions",
-       subtitle = sub_pools5_BA) +
+       subtitle = cs345_subtitle) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools5_BA)
@@ -2181,12 +2201,13 @@ cs4_non <- cs4_norm_counts %>%
 counts4_A <-
   list(cs34_norm, cs4_non, cs4_norm_A) %>%
   set_names(c("CS3-Non", "CS4-Non", "CS4-NormA")) %>% 
-  map_at(-1, ~ rename(., ottaID = FileName) %>% 
-           mutate(ottaID = gsub("-N1|\\.(x|y)", "", ottaID)) %>% 
-           semi_join(cs34_norm, by = "ottaID") %>% 
+  map_at(-1, ~ inner_join(., cs45_overlap,
+                          by = c("FileName" = "File.Name.CS4")) %>% 
+           select(-matches("File.Name")) %>% 
            group_by(ottaID) %>% 
-           summarize(across(where(is.double), mean)) %>% 
-           ungroup()) %>% 
+           summarize_if(is.double, mean) %>% 
+           `rownames<-`(NULL)
+  ) %>% 
   map(column_to_rownames, "ottaID")
 
 comps4_A <- tibble(
@@ -2203,11 +2224,6 @@ metrics_pools4_A <- comps4_A %>%
   mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
   ungroup()
 
-sub_pools4_A <- counts4_A %>%
-  map(dim) %>%
-  unique() %>%
-  unlist() %>%
-  paste0(c("Samples=", "Genes="), ., collapse = ", ")
 p_pools4_A <- ggplot(metrics_pools4_A, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 100, label = Median),
@@ -2217,29 +2233,35 @@ p_pools4_A <- ggplot(metrics_pools4_A, aes(Expression)) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "CS4 Set A Chaining Concordance Measure Distributions",
-       subtitle = sub_pools4_A) +
+       subtitle = cs345_subtitle) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools4_A)
 ```
 
 ```{r cs-chain-cs5-cs4-B, fig.cap='CS4 and CS5 using Set B Concordance Measure Distributions'}
-cs_45_norm <- cs4_norm_counts %>% 
-  semi_join(cs5_norm_counts, by = "Name") %>% 
-  select(-matches("\\.y")) %>% 
-  rename_all(~ gsub("-N1|\\.x", "", .)) %>% 
-  select(any_of(names(cs5_norm_counts))) %>% 
-  mutate(Name = factor(Name, levels = cs5_norm_counts$Name)) %>% 
-  arrange(Name) %>% 
-  gather(ottaID, exp, -Name) %>% 
+cs45_norm <- cs4_norm_counts %>%
+  gather(FileName, exp, -1:-3) %>% 
+  inner_join(cs45_overlap, by = c("FileName" = "File.Name.CS4")) %>% 
+  filter(ottaID %in% cs345_common_samples) %>% 
+  mutate(Name = factor(Name, levels = cs345_common_genes)) %>%
+  select(ottaID, Name, exp) %>% 
+  group_by(ottaID, Name) %>%
+  summarize_if(is.double, mean) %>% 
+  ungroup() %>% 
   spread(Name, exp)
 
 counts45_B <-
-  list(cs_45_norm, cs5_norm_counts, cs5_norm_B) %>% 
+  list(cs45_norm, cs5_norm_counts, cs5_norm_B) %>% 
   set_names(c("CS4-Non", "CS5-Non", "CS5-NormB")) %>% 
-  map_at(-1, ~ gather(., ottaID, exp, -Name) %>%
-           spread(Name, exp) %>%
-           semi_join(cs_45_norm, by = "ottaID")) %>% 
+  map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
+           spread(Name, exp) %>% 
+           inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
+           select(-matches("File.Name")) %>% 
+           group_by(ottaID) %>% 
+           summarize_if(is.double, mean) %>% 
+           `rownames<-`(NULL)
+  ) %>%
   map(column_to_rownames, "ottaID")
 
 comps45_B <- tibble(
@@ -2256,11 +2278,6 @@ metrics_pools45_B <- comps45_B %>%
   mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
   ungroup()
 
-sub_pools45_B <- counts45_B %>%
-  map(dim) %>%
-  unique() %>%
-  unlist() %>%
-  paste0(c("Samples=", "Genes="), ., collapse = ", ")
 p_pools45_B <- ggplot(metrics_pools45_B, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 40, label = Median),
@@ -2270,7 +2287,7 @@ p_pools45_B <- ggplot(metrics_pools45_B, aes(Expression)) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "CS4 and CS5 using Set B Concordance Measure Distributions",
-       subtitle = sub_pools45_B) +
+       subtitle = cs345_subtitle) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools45_B)
@@ -2279,14 +2296,6 @@ print(p_pools45_B)
 #### CS3, CS4, CS5 using Set C/A
 
 ```{r codeset-chaining-cs345-setCA}
-# Pool SetC from CS4
-cs4_poolsC <- cs4_pools %>% 
-  select(Name, matches("Pool ?[4-5|7-8].*")) %>% 
-  column_to_rownames("Name")
-
-# Pool SetC from CS5
-cs5_poolsC <- select(cs5_pools, Name, matches("POOL[4-5|7-8]"))
-
 ## Normalize CS5 to CS4 using Set C pools
 # CS4 Set B pools weights
 cs4_weightsC <- paste0("Pool ?", c(4:5, 7:8)) %>%
@@ -2294,12 +2303,12 @@ cs4_weightsC <- paste0("Pool ?", c(4:5, 7:8)) %>%
   map_dbl(~ mean(grepl(., names(cs4_poolsC), ignore.case = TRUE)))
 
 # Weighted mean gene expression for CS5 pools (using CS4 pools weights)
-cs5_pools_mgx <- cs4_weightsC %>%
+cs5_poolsC_mgx <- cs4_weightsC %>%
   imap_dfc(~ .x * rowMeans(select(cs5_poolsC, matches(.y, ignore.case = TRUE)))) %>%
   transmute(Name = cs5_poolsC[["Name"]], cs5_exp = rowSums(., na.rm = TRUE))
 
 # Mean gene expression for CS4 reference pools
-cs4_pools_mgx <-
+cs4_poolsC_mgx <-
   enframe(rowMeans(cs4_poolsC), name = "Name", value = "cs4_exp")
 
 # Extract cs5 norm counts (not pools)
@@ -2309,7 +2318,7 @@ cs5_norm_counts <- cs5_dat %>%
 
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs5_norm_C <-
-  inner_join(cs5_pools_mgx, cs4_pools_mgx, by = "Name") %>%
+  inner_join(cs5_poolsC_mgx, cs4_poolsC_mgx, by = "Name") %>%
   transmute(Name, be = cs4_exp - cs5_exp) %>%
   inner_join(cs5_norm_counts, by = "Name") %>%
   gather(FileName, exp, -1:-2) %>%
@@ -2324,7 +2333,7 @@ cs3_weights <- c("Pool ?1.*", "Pool ?2.*", "Pool ?3.*") %>%
   map_dbl(~ mean(grepl(., names(ref_pools), ignore.case = TRUE)))
 
 # Weighted mean gene expression for CS4 pools (using CS3 pools weights)
-cs4_pools_mgx <- cs3_weights %>%
+cs4_poolsA_mgx <- cs3_weights %>%
   imap_dfc(~ .x * rowMeans(select(cs4_poolsA, matches(.y)))) %>%
   transmute(Name = cs4_poolsA[["Name"]], cs4_exp = rowSums(.))
 
@@ -2334,7 +2343,7 @@ cs3_pools_mgx <-
 
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs5_norm_A <-
-  inner_join(cs4_pools_mgx, cs3_pools_mgx, by = "Name") %>%
+  inner_join(cs4_poolsA_mgx, cs3_pools_mgx, by = "Name") %>%
   transmute(Name, be = cs3_exp - cs4_exp) %>%
   inner_join(cs5_norm_C, by = "Name") %>%
   gather(FileName, exp, -1:-2) %>%
@@ -2346,7 +2355,7 @@ cs5_norm_A <-
 ## Normalize CS4 to CS3 using Set A Pools
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs4_norm_A <- 
-  inner_join(cs4_pools_mgx, cs3_pools_mgx, by = "Name") %>%
+  inner_join(cs4_poolsA_mgx, cs3_pools_mgx, by = "Name") %>%
   transmute(Name, be = cs3_exp - cs4_exp) %>%
   inner_join(cs4_norm_counts, by = "Name") %>%
   gather(FileName, exp, -1:-4) %>%
@@ -2372,9 +2381,17 @@ cs35_norm <- cs3_norm_full %>%
 counts5_CA <-
   list(cs35_norm, cs5_norm_counts, cs5_norm_C, cs5_norm_A) %>%
   set_names(c("CS3-Non", "CS5-Non", "CS5-NormC", "CS5-NormA")) %>% 
-  map_at(-1, ~ gather(., ottaID, exp, -Name) %>%
-           spread(Name, exp) %>%
-           semi_join(cs35_norm, by = "ottaID")) %>% 
+  map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
+           spread(Name, exp) %>% 
+           inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
+           select(-matches("File.Name")) %>% 
+           group_by(ottaID) %>% 
+           summarize_if(is.double, mean) %>% 
+           `rownames<-`(NULL)
+  ) %>% 
+  # map_at(-1, ~ gather(., ottaID, exp, -Name) %>%
+  #          spread(Name, exp) %>%
+  #          semi_join(cs35_norm, by = "ottaID")) %>% 
   map(column_to_rownames, "ottaID")
 
 comps5_CA <- tibble(
@@ -2393,11 +2410,6 @@ metrics_pools5_CA <- comps5_CA %>%
   mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
   ungroup()
 
-sub_pools5_CA <- counts5_CA %>%
-  map(dim) %>%
-  unique() %>%
-  unlist() %>%
-  paste0(c("Samples=", "Genes="), ., collapse = ", ")
 p_pools5_CA <- ggplot(metrics_pools5_CA, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 40, label = Median),
@@ -2407,7 +2419,7 @@ p_pools5_CA <- ggplot(metrics_pools5_CA, aes(Expression)) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "CS5 Set C/A Chaining Concordance Measure Distributions",
-       subtitle = sub_pools5_CA) +
+       subtitle = cs345_subtitle) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools5_CA)
@@ -2415,11 +2427,16 @@ print(p_pools5_CA)
 
 ```{r cs-chain-cs5-cs4-C, fig.cap='CS4 and CS5 using Set C Concordance Measure Distributions'}
 counts45_C <-
-  list(cs_45_norm, cs5_norm_counts, cs5_norm_C) %>% 
+  list(cs45_norm, cs5_norm_counts, cs5_norm_C) %>% 
   set_names(c("CS4-Non", "CS5-Non", "CS5-NormC")) %>% 
-  map_at(-1, ~ gather(., ottaID, exp, -Name) %>%
-           spread(Name, exp) %>%
-           semi_join(cs_45_norm, by = "ottaID")) %>% 
+  map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
+           spread(Name, exp) %>% 
+           inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
+           select(-matches("File.Name")) %>% 
+           group_by(ottaID) %>% 
+           summarize_if(is.double, mean) %>% 
+           `rownames<-`(NULL)
+  ) %>%
   map(column_to_rownames, "ottaID")
 
 comps45_C <- tibble(
@@ -2436,11 +2453,6 @@ metrics_pools45_C <- comps45_C %>%
   mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
   ungroup()
 
-sub_pools45_C <- counts45_C %>%
-  map(dim) %>%
-  unique() %>%
-  unlist() %>%
-  paste0(c("Samples=", "Genes="), ., collapse = ", ")
 p_pools45_C <- ggplot(metrics_pools45_C, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
   geom_text(aes(x = 0, y = 40, label = Median),
@@ -2450,7 +2462,7 @@ p_pools45_C <- ggplot(metrics_pools45_C, aes(Expression)) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "CS4 and CS5 using Set C Concordance Measure Distributions",
-       subtitle = sub_pools45_C) +
+       subtitle = cs345_subtitle) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools45_C)
@@ -2519,30 +2531,17 @@ common_dist_sites_distinct <- hist %>%
 knitr::kable(common_dist_sites_distinct, caption = "Distinct Common Samples Across Sites Histotype Distribution")
 ```
 
-```{r cs3-overlap-cs45}
-# CS4 overlaps 80 CS5
-cs4_overlap_cs5 <-
-  inner_join(
-    cs4$exp %>% mutate(ottaID = gsub("-N1$", "", File.Name)),
-    cs5$exp %>% mutate(ottaID = File.Name),
-    by = "ottaID",
-    suffix = c(".CS4", ".CS5")
-  ) %>%
-  select(ottaID, File.Name.CS4, File.Name.CS5)
-
-# CS3 overlaps 45 CS4/5
-cs3_overlap_cs45 <-
-  inner_join(hist_all, cs4_overlap_cs5, by = "ottaID") %>%
-  filter(CodeSet == "CS3",
-         ottaID %in% intersect(
-           gsub("-N1|\\.(x|y)", "", names(cs4_dat)), names(cs5_dat)
-         )) %>%
-  select(ottaID, File.Name.CS4, File.Name.CS5, CodeSet, revHist) %>%
-  distinct(ottaID, CodeSet, revHist) %>%
-  count(CodeSet, revHist) %>%
-  pivot_wider(names_from = "CodeSet", values_from = "n") %>% 
-  mutate(CS4 = CS3, CS5 = CS3)
-knitr::kable(cs3_overlap_cs45, caption = "CS3/CS4/CS5 Common Samples Histotype Distribution")
+```{r cs345-overlap}
+# CS3/CS4/CS5 overlap 72 (2 duplicates)
+cs345_overlap <- 
+  inner_join(hist_all, cs45_overlap, by = "ottaID") %>%
+  filter(CodeSet == "CS3") %>%
+  select(ottaID, CS3 = FileName, CS4 = File.Name.CS4, CS5 = File.Name.CS5, revHist) %>%
+  pivot_longer(names_to = "CodeSet", values_to = "File.Name", 2:4) %>% 
+  distinct(ottaID, CodeSet, revHist) %>% 
+  count(CodeSet, revHist) %>% 
+  pivot_wider(names_from = "CodeSet", values_from = "n")
+knitr::kable(cs345_overlap, caption = "CS3/CS4/CS5 Common Samples Histotype Distribution")
 ```
 
 ```{r cs345-pools}
