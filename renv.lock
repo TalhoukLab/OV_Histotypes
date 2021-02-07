@@ -1063,9 +1063,9 @@
     },
     "otta": {
       "Package": "otta",
-      "Version": "0.1.10",
+      "Version": "0.2.0",
       "Source": "Local",
-      "Hash": "28693822ecc878ed9fe5c4b249bdacb2"
+      "Hash": "f71171b8008f68524ffd29e7a9c372ed"
     },
     "ottaOvca": {
       "Package": "ottaOvca",
