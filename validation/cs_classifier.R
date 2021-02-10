@@ -1,5 +1,6 @@
 # Process cohorts
 source(here::here("validation/cs_process_cohorts.R"))
+source(here::here("src/funs.R"))
 
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
@@ -127,9 +128,15 @@ cs3_X <- cs3_norm %>%
 
 # Normalized Datasets
 # Normalizing CS1 to CS3 uses n=79 common genes
-cs1_norm <- as.data.frame(refMethod(cs1_X, cs3_R, cs1_R))
+cs13_genes <- intersect(names(cs3_R), names(cs1_R))
+cs1_norm <- as.data.frame(refMethod(cs1_X[cs13_genes],
+                                    cs3_R[cs13_genes],
+                                    cs1_R[cs13_genes]))
 # Normalizing CS2 to CS3 uses n=136 common genes
-cs2_norm <- as.data.frame(refMethod(cs2_X, cs3_R, cs2_R))
+cs23_genes <- intersect(names(cs3_R), names(cs2_R))
+cs2_norm <- as.data.frame(refMethod(cs2_X[cs23_genes],
+                                    cs3_R[cs23_genes],
+                                    cs2_R[cs23_genes]))
 
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
@@ -179,20 +186,75 @@ cs3_norm_aoc_rand1 <-
   refMethod(cs3_aoc_dist_counts1, cs3_van_rand1, cs3_aoc_rand1) %>%
   as.data.frame()
 
-# # Combine the two CS3-VAN used to normalize CS1/CS2 and normalize CS3-USC/CS3-AOC
-# # and remove duplicates
-# cs3_combined <- bind_rows(
-#   rownames_to_column(cs3_dist_counts1, "FileName"),
-#   rownames_to_column(cs3_van_dist_counts1, "FileName")
-# ) %>%
-#   distinct() %>%
-#   column_to_rownames("FileName")
-#
-# # Combine all 5 datasets for classifier development
-# cs_classifier <- bind_rows(
-#   cs1_norm_rand1,
-#   cs2_norm_rand1,
-#   cs3_norm_usc_rand1,
-#   cs3_norm_aoc_rand1,
-#   cs3_combined
-# )
+# Combine the two CS3-VAN used to normalize CS1/CS2 and normalize CS3-USC/CS3-AOC
+# and remove duplicates
+cs3_combined <-
+  list(cs3_X, cs3_van_dist_counts1, cs3_norm_usc_rand1, cs3_norm_aoc_rand1) %>%
+  map_dfr(rownames_to_column, "FileName") %>%
+  distinct() %>%
+  filter(!duplicated(FileName, fromLast = TRUE)) %>%
+  column_to_rownames("FileName")
+
+# Create data sets, keeping common genes n=72
+# Training set, n=270+840+515-78=1547 (CS1 + CS2 + CS3 excluding TNCO and DOVE
+# - other histotypes)
+cs1_train <- cs1_norm[common_genes]
+cs2_train <- cs2_norm[common_genes]
+cs3_train <- cs3_combined %>%
+  rownames_to_column("col_name") %>%
+  mutate(col_name = paste0("X", col_name)) %>%
+  inner_join(cohorts, by = "col_name") %>%
+  filter(!cohort %in% c("TNCO", "DOVE4"),
+         !grepl("pool", col_name, ignore.case = TRUE)) %>%
+  mutate(col_name = gsub("^X", "", col_name)) %>%
+  column_to_rownames("col_name") %>%
+  select(all_of(common_genes))
+
+train_ref <-
+  bind_rows(cs1_train, cs2_train, cs3_train) %>%
+  rownames_to_column("FileName") %>%
+  inner_join(hist, by = "FileName") %>%
+  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  column_to_rownames("FileName")
+
+train_data <- select(train_ref, where(is.double))
+train_class <- train_ref[["revHist"]]
+
+saveRDS(train_data, here::here("data/train_data.rds"))
+saveRDS(train_class, here::here("data/train_class.rds"))
+
+# Confirmation set, n=674-30=644 (TNCO - other histotypes)
+conf_ref <- cs3_X %>%
+  rownames_to_column("col_name") %>%
+  mutate(col_name = paste0("X", col_name)) %>%
+  inner_join(cohorts, by = "col_name") %>%
+  filter(cohort == "TNCO") %>%
+  mutate(col_name = gsub("^X", "", col_name)) %>%
+  select(FileName = col_name, all_of(common_genes)) %>%
+  inner_join(hist, by = "FileName") %>%
+  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  column_to_rownames("FileName")
+
+conf_data <- select(conf_ref, where(is.double))
+conf_class <- conf_ref[["revHist"]]
+
+saveRDS(conf_data, here::here("data/conf_data.rds"))
+saveRDS(conf_class, here::here("data/conf_class.rds"))
+
+# Validation set, n=1094-33=1061 (DOVE - other histotypes)
+val_ref <- cs3_X %>%
+  rownames_to_column("col_name") %>%
+  mutate(col_name = paste0("X", col_name)) %>%
+  inner_join(cohorts, by = "col_name") %>%
+  filter(cohort == "DOVE4") %>%
+  mutate(col_name = gsub("^X", "", col_name)) %>%
+  select(FileName = col_name, all_of(common_genes)) %>%
+  inner_join(hist, by = "FileName") %>%
+  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  column_to_rownames("FileName")
+
+val_data <- select(val_ref, where(is.double))
+val_class <- val_ref[["revHist"]]
+
+saveRDS(val_data, here::here("data/val_data.rds"))
+saveRDS(val_class, here::here("data/val_class.rds"))

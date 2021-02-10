@@ -2570,3 +2570,36 @@ cs345_pools <-
 
 knitr::kable(cs345_pools, caption = "CS3/CS4/CS5 Pools Distribution")
 ```
+
+## Histotype Distribution in Classifier Datasets
+
+```{r classifier-hist}
+source(here::here("validation/cs_classifier.R"))
+```
+
+```{r train-hist}
+train_hist <- count(train_ref, revHist, sort = TRUE)
+
+knitr::kable(train_hist, caption = "Training Set Histotype Distribution")
+```
+
+```{r train-hist-codeset}
+train_hist_codeset <- train_ref %>%
+    count(revHist, CodeSet, sort = TRUE) %>% 
+    arrange(CodeSet) %>% 
+    pivot_wider(names_from = "CodeSet", values_from = "n")
+
+knitr::kable(train_hist_codeset, caption = "Training Set Histotype Distribution by CodeSet")
+```
+
+```{r conf-hist}
+conf_hist <- count(conf_ref, revHist, sort = TRUE)
+
+knitr::kable(conf_hist, caption = "Confirmation Set Histotype Distribution")
+```
+
+```{r val-hist}
+val_hist <- count(val_ref, revHist, sort = TRUE)
+
+knitr::kable(val_hist, caption = "Validation Set Histotype Distribution")
+```

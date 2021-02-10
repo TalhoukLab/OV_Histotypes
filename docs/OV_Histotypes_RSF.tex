@@ -100,7 +100,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2021-02-07}
+\date{2021-02-10}
 
 \begin{document}
 \maketitle
@@ -1508,6 +1508,93 @@ Pool9 & NA & 2 & 1\\
 Pool10 & NA & 2 & 1\\
 \hline
 Pool11 & NA & 2 & 1\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{histotype-distribution-in-classifier-datasets}{%
+\section{Histotype Distribution in Classifier Datasets}\label{histotype-distribution-in-classifier-datasets}}
+
+\begin{table}
+
+\caption{\label{tab:train-hist}Training Set Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+revHist & n\\
+\hline
+HGSC & 1227\\
+\hline
+CCOC & 106\\
+\hline
+ENOC & 91\\
+\hline
+MUC & 84\\
+\hline
+LGSC & 39\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-hist-codeset}Training Set Histotype Distribution by CodeSet}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+revHist & CS1 & CS2 & CS3\\
+\hline
+HGSC & 122 & 629 & 476\\
+\hline
+ENOC & 55 & 28 & 8\\
+\hline
+CCOC & 44 & 54 & 8\\
+\hline
+MUC & 16 & 59 & 9\\
+\hline
+LGSC & 14 & 19 & 6\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:conf-hist}Confirmation Set Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+revHist & n\\
+\hline
+HGSC & 423\\
+\hline
+ENOC & 106\\
+\hline
+CCOC & 75\\
+\hline
+MUC & 27\\
+\hline
+LGSC & 13\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:val-hist}Validation Set Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+revHist & n\\
+\hline
+HGSC & 781\\
+\hline
+ENOC & 140\\
+\hline
+CCOC & 86\\
+\hline
+MUC & 34\\
+\hline
+LGSC & 20\\
 \hline
 \end{tabular}
 \end{table}
