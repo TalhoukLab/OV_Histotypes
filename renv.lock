@@ -1395,15 +1395,15 @@
     },
     "splendid": {
       "Package": "splendid",
-      "Version": "0.1.0.9011",
+      "Version": "0.2.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "AlineTalhouk",
       "RemoteRepo": "splendid",
       "RemoteRef": "master",
-      "RemoteSha": "006449605961541257f5f64440a607963cfcd121",
-      "Hash": "9213c579bd882773013292c85ebff6a5"
+      "RemoteSha": "9f67cb8a1fe934ecbb54475d28af9bdd664bc96d",
+      "Hash": "f34ade06b1f0037823d0bb2920b7e072"
     },
     "stringi": {
       "Package": "stringi",
