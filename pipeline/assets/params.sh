@@ -28,4 +28,8 @@ GREEN_BULLET='\033[0;32m\xe2\x80\xa2\033[0m'
 BLUE_BULLET='\033[0;34m\xe2\x80\xa2\033[0m'
 RED_CROSS='\033[0;31m\xe2\x9c\x96\033[0m'
 
+# Queue parameters
+maxQueueLength=8000
+shouldWait=TRUE
+
 . ./assets/check.sh
