@@ -113,6 +113,12 @@
 <li class="chapter" data-level="4.2.1" data-path="results.html"><a href="results.html#accuracy-1"><i class="fa fa-check"></i><b>4.2.1</b> Accuracy</a></li>
 <li class="chapter" data-level="4.2.2" data-path="results.html"><a href="results.html#f1-score-1"><i class="fa fa-check"></i><b>4.2.2</b> F1-Score</a></li>
 </ul></li>
+<li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#training-set"><i class="fa fa-check"></i><b>4.3</b> Training Set</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="results.html"><a href="results.html#accuracy-2"><i class="fa fa-check"></i><b>4.3.1</b> Accuracy</a></li>
+<li class="chapter" data-level="4.3.2" data-path="results.html"><a href="results.html#f1-score-2"><i class="fa fa-check"></i><b>4.3.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.3.3" data-path="results.html"><a href="results.html#g-mean"><i class="fa fa-check"></i><b>4.3.3</b> G-mean</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 </ul>
@@ -134,7 +140,7 @@
             <section class="normal" id="section-">
 <div id="results" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Results</h1>
-<p>Here we show internal validation summaries for both CS1 and CS2. The accuracy and F1-scores are the measures of interest. Algorithms are sorted by descending value. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.</p>
+<p>Here we show internal validation summaries for CS1, CS2, and the combined classifier training set. The accuracy and F1-scores are the measures of interest. We also implemented the G-mean measure for the evaluation of the training set. Algorithms are sorted by descending value. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.</p>
 <div id="cs1" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> CS1</h2>
 <div id="accuracy" class="section level3" number="4.1.1">
@@ -185,6 +191,42 @@ Figure 4.5: CS2 F1-Score
 <img src="OV_Histotypes_RSF_files/figure-html/cs2-f1-class-1.png" alt="CS2 Class-Specific F1-Score" width="672" />
 <p class="caption">
 Figure 4.6: CS2 Class-Specific F1-Score
+</p>
+</div>
+</div>
+</div>
+<div id="training-set" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Training Set</h2>
+<div id="accuracy-2" class="section level3" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Accuracy</h3>
+<div class="figure" style="text-align: center"><span id="fig:train-accuracy"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/train-accuracy-1.png" alt="Training Set Accuracy" width="672" />
+<p class="caption">
+Figure 4.7: Training Set Accuracy
+</p>
+</div>
+</div>
+<div id="f1-score-2" class="section level3" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> F1-Score</h3>
+<div class="figure" style="text-align: center"><span id="fig:train-f1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/train-f1-1.png" alt="Training Set F1-Score" width="672" />
+<p class="caption">
+Figure 4.8: Training Set F1-Score
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:train-f1-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/train-f1-class-1.png" alt="Training Set Class-Specific F1-Score" width="672" />
+<p class="caption">
+Figure 4.9: Training Set Class-Specific F1-Score
+</p>
+</div>
+</div>
+<div id="g-mean" class="section level3" number="4.3.3">
+<h3><span class="header-section-number">4.3.3</span> G-mean</h3>
+<div class="figure" style="text-align: center"><span id="fig:training-gmean"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/training-gmean-1.png" alt="Training Set G-mean" width="672" />
+<p class="caption">
+Figure 4.10: Training Set G-mean
 </p>
 </div>
 
