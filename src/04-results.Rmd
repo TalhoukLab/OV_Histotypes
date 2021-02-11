@@ -6,9 +6,10 @@ library(ggplot2)
 library(magrittr)
 ivs1 <- readRDS(here::here("data/iv_summary_cs1.rds"))
 ivs2 <- readRDS(here::here("data/iv_summary_cs2.rds"))
+ivst <- readRDS(here::here("data/iv_summary_train.rds"))
 ```
 
-Here we show internal validation summaries for both CS1 and CS2. The accuracy and F1-scores are the measures of interest. Algorithms are sorted by descending value. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
+Here we show internal validation summaries for CS1, CS2, and the combined classifier training set. The accuracy and F1-scores are the measures of interest.  We also implemented the G-mean measure for the evaluation of the training set. Algorithms are sorted by descending value. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
 
 ## CS1
 
@@ -160,6 +161,108 @@ p <-
     y = "F1-Score",
     color = "Subsampling",
     title = "CS2 Class-Specific F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+## Training Set
+
+### Accuracy
+
+```{r train-accuracy, fig.cap='Training Set Accuracy'}
+ivst_accuracy <- ivst %>%
+  dplyr::filter(measure == "accuracy") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivst_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Accuracy",
+    color = "Subsampling",
+    title = "Training Set Overall Accuracy by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+### F1-Score
+
+```{r train-f1, fig.cap='Training Set F1-Score'}
+ivst_f1 <- ivst %>%
+  dplyr::filter(measure == "macro_f1") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivst_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "F1-Score",
+    color = "Subsampling",
+    title = "Training Set Macro-Averaged F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+```{r train-f1-class, fig.cap='Training Set Class-Specific F1-Score'}
+ivst_f1_class <- ivst %>%
+  dplyr::filter(grepl("f1\\.", measure)) %>%
+  dplyr::mutate(
+    measure = gsub("f1\\.", "", measure),
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivst_f1_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.8)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  facet_wrap(vars(measure), ncol = 2) +
+  labs(
+    x = "Algorithm",
+    y = "F1-Score",
+    color = "Subsampling",
+    title = "Training Set Class-Specific F1-Score by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+### G-mean
+
+```{r training-gmean, fig.cap='Training Set G-mean'}
+ivst_gmean <- ivst %>%
+  dplyr::filter(measure == "gmean") %>%
+  dplyr::mutate(
+    sampling = forcats::fct_inorder(sampling),
+    algorithm = forcats::fct_reorder2(algorithm, sampling, percentile_50)
+  )
+
+p <-
+  ggplot(ivst_gmean, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "G-mean",
+    color = "Subsampling",
+    title = "Training Set G-mean by Algorithm and Subsampling Method"
   )
 print(p)
 ```
