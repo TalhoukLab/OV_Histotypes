@@ -33,7 +33,7 @@ data <- normalize(data, norm_by, norm_type, min_var)
 
 # Fast algorithms combined
 if (alg == "combined") {
-  a <- c("svm", "lda", "xgboost", "knn")
+  a <- c("svm", "rf", "adaboost")
 } else {
   a <- alg
 }
