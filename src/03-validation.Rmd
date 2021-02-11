@@ -1,10 +1,14 @@
 # Validation
 
 ```{r setup-03}
-source(here::here("src/funs.R"))
-source(here::here("validation/cs_process.R"))
-cs1_class <- readRDS(here::here("data/cs1_class.rds"))
-cs2_class <- readRDS(here::here("data/cs2_class.rds"))
+library(Amisc)
+library(forcats)
+library(scales)
+library(here)
+source(here("src/funs.R"))
+source(here("validation/cs_process.R"))
+cs1_class <- readRDS(here("data/cs1_class.rds"))
+cs2_class <- readRDS(here("data/cs2_class.rds"))
 ```
 <!--
 ## Concordance
@@ -260,7 +264,7 @@ cs2_class %>%
 ## Normalization
 
 ```{r process-cohorts}
-source(here::here("validation/cs_process_cohorts.R"))
+source(here("validation/cs_process_cohorts.R"))
 ```
 
 ```{r cs-raw}
@@ -2574,32 +2578,41 @@ knitr::kable(cs345_pools, caption = "CS3/CS4/CS5 Pools Distribution")
 ## Histotype Distribution in Classifier Datasets
 
 ```{r classifier-hist}
-source(here::here("validation/cs_classifier.R"))
+source(here("validation/cs_classifier.R"))
 ```
 
 ```{r train-hist}
-train_hist <- count(train_ref, revHist, sort = TRUE)
+train_hist <- count(train_ref, revHist, sort = TRUE) %>% 
+  mutate(freq = percent(n / sum(n), accuracy = 1))
 
 knitr::kable(train_hist, caption = "Training Set Histotype Distribution")
 ```
 
 ```{r train-hist-codeset}
-train_hist_codeset <- train_ref %>%
-    count(revHist, CodeSet, sort = TRUE) %>% 
-    arrange(CodeSet) %>% 
-    pivot_wider(names_from = "CodeSet", values_from = "n")
+train_hist_codeset <- train_ref %>% 
+  mutate(revHist = fct_infreq(revHist)) %>% 
+  describeBy(
+    var.names = "revHist",
+    var.labels = "Histotype",
+    by1 = "CodeSet",
+    test = FALSE,
+    total = "bottom",
+    bold_var = FALSE
+  )
 
 knitr::kable(train_hist_codeset, caption = "Training Set Histotype Distribution by CodeSet")
 ```
 
 ```{r conf-hist}
-conf_hist <- count(conf_ref, revHist, sort = TRUE)
+conf_hist <- count(conf_ref, revHist, sort = TRUE) %>% 
+  mutate(freq = percent(n / sum(n), accuracy = 1))
 
 knitr::kable(conf_hist, caption = "Confirmation Set Histotype Distribution")
 ```
 
 ```{r val-hist}
-val_hist <- count(val_ref, revHist, sort = TRUE)
+val_hist <- count(val_ref, revHist, sort = TRUE) %>% 
+  mutate(freq = percent(n / sum(n), accuracy = 1))
 
 knitr::kable(val_hist, caption = "Validation Set Histotype Distribution")
 ```

@@ -9,6 +9,18 @@
     ]
   },
   "Packages": {
+    "Amisc": {
+      "Package": "Amisc",
+      "Version": "0.3.4",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteUsername": "AlineTalhouk",
+      "RemoteRepo": "Amisc",
+      "RemoteRef": "master",
+      "RemoteSha": "e25aef23346f6790574fd263ca239eb1ccc7a46f",
+      "RemoteHost": "api.github.com",
+      "Hash": "e99713ca662e5245455c1e1f3fa698be"
+    },
     "BH": {
       "Package": "BH",
       "Version": "1.72.0-2",
