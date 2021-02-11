@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Supervised parameters
-dataSets=(cs2)
+dataSets=(train)
 reps=500
 algs=(rf adaboost combined)
 samps=(none up down smote)
@@ -11,13 +11,15 @@ min_var=0
 
 # Directory parameters
 user="$(whoami)"
-rootDir="/scratch/ovcare"/$user
-inputDir=$rootDir"/Projects/histotype/data"
-scriptDir=$rootDir"/results/histotype/scripts"
+rootDir="/home"/$user
+projDir=$rootDir"/Projects/OV_Histotypes"
+inputDir=$projDir"/data"
+resultsDir=$rootDir"/results/OV_Histotypes"
+scriptDir=$resultsDir"/scripts"
 RDir=$scriptDir"/R"
 shDir=$scriptDir"/sh"
-outputDir=$rootDir"/results/histotype/outputs"
-logDir=$rootDir"/results/histotype/logs"
+outputDir=$resultsDir"/outputs"
+logDir=$resultsDir"/logs"
 
 # Bash parameters
 RPath="$(which R | sort | tail -n 1)"
@@ -28,8 +30,6 @@ RED_CROSS='\033[0;31m\xe2\x9c\x96\033[0m'
 
 # Queue parameters
 maxQueueLength=8000
-mem_free="4G"
-mem_token="4G"
-h_vmem="8G"
+shouldWait=TRUE
 
 . ./assets/check.sh

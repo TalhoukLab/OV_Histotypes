@@ -29,26 +29,28 @@ for dataset in "${dataSets[@]}"; do
                 echo 'norm_by <- "'$norm_by'"' >> $R_file
                 echo 'norm_type <- "'$norm_type'"' >> $R_file
                 echo "min_var <- '$min_var'" >> $R_file
-                echo 'source("1-train_eval.R")' >> $R_file
+                echo 'source("pipeline/1-train_eval.R")' >> $R_file
 
                 # Content of sh file
-                sh_file=$shSubDir/$dataset/$alg"_"$samp"_"$s.sh
-                echo "Rscript $R_file" > $sh_file
-                chmod +x $sh_file
+                job_file=$shSubDir/$dataset/$alg"_"$samp"_"$s.sh
+                cat ./assets/sbatch_params.sh > $job_file
+                echo "cd $projDir" >> $job_file
+                echo "Rscript $R_file" >> $job_file
+                chmod +x $job_file
 
-                # Add to queue if qsub exists
-                if command -v qsub &>/dev/null; then
-                    file_to_submit+=($sh_file)
-                    echo -e "$GREEN_TICK Added to queue: $sh_file"
+                # Add to queue if sbatch exists
+                if command -v sbatch &>/dev/null; then
+                    file_to_submit+=($job_file)
+                    echo -e "$GREEN_TICK Added to queue: $job_file"
                 fi
             done
         done
     done
 done
 
-# Submit to queue if qsub exists
+# Submit to queue if sbatch exists
 logDir=$logDir/$subDir
 outputDir=$outputDir/$subDir
-if command -v qsub &>/dev/null; then
-    . ./assets/submit_queue.sh
+if command -v sbatch &>/dev/null; then
+    . ./assets/submit_slurm.sh
 fi
