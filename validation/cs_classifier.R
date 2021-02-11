@@ -42,11 +42,25 @@ cs1_samples_X <- cohorts %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
+# CS1 with duplicates: n=287
+cs1_samples_all_X <- cohorts %>%
+  anti_join(hist_rand1, by = "ottaID") %>%
+  filter(col_name %in% cs1_samples) %>%
+  pull(col_name) %>%
+  gsub("^X", "", .)
+
 # CS2: n=840
 cs2_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
+  pull(col_name) %>%
+  gsub("^X", "", .)
+
+# CS2 with duplicates: n=897
+cs2_samples_all_X <- cohorts %>%
+  anti_join(hist_rand1, by = "ottaID") %>%
+  filter(col_name %in% cs2_samples) %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
@@ -104,10 +118,32 @@ cs1_X <- cs1_norm %>%
   select(-ottaID:-site) %>%
   column_to_rownames("FileName")
 
+# CS1 with duplicates: 287 samples by 256 genes
+cs1_all_X <- cs1_norm %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select_if(names(.) %in% c("Name", cs1_samples_all_X)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-ottaID:-site) %>%
+  column_to_rownames("FileName")
+
 # CS2: 840 samples by 365 genes
 cs2_X <- cs2_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
   select_if(names(.) %in% c("Name", cs2_samples_X)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-ottaID:-site) %>%
+  column_to_rownames("FileName")
+
+# CS2 with duplicates: 897 samples by 365 genes
+cs2_all_X <- cs2_norm %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select_if(names(.) %in% c("Name", cs2_samples_all_X)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
@@ -133,12 +169,23 @@ cs1_train <- as.data.frame(refMethod(cs1_X[cs13_genes],
                                      cs3_R[cs13_genes],
                                      cs1_R[cs13_genes])) %>%
   select(all_of(common_genes))
+
+# Normalizing CS1 all to CS3 using n=79 common genes
+cs1_all_train <- as.data.frame(refMethod(cs1_all_X[cs13_genes],
+                                         cs3_R[cs13_genes],
+                                         cs1_R[cs13_genes]))
+
 # Normalizing CS2 to CS3 uses n=136 common genes
 cs23_genes <- intersect(names(cs3_R), names(cs2_R))
 cs2_train <- as.data.frame(refMethod(cs2_X[cs23_genes],
                                      cs3_R[cs23_genes],
                                      cs2_R[cs23_genes])) %>%
   select(all_of(common_genes))
+
+# Normalizing CS2 all to CS3 using n=136 common genes
+cs2_all_train <- as.data.frame(refMethod(cs2_all_X[cs23_genes],
+                                         cs3_R[cs23_genes],
+                                         cs2_R[cs23_genes]))
 
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
@@ -217,6 +264,32 @@ train_class <- train_ref[["revHist"]]
 
 saveRDS(train_data, here::here("data/train_data.rds"))
 saveRDS(train_class, here::here("data/train_class.rds"))
+
+# CS1 all set, n=287-19=268 (CS1 - other histotypes), common genes with CS3 n=79
+cs1_all_ref <- cs1_all_train %>%
+  rownames_to_column("FileName") %>%
+  inner_join(hist, by = "FileName") %>%
+  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  column_to_rownames("FileName")
+
+cs1_all_data <- select(cs1_all_ref, where(is.double))
+cs1_all_class <- cs1_all_ref[["revHist"]]
+
+saveRDS(cs1_all_data, here::here("data/cs1_all_data.rds"))
+saveRDS(cs1_all_class, here::here("data/cs1_all_class.rds"))
+
+# CS2 all set, n=897-70=827 (CS2 - other histotypes), common genes with CS3 n=136
+cs2_all_ref <- cs2_all_train %>%
+  rownames_to_column("FileName") %>%
+  inner_join(hist, by = "FileName") %>%
+  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  column_to_rownames("FileName")
+
+cs2_all_data <- select(cs2_all_ref, where(is.double))
+cs2_all_class <- cs2_all_ref[["revHist"]]
+
+saveRDS(cs2_all_data, here::here("data/cs2_all_data.rds"))
+saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 
 # Confirmation set, n=674-30=644 (TNCO - other histotypes)
 conf_ref <- cs3_X %>%
