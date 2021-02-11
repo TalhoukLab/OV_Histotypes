@@ -2585,7 +2585,7 @@ source(here("validation/cs_classifier.R"))
 train_hist <- count(train_ref, revHist, sort = TRUE) %>% 
   mutate(freq = percent(n / sum(n), accuracy = 1))
 
-knitr::kable(train_hist, caption = "Training Set Histotype Distribution")
+knitr::kable(train_hist, caption = "Full Training Set Histotype Distribution")
 ```
 
 ```{r train-hist-codeset}
@@ -2600,7 +2600,21 @@ train_hist_codeset <- train_ref %>%
     bold_var = FALSE
   )
 
-knitr::kable(train_hist_codeset, caption = "Training Set Histotype Distribution by CodeSet")
+knitr::kable(train_hist_codeset, caption = "Full Training Set Histotype Distribution by CodeSet")
+```
+
+```{r cs1-all-hist}
+cs1_all_hist <- count(cs1_all_ref, revHist, sort = TRUE) %>% 
+  mutate(freq = percent(n / sum(n), accuracy = 1))
+
+knitr::kable(cs1_all_hist, caption = "CS1 All Training Set Histotype Distribution")
+```
+
+```{r cs2-all-hist}
+cs2_all_hist <- count(cs2_all_ref, revHist, sort = TRUE) %>% 
+  mutate(freq = percent(n / sum(n), accuracy = 1))
+
+knitr::kable(cs2_all_hist, caption = "CS2 All Training Set Histotype Distribution")
 ```
 
 ```{r conf-hist}
