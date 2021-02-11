@@ -129,14 +129,16 @@ cs3_X <- cs3_norm %>%
 # Normalized Datasets
 # Normalizing CS1 to CS3 uses n=79 common genes
 cs13_genes <- intersect(names(cs3_R), names(cs1_R))
-cs1_norm <- as.data.frame(refMethod(cs1_X[cs13_genes],
-                                    cs3_R[cs13_genes],
-                                    cs1_R[cs13_genes]))
+cs1_train <- as.data.frame(refMethod(cs1_X[cs13_genes],
+                                     cs3_R[cs13_genes],
+                                     cs1_R[cs13_genes])) %>%
+  select(all_of(common_genes))
 # Normalizing CS2 to CS3 uses n=136 common genes
 cs23_genes <- intersect(names(cs3_R), names(cs2_R))
-cs2_norm <- as.data.frame(refMethod(cs2_X[cs23_genes],
-                                    cs3_R[cs23_genes],
-                                    cs2_R[cs23_genes]))
+cs2_train <- as.data.frame(refMethod(cs2_X[cs23_genes],
+                                     cs3_R[cs23_genes],
+                                     cs2_R[cs23_genes])) %>%
+  select(all_of(common_genes))
 
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
@@ -188,21 +190,12 @@ cs3_norm_aoc_rand1 <-
 
 # Combine the two CS3-VAN used to normalize CS1/CS2 and normalize CS3-USC/CS3-AOC
 # and remove duplicates
-cs3_combined <-
+cs3_train <-
   list(cs3_X, cs3_van_dist_counts1, cs3_norm_usc_rand1, cs3_norm_aoc_rand1) %>%
   map_dfr(rownames_to_column, "FileName") %>%
   distinct() %>%
   filter(!duplicated(FileName, fromLast = TRUE)) %>%
-  column_to_rownames("FileName")
-
-# Create data sets, keeping common genes n=72
-# Training set, n=270+840+515-78=1547 (CS1 + CS2 + CS3 excluding TNCO and DOVE
-# - other histotypes)
-cs1_train <- cs1_norm[common_genes]
-cs2_train <- cs2_norm[common_genes]
-cs3_train <- cs3_combined %>%
-  rownames_to_column("col_name") %>%
-  mutate(col_name = paste0("X", col_name)) %>%
+  mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   filter(!cohort %in% c("TNCO", "DOVE4"),
          !grepl("pool", col_name, ignore.case = TRUE)) %>%
@@ -210,6 +203,8 @@ cs3_train <- cs3_combined %>%
   column_to_rownames("col_name") %>%
   select(all_of(common_genes))
 
+# Training set, n=270+840+515-78=1547 (CS1 + CS2 + CS3 excluding TNCO and DOVE
+# - other histotypes), common genes n=72
 train_ref <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
   rownames_to_column("FileName") %>%
