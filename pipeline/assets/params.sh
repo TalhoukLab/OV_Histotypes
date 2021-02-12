@@ -3,7 +3,7 @@
 # Supervised parameters
 dataSets=(train)
 reps=500
-algs=(rf adaboost combined)
+algs=(combined mlr_lasso mlr_ridge)
 samps=(none up down smote)
 norm_by="none"
 norm_type="conventional"

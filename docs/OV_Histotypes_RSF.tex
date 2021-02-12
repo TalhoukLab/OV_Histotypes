@@ -100,7 +100,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2021-02-10}
+\date{2021-02-11}
 
 \begin{document}
 \maketitle
@@ -1517,42 +1517,86 @@ Pool11 & NA & 2 & 1\\
 
 \begin{table}
 
-\caption{\label{tab:train-hist}Training Set Histotype Distribution}
+\caption{\label{tab:train-hist}Full Training Set Histotype Distribution}
 \centering
-\begin{tabular}[t]{l|r}
+\begin{tabular}[t]{l|r|l}
 \hline
-revHist & n\\
+revHist & n & freq\\
 \hline
-HGSC & 1227\\
+HGSC & 1227 & 79\%\\
 \hline
-CCOC & 106\\
+CCOC & 106 & 7\%\\
 \hline
-ENOC & 91\\
+ENOC & 91 & 6\%\\
 \hline
-MUC & 84\\
+MUC & 84 & 5\%\\
 \hline
-LGSC & 39\\
+LGSC & 39 & 3\%\\
 \hline
 \end{tabular}
 \end{table}
 
 \begin{table}
 
-\caption{\label{tab:train-hist-codeset}Training Set Histotype Distribution by CodeSet}
+\caption{\label{tab:train-hist-codeset}Full Training Set Histotype Distribution by CodeSet}
 \centering
-\begin{tabular}[t]{l|r|r|r}
+\begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-revHist & CS1 & CS2 & CS3\\
+Variable & Levels & CS1 & CS2 & CS3 & Total\\
 \hline
-HGSC & 122 & 629 & 476\\
+Histotype & HGSC & 122 (49\%) & 629 (80\%) & 476 (94\%) & 1227 (79\%)\\
 \hline
-ENOC & 55 & 28 & 8\\
+ & CCOC & 44 (18\%) & 54 (7\%) & 8 (2\%) & 106 (7\%)\\
 \hline
-CCOC & 44 & 54 & 8\\
+ & ENOC & 55 (22\%) & 28 (4\%) & 8 (2\%) & 91 (6\%)\\
 \hline
-MUC & 16 & 59 & 9\\
+ & MUC & 16 (6\%) & 59 (7\%) & 9 (2\%) & 84 (5\%)\\
 \hline
-LGSC & 14 & 19 & 6\\
+ & LGSC & 14 (6\%) & 19 (2\%) & 6 (1\%) & 39 (3\%)\\
+\hline
+Total & N (\%) & 251 (16\%) & 789 (51\%) & 507 (33\%) & 1547 (100\%)\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:cs1-all-hist}CS1 All Training Set Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r|l}
+\hline
+revHist & n & freq\\
+\hline
+HGSC & 125 & 47\%\\
+\hline
+ENOC & 58 & 22\%\\
+\hline
+CCOC & 47 & 18\%\\
+\hline
+LGSC & 19 & 7\%\\
+\hline
+MUC & 19 & 7\%\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:cs2-all-hist}CS2 All Training Set Histotype Distribution}
+\centering
+\begin{tabular}[t]{l|r|l}
+\hline
+revHist & n & freq\\
+\hline
+HGSC & 654 & 79\%\\
+\hline
+MUC & 61 & 7\%\\
+\hline
+CCOC & 60 & 7\%\\
+\hline
+ENOC & 32 & 4\%\\
+\hline
+LGSC & 20 & 2\%\\
 \hline
 \end{tabular}
 \end{table}
@@ -1561,19 +1605,19 @@ LGSC & 14 & 19 & 6\\
 
 \caption{\label{tab:conf-hist}Confirmation Set Histotype Distribution}
 \centering
-\begin{tabular}[t]{l|r}
+\begin{tabular}[t]{l|r|l}
 \hline
-revHist & n\\
+revHist & n & freq\\
 \hline
-HGSC & 423\\
+HGSC & 423 & 66\%\\
 \hline
-ENOC & 106\\
+ENOC & 106 & 16\%\\
 \hline
-CCOC & 75\\
+CCOC & 75 & 12\%\\
 \hline
-MUC & 27\\
+MUC & 27 & 4\%\\
 \hline
-LGSC & 13\\
+LGSC & 13 & 2\%\\
 \hline
 \end{tabular}
 \end{table}
@@ -1582,19 +1626,19 @@ LGSC & 13\\
 
 \caption{\label{tab:val-hist}Validation Set Histotype Distribution}
 \centering
-\begin{tabular}[t]{l|r}
+\begin{tabular}[t]{l|r|l}
 \hline
-revHist & n\\
+revHist & n & freq\\
 \hline
-HGSC & 781\\
+HGSC & 781 & 74\%\\
 \hline
-ENOC & 140\\
+ENOC & 140 & 13\%\\
 \hline
-CCOC & 86\\
+CCOC & 86 & 8\%\\
 \hline
-MUC & 34\\
+MUC & 34 & 3\%\\
 \hline
-LGSC & 20\\
+LGSC & 20 & 2\%\\
 \hline
 \end{tabular}
 \end{table}
@@ -1602,97 +1646,13 @@ LGSC & 20\\
 \hypertarget{results}{%
 \chapter{Results}\label{results}}
 
-Here we show internal validation summaries for CS1, CS2, and the combined classifier training set. The accuracy and F1-scores are the measures of interest. We also implemented the G-mean measure for the evaluation of the training set. Algorithms are sorted by descending value. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
-
-\hypertarget{cs1}{%
-\section{CS1}\label{cs1}}
-
-\hypertarget{accuracy}{%
-\subsection{Accuracy}\label{accuracy}}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-accuracy-1} 
-
-}
-
-\caption{CS1 Accuracy}\label{fig:cs1-accuracy}
-\end{figure}
-
-\hypertarget{f1-score}{%
-\subsection{F1-Score}\label{f1-score}}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-f1-1} 
-
-}
-
-\caption{CS1 F1-Score}\label{fig:cs1-f1}
-\end{figure}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-f1-class-1} 
-
-}
-
-\caption{CS1 Class-Specific F1-Score}\label{fig:cs1-f1-class}
-\end{figure}
-
-\hypertarget{cs2}{%
-\section{CS2}\label{cs2}}
-
-\hypertarget{accuracy-1}{%
-\subsection{Accuracy}\label{accuracy-1}}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-accuracy-1} 
-
-}
-
-\caption{CS2 Accuracy}\label{fig:cs2-accuracy}
-\end{figure}
-
-\hypertarget{f1-score-1}{%
-\subsection{F1-Score}\label{f1-score-1}}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-f1-1} 
-
-}
-
-\caption{CS2 F1-Score}\label{fig:cs2-f1}
-\end{figure}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-f1-class-1} 
-
-}
-
-\caption{CS2 Class-Specific F1-Score}\label{fig:cs2-f1-class}
-\end{figure}
+We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overall F1-score of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
 
 \hypertarget{training-set}{%
 \section{Training Set}\label{training-set}}
 
-\hypertarget{accuracy-2}{%
-\subsection{Accuracy}\label{accuracy-2}}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-accuracy-1} 
-
-}
-
-\caption{Training Set Accuracy}\label{fig:train-accuracy}
-\end{figure}
-
-\hypertarget{f1-score-2}{%
-\subsection{F1-Score}\label{f1-score-2}}
+\hypertarget{f1-score}{%
+\subsection{F1-Score}\label{f1-score}}
 
 \begin{figure}[H]
 
@@ -1712,16 +1672,178 @@ Here we show internal validation summaries for CS1, CS2, and the combined classi
 \caption{Training Set Class-Specific F1-Score}\label{fig:train-f1-class}
 \end{figure}
 
+\hypertarget{kappa}{%
+\subsection{Kappa}\label{kappa}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-kappa-1} 
+
+}
+
+\caption{Training Set Kappa}\label{fig:train-kappa}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-kappa-class-1} 
+
+}
+
+\caption{Training Set Class-Specific Kappa}\label{fig:train-kappa-class}
+\end{figure}
+
 \hypertarget{g-mean}{%
 \subsection{G-mean}\label{g-mean}}
 
 \begin{figure}[H]
 
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/training-gmean-1} 
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-gmean-1} 
 
 }
 
-\caption{Training Set G-mean}\label{fig:training-gmean}
+\caption{Training Set G-mean}\label{fig:train-gmean}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-gmean-class-1} 
+
+}
+
+\caption{Training Set Class-Specific G-mean}\label{fig:train-gmean-class}
+\end{figure}
+
+\hypertarget{cs1-set}{%
+\section{CS1 Set}\label{cs1-set}}
+
+\hypertarget{f1-score-1}{%
+\subsection{F1-Score}\label{f1-score-1}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-f1-1} 
+
+}
+
+\caption{CS1 Set F1-Score}\label{fig:cs1-f1}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-f1-class-1} 
+
+}
+
+\caption{CS1 Set Class-Specific F1-Score}\label{fig:cs1-f1-class}
+\end{figure}
+
+\hypertarget{kappa-1}{%
+\subsection{Kappa}\label{kappa-1}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-kappa-1} 
+
+}
+
+\caption{CS1 Set Kappa}\label{fig:cs1-kappa}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-kappa-class-1} 
+
+}
+
+\caption{CS1 Set Class-Specific Kappa}\label{fig:cs1-kappa-class}
+\end{figure}
+
+\hypertarget{g-mean-1}{%
+\subsection{G-mean}\label{g-mean-1}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-gmean-1} 
+
+}
+
+\caption{CS1 Set G-mean}\label{fig:cs1-gmean}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-gmean-class-1} 
+
+}
+
+\caption{CS1 Set Class-Specific G-mean}\label{fig:cs1-gmean-class}
+\end{figure}
+
+\hypertarget{cs2-set}{%
+\section{CS2 Set}\label{cs2-set}}
+
+\hypertarget{f1-score-2}{%
+\subsection{F1-Score}\label{f1-score-2}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-f1-1} 
+
+}
+
+\caption{CS2 Set F1-Score}\label{fig:cs2-f1}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-f1-class-1} 
+
+}
+
+\caption{CS2 Set Class-Specific F1-Score}\label{fig:cs2-f1-class}
+\end{figure}
+
+\hypertarget{kappa-2}{%
+\subsection{Kappa}\label{kappa-2}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-kappa-1} 
+
+}
+
+\caption{CS2 Set Kappa}\label{fig:cs2-kappa}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-kappa-class-1} 
+
+}
+
+\caption{CS2 Set Class-Specific Kappa}\label{fig:cs2-kappa-class}
+\end{figure}
+
+\hypertarget{g-mean-2}{%
+\subsection{G-mean}\label{g-mean-2}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-gmean-1} 
+
+}
+
+\caption{CS2 Set G-mean}\label{fig:cs2-gmean}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-gmean-class-1} 
+
+}
+
+\caption{CS2 Set Class-Specific G-mean}\label{fig:cs2-gmean-class}
 \end{figure}
 
   \bibliography{packages.bib}

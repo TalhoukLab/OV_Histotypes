@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2021-02-10" />
+<meta name="date" content="2021-02-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -103,21 +103,23 @@
 </ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#cs1"><i class="fa fa-check"></i><b>4.1</b> CS1</a>
+<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#training-set"><i class="fa fa-check"></i><b>4.1</b> Training Set</a>
 <ul>
-<li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#accuracy"><i class="fa fa-check"></i><b>4.1.1</b> Accuracy</a></li>
-<li class="chapter" data-level="4.1.2" data-path="results.html"><a href="results.html#f1-score"><i class="fa fa-check"></i><b>4.1.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#f1-score"><i class="fa fa-check"></i><b>4.1.1</b> F1-Score</a></li>
+<li class="chapter" data-level="4.1.2" data-path="results.html"><a href="results.html#kappa"><i class="fa fa-check"></i><b>4.1.2</b> Kappa</a></li>
+<li class="chapter" data-level="4.1.3" data-path="results.html"><a href="results.html#g-mean"><i class="fa fa-check"></i><b>4.1.3</b> G-mean</a></li>
 </ul></li>
-<li class="chapter" data-level="4.2" data-path="results.html"><a href="results.html#cs2"><i class="fa fa-check"></i><b>4.2</b> CS2</a>
+<li class="chapter" data-level="4.2" data-path="results.html"><a href="results.html#cs1-set"><i class="fa fa-check"></i><b>4.2</b> CS1 Set</a>
 <ul>
-<li class="chapter" data-level="4.2.1" data-path="results.html"><a href="results.html#accuracy-1"><i class="fa fa-check"></i><b>4.2.1</b> Accuracy</a></li>
-<li class="chapter" data-level="4.2.2" data-path="results.html"><a href="results.html#f1-score-1"><i class="fa fa-check"></i><b>4.2.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.2.1" data-path="results.html"><a href="results.html#f1-score-1"><i class="fa fa-check"></i><b>4.2.1</b> F1-Score</a></li>
+<li class="chapter" data-level="4.2.2" data-path="results.html"><a href="results.html#kappa-1"><i class="fa fa-check"></i><b>4.2.2</b> Kappa</a></li>
+<li class="chapter" data-level="4.2.3" data-path="results.html"><a href="results.html#g-mean-1"><i class="fa fa-check"></i><b>4.2.3</b> G-mean</a></li>
 </ul></li>
-<li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#training-set"><i class="fa fa-check"></i><b>4.3</b> Training Set</a>
+<li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#cs2-set"><i class="fa fa-check"></i><b>4.3</b> CS2 Set</a>
 <ul>
-<li class="chapter" data-level="4.3.1" data-path="results.html"><a href="results.html#accuracy-2"><i class="fa fa-check"></i><b>4.3.1</b> Accuracy</a></li>
-<li class="chapter" data-level="4.3.2" data-path="results.html"><a href="results.html#f1-score-2"><i class="fa fa-check"></i><b>4.3.2</b> F1-Score</a></li>
-<li class="chapter" data-level="4.3.3" data-path="results.html"><a href="results.html#g-mean"><i class="fa fa-check"></i><b>4.3.3</b> G-mean</a></li>
+<li class="chapter" data-level="4.3.1" data-path="results.html"><a href="results.html#f1-score-2"><i class="fa fa-check"></i><b>4.3.1</b> F1-Score</a></li>
+<li class="chapter" data-level="4.3.2" data-path="results.html"><a href="results.html#kappa-2"><i class="fa fa-check"></i><b>4.3.2</b> Kappa</a></li>
+<li class="chapter" data-level="4.3.3" data-path="results.html"><a href="results.html#g-mean-2"><i class="fa fa-check"></i><b>4.3.3</b> G-mean</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -140,93 +142,147 @@
             <section class="normal" id="section-">
 <div id="results" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Results</h1>
-<p>Here we show internal validation summaries for CS1, CS2, and the combined classifier training set. The accuracy and F1-scores are the measures of interest. We also implemented the G-mean measure for the evaluation of the training set. Algorithms are sorted by descending value. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.</p>
-<div id="cs1" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> CS1</h2>
-<div id="accuracy" class="section level3" number="4.1.1">
-<h3><span class="header-section-number">4.1.1</span> Accuracy</h3>
-<div class="figure" style="text-align: center"><span id="fig:cs1-accuracy"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs1-accuracy-1.png" alt="CS1 Accuracy" width="672" />
-<p class="caption">
-Figure 4.1: CS1 Accuracy
-</p>
-</div>
-</div>
-<div id="f1-score" class="section level3" number="4.1.2">
-<h3><span class="header-section-number">4.1.2</span> F1-Score</h3>
-<div class="figure" style="text-align: center"><span id="fig:cs1-f1"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs1-f1-1.png" alt="CS1 F1-Score" width="672" />
-<p class="caption">
-Figure 4.2: CS1 F1-Score
-</p>
-</div>
-<div class="figure" style="text-align: center"><span id="fig:cs1-f1-class"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs1-f1-class-1.png" alt="CS1 Class-Specific F1-Score" width="672" />
-<p class="caption">
-Figure 4.3: CS1 Class-Specific F1-Score
-</p>
-</div>
-</div>
-</div>
-<div id="cs2" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> CS2</h2>
-<div id="accuracy-1" class="section level3" number="4.2.1">
-<h3><span class="header-section-number">4.2.1</span> Accuracy</h3>
-<div class="figure" style="text-align: center"><span id="fig:cs2-accuracy"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs2-accuracy-1.png" alt="CS2 Accuracy" width="672" />
-<p class="caption">
-Figure 4.4: CS2 Accuracy
-</p>
-</div>
-</div>
-<div id="f1-score-1" class="section level3" number="4.2.2">
-<h3><span class="header-section-number">4.2.2</span> F1-Score</h3>
-<div class="figure" style="text-align: center"><span id="fig:cs2-f1"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs2-f1-1.png" alt="CS2 F1-Score" width="672" />
-<p class="caption">
-Figure 4.5: CS2 F1-Score
-</p>
-</div>
-<div class="figure" style="text-align: center"><span id="fig:cs2-f1-class"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs2-f1-class-1.png" alt="CS2 Class-Specific F1-Score" width="672" />
-<p class="caption">
-Figure 4.6: CS2 Class-Specific F1-Score
-</p>
-</div>
-</div>
-</div>
-<div id="training-set" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Training Set</h2>
-<div id="accuracy-2" class="section level3" number="4.3.1">
-<h3><span class="header-section-number">4.3.1</span> Accuracy</h3>
-<div class="figure" style="text-align: center"><span id="fig:train-accuracy"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-accuracy-1.png" alt="Training Set Accuracy" width="672" />
-<p class="caption">
-Figure 4.7: Training Set Accuracy
-</p>
-</div>
-</div>
-<div id="f1-score-2" class="section level3" number="4.3.2">
-<h3><span class="header-section-number">4.3.2</span> F1-Score</h3>
+<p>We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overall F1-score of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.</p>
+<div id="training-set" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Training Set</h2>
+<div id="f1-score" class="section level3" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> F1-Score</h3>
 <div class="figure" style="text-align: center"><span id="fig:train-f1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-f1-1.png" alt="Training Set F1-Score" width="672" />
 <p class="caption">
-Figure 4.8: Training Set F1-Score
+Figure 4.1: Training Set F1-Score
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:train-f1-class"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-f1-class-1.png" alt="Training Set Class-Specific F1-Score" width="672" />
 <p class="caption">
-Figure 4.9: Training Set Class-Specific F1-Score
+Figure 4.2: Training Set Class-Specific F1-Score
 </p>
 </div>
 </div>
-<div id="g-mean" class="section level3" number="4.3.3">
-<h3><span class="header-section-number">4.3.3</span> G-mean</h3>
-<div class="figure" style="text-align: center"><span id="fig:training-gmean"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/training-gmean-1.png" alt="Training Set G-mean" width="672" />
+<div id="kappa" class="section level3" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Kappa</h3>
+<div class="figure" style="text-align: center"><span id="fig:train-kappa"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/train-kappa-1.png" alt="Training Set Kappa" width="672" />
 <p class="caption">
-Figure 4.10: Training Set G-mean
+Figure 4.3: Training Set Kappa
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:train-kappa-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/train-kappa-class-1.png" alt="Training Set Class-Specific Kappa" width="672" />
+<p class="caption">
+Figure 4.4: Training Set Class-Specific Kappa
+</p>
+</div>
+</div>
+<div id="g-mean" class="section level3" number="4.1.3">
+<h3><span class="header-section-number">4.1.3</span> G-mean</h3>
+<div class="figure" style="text-align: center"><span id="fig:train-gmean"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/train-gmean-1.png" alt="Training Set G-mean" width="672" />
+<p class="caption">
+Figure 4.5: Training Set G-mean
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:train-gmean-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/train-gmean-class-1.png" alt="Training Set Class-Specific G-mean" width="672" />
+<p class="caption">
+Figure 4.6: Training Set Class-Specific G-mean
+</p>
+</div>
+</div>
+</div>
+<div id="cs1-set" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> CS1 Set</h2>
+<div id="f1-score-1" class="section level3" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> F1-Score</h3>
+<div class="figure" style="text-align: center"><span id="fig:cs1-f1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs1-f1-1.png" alt="CS1 Set F1-Score" width="672" />
+<p class="caption">
+Figure 4.7: CS1 Set F1-Score
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs1-f1-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs1-f1-class-1.png" alt="CS1 Set Class-Specific F1-Score" width="672" />
+<p class="caption">
+Figure 4.8: CS1 Set Class-Specific F1-Score
+</p>
+</div>
+</div>
+<div id="kappa-1" class="section level3" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Kappa</h3>
+<div class="figure" style="text-align: center"><span id="fig:cs1-kappa"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs1-kappa-1.png" alt="CS1 Set Kappa" width="672" />
+<p class="caption">
+Figure 4.9: CS1 Set Kappa
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs1-kappa-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs1-kappa-class-1.png" alt="CS1 Set Class-Specific Kappa" width="672" />
+<p class="caption">
+Figure 4.10: CS1 Set Class-Specific Kappa
+</p>
+</div>
+</div>
+<div id="g-mean-1" class="section level3" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> G-mean</h3>
+<div class="figure" style="text-align: center"><span id="fig:cs1-gmean"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs1-gmean-1.png" alt="CS1 Set G-mean" width="672" />
+<p class="caption">
+Figure 4.11: CS1 Set G-mean
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs1-gmean-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs1-gmean-class-1.png" alt="CS1 Set Class-Specific G-mean" width="672" />
+<p class="caption">
+Figure 4.12: CS1 Set Class-Specific G-mean
+</p>
+</div>
+</div>
+</div>
+<div id="cs2-set" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> CS2 Set</h2>
+<div id="f1-score-2" class="section level3" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> F1-Score</h3>
+<div class="figure" style="text-align: center"><span id="fig:cs2-f1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-f1-1.png" alt="CS2 Set F1-Score" width="672" />
+<p class="caption">
+Figure 4.13: CS2 Set F1-Score
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs2-f1-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-f1-class-1.png" alt="CS2 Set Class-Specific F1-Score" width="672" />
+<p class="caption">
+Figure 4.14: CS2 Set Class-Specific F1-Score
+</p>
+</div>
+</div>
+<div id="kappa-2" class="section level3" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> Kappa</h3>
+<div class="figure" style="text-align: center"><span id="fig:cs2-kappa"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-kappa-1.png" alt="CS2 Set Kappa" width="672" />
+<p class="caption">
+Figure 4.15: CS2 Set Kappa
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs2-kappa-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-kappa-class-1.png" alt="CS2 Set Class-Specific Kappa" width="672" />
+<p class="caption">
+Figure 4.16: CS2 Set Class-Specific Kappa
+</p>
+</div>
+</div>
+<div id="g-mean-2" class="section level3" number="4.3.3">
+<h3><span class="header-section-number">4.3.3</span> G-mean</h3>
+<div class="figure" style="text-align: center"><span id="fig:cs2-gmean"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-gmean-1.png" alt="CS2 Set G-mean" width="672" />
+<p class="caption">
+Figure 4.17: CS2 Set G-mean
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs2-gmean-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-gmean-class-1.png" alt="CS2 Set Class-Specific G-mean" width="672" />
+<p class="caption">
+Figure 4.18: CS2 Set Class-Specific G-mean
 </p>
 </div>
 
