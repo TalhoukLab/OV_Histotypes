@@ -50,7 +50,7 @@ p <-
 print(p)
 ```
 
-```{r train-f1-class, fig.cap='Training Set Class-Specific F1-Score'}
+```{r train-f1-class, fig.cap='Training Set Class-Specific F1-Score', fig.width=8}
 ivst_f1_class <- ivst %>%
   filter(grepl("f1\\.", measure)) %>%
   mutate(
@@ -100,7 +100,7 @@ p <-
 print(p)
 ```
 
-```{r train-kappa-class, fig.cap='Training Set Class-Specific Kappa'}
+```{r train-kappa-class, fig.cap='Training Set Class-Specific Kappa', fig.width=8}
 ivst_kappa_class <- ivst %>%
   filter(grepl("kappa\\.", measure)) %>%
   mutate(
@@ -150,7 +150,7 @@ p <-
 print(p)
 ```
 
-```{r train-gmean-class, fig.cap='Training Set Class-Specific G-mean'}
+```{r train-gmean-class, fig.cap='Training Set Class-Specific G-mean', fig.width=8}
 ivst_gmean_class <- ivst %>%
   filter(grepl("gmean\\.", measure)) %>%
   mutate(
@@ -202,7 +202,7 @@ p <-
 print(p)
 ```
 
-```{r cs1-f1-class, fig.cap='CS1 Set Class-Specific F1-Score'}
+```{r cs1-f1-class, fig.cap='CS1 Set Class-Specific F1-Score', fig.width=8}
 ivs1_f1_class <- ivs1 %>%
   filter(grepl("f1\\.", measure)) %>%
   mutate(
@@ -252,7 +252,7 @@ p <-
 print(p)
 ```
 
-```{r cs1-kappa-class, fig.cap='CS1 Set Class-Specific Kappa'}
+```{r cs1-kappa-class, fig.cap='CS1 Set Class-Specific Kappa', fig.width=8}
 ivs1_kappa_class <- ivs1 %>%
   filter(grepl("kappa\\.", measure)) %>%
   mutate(
@@ -302,7 +302,7 @@ p <-
 print(p)
 ```
 
-```{r cs1-gmean-class, fig.cap='CS1 Set Class-Specific G-mean'}
+```{r cs1-gmean-class, fig.cap='CS1 Set Class-Specific G-mean', fig.width=8}
 ivs1_gmean_class <- ivs1 %>%
   filter(grepl("gmean\\.", measure)) %>%
   mutate(
@@ -354,7 +354,7 @@ p <-
 print(p)
 ```
 
-```{r cs2-f1-class, fig.cap='CS2 Set Class-Specific F1-Score'}
+```{r cs2-f1-class, fig.cap='CS2 Set Class-Specific F1-Score', fig.width=8}
 ivs2_f1_class <- ivs2 %>%
   filter(grepl("f1\\.", measure)) %>%
   mutate(
@@ -404,7 +404,7 @@ p <-
 print(p)
 ```
 
-```{r cs2-kappa-class, fig.cap='CS2 Set Class-Specific Kappa'}
+```{r cs2-kappa-class, fig.cap='CS2 Set Class-Specific Kappa', fig.width=8}
 ivs2_kappa_class <- ivs2 %>%
   filter(grepl("kappa\\.", measure)) %>%
   mutate(
@@ -454,7 +454,7 @@ p <-
 print(p)
 ```
 
-```{r cs2-gmean-class, fig.cap='CS2 Set Class-Specific G-mean'}
+```{r cs2-gmean-class, fig.cap='CS2 Set Class-Specific G-mean', fig.width=8}
 ivs2_gmean_class <- ivs2 %>%
   filter(grepl("gmean\\.", measure)) %>%
   mutate(
@@ -502,7 +502,7 @@ p <-
 print(p)
 ```
 
-```{r smote-kappa-class, fig.cap='SMOTE Class-Specific Kappa by Algorithm and Dataset'}
+```{r smote-kappa-class, fig.cap='SMOTE Class-Specific Kappa by Algorithm and Dataset', fig.width=8}
 ivs_smote_kappa_class <- ivs %>%
   filter(sampling == "smote", grepl("kappa\\.", measure)) %>%
   mutate(
