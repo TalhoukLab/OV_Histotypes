@@ -6,9 +6,18 @@ library(dplyr)
 library(ggplot2)
 library(forcats)
 library(magrittr)
+ivst <- readRDS(here::here("data/iv_summary_train.rds"))
 ivs1 <- readRDS(here::here("data/iv_summary_cs1_all.rds"))
 ivs2 <- readRDS(here::here("data/iv_summary_cs2_all.rds"))
-ivst <- readRDS(here::here("data/iv_summary_train.rds"))
+```
+
+```{r ivs-combine}
+ivs <- bind_rows(ivst, ivs1, ivs2) %>%
+  mutate(dataset = factor(
+    dataset,
+    levels = c("train", "cs1_all", "cs2_all"),
+    labels = c("Training", "CS1", "CS2")
+  ))
 ```
 
 We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overall F1-score of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
@@ -466,6 +475,54 @@ p <-
     y = "G-mean",
     color = "Subsampling",
     title = "CS2 Set Class Specific G-mean by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
+## SMOTE Kappa Summary
+
+```{r smote-kappa, fig.cap='SMOTE Kappa by Algorithm and Dataset'}
+ivs_smote_kappa <- ivs %>%
+  filter(sampling == "smote", measure == "kappa") %>%
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
+
+p <-
+  ggplot(ivs_smote_kappa, aes(x = algorithm, y = percentile_50, color = dataset)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  scale_color_brewer(palette = "Dark2") +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Kappa",
+    color = "Dataset",
+    title = "SMOTE Kappa by Algorithm and Dataset"
+  )
+print(p)
+```
+
+```{r smote-kappa-class, fig.cap='SMOTE Class-Specific Kappa by Algorithm and Dataset'}
+ivs_smote_kappa_class <- ivs %>%
+  filter(sampling == "smote", grepl("kappa\\.", measure)) %>%
+  mutate(
+    measure = gsub("kappa\\.", "", measure),
+    algorithm = factor(algorithm, levels = alg_levels)
+  )
+
+p <-
+  ggplot(ivs_smote_kappa_class, aes(x = algorithm, y = percentile_50, color = dataset)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  scale_color_brewer(palette = "Dark2") +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  facet_wrap(vars(measure), ncol = 2) +
+  labs(
+    x = "Algorithm",
+    y = "Kappa",
+    color = "Dataset",
+    title = "SMOTE Class-Specific Kappa by Algorithm and Dataset"
   )
 print(p)
 ```
