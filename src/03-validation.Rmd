@@ -1754,6 +1754,8 @@ cs3_counts1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
 # Normalize by reference method using common samples
 cs1_norm_rand1 <-
   as.data.frame(refMethod(cs1_counts1, cs2_rand1, cs1_rand1))
+cs1_norm_rand1_cs3 <-
+  as.data.frame(refMethod(cs1_counts1, cs3_rand1, cs1_rand1))
 
 # Pool set: pool samples from CS2
 pool_samples <- cohorts %>%
@@ -1947,6 +1949,42 @@ p_rand1v3 <- ggplot(metrics_rand1v3, aes(Expression)) +
 print(p_rand1v3)
 ```
 
+```{r cs-chain-rand1-cs1v3-2, fig.cap='CS1 CodeSet Chaining Concordance Measure Distributions 2'}
+counts1v3 <-
+  list(cs1_counts1, cs1_norm_rand1_cs3, cs12_rand1_pools, cs3_common_rand1) %>%
+  set_names(c("CS1-Non", "CS1-Random1", "CS1-Random1+Pools", "CS3")) %>% 
+  map(select, names(cs3_common_rand1))
+
+comps1v3 <- tibble(
+  `CS1-Non` = c("CS1-Non", "CS3"),
+  `CS1-Random1+Pools` = c("CS1-Random1+Pools", "CS3"),
+  `CS1-Random1` = c("CS1-Random1", "CS3")
+)
+
+metrics_rand1v3 <- comps1v3 %>%
+  imap_dfr(~ {
+    pmap_dfr(counts1v3[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.01))) %>%
+  ungroup() %>% 
+  mutate(Sites = fct_relevel(Sites, "CS1-Random1", after = 3L))
+
+p_rand1v3 <- ggplot(metrics_rand1v3, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS1 CodeSet Chaining Concordance Measure Distributions 2") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_rand1v3)
+```
+
 ```{r cs-chain-rand1-cs2v3, fig.cap='CS2 CodeSet Chaining Concordance Measure Distributions'}
 counts2v3 <-
   list(cs2_counts1, cs3_common_rand1, cs2_common_pools) %>%
@@ -2028,6 +2066,7 @@ cs5_dat <- HKnorm(cs5) %>% select(-any_of(cs5_qc_failed))
 
 # Pools Set B, C from CS5
 cs5_pools <- select(cs5_dat, Name, matches("pool", ignore.case = TRUE))
+cs5_poolsA <- select(cs5_pools, Name, matches("POOL[1-3]_"))
 cs5_poolsB <- select(cs5_pools, Name, matches("POOL(9|10|11)"))
 cs5_poolsC <- select(cs5_pools, Name, matches("POOL[4-5|7-8]"))
 ```
@@ -2095,13 +2134,29 @@ cs3_pools_mgx <-
   enframe(rowMeans(ref_pools), name = "Name", value = "cs3_exp")
 
 # Normalize each gene by adding batch effect (diff in mean gx)
-cs5_norm_A <-
+cs5_norm_BA <-
   inner_join(cs4_poolsA_mgx, cs3_pools_mgx, by = "Name") %>%
   transmute(Name, be = cs3_exp - cs4_exp) %>%
   inner_join(cs5_norm_B, by = "Name") %>%
   gather(FileName, exp, -1:-2) %>%
   transmute(Name = factor(Name, levels = cs5_norm_B$Name),
             FileName, exp = be + exp) %>%
+  spread(FileName, exp) %>% 
+  select(all_of(names(cs5_norm_counts)))
+
+## Normalize CS5 to CS3 using Set A pools
+# Weighted mean gene expression for CS5 pools (using CS3 pools weights)
+cs5_poolsA_mgx <- cs3_weights %>%
+  imap_dfc(~ .x * rowMeans(select(cs5_poolsA, matches(.y)))) %>%
+  transmute(Name = cs5_poolsA[["Name"]], cs5_exp = rowSums(.))
+
+# Normalize each gene by adding batch effect (diff in mean gx)
+cs5_norm_A <-
+  inner_join(cs5_poolsA_mgx, cs3_pools_mgx, by = "Name") %>%
+  transmute(Name, be = cs3_exp - cs5_exp) %>%
+  inner_join(cs5_norm_counts, by = "Name") %>%
+  gather(FileName, exp, -1:-2) %>%
+  transmute(Name = fct_inorder(Name), FileName, exp = be + exp) %>%
   spread(FileName, exp) %>% 
   select(all_of(names(cs5_norm_counts)))
 
@@ -2137,8 +2192,8 @@ cs35_norm <- cs3_norm_full %>%
   spread(Name, exp)
 
 counts5_BA <-
-  list(cs35_norm, cs5_norm_counts, cs5_norm_B, cs5_norm_A) %>%
-  set_names(c("CS3-Non", "CS5-Non", "CS5-NormB", "CS5-NormA")) %>% 
+  list(cs35_norm, cs5_norm_counts, cs5_norm_B, cs5_norm_BA, cs5_norm_A) %>%
+  set_names(c("CS3-Non", "CS5-Non", "CS5-NormB", "CS5-NormBA", "CS5-NormA")) %>% 
   map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
            spread(Name, exp) %>% 
            inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
@@ -2152,7 +2207,7 @@ counts5_BA <-
 comps5_BA <- tibble(
   `CS3-Non_vs_CS5-Non` = c("CS3-Non", "CS5-Non"),
   `CS3-Non_vs_CS5-NormB` = c("CS3-Non", "CS5-NormB"),
-  `CS3-Non_vs_CS5-NormA` = c("CS3-Non", "CS5-NormA"),
+  `CS3-Non_vs_CS5-NormBA` = c("CS3-Non", "CS5-NormBA"),
 )
 
 metrics_pools5_BA <- comps5_BA %>%
@@ -2175,6 +2230,39 @@ p_pools5_BA <- ggplot(metrics_pools5_BA, aes(Expression)) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "CS5 Set B/A Chaining Concordance Measure Distributions",
+       subtitle = cs345_subtitle) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_pools5_BA)
+```
+
+```{r cs-chain-cs5-setBA-2, fig.cap='CS5 Set B/A Chaining Concordance  Measure Distributions 2', fig.height=6}
+comps5_BA <- tibble(
+  `CS3-Non_vs_CS5-Non` = c("CS3-Non", "CS5-Non"),
+  `CS3-Non_vs_CS5-NormBA` = c("CS3-Non", "CS5-NormBA"),
+  `CS3-Non_vs_CS5-NormA` = c("CS3-Non", "CS5-NormA")
+)
+
+metrics_pools5_BA <- comps5_BA %>%
+  imap_dfr(~ {
+    pmap_dfr(counts5_BA[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  mutate(Sites = fct_inorder(Sites)) %>% 
+  group_by(Sites, Metric) %>%
+  mutate(
+    Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
+  ungroup()
+
+p_pools5_BA <- ggplot(metrics_pools5_BA, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS5 Set B/A Chaining Concordance Measure Distributions 2",
        subtitle = cs345_subtitle) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
@@ -2346,7 +2434,7 @@ cs3_pools_mgx <-
   enframe(rowMeans(ref_pools), name = "Name", value = "cs3_exp")
 
 # Normalize each gene by adding batch effect (diff in mean gx)
-cs5_norm_A <-
+cs5_norm_CA <-
   inner_join(cs4_poolsA_mgx, cs3_pools_mgx, by = "Name") %>%
   transmute(Name, be = cs3_exp - cs4_exp) %>%
   inner_join(cs5_norm_C, by = "Name") %>%
@@ -2383,8 +2471,8 @@ cs35_norm <- cs3_norm_full %>%
   spread(Name, exp)
 
 counts5_CA <-
-  list(cs35_norm, cs5_norm_counts, cs5_norm_C, cs5_norm_A) %>%
-  set_names(c("CS3-Non", "CS5-Non", "CS5-NormC", "CS5-NormA")) %>% 
+  list(cs35_norm, cs5_norm_counts, cs5_norm_C, cs5_norm_CA, cs5_norm_A) %>%
+  set_names(c("CS3-Non", "CS5-Non", "CS5-NormC", "CS5-NormCA", "CS5-NormA")) %>% 
   map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
            spread(Name, exp) %>% 
            inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
@@ -2393,15 +2481,12 @@ counts5_CA <-
            summarize_if(is.double, mean) %>% 
            `rownames<-`(NULL)
   ) %>% 
-  # map_at(-1, ~ gather(., ottaID, exp, -Name) %>%
-  #          spread(Name, exp) %>%
-  #          semi_join(cs35_norm, by = "ottaID")) %>% 
   map(column_to_rownames, "ottaID")
 
 comps5_CA <- tibble(
   `CS3-Non_vs_CS5-Non` = c("CS3-Non", "CS5-Non"),
   `CS3-Non_vs_CS5-NormC` = c("CS3-Non", "CS5-NormC"),
-  `CS3-Non_vs_CS5-NormA` = c("CS3-Non", "CS5-NormA"),
+  `CS3-Non_vs_CS5-NormCA` = c("CS3-Non", "CS5-NormCA"),
 )
 
 metrics_pools5_CA <- comps5_CA %>%
@@ -2423,6 +2508,38 @@ p_pools5_CA <- ggplot(metrics_pools5_CA, aes(Expression)) +
   facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
   labs(y = "Count",
        title = "CS5 Set C/A Chaining Concordance Measure Distributions",
+       subtitle = cs345_subtitle) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_pools5_CA)
+```
+
+```{r cs-chain-cs5-setCA-2, fig.cap='CS5 Set C/A Chaining Concordance  Measure Distributions 2', fig.height=6}
+comps5_CA <- tibble(
+  `CS3-Non_vs_CS5-Non` = c("CS3-Non", "CS5-Non"),
+  `CS3-Non_vs_CS5-NormCA` = c("CS3-Non", "CS5-NormCA"),
+  `CS3-Non_vs_CS5-NormA` = c("CS3-Non", "CS5-NormA")
+)
+
+metrics_pools5_CA <- comps5_CA %>%
+  imap_dfr(~ {
+    pmap_dfr(counts5_CA[.x], ~ cor_stats(.x, .y)) %>% mutate(Sites = .y)
+  }) %>%
+  gather(key = "Metric", value = "Expression", -Sites) %>%
+  mutate(Sites = fct_inorder(Sites)) %>% 
+  group_by(Sites, Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
+  ungroup()
+
+p_pools5_CA <- ggplot(metrics_pools5_CA, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0, y = 40, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "CS5 Set C/A Chaining Concordance Measure Distributions 2",
        subtitle = cs345_subtitle) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
