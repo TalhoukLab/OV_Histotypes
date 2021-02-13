@@ -5,6 +5,8 @@
 library(dplyr)
 library(ggplot2)
 library(forcats)
+library(knitr)
+library(kableExtra)
 library(magrittr)
 ivst <- readRDS(here::here("data/iv_summary_train.rds"))
 ivs1 <- readRDS(here::here("data/iv_summary_cs1_all.rds"))
@@ -118,6 +120,25 @@ p <-
     title = "Training Set Kappa by Algorithm and Subsampling Method"
   )
 print(p)
+```
+
+```{r train-kappa-table}
+ivst_kappa_table <- ivst_kappa %>%
+  arrange(algorithm) %>%
+  mutate(across(where(is.numeric), round, digits = 3)) %>%
+  mutate(percentile_50 = ifelse(
+    percentile_50 == max(percentile_50),
+    cell_spec(percentile_50, bold = TRUE),
+    percentile_50
+  )) %>%
+  pivot_wider(id_cols = sampling,
+              names_from = "algorithm",
+              values_from = "percentile_50")
+
+kable(ivst_kappa_table,
+      caption = "Training Set Kappa by Algorithm and SUbsampling Method",
+      escape = FALSE) %>%
+  kable_styling()  
 ```
 
 ```{r train-kappa-class, fig.cap='Training Set Class-Specific Kappa', fig.width=8}
@@ -284,6 +305,25 @@ p <-
 print(p)
 ```
 
+```{r cs1-kappa-table}
+ivs1_kappa_table <- ivs1_kappa %>%
+  arrange(algorithm) %>%
+  mutate(across(where(is.numeric), round, digits = 3)) %>%
+  mutate(percentile_50 = ifelse(
+    percentile_50 == max(percentile_50),
+    cell_spec(percentile_50, bold = TRUE),
+    percentile_50
+  )) %>%
+  pivot_wider(id_cols = sampling,
+              names_from = "algorithm",
+              values_from = "percentile_50")
+
+kable(ivs1_kappa_table,
+      caption = "CS1 Set Kappa by Algorithm and SUbsampling Method",
+      escape = FALSE) %>%
+  kable_styling()  
+```
+
 ```{r cs1-kappa-class, fig.cap='CS1 Set Class-Specific Kappa', fig.width=8}
 ivs1_kappa_class <- ivs1 %>%
   filter(grepl("kappa\\.", measure)) %>%
@@ -446,6 +486,25 @@ p <-
 print(p)
 ```
 
+```{r cs2-kappa-table}
+ivs2_kappa_table <- ivs2_kappa %>%
+  arrange(algorithm) %>%
+  mutate(across(where(is.numeric), round, digits = 3)) %>%
+  mutate(percentile_50 = ifelse(
+    percentile_50 == max(percentile_50),
+    cell_spec(percentile_50, bold = TRUE),
+    percentile_50
+  )) %>%
+  pivot_wider(id_cols = sampling,
+              names_from = "algorithm",
+              values_from = "percentile_50")
+
+kable(ivs2_kappa_table,
+      caption = "CS2 Set Kappa by Algorithm and SUbsampling Method",
+      escape = FALSE) %>%
+  kable_styling()  
+```
+
 ```{r cs2-kappa-class, fig.cap='CS2 Set Class-Specific Kappa', fig.width=8}
 ivs2_kappa_class <- ivs2 %>%
   filter(grepl("kappa\\.", measure)) %>%
@@ -537,6 +596,25 @@ p <-
     title = "SMOTE Kappa by Algorithm and Dataset"
   )
 print(p)
+```
+
+```{r smote-kappa-table}
+ivs_smote_kappa_table <- ivs_smote_kappa %>%
+  arrange(algorithm) %>%
+  mutate(across(where(is.numeric), round, digits = 3)) %>%
+  mutate(percentile_50 = ifelse(
+    percentile_50 == max(percentile_50),
+    cell_spec(percentile_50, bold = TRUE),
+    percentile_50
+  )) %>%
+  pivot_wider(id_cols = dataset,
+              names_from = "algorithm",
+              values_from = "percentile_50")
+
+kable(ivs_smote_kappa_table,
+      caption = "SMOTE Kappa by Algorithm and Dataset",
+      escape = FALSE) %>%
+  kable_styling()  
 ```
 
 ```{r smote-kappa-class, fig.cap='SMOTE Class-Specific Kappa by Algorithm and Dataset', fig.width=8}
