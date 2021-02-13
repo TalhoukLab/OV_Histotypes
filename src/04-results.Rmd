@@ -12,28 +12,52 @@ ivs2 <- readRDS(here::here("data/iv_summary_cs2_all.rds"))
 ```
 
 ```{r ivs-combine}
+ivst <- ivst %>% mutate(sampling = fct_inorder(sampling))
+ivs1 <- ivs1 %>% mutate(sampling = fct_inorder(sampling))
+ivs2 <- ivs2 %>% mutate(sampling = fct_inorder(sampling))
 ivs <- bind_rows(ivst, ivs1, ivs2) %>%
   mutate(dataset = factor(
     dataset,
     levels = c("train", "cs1_all", "cs2_all"),
     labels = c("Training", "CS1", "CS2")
-  ))
+  ),
+  sampling = fct_inorder(sampling))
 ```
 
-We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overall F1-score of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
+We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overallaccuracy of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
 
 ## Training Set
+
+### Accuracy
+
+```{r train-accuracy, fig.cap='Training Set Accuracy'}
+ivst_accuracy <- ivst %>% 
+  filter(measure == "accuracy") %>% 
+  mutate(algorithm = fct_reorder2(algorithm, sampling, percentile_50))
+
+alg_levels <- levels(ivst_accuracy[["algorithm"]])
+
+p <-
+  ggplot(ivst_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Accuracy",
+    color = "Subsampling",
+    title = "Training Set Accuracy by Algorithm and Subsampling Method"
+  )
+print(p)
+```
 
 ### F1-Score
 
 ```{r train-f1, fig.cap='Training Set F1-Score'}
 ivst_f1 <- ivst %>%
   filter(measure == "macro_f1") %>%
-  mutate(
-    sampling = fct_inorder(sampling),
-    algorithm = fct_reorder2(algorithm, sampling, percentile_50)
-  )
-alg_levels <- levels(ivst_f1[["algorithm"]])
+  mutate(algorithm = alg_levels)
 
 p <-
   ggplot(ivst_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
@@ -55,7 +79,6 @@ ivst_f1_class <- ivst %>%
   filter(grepl("f1\\.", measure)) %>%
   mutate(
     measure = gsub("f1\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -80,10 +103,7 @@ print(p)
 ```{r train-kappa, fig.cap='Training Set Kappa'}
 ivst_kappa <- ivst %>%
   filter(measure == "kappa") %>%
-  mutate(
-    sampling = fct_inorder(sampling),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
 
 p <-
   ggplot(ivst_kappa, aes(x = algorithm, y = percentile_50, color = sampling)) +
@@ -105,7 +125,6 @@ ivst_kappa_class <- ivst %>%
   filter(grepl("kappa\\.", measure)) %>%
   mutate(
     measure = gsub("kappa\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -131,7 +150,6 @@ print(p)
 ivst_gmean <- ivst %>%
   filter(measure == "gmean") %>%
   mutate(
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -155,7 +173,6 @@ ivst_gmean_class <- ivst %>%
   filter(grepl("gmean\\.", measure)) %>%
   mutate(
     measure = gsub("gmean\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -177,15 +194,34 @@ print(p)
 
 ## CS1 Set
 
+### Accuracy
+
+```{r cs1-accuracy, fig.cap='CS1 Set Accuracy'}
+ivs1_accuracy <- ivs1 %>%
+  filter(measure == "accuracy") %>%
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
+
+p <-
+  ggplot(ivs1_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Accuracy",
+    color = "Subsampling",
+    title = "CS1 Set Accuracy by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
 ### F1-Score
 
 ```{r cs1-f1, fig.cap='CS1 Set F1-Score'}
 ivs1_f1 <- ivs1 %>%
   filter(measure == "macro_f1") %>%
-  mutate(
-    sampling = fct_inorder(sampling),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
 
 p <-
   ggplot(ivs1_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
@@ -207,7 +243,6 @@ ivs1_f1_class <- ivs1 %>%
   filter(grepl("f1\\.", measure)) %>%
   mutate(
     measure = gsub("f1\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -232,10 +267,7 @@ print(p)
 ```{r cs1-kappa, fig.cap='CS1 Set Kappa'}
 ivs1_kappa <- ivs1 %>%
   filter(measure == "kappa") %>%
-  mutate(
-    sampling = fct_inorder(sampling),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
 
 p <-
   ggplot(ivs1_kappa, aes(x = algorithm, y = percentile_50, color = sampling)) +
@@ -257,7 +289,6 @@ ivs1_kappa_class <- ivs1 %>%
   filter(grepl("kappa\\.", measure)) %>%
   mutate(
     measure = gsub("kappa\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -282,10 +313,7 @@ print(p)
 ```{r cs1-gmean, fig.cap='CS1 Set G-mean'}
 ivs1_gmean <- ivs1 %>%
   filter(measure == "gmean") %>%
-  mutate(
-    sampling = fct_inorder(sampling),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
 
 p <-
   ggplot(ivs1_gmean, aes(x = algorithm, y = percentile_50, color = sampling)) +
@@ -307,7 +335,6 @@ ivs1_gmean_class <- ivs1 %>%
   filter(grepl("gmean\\.", measure)) %>%
   mutate(
     measure = gsub("gmean\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -329,15 +356,34 @@ print(p)
 
 ## CS2 Set
 
+### Accuracy
+
+```{r cs2-accuracy, fig.cap='CS2 Set Accuracy'}
+ivs2_accuracy <- ivs2 %>%
+  filter(measure == "accuracy") %>%
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
+
+p <-
+  ggplot(ivs2_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Algorithm",
+    y = "Accuracy",
+    color = "Subsampling",
+    title = "CS2 Set Accuracy by Algorithm and Subsampling Method"
+  )
+print(p)
+```
+
 ### F1-Score
 
 ```{r cs2-f1, fig.cap='CS2 Set F1-Score'}
 ivs2_f1 <- ivs2 %>%
   filter(measure == "macro_f1") %>%
-  mutate(
-    sampling = fct_inorder(sampling),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
 
 p <-
   ggplot(ivs2_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
@@ -359,7 +405,6 @@ ivs2_f1_class <- ivs2 %>%
   filter(grepl("f1\\.", measure)) %>%
   mutate(
     measure = gsub("f1\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -384,10 +429,7 @@ print(p)
 ```{r cs2-kappa, fig.cap='CS2 Set Kappa'}
 ivs2_kappa <- ivs2 %>%
   filter(measure == "kappa") %>%
-  mutate(
-    sampling = fct_inorder(sampling),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
 
 p <-
   ggplot(ivs2_kappa, aes(x = algorithm, y = percentile_50, color = sampling)) +
@@ -409,7 +451,6 @@ ivs2_kappa_class <- ivs2 %>%
   filter(grepl("kappa\\.", measure)) %>%
   mutate(
     measure = gsub("kappa\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
@@ -434,10 +475,7 @@ print(p)
 ```{r cs2-gmean, fig.cap='CS2 Set G-mean'}
 ivs2_gmean <- ivs2 %>%
   filter(measure == "gmean") %>%
-  mutate(
-    sampling = fct_inorder(sampling),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
 
 p <-
   ggplot(ivs2_gmean, aes(x = algorithm, y = percentile_50, color = sampling)) +
@@ -459,7 +497,6 @@ ivs2_gmean_class <- ivs2 %>%
   filter(grepl("gmean\\.", measure)) %>%
   mutate(
     measure = gsub("gmean\\.", "", measure),
-    sampling = fct_inorder(sampling),
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
