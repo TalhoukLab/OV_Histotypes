@@ -17,4 +17,4 @@ link-citations: true
 
 This report of statistical findings describes the classification of ovarian cancer histotypes using data from NanoString CodeSets.
 
-Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang implemented class imbalance techniques, Derek Chiu conducted the normalization and statistical analysis, and Aline Talhouk lead the project.
+Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang implemented class imbalance techniques, Derek Chiu conducted the normalization and statistical analysis, and Lauren Tindale and Aline Talhouk are the project leads.
