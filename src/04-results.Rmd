@@ -55,7 +55,7 @@ print(p)
 ```{r train-f1, fig.cap='Training Set F1-Score'}
 ivst_f1 <- ivst %>%
   filter(measure == "macro_f1") %>%
-  mutate(algorithm = alg_levels)
+  mutate(algorithm = factor(algorithm, levels = alg_levels))
 
 p <- plot_measure(ivst_f1) +
   labs(
