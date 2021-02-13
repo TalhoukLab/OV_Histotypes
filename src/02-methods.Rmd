@@ -238,16 +238,15 @@ Concordance between CodeSets using the different normalization strategies was co
 
 ## Histotype Classification
 
-We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the [splendid](https://alinetalhouk.github.io/splendid/) package.
+We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for the Training Set, CS1 and CS2. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. Implementations of the techniques below were called from the [splendid](https://alinetalhouk.github.io/splendid/) package.
 
 -   Classifiers:
 
     -   Random Forest
-    -   Adaboost
-    -   XGBoost
-    -   LDA
     -   SVM
-    -   K-Nearest Neighbours
+    -   Adaboost
+    -   Multinomial Regression Model with Ridge Penalty
+    -   Multinomial Regression Model with LASSO Penalty
 
 -   Subsampling:
 
