@@ -8,9 +8,11 @@ library(forcats)
 library(knitr)
 library(kableExtra)
 library(magrittr)
-ivst <- readRDS(here::here("data/iv_summary_train.rds"))
-ivs1 <- readRDS(here::here("data/iv_summary_cs1_all.rds"))
-ivs2 <- readRDS(here::here("data/iv_summary_cs2_all.rds"))
+library(here)
+source(here("src/funs.R"))
+ivst <- readRDS(here("data/iv_summary_train.rds"))
+ivs1 <- readRDS(here("data/iv_summary_cs1_all.rds"))
+ivs2 <- readRDS(here("data/iv_summary_cs2_all.rds"))
 ```
 
 ```{r ivs-combine}
@@ -39,14 +41,8 @@ ivst_accuracy <- ivst %>%
 
 alg_levels <- levels(ivst_accuracy[["algorithm"]])
 
-p <-
-  ggplot(ivst_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivst_accuracy) +
   labs(
-    x = "Algorithm",
     y = "Accuracy",
     color = "Subsampling",
     title = "Training Set Accuracy by Algorithm and Subsampling Method"
@@ -61,14 +57,8 @@ ivst_f1 <- ivst %>%
   filter(measure == "macro_f1") %>%
   mutate(algorithm = alg_levels)
 
-p <-
-  ggplot(ivst_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivst_f1) +
   labs(
-    x = "Algorithm",
     y = "F1-Score",
     color = "Subsampling",
     title = "Training Set Macro-Averaged F1-Score by Algorithm and Subsampling Method"
@@ -84,15 +74,9 @@ ivst_f1_class <- ivst %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivst_f1_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.8)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivst_f1_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "F1-Score",
     color = "Subsampling",
     title = "Training Set Class-Specific F1-Score by Algorithm and Subsampling Method"
@@ -107,14 +91,8 @@ ivst_kappa <- ivst %>%
   filter(measure == "kappa") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivst_kappa, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivst_kappa) +
   labs(
-    x = "Algorithm",
     y = "Kappa",
     color = "Subsampling",
     title = "Training Set Kappa by Algorithm and Subsampling Method"
@@ -149,15 +127,9 @@ ivst_kappa_class <- ivst %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivst_kappa_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.8)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivst_kappa_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "Kappa",
     color = "Subsampling",
     title = "Training Set Class-Specific Kappa by Algorithm and Subsampling Method"
@@ -174,14 +146,8 @@ ivst_gmean <- ivst %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivst_gmean, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivst_gmean) +
   labs(
-    x = "Algorithm",
     y = "G-mean",
     color = "Subsampling",
     title = "Training Set G-mean by Algorithm and Subsampling Method"
@@ -197,15 +163,9 @@ ivst_gmean_class <- ivst %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivst_gmean_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivst_gmean_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "G-mean",
     color = "Subsampling",
     title = "Training Set Class Specific G-mean by Algorithm and Subsampling Method"
@@ -222,14 +182,8 @@ ivs1_accuracy <- ivs1 %>%
   filter(measure == "accuracy") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivs1_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs1_accuracy) +
   labs(
-    x = "Algorithm",
     y = "Accuracy",
     color = "Subsampling",
     title = "CS1 Set Accuracy by Algorithm and Subsampling Method"
@@ -244,14 +198,8 @@ ivs1_f1 <- ivs1 %>%
   filter(measure == "macro_f1") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivs1_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs1_f1) +
   labs(
-    x = "Algorithm",
     y = "F1-Score",
     color = "Subsampling",
     title = "CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method"
@@ -267,15 +215,9 @@ ivs1_f1_class <- ivs1 %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivs1_f1_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.8)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs1_f1_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "F1-Score",
     color = "Subsampling",
     title = "CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method"
@@ -290,14 +232,8 @@ ivs1_kappa <- ivs1 %>%
   filter(measure == "kappa") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivs1_kappa, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs1_kappa) +
   labs(
-    x = "Algorithm",
     y = "Kappa",
     color = "Subsampling",
     title = "CS1 Set Kappa by Algorithm and Subsampling Method"
@@ -332,15 +268,9 @@ ivs1_kappa_class <- ivs1 %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivs1_kappa_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.8)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs1_kappa_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "Kappa",
     color = "Subsampling",
     title = "CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method"
@@ -355,14 +285,8 @@ ivs1_gmean <- ivs1 %>%
   filter(measure == "gmean") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivs1_gmean, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs1_gmean) +
   labs(
-    x = "Algorithm",
     y = "G-mean",
     color = "Subsampling",
     title = "CS1 Set G-mean by Algorithm and Subsampling Method"
@@ -378,15 +302,9 @@ ivs1_gmean_class <- ivs1 %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivs1_gmean_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs1_gmean_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "G-mean",
     color = "Subsampling",
     title = "CS1 Set Class Specific G-mean by Algorithm and Subsampling Method"
@@ -403,14 +321,8 @@ ivs2_accuracy <- ivs2 %>%
   filter(measure == "accuracy") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivs2_accuracy, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs2_accuracy) +
   labs(
-    x = "Algorithm",
     y = "Accuracy",
     color = "Subsampling",
     title = "CS2 Set Accuracy by Algorithm and Subsampling Method"
@@ -425,14 +337,8 @@ ivs2_f1 <- ivs2 %>%
   filter(measure == "macro_f1") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivs2_f1, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs2_f1) +
   labs(
-    x = "Algorithm",
     y = "F1-Score",
     color = "Subsampling",
     title = "CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method"
@@ -448,15 +354,9 @@ ivs2_f1_class <- ivs2 %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivs2_f1_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.8)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs2_f1_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "F1-Score",
     color = "Subsampling",
     title = "CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method"
@@ -471,14 +371,8 @@ ivs2_kappa <- ivs2 %>%
   filter(measure == "kappa") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivs2_kappa, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs2_kappa) +
   labs(
-    x = "Algorithm",
     y = "Kappa",
     color = "Subsampling",
     title = "CS2 Set Kappa by Algorithm and Subsampling Method"
@@ -513,15 +407,9 @@ ivs2_kappa_class <- ivs2 %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivs2_kappa_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.8)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs2_kappa_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "Kappa",
     color = "Subsampling",
     title = "CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method"
@@ -536,14 +424,8 @@ ivs2_gmean <- ivs2 %>%
   filter(measure == "gmean") %>%
   mutate(algorithm = factor(algorithm, levels = alg_levels))
 
-p <-
-  ggplot(ivs2_gmean, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs2_gmean) +
   labs(
-    x = "Algorithm",
     y = "G-mean",
     color = "Subsampling",
     title = "CS2 Set G-mean by Algorithm and Subsampling Method"
@@ -559,15 +441,9 @@ ivs2_gmean_class <- ivs2 %>%
     algorithm = factor(algorithm, levels = alg_levels)
   )
 
-p <-
-  ggplot(ivs2_gmean_class, aes(x = algorithm, y = percentile_50, color = sampling)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+p <- plot_measure(ivs2_gmean_class) +
   facet_wrap(vars(measure), ncol = 2) +
   labs(
-    x = "Algorithm",
     y = "G-mean",
     color = "Subsampling",
     title = "CS2 Set Class Specific G-mean by Algorithm and Subsampling Method"
@@ -586,9 +462,10 @@ p <-
   ggplot(ivs_smote_kappa, aes(x = algorithm, y = percentile_50, color = dataset)) +
   geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
                   position = position_dodge(width = 0.4)) +
-  scale_color_brewer(palette = "Dark2") +
+  
   theme_bw() +
   theme(plot.title = element_text(face = "bold")) +
+  scale_color_brewer(palette = "Dark2") +
   labs(
     x = "Algorithm",
     y = "Kappa",

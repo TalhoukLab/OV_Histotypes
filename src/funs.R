@@ -33,3 +33,15 @@ split_hist <- function(data, hist_df) {
     split(.$revHist) %>%
     purrr::map(dplyr::select, -"revHist")
 }
+
+# Plot internal validitiy measures
+plot_measure <- function(data) {
+  p <-
+    ggplot(data, aes(x = algorithm, y = percentile_50, color = sampling)) +
+    geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                    position = position_dodge(width = 0.4)) +
+    theme_bw() +
+    theme(plot.title = element_text(face = "bold")) +
+    xlab("Algorithm")
+  print(p)
+}
