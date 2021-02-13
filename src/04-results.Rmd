@@ -3,6 +3,7 @@
 ```{r setup-04}
 # Load packages and data
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(forcats)
 library(knitr)
@@ -111,10 +112,11 @@ ivst_kappa_table <- ivst_kappa %>%
   )) %>%
   pivot_wider(id_cols = sampling,
               names_from = "algorithm",
-              values_from = "percentile_50")
+              values_from = "percentile_50") %>% 
+  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
 
 kable(ivst_kappa_table,
-      caption = "Training Set Kappa by Algorithm and SUbsampling Method",
+      caption = "Training Set Kappa by Algorithm and Subsampling Method",
       escape = FALSE) %>%
   kable_styling()  
 ```
@@ -252,10 +254,11 @@ ivs1_kappa_table <- ivs1_kappa %>%
   )) %>%
   pivot_wider(id_cols = sampling,
               names_from = "algorithm",
-              values_from = "percentile_50")
+              values_from = "percentile_50") %>% 
+  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
 
 kable(ivs1_kappa_table,
-      caption = "CS1 Set Kappa by Algorithm and SUbsampling Method",
+      caption = "CS1 Set Kappa by Algorithm and Subsampling Method",
       escape = FALSE) %>%
   kable_styling()  
 ```
@@ -391,10 +394,11 @@ ivs2_kappa_table <- ivs2_kappa %>%
   )) %>%
   pivot_wider(id_cols = sampling,
               names_from = "algorithm",
-              values_from = "percentile_50")
+              values_from = "percentile_50") %>% 
+  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
 
 kable(ivs2_kappa_table,
-      caption = "CS2 Set Kappa by Algorithm and SUbsampling Method",
+      caption = "CS2 Set Kappa by Algorithm and Subsampling Method",
       escape = FALSE) %>%
   kable_styling()  
 ```
@@ -486,7 +490,8 @@ ivs_smote_kappa_table <- ivs_smote_kappa %>%
   )) %>%
   pivot_wider(id_cols = dataset,
               names_from = "algorithm",
-              values_from = "percentile_50")
+              values_from = "percentile_50") %>% 
+  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
 
 kable(ivs_smote_kappa_table,
       caption = "SMOTE Kappa by Algorithm and Dataset",
