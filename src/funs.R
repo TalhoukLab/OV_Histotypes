@@ -43,5 +43,4 @@ plot_measure <- function(data) {
     theme_bw() +
     theme(plot.title = element_text(face = "bold")) +
     xlab("Algorithm")
-  print(p)
 }
