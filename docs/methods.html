@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2021-02-12" />
+<meta name="date" content="2021-02-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -51,6 +51,8 @@
 
 
 
+<script src="assets/kePrint-0.0.1/kePrint.js"></script>
+<link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
 
 
@@ -105,21 +107,24 @@
 <ul>
 <li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#training-set"><i class="fa fa-check"></i><b>4.1</b> Training Set</a>
 <ul>
-<li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#f1-score"><i class="fa fa-check"></i><b>4.1.1</b> F1-Score</a></li>
-<li class="chapter" data-level="4.1.2" data-path="results.html"><a href="results.html#kappa"><i class="fa fa-check"></i><b>4.1.2</b> Kappa</a></li>
-<li class="chapter" data-level="4.1.3" data-path="results.html"><a href="results.html#g-mean"><i class="fa fa-check"></i><b>4.1.3</b> G-mean</a></li>
+<li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#accuracy"><i class="fa fa-check"></i><b>4.1.1</b> Accuracy</a></li>
+<li class="chapter" data-level="4.1.2" data-path="results.html"><a href="results.html#f1-score"><i class="fa fa-check"></i><b>4.1.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.1.3" data-path="results.html"><a href="results.html#kappa"><i class="fa fa-check"></i><b>4.1.3</b> Kappa</a></li>
+<li class="chapter" data-level="4.1.4" data-path="results.html"><a href="results.html#g-mean"><i class="fa fa-check"></i><b>4.1.4</b> G-mean</a></li>
 </ul></li>
 <li class="chapter" data-level="4.2" data-path="results.html"><a href="results.html#cs1-set"><i class="fa fa-check"></i><b>4.2</b> CS1 Set</a>
 <ul>
-<li class="chapter" data-level="4.2.1" data-path="results.html"><a href="results.html#f1-score-1"><i class="fa fa-check"></i><b>4.2.1</b> F1-Score</a></li>
-<li class="chapter" data-level="4.2.2" data-path="results.html"><a href="results.html#kappa-1"><i class="fa fa-check"></i><b>4.2.2</b> Kappa</a></li>
-<li class="chapter" data-level="4.2.3" data-path="results.html"><a href="results.html#g-mean-1"><i class="fa fa-check"></i><b>4.2.3</b> G-mean</a></li>
+<li class="chapter" data-level="4.2.1" data-path="results.html"><a href="results.html#accuracy-1"><i class="fa fa-check"></i><b>4.2.1</b> Accuracy</a></li>
+<li class="chapter" data-level="4.2.2" data-path="results.html"><a href="results.html#f1-score-1"><i class="fa fa-check"></i><b>4.2.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.2.3" data-path="results.html"><a href="results.html#kappa-1"><i class="fa fa-check"></i><b>4.2.3</b> Kappa</a></li>
+<li class="chapter" data-level="4.2.4" data-path="results.html"><a href="results.html#g-mean-1"><i class="fa fa-check"></i><b>4.2.4</b> G-mean</a></li>
 </ul></li>
 <li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#cs2-set"><i class="fa fa-check"></i><b>4.3</b> CS2 Set</a>
 <ul>
-<li class="chapter" data-level="4.3.1" data-path="results.html"><a href="results.html#f1-score-2"><i class="fa fa-check"></i><b>4.3.1</b> F1-Score</a></li>
-<li class="chapter" data-level="4.3.2" data-path="results.html"><a href="results.html#kappa-2"><i class="fa fa-check"></i><b>4.3.2</b> Kappa</a></li>
-<li class="chapter" data-level="4.3.3" data-path="results.html"><a href="results.html#g-mean-2"><i class="fa fa-check"></i><b>4.3.3</b> G-mean</a></li>
+<li class="chapter" data-level="4.3.1" data-path="results.html"><a href="results.html#accuracy-2"><i class="fa fa-check"></i><b>4.3.1</b> Accuracy</a></li>
+<li class="chapter" data-level="4.3.2" data-path="results.html"><a href="results.html#f1-score-2"><i class="fa fa-check"></i><b>4.3.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.3.3" data-path="results.html"><a href="results.html#kappa-2"><i class="fa fa-check"></i><b>4.3.3</b> Kappa</a></li>
+<li class="chapter" data-level="4.3.4" data-path="results.html"><a href="results.html#g-mean-2"><i class="fa fa-check"></i><b>4.3.4</b> G-mean</a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="results.html"><a href="results.html#smote-kappa-summary"><i class="fa fa-check"></i><b>4.4</b> SMOTE Kappa Summary</a></li>
 </ul></li>
@@ -484,16 +489,15 @@
 </div>
 <div id="histotype-classification" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Histotype Classification</h2>
-<p>We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the <a href="https://alinetalhouk.github.io/splendid/">splendid</a> package.</p>
+<p>We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for the Training Set, CS1 and CS2. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. Implementations of the techniques below were called from the <a href="https://alinetalhouk.github.io/splendid/">splendid</a> package.</p>
 <ul>
 <li><p>Classifiers:</p>
 <ul>
 <li>Random Forest</li>
-<li>Adaboost</li>
-<li>XGBoost</li>
-<li>LDA</li>
 <li>SVM</li>
-<li>K-Nearest Neighbours</li>
+<li>Adaboost</li>
+<li>Multinomial Regression Model with Ridge Penalty</li>
+<li>Multinomial Regression Model with LASSO Penalty</li>
 </ul></li>
 <li><p>Subsampling:</p>
 <ul>

@@ -92,6 +92,20 @@
 \titlespacing*{\chapter}{0pt}{0pt}{40pt}
 
 \renewcommand{\bibname}{References}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \ifluatex
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -100,7 +114,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2021-02-12}
+\date{2021-02-14}
 
 \begin{document}
 \maketitle
@@ -118,7 +132,7 @@
 
 This report of statistical findings describes the classification of ovarian cancer histotypes using data from NanoString CodeSets.
 
-Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang implemented class imbalance techniques, Derek Chiu conducted the normalization and statistical analysis, and Aline Talhouk lead the project.
+Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang implemented class imbalance techniques, Derek Chiu conducted the normalization and statistical analysis, and Lauren Tindale and Aline Talhouk are the project leads.
 
 \hypertarget{introduction}{%
 \chapter{Introduction}\label{introduction}}
@@ -459,7 +473,7 @@ Concordance between CodeSets using the different normalization strategies was co
 \hypertarget{histotype-classification}{%
 \section{Histotype Classification}\label{histotype-classification}}
 
-We use 6 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for CS1 and CS2. The pipeline was run using many SGE batch jobs as a way of parallelization on a CentOS 5 server. Implementations of the techniques below were called from the \href{https://alinetalhouk.github.io/splendid/}{splendid} package.
+We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for the Training Set, CS1 and CS2. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. Implementations of the techniques below were called from the \href{https://alinetalhouk.github.io/splendid/}{splendid} package.
 
 \begin{itemize}
 \item
@@ -470,15 +484,13 @@ We use 6 classification algorithms and 4 subsampling methods across 500 repetiti
   \item
     Random Forest
   \item
-    Adaboost
-  \item
-    XGBoost
-  \item
-    LDA
-  \item
     SVM
   \item
-    K-Nearest Neighbours
+    Adaboost
+  \item
+    Multinomial Regression Model with Ridge Penalty
+  \item
+    Multinomial Regression Model with LASSO Penalty
   \end{itemize}
 \item
   Subsampling:
@@ -1673,10 +1685,22 @@ LGSC & 20 & 2\%\\
 \hypertarget{results}{%
 \chapter{Results}\label{results}}
 
-We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overall F1-score of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
+We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overallaccuracy of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
 
 \hypertarget{training-set}{%
 \section{Training Set}\label{training-set}}
+
+\hypertarget{accuracy}{%
+\subsection{Accuracy}\label{accuracy}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-accuracy-1} 
+
+}
+
+\caption{Training Set Accuracy}\label{fig:train-accuracy}
+\end{figure}
 
 \hypertarget{f1-score}{%
 \subsection{F1-Score}\label{f1-score}}
@@ -1711,6 +1735,25 @@ We show internal validation summaries for the combined classifier training set, 
 \caption{Training Set Kappa}\label{fig:train-kappa}
 \end{figure}
 
+\begin{table}
+
+\caption{\label{tab:train-kappa-table}Training Set Kappa by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+\hline
+none & 0.793 & 0.819 & 0.745 & 0.798 & 0.798\\
+\hline
+up & 0.809 & 0.808 & 0.828 & 0.739 & 0.745\\
+\hline
+down & 0.698 & 0.691 & 0.683 & 0.667 & 0.631\\
+\hline
+smote & \textbf{0.831} & 0.811 & 0.81 & 0.766 & 0.758\\
+\hline
+\end{tabular}
+\end{table}
+
 \begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-kappa-class-1} 
@@ -1743,6 +1786,18 @@ We show internal validation summaries for the combined classifier training set, 
 
 \hypertarget{cs1-set}{%
 \section{CS1 Set}\label{cs1-set}}
+
+\hypertarget{accuracy-1}{%
+\subsection{Accuracy}\label{accuracy-1}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-accuracy-1} 
+
+}
+
+\caption{CS1 Set Accuracy}\label{fig:cs1-accuracy}
+\end{figure}
 
 \hypertarget{f1-score-1}{%
 \subsection{F1-Score}\label{f1-score-1}}
@@ -1777,6 +1832,25 @@ We show internal validation summaries for the combined classifier training set, 
 \caption{CS1 Set Kappa}\label{fig:cs1-kappa}
 \end{figure}
 
+\begin{table}
+
+\caption{\label{tab:cs1-kappa-table}CS1 Set Kappa by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+\hline
+none & 0.724 & \textbf{0.766} & 0.697 & 0.752 & 0.74\\
+\hline
+up & 0.756 & 0.752 & 0.742 & 0.757 & 0.732\\
+\hline
+down & 0.716 & 0.72 & 0.687 & 0.706 & 0.674\\
+\hline
+smote & 0.763 & 0.759 & 0.751 & 0.755 & 0.736\\
+\hline
+\end{tabular}
+\end{table}
+
 \begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs1-kappa-class-1} 
@@ -1810,6 +1884,18 @@ We show internal validation summaries for the combined classifier training set, 
 \hypertarget{cs2-set}{%
 \section{CS2 Set}\label{cs2-set}}
 
+\hypertarget{accuracy-2}{%
+\subsection{Accuracy}\label{accuracy-2}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs2-accuracy-1} 
+
+}
+
+\caption{CS2 Set Accuracy}\label{fig:cs2-accuracy}
+\end{figure}
+
 \hypertarget{f1-score-2}{%
 \subsection{F1-Score}\label{f1-score-2}}
 
@@ -1842,6 +1928,25 @@ We show internal validation summaries for the combined classifier training set, 
 
 \caption{CS2 Set Kappa}\label{fig:cs2-kappa}
 \end{figure}
+
+\begin{table}
+
+\caption{\label{tab:cs2-kappa-table}CS2 Set Kappa by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+\hline
+none & 0.75 & 0.774 & 0.678 & \textbf{0.803} & 0.788\\
+\hline
+up & 0.763 & 0.761 & 0.791 & 0.787 & 0.774\\
+\hline
+down & 0.669 & 0.629 & 0.641 & 0.599 & 0.594\\
+\hline
+smote & 0.798 & 0.76 & 0.787 & 0.77 & 0.736\\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[H]
 
@@ -1884,6 +1989,23 @@ We show internal validation summaries for the combined classifier training set, 
 
 \caption{SMOTE Kappa by Algorithm and Dataset}\label{fig:smote-kappa}
 \end{figure}
+
+\begin{table}
+
+\caption{\label{tab:smote-kappa-table}SMOTE Kappa by Algorithm and Dataset}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+dataset & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+\hline
+Training & \textbf{0.831} & 0.811 & 0.81 & 0.766 & 0.758\\
+\hline
+CS1 & 0.763 & 0.759 & 0.751 & 0.755 & 0.736\\
+\hline
+CS2 & 0.798 & 0.76 & 0.787 & 0.77 & 0.736\\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[H]
 
