@@ -1417,12 +1417,12 @@
       "Version": "0.2.1",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "AlineTalhouk",
       "RemoteRepo": "splendid",
       "RemoteRef": "master",
-      "RemoteSha": "71fdc82a76bfbe728d6469cd34f525bbba3fd4ae",
-      "RemoteHost": "api.github.com",
-      "Hash": "2da012162d49f1ce9612bb5ba651c2c1"
+      "RemoteSha": "3006063cd19291199ba01f6ecba19308df46e009",
+      "Hash": "d790460b61328be0bd17ac0aadb708bc"
     },
     "stringi": {
       "Package": "stringi",
