@@ -737,6 +737,53 @@ knitr::kable(rand1_cs2_vs_cs3,
              digits = 2)
 ```
 
+Because Random1 is a random selection of reference samples, we want to assess the variability of the concordance measures by repeating Random1 on different selections and observing the distribution of the medians.
+
+```{r cc-rand1-cs23-meds, fig.cap='CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures'}
+hist_common <- hist %>%
+  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
+  distinct(ottaID, revHist)
+
+hist_rand1_list <- map(seq_len(100), ~ {
+  set.seed(.x)
+  hist_common  %>%
+    group_by(revHist) %>% 
+    slice_sample(n = 1) %>%
+    ungroup()
+})
+
+metrics_runs_cs23 <- imap_dfr(hist_rand1_list, ~ {
+  cs2_rand1 <- join_avg(cs2_clean, .x, "ottaID", "keep")
+  cs3_rand1 <- join_avg(cs3_clean, .x, "ottaID", "keep")
+  cs2_counts1 <- join_avg(cs2_clean, .x, "ottaID", "discard")
+  cs3_counts1 <- join_avg(cs3_clean, .x, "ottaID", "discard")
+  cs2_norm_rand1 <- as.data.frame(refMethod(cs2_counts1, cs3_rand1, cs2_rand1))
+  
+  pmap_dfr(list(cs2_norm_rand1, cs3_counts1), cor_stats) %>%
+    summarize_all(median) %>%
+    mutate(Run = .y)
+})
+
+metrics_meds_cs23 <- metrics_runs_cs23 %>% 
+  gather(key = "Metric", value = "Expression", -Run) %>% 
+  group_by(Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
+  ungroup()
+
+p_meds_cs23 <- ggplot(metrics_meds_cs23, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0.8, y = 90, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(cols = vars(Metric)) +
+  labs(y = "Count",
+       title = "CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_meds_cs23)
+```
+
 #### Random3 HGSC
 
 Randomly choose n=3 HGSC samples as the reference set, and use the rest as validation. This was tried in lieu of the fact that some non-HGSC histotypes have at most n=3 samples in total, so using Random3 or even Random2 would leave no samples remaining in the validation set for these histotypes.
