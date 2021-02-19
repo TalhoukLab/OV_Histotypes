@@ -257,6 +257,12 @@
       "Repository": "CRAN",
       "Hash": "543776ae6848fde2f48ff3816d0628bc"
     },
+    "batchAdj": {
+      "Package": "batchAdj",
+      "Version": "0.1.1",
+      "Source": "Local",
+      "Hash": "62332f0ba52491c573d72ed34a7692f1"
+    },
     "bibtex": {
       "Package": "bibtex",
       "Version": "0.4.2.2",
@@ -1414,15 +1420,15 @@
     },
     "splendid": {
       "Package": "splendid",
-      "Version": "0.2.1",
+      "Version": "0.2.1.9000",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "AlineTalhouk",
       "RemoteRepo": "splendid",
       "RemoteRef": "master",
-      "RemoteSha": "3006063cd19291199ba01f6ecba19308df46e009",
-      "Hash": "d790460b61328be0bd17ac0aadb708bc"
+      "RemoteSha": "b58ba6ff6c6abebaca8d239e5a10bcdfbdf84de4",
+      "RemoteHost": "api.github.com",
+      "Hash": "30497fad3bf5511f31f068b8a9ed6739"
     },
     "stringi": {
       "Package": "stringi",

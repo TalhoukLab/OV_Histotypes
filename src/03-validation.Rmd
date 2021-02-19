@@ -2,6 +2,7 @@
 
 ```{r setup-03}
 library(Amisc)
+library(batchAdj)
 library(forcats)
 library(scales)
 library(here)
@@ -735,6 +736,53 @@ rand1_cs2_vs_cs3 <-
 knitr::kable(rand1_cs2_vs_cs3,
              caption = "Random1 CS2 vs. CS3 Median Concordance Measures by Histotypes",
              digits = 2)
+```
+
+Because Random1 is a random selection of reference samples, we want to assess the variability of the concordance measures by repeating Random1 on different selections and observing the distribution of the medians.
+
+```{r cc-rand1-cs23-meds, fig.cap='CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures'}
+hist_common <- hist %>%
+  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
+  distinct(ottaID, revHist)
+
+hist_rand1_list <- map(seq_len(100), ~ {
+  set.seed(.x)
+  hist_common  %>%
+    group_by(revHist) %>% 
+    slice_sample(n = 1) %>%
+    ungroup()
+})
+
+metrics_runs_cs23 <- imap_dfr(hist_rand1_list, ~ {
+  cs2_rand1 <- join_avg(cs2_clean, .x, "ottaID", "keep")
+  cs3_rand1 <- join_avg(cs3_clean, .x, "ottaID", "keep")
+  cs2_counts1 <- join_avg(cs2_clean, .x, "ottaID", "discard")
+  cs3_counts1 <- join_avg(cs3_clean, .x, "ottaID", "discard")
+  cs2_norm_rand1 <- as.data.frame(refMethod(cs2_counts1, cs3_rand1, cs2_rand1))
+  
+  pmap_dfr(list(cs2_norm_rand1, cs3_counts1), cor_stats) %>%
+    summarize_all(median) %>%
+    mutate(Run = .y)
+})
+
+metrics_meds_cs23 <- metrics_runs_cs23 %>% 
+  gather(key = "Metric", value = "Expression", -Run) %>% 
+  group_by(Metric) %>%
+  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
+  ungroup()
+
+p_meds_cs23 <- ggplot(metrics_meds_cs23, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  geom_text(aes(x = 0.8, y = 90, label = Median),
+            hjust = 0,
+            vjust = 1,
+            check_overlap = TRUE) +
+  facet_grid(cols = vars(Metric)) +
+  labs(y = "Count",
+       title = "CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_meds_cs23)
 ```
 
 #### Random3 HGSC
@@ -1727,6 +1775,20 @@ knitr::kable(rand1_stats,
              digits = 2)
 ```
 
+```{r cs23-dsc}
+set.seed(2021)
+cs23_batch <- rep(2:3, each = nrow(cs3_counts1))
+cs23_dsc <- list(
+  `CS2-None vs CS3` = cs2_counts1,
+  `CS2-Random1 vs CS3` = cs2_norm_rand1,
+  `CS2-Pools vs CS3` = cs2_counts1_pools
+) %>%
+  map(bind_rows, cs3_counts1) %>% 
+  map_dfr(DSC, Y = cs23_batch, permut = 1000, .id = "Comparison")
+
+knitr::kable(cs23_dsc, caption = "DSC for CS2 vs CS3 Comparisons")
+```
+
 ### CodeSet Chaining
 
 #### CS1, CS2, CS3
@@ -1985,6 +2047,53 @@ p_rand1v3 <- ggplot(metrics_rand1v3, aes(Expression)) +
 print(p_rand1v3)
 ```
 
+```{r cs13-dsc}
+set.seed(2021)
+cs13_batch <- rep(c(1, 3), each = nrow(counts1v3[["CS3"]]))
+cs13_dsc <- list(
+  `CS1-None vs CS3` = counts1v3[["CS1-Non"]],
+  `CS1-Random1+Pools vs CS3` = counts1v3[["CS1-Random1+Pools"]],
+  `CS1-Random1 vs CS3` = counts1v3[["CS1-Random1"]]
+) %>% 
+  map(bind_rows, counts1v3[["CS3"]]) %>% 
+  map_dfr(DSC, Y = cs13_batch, permut = 1000, .id = "Comparison")
+
+knitr::kable(cs13_dsc, caption = "DSC for CS1 vs CS3 Comparisons")
+```
+
+```{r cs13-genes-topbot, fig.cap='Pairwise Top/Bottom 3 Genes between CS1 Data vs. CS3'}
+counts1v3_df <- counts1v3 %>%
+  map_dfr(~ {
+    rownames_to_column(.x, "ottaID") %>%
+      gather("Gene", "Expression", -ottaID)
+  },
+  .id = "Data") %>%
+  mutate(Gene = fct_inorder(Gene)) %>%
+  spread(Data, Expression)
+
+cs13_genes_topbot <- counts1v3_df %>% 
+  group_by(Gene) %>% 
+  summarize(R2 = cor(`CS1-Non`, CS3) ^ 2) %>%
+  filter(dense_rank(R2) <= 3 | dense_rank(desc(R2)) <= 3) %>% 
+  mutate(R2 = paste0("R2 = ", round(R2, 3)))
+
+counts1v3_df_topbot <- counts1v3_df %>% 
+  inner_join(cs13_genes_topbot, by = "Gene") %>% 
+  gather("Norm", "CS1", matches("CS1"))
+
+p_cs13_genes_topbot <-
+  ggplot(counts1v3_df_topbot, aes(x = CS1, y = CS3)) + 
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, color = "red") +
+  geom_text(aes(label = R2), x = -20, y = 2, size = 3, 
+            hjust = 0, check_overlap = TRUE) +
+  facet_grid(rows = vars(Norm), cols = vars(Gene)) +
+  labs(title = "Pairwise Top/Bottom 3 Genes between CS1 Data vs. CS3") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs13_genes_topbot)
+```
+
 ```{r cs-chain-rand1-cs2v3, fig.cap='CS2 CodeSet Chaining Concordance Measure Distributions'}
 counts2v3 <-
   list(cs2_counts1, cs3_common_rand1, cs2_common_pools) %>%
@@ -2053,9 +2162,11 @@ cs4_poolsA <- cs4_pools %>%
   ))
 cs4_poolsB <- cs4_pools %>% 
   select(Name, matches("Pool ?(9|10|11).*")) %>% 
+  `rownames<-`(NULL) %>% 
   column_to_rownames("Name")
 cs4_poolsC <- cs4_pools %>% 
   select(Name, matches("Pool ?[4-5|7-8].*")) %>% 
+  `rownames<-`(NULL) %>% 
   column_to_rownames("Name")
 
 # CS5 data excluding samples that failed QC
@@ -2267,6 +2378,20 @@ p_pools5_BA <- ggplot(metrics_pools5_BA, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools5_BA)
+```
+
+```{r cs35-BA-dsc}
+set.seed(2021)
+cs35_BA_batch <- rep(c(3, 5), each = nrow(counts5_BA[["CS3-Non"]]))
+cs35_BA_dsc <- list(
+  `CS3 vs CS5-None` = counts5_BA[["CS5-Non"]],
+  `CS3 vs CS5-NormBA` = counts5_BA[["CS5-NormBA"]],
+  `CS3 vs CS5-NormA` = counts5_BA[["CS5-NormA"]]
+) %>% 
+  map(bind_rows, counts5_BA[["CS3-Non"]]) %>% 
+  map_dfr(DSC, Y = cs35_BA_batch, permut = 1000, .id = "Comparisons")
+
+knitr::kable(cs35_BA_dsc, caption = "DSC for CS3 vs CS5 Set B/A Comparisons")
 ```
 
 ```{r cs-chain-cs4-setA, fig.cap='CS4 Set A Chaining Concordance Measure Distributions'}
@@ -2544,6 +2669,20 @@ p_pools5_CA <- ggplot(metrics_pools5_CA, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools5_CA)
+```
+
+```{r cs35-CA-dsc}
+set.seed(2021)
+cs35_CA_batch <- rep(c(3, 5), each = nrow(counts5_CA[["CS3-Non"]]))
+cs35_CA_dsc <- list(
+  `CS3 vs CS5-None` = counts5_CA[["CS5-Non"]],
+  `CS3 vs CS5-NormCA` = counts5_CA[["CS5-NormCA"]],
+  `CS3 vs CS5-NormA` = counts5_CA[["CS5-NormA"]]
+) %>% 
+  map(bind_rows, counts5_CA[["CS3-Non"]]) %>% 
+  map_dfr(DSC, Y = cs35_CA_batch, permut = 1000, .id = "Comparisons")
+
+knitr::kable(cs35_CA_dsc, caption = "DSC for CS3 vs CS5 Set C/A Comparisons")
 ```
 
 ```{r cs-chain-cs5-cs4-C, fig.cap='CS4 and CS5 using Set C Concordance Measure Distributions'}
