@@ -114,7 +114,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2021-02-16}
+\date{2021-02-19}
 
 \begin{document}
 \maketitle
@@ -939,6 +939,17 @@ MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61\\
 \end{tabular}
 \end{table}
 
+Because Random1 is a random selection of reference samples, we want to assess the variability of the concordance measures by repeating Random1 on different selections and observing the distribution of the medians.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cc-rand1-cs23-meds-1} 
+
+}
+
+\caption{CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures}\label{fig:cc-rand1-cs23-meds}
+\end{figure}
+
 \hypertarget{random3-hgsc}{%
 \subsubsection{Random3 HGSC}\label{random3-hgsc}}
 
@@ -1275,6 +1286,23 @@ MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61 & 0.68 & 0.78 & 0.51\\
 \end{tabular}
 \end{table}
 
+\begin{table}
+
+\caption{\label{tab:cs23-dsc}DSC for CS2 vs CS3 Comparisons}
+\centering
+\begin{tabular}[t]{l|r|r}
+\hline
+Comparison & DSC & pval\\
+\hline
+CS2-None vs CS3 & 0.126 & 0.032\\
+\hline
+CS2-Random1 vs CS3 & 0.084 & 0.475\\
+\hline
+CS2-Pools vs CS3 & 0.159 & 0.005\\
+\hline
+\end{tabular}
+\end{table}
+
 \hypertarget{codeset-chaining}{%
 \subsection{CodeSet Chaining}\label{codeset-chaining}}
 
@@ -1317,6 +1345,32 @@ MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61 & 0.68 & 0.78 & 0.51\\
 \caption{CS1 CodeSet Chaining Concordance Measure Distributions 2}\label{fig:cs-chain-rand1-cs1v3-2}
 \end{figure}
 
+\begin{table}
+
+\caption{\label{tab:cs13-dsc}DSC for CS1 vs CS3 Comparisons}
+\centering
+\begin{tabular}[t]{l|r|r}
+\hline
+Comparison & DSC & pval\\
+\hline
+CS1-None vs CS3 & 0.265 & 0\\
+\hline
+CS1-Random1+Pools vs CS3 & 0.351 & 0\\
+\hline
+CS1-Random1 vs CS3 & 0.229 & 0\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs13-genes-topbot-1} 
+
+}
+
+\caption{Pairwise Top/Bottom 3 Genes between CS1 Data vs. CS3}\label{fig:cs13-genes-topbot}
+\end{figure}
+
 \begin{figure}[H]
 
 {\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs-chain-rand1-cs2v3-1} 
@@ -1346,6 +1400,23 @@ MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61 & 0.68 & 0.78 & 0.51\\
 
 \caption{CS5 Set B/A Chaining Concordance  Measure Distributions 2}\label{fig:cs-chain-cs5-setBA-2}
 \end{figure}
+
+\begin{table}
+
+\caption{\label{tab:cs35-BA-dsc}DSC for CS3 vs CS5 Set B/A Comparisons}
+\centering
+\begin{tabular}[t]{l|r|r}
+\hline
+Comparisons & DSC & pval\\
+\hline
+CS3 vs CS5-None & 0.126 & 0.101\\
+\hline
+CS3 vs CS5-NormBA & 0.087 & 0.320\\
+\hline
+CS3 vs CS5-NormA & 0.144 & 0.047\\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[H]
 
@@ -1385,6 +1456,23 @@ MUC & 0.68 & 0.77 & 0.55 & 0.68 & 0.86 & 0.61 & 0.68 & 0.78 & 0.51\\
 
 \caption{CS5 Set C/A Chaining Concordance  Measure Distributions 2}\label{fig:cs-chain-cs5-setCA-2}
 \end{figure}
+
+\begin{table}
+
+\caption{\label{tab:cs35-CA-dsc}DSC for CS3 vs CS5 Set C/A Comparisons}
+\centering
+\begin{tabular}[t]{l|r|r}
+\hline
+Comparisons & DSC & pval\\
+\hline
+CS3 vs CS5-None & 0.126 & 0.101\\
+\hline
+CS3 vs CS5-NormCA & 0.383 & 0.000\\
+\hline
+CS3 vs CS5-NormA & 0.144 & 0.047\\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[H]
 

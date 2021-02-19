@@ -2162,9 +2162,11 @@ cs4_poolsA <- cs4_pools %>%
   ))
 cs4_poolsB <- cs4_pools %>% 
   select(Name, matches("Pool ?(9|10|11).*")) %>% 
+  `rownames<-`(NULL) %>% 
   column_to_rownames("Name")
 cs4_poolsC <- cs4_pools %>% 
   select(Name, matches("Pool ?[4-5|7-8].*")) %>% 
+  `rownames<-`(NULL) %>% 
   column_to_rownames("Name")
 
 # CS5 data excluding samples that failed QC
