@@ -2,6 +2,7 @@
 
 ```{r setup-03}
 library(Amisc)
+library(batchAdj)
 library(forcats)
 library(scales)
 library(here)
@@ -1774,6 +1775,20 @@ knitr::kable(rand1_stats,
              digits = 2)
 ```
 
+```{r cs23-dsc}
+set.seed(2021)
+cs23_batch <- rep(2:3, each = nrow(cs3_counts1))
+cs23_dsc <- list(
+  `CS2-None vs CS3` = cs2_counts1,
+  `CS2-Random1 vs CS3` = cs2_norm_rand1,
+  `CS2-Pools vs CS3` = cs2_counts1_pools
+) %>%
+  map(bind_rows, cs3_counts1) %>% 
+  map_dfr(DSC, Y = cs23_batch, permut = 1000, .id = "Comparison")
+
+knitr::kable(cs23_dsc, caption = "DSC for CS2 vs CS3 Comparisons")
+```
+
 ### CodeSet Chaining
 
 #### CS1, CS2, CS3
@@ -2030,6 +2045,20 @@ p_rand1v3 <- ggplot(metrics_rand1v3, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_rand1v3)
+```
+
+```{r cs13-dsc}
+set.seed(2021)
+cs13_batch <- rep(c(1, 3), each = nrow(counts1v3[["CS3"]]))
+cs13_dsc <- list(
+  `CS1-None vs CS3` = counts1v3[["CS1-Non"]],
+  `CS1-Random1+Pools vs CS3` = counts1v3[["CS1-Random1+Pools"]],
+  `CS1-Random1 vs CS3` = counts1v3[["CS1-Random1"]]
+) %>% 
+  map(bind_rows, counts1v3[["CS3"]]) %>% 
+  map_dfr(DSC, Y = cs13_batch, permut = 1000, .id = "Comparison")
+
+knitr::kable(cs13_dsc, caption = "DSC for CS1 vs CS3 Comparisons")
 ```
 
 ```{r cs-chain-rand1-cs2v3, fig.cap='CS2 CodeSet Chaining Concordance Measure Distributions'}
@@ -2316,6 +2345,20 @@ p_pools5_BA <- ggplot(metrics_pools5_BA, aes(Expression)) +
 print(p_pools5_BA)
 ```
 
+```{r cs35-BA-dsc}
+set.seed(2021)
+cs35_BA_batch <- rep(c(3, 5), each = nrow(counts5_BA[["CS3-Non"]]))
+cs35_BA_dsc <- list(
+  `CS3 vs CS5-None` = counts5_BA[["CS5-Non"]],
+  `CS3 vs CS5-NormBA` = counts5_BA[["CS5-NormBA"]],
+  `CS3 vs CS5-NormA` = counts5_BA[["CS5-NormA"]]
+) %>% 
+  map(bind_rows, counts5_BA[["CS3-Non"]]) %>% 
+  map_dfr(DSC, Y = cs35_BA_batch, permut = 1000, .id = "Comparisons")
+
+knitr::kable(cs35_BA_dsc, caption = "DSC for CS3 vs CS5 Set B/A Comparisons")
+```
+
 ```{r cs-chain-cs4-setA, fig.cap='CS4 Set A Chaining Concordance Measure Distributions'}
 cs34_norm <- cs3_norm_full %>%
   select(-one_of(names(ref_pools))) %>%
@@ -2591,6 +2634,20 @@ p_pools5_CA <- ggplot(metrics_pools5_CA, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_pools5_CA)
+```
+
+```{r cs35-CA-dsc}
+set.seed(2021)
+cs35_CA_batch <- rep(c(3, 5), each = nrow(counts5_CA[["CS3-Non"]]))
+cs35_CA_dsc <- list(
+  `CS3 vs CS5-None` = counts5_CA[["CS5-Non"]],
+  `CS3 vs CS5-NormCA` = counts5_CA[["CS5-NormCA"]],
+  `CS3 vs CS5-NormA` = counts5_CA[["CS5-NormA"]]
+) %>% 
+  map(bind_rows, counts5_CA[["CS3-Non"]]) %>% 
+  map_dfr(DSC, Y = cs35_CA_batch, permut = 1000, .id = "Comparisons")
+
+knitr::kable(cs35_CA_dsc, caption = "DSC for CS3 vs CS5 Set C/A Comparisons")
 ```
 
 ```{r cs-chain-cs5-cs4-C, fig.cap='CS4 and CS5 using Set C Concordance Measure Distributions'}
