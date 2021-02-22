@@ -765,15 +765,21 @@ metrics_runs_cs23 <- imap_dfr(hist_rand1_list, ~ {
     mutate(Run = .y)
 })
 
-metrics_meds_cs23 <- metrics_runs_cs23 %>% 
-  gather(key = "Metric", value = "Expression", -Run) %>% 
+metrics_meds_cs23 <- metrics_runs_cs23 %>%
+  gather(key = "Metric", value = "Expression", -Run) %>%
   group_by(Metric) %>%
-  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
+  mutate(
+    Min = min(Expression),
+    Median = median(Expression),
+    Max = max(Expression),
+    SD = sd(Expression),
+    Median_lab = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))
+  ) %>%
   ungroup()
 
 p_meds_cs23 <- ggplot(metrics_meds_cs23, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0.8, y = 90, label = Median),
+  geom_text(aes(x = 0.8, y = 90, label = Median_lab),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -783,6 +789,17 @@ p_meds_cs23 <- ggplot(metrics_meds_cs23, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_meds_cs23)
+```
+
+```{r metrics-summ-cs23}
+metrics_summ_cs23 <- metrics_meds_cs23 %>% 
+  arrange(Metric) %>% 
+  select(-c(Run, Expression, Median_lab)) %>% 
+  distinct()
+
+knitr::kable(metrics_summ_cs23, 
+             caption = "CS2 vs CS3 Random1 Normalized 100 Runs of Summary Concordance Measures",
+             digits = 3)
 ```
 
 #### Random3 HGSC
