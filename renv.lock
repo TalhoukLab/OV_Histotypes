@@ -1296,10 +1296,10 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "0.4.7",
+      "Version": "0.4.10",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "c06d2a6887f4b414f8e927afd9ee976a"
+      "Hash": "599df23c40a4fce9c7b4764f28c37857"
     },
     "rmarkdown": {
       "Package": "rmarkdown",
@@ -1338,10 +1338,10 @@
     },
     "rsample": {
       "Package": "rsample",
-      "Version": "0.0.5",
+      "Version": "0.0.9",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "48a16b22b5594526c3f24d79b7f8e645"
+      "Hash": "ca4701584cfcf4ac11e72db5fd728b35"
     },
     "rstudioapi": {
       "Package": "rstudioapi",
@@ -1410,6 +1410,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "a49c7ee61a72b1b3dc4b46354acbf64d"
+    },
+    "slider": {
+      "Package": "slider",
+      "Version": "0.1.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ac1eb08941cacd8ff16f0041ca60a3de"
     },
     "sourcetools": {
       "Package": "sourcetools",
@@ -1540,6 +1547,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "f62b960320b18fdffb2f0f76bb65dbaf"
+    },
+    "warp": {
+      "Package": "warp",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2982481615756e24e79fee95bdc95daa"
     },
     "webshot": {
       "Package": "webshot",
