@@ -2099,7 +2099,7 @@ counts1v3_df_topbot <- counts1v3_df %>%
   droplevels()
 ```
 
-```{r cs13-genes-topbot-non, fig.cap='Pairwise Genes by Top & Bottom 3 Rc for CS1-Non vs. CS3'}
+```{r cs13-genes-topbot-non, fig.cap='Pairwise Genes by Top/Bottom 3 Rc for CS1-Non vs. CS3'}
 p_cs13_genes_topbot_non <-
   ggplot(counts1v3_df_topbot %>%
            filter(Norm == "CS1-Non") %>%
@@ -2113,13 +2113,13 @@ p_cs13_genes_topbot_non <-
   scale_x_continuous(breaks = c(-8, -4, 0), limits = c(-12, 4)) +
   lims(y = c(-10, 3)) +
   labs(x = "CS1-Non",
-       title = "Pairwise Genes by Top & Bottom 3 Rc for CS1-Non vs. CS3") +
+       title = "Pairwise Genes by Top/Bottom 3 Rc for CS1-Non vs. CS3") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_cs13_genes_topbot_non)
 ```
 
-```{r cs13-genes-topbot-rand1, fig.cap='Pairwise Genes by Top & Bottom 3 Rc for CS1-Random1 vs. CS3'}
+```{r cs13-genes-topbot-rand1, fig.cap='Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1 vs. CS3'}
 p_cs13_genes_topbot_rand1 <-
   ggplot(counts1v3_df_topbot %>%
            filter(Norm == "CS1-Random1") %>%
@@ -2133,13 +2133,13 @@ p_cs13_genes_topbot_rand1 <-
   scale_x_continuous(breaks = c(-8, -4, 0), limits = c(-12, 4)) +
   lims(y = c(-10, 3)) +
   labs(x = "CS1-Random1",
-       title = "Pairwise Genes by Top & Bottom 3 Rc for CS1-Random1 vs. CS3") +
+       title = "Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1 vs. CS3") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_cs13_genes_topbot_rand1)
 ```
 
-```{r cs13-genes-topbot-rand1pools, fig.cap='Pairwise Genes by Top & Bottom 3 Rc for CS1-Random1+Pools vs. CS3'}
+```{r cs13-genes-topbot-rand1pools, fig.cap='Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1+Pools vs. CS3'}
 p_cs13_genes_topbot_rand1pools <-
   ggplot(counts1v3_df_topbot %>%
            filter(Norm == "CS1-Random1+Pools") %>%
@@ -2153,7 +2153,7 @@ p_cs13_genes_topbot_rand1pools <-
   scale_x_continuous(breaks = c(-8, -4, 0), limits = c(-12, 4)) +
   lims(y = c(-10, 3)) +
   labs(x = "CS1-Random1+Pools",
-       title = "Pairwise Genes by Top & Bottom 3 Rc for CS1-Random1+Pools vs. CS3") +
+       title = "Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1+Pools vs. CS3") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_cs13_genes_topbot_rand1pools)
