@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2021-02-19" />
+<meta name="date" content="2021-02-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -993,6 +993,41 @@ Figure 3.6: Random1 Normalized Concordance Measure Distributions
 Figure 3.7: CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures
 </p>
 </div>
+<table>
+<caption><span id="tab:metrics-summ-cs23">Table 3.12: </span>CS2 vs CS3 Random1 Normalized 100 Runs of Summary Concordance Measures</caption>
+<thead>
+<tr class="header">
+<th align="left">Metric</th>
+<th align="right">Min</th>
+<th align="right">Median</th>
+<th align="right">Max</th>
+<th align="right">SD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Ca</td>
+<td align="right">0.956</td>
+<td align="right">0.981</td>
+<td align="right">0.989</td>
+<td align="right">0.007</td>
+</tr>
+<tr class="even">
+<td align="left">R2</td>
+<td align="right">0.830</td>
+<td align="right">0.847</td>
+<td align="right">0.870</td>
+<td align="right">0.007</td>
+</tr>
+<tr class="odd">
+<td align="left">Rc</td>
+<td align="right">0.867</td>
+<td align="right">0.891</td>
+<td align="right">0.907</td>
+<td align="right">0.008</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="random3-hgsc" class="section level4" number="3.3.1.4">
 <h4><span class="header-section-number">3.3.1.4</span> Random3 HGSC</h4>
@@ -1003,9 +1038,9 @@ Figure 3.7: CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measu
 Figure 3.8: Random3 HGSC Normalized Concordance Measure Distributions
 </p>
 </div>
-<p>In Tables <a href="validation.html#tab:rand3-hgsc-cs1-vs-cs3">3.12</a> and <a href="validation.html#tab:rand3-hgsc-cs2-vs-cs3">3.13</a>, we calculate the concordance measures for CS1 vs. CS3 and CS2 cs. CS3, respectively. The measures are calculated for both non-normalized and normalized datasets (CS1, CS2), and split by histotype.</p>
+<p>In Tables <a href="validation.html#tab:rand3-hgsc-cs1-vs-cs3">3.13</a> and <a href="validation.html#tab:rand3-hgsc-cs2-vs-cs3">3.14</a>, we calculate the concordance measures for CS1 vs. CS3 and CS2 cs. CS3, respectively. The measures are calculated for both non-normalized and normalized datasets (CS1, CS2), and split by histotype.</p>
 <table>
-<caption><span id="tab:rand3-hgsc-cs1-vs-cs3">Table 3.12: </span>Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<caption><span id="tab:rand3-hgsc-cs1-vs-cs3">Table 3.13: </span>Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes</caption>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1066,7 +1101,7 @@ Figure 3.8: Random3 HGSC Normalized Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:rand3-hgsc-cs2-vs-cs3">Table 3.13: </span>Random3 HGSC CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<caption><span id="tab:rand3-hgsc-cs2-vs-cs3">Table 3.14: </span>Random3 HGSC CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1166,7 +1201,7 @@ Figure 3.12: CS2 Normalized Pools vs. CS3 Concordance Measure Distributions
 </p>
 </div>
 <table>
-<caption><span id="tab:pools-cs2non-vs-cs3">Table 3.14: </span>Pools Non-Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<caption><span id="tab:pools-cs2non-vs-cs3">Table 3.15: </span>Pools Non-Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1209,7 +1244,7 @@ Figure 3.12: CS2 Normalized Pools vs. CS3 Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:pools-cs2norm-vs-cs3">Table 3.15: </span>Pools Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<caption><span id="tab:pools-cs2norm-vs-cs3">Table 3.16: </span>Pools Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1323,7 +1358,7 @@ Figure 3.21: Random3 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
 <table>
-<caption><span id="tab:rand3-vs-pools-stats">Table 3.16: </span>Random3 Samples Comparisons Statistics by Histotypes</caption>
+<caption><span id="tab:rand3-vs-pools-stats">Table 3.17: </span>Random3 Samples Comparisons Statistics by Histotypes</caption>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1384,7 +1419,7 @@ Figure 3.22: Random2 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
 <table>
-<caption><span id="tab:rand2-vs-pools-stats">Table 3.17: </span>Random2 Samples Comparisons Statistics by Histotypes</caption>
+<caption><span id="tab:rand2-vs-pools-stats">Table 3.18: </span>Random2 Samples Comparisons Statistics by Histotypes</caption>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1469,7 +1504,7 @@ Figure 3.23: Random1 Samples Comparisons of Concordance Measure Distributions
 </p>
 </div>
 <table>
-<caption><span id="tab:rand1-vs-pools-stats">Table 3.18: </span>Random1 Samples Comparisons Statistics by Histotypes</caption>
+<caption><span id="tab:rand1-vs-pools-stats">Table 3.19: </span>Random1 Samples Comparisons Statistics by Histotypes</caption>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1548,7 +1583,7 @@ Figure 3.23: Random1 Samples Comparisons of Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:cs23-dsc">Table 3.19: </span>DSC for CS2 vs CS3 Comparisons</caption>
+<caption><span id="tab:cs23-dsc">Table 3.20: </span>DSC for CS2 vs CS3 Comparisons</caption>
 <thead>
 <tr class="header">
 <th align="left">Comparison</th>
@@ -1604,7 +1639,7 @@ Figure 3.27: CS1 CodeSet Chaining Concordance Measure Distributions 2
 </p>
 </div>
 <table>
-<caption><span id="tab:cs13-dsc">Table 3.20: </span>DSC for CS1 vs CS3 Comparisons</caption>
+<caption><span id="tab:cs13-dsc">Table 3.21: </span>DSC for CS1 vs CS3 Comparisons</caption>
 <thead>
 <tr class="header">
 <th align="left">Comparison</th>
@@ -1630,16 +1665,28 @@ Figure 3.27: CS1 CodeSet Chaining Concordance Measure Distributions 2
 </tr>
 </tbody>
 </table>
-<div class="figure" style="text-align: center"><span id="fig:cs13-genes-topbot"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs13-genes-topbot-1.png" alt="Pairwise Top/Bottom 3 Genes between CS1 Data vs. CS3" width="672" />
+<div class="figure" style="text-align: center"><span id="fig:cs13-genes-topbot-non"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs13-genes-topbot-non-1.png" alt="Pairwise Genes by Top/Bottom 3 Rc for CS1-Non vs. CS3" width="672" />
 <p class="caption">
-Figure 3.28: Pairwise Top/Bottom 3 Genes between CS1 Data vs. CS3
+Figure 3.28: Pairwise Genes by Top/Bottom 3 Rc for CS1-Non vs. CS3
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs13-genes-topbot-rand1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs13-genes-topbot-rand1-1.png" alt="Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1 vs. CS3" width="672" />
+<p class="caption">
+Figure 3.29: Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1 vs. CS3
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:cs13-genes-topbot-rand1pools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs13-genes-topbot-rand1pools-1.png" alt="Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1+Pools vs. CS3" width="672" />
+<p class="caption">
+Figure 3.30: Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1+Pools vs. CS3
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:cs-chain-rand1-cs2v3"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs2v3-1.png" alt="CS2 CodeSet Chaining Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.29: CS2 CodeSet Chaining Concordance Measure Distributions
+Figure 3.31: CS2 CodeSet Chaining Concordance Measure Distributions
 </p>
 </div>
 </div>
@@ -1648,17 +1695,17 @@ Figure 3.29: CS2 CodeSet Chaining Concordance Measure Distributions
 <div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-setBA"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-1.png" alt="CS5 Set B/A Chaining Concordance  Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.30: CS5 Set B/A Chaining Concordance Measure Distributions
+Figure 3.32: CS5 Set B/A Chaining Concordance Measure Distributions
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-setBA-2"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-2-1.png" alt="CS5 Set B/A Chaining Concordance  Measure Distributions 2" width="672" />
 <p class="caption">
-Figure 3.31: CS5 Set B/A Chaining Concordance Measure Distributions 2
+Figure 3.33: CS5 Set B/A Chaining Concordance Measure Distributions 2
 </p>
 </div>
 <table>
-<caption><span id="tab:cs35-BA-dsc">Table 3.21: </span>DSC for CS3 vs CS5 Set B/A Comparisons</caption>
+<caption><span id="tab:cs35-BA-dsc">Table 3.22: </span>DSC for CS3 vs CS5 Set B/A Comparisons</caption>
 <thead>
 <tr class="header">
 <th align="left">Comparisons</th>
@@ -1687,13 +1734,13 @@ Figure 3.31: CS5 Set B/A Chaining Concordance Measure Distributions 2
 <div class="figure" style="text-align: center"><span id="fig:cs-chain-cs4-setA"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs4-setA-1.png" alt="CS4 Set A Chaining Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.32: CS4 Set A Chaining Concordance Measure Distributions
+Figure 3.34: CS4 Set A Chaining Concordance Measure Distributions
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-cs4-B"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-cs4-B-1.png" alt="CS4 and CS5 using Set B Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.33: CS4 and CS5 using Set B Concordance Measure Distributions
+Figure 3.35: CS4 and CS5 using Set B Concordance Measure Distributions
 </p>
 </div>
 </div>
@@ -1702,17 +1749,17 @@ Figure 3.33: CS4 and CS5 using Set B Concordance Measure Distributions
 <div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-setCA"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setCA-1.png" alt="CS5 Set C/A Chaining Concordance  Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.34: CS5 Set C/A Chaining Concordance Measure Distributions
+Figure 3.36: CS5 Set C/A Chaining Concordance Measure Distributions
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-setCA-2"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setCA-2-1.png" alt="CS5 Set C/A Chaining Concordance  Measure Distributions 2" width="672" />
 <p class="caption">
-Figure 3.35: CS5 Set C/A Chaining Concordance Measure Distributions 2
+Figure 3.37: CS5 Set C/A Chaining Concordance Measure Distributions 2
 </p>
 </div>
 <table>
-<caption><span id="tab:cs35-CA-dsc">Table 3.22: </span>DSC for CS3 vs CS5 Set C/A Comparisons</caption>
+<caption><span id="tab:cs35-CA-dsc">Table 3.23: </span>DSC for CS3 vs CS5 Set C/A Comparisons</caption>
 <thead>
 <tr class="header">
 <th align="left">Comparisons</th>
@@ -1741,7 +1788,7 @@ Figure 3.35: CS5 Set C/A Chaining Concordance Measure Distributions 2
 <div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-cs4-C"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-cs4-C-1.png" alt="CS4 and CS5 using Set C Concordance Measure Distributions" width="672" />
 <p class="caption">
-Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
+Figure 3.38: CS4 and CS5 using Set C Concordance Measure Distributions
 </p>
 </div>
 </div>
@@ -1750,7 +1797,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 <div id="common-sample-distributions" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> Common Sample Distributions</h2>
 <table>
-<caption><span id="tab:common-dist-all">Table 3.23: </span>All Common Samples Histotype Distribution</caption>
+<caption><span id="tab:common-dist-all">Table 3.24: </span>All Common Samples Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1793,7 +1840,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-dist-distinct">Table 3.24: </span>Distinct Common Samples Histotype Distribution</caption>
+<caption><span id="tab:common-dist-distinct">Table 3.25: </span>Distinct Common Samples Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1836,7 +1883,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-cs2-cs3-dist-distinct">Table 3.25: </span>Distinct Common CS2 and CS3 Samples Histotype Distribution</caption>
+<caption><span id="tab:common-cs2-cs3-dist-distinct">Table 3.26: </span>Distinct Common CS2 and CS3 Samples Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1873,7 +1920,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-dist-sites">Table 3.26: </span>Common Samples Across Sites Histotype Distribution</caption>
+<caption><span id="tab:common-dist-sites">Table 3.27: </span>Common Samples Across Sites Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1916,7 +1963,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:common-dist-sites-distinct">Table 3.27: </span>Distinct Common Samples Across Sites Histotype Distribution</caption>
+<caption><span id="tab:common-dist-sites-distinct">Table 3.28: </span>Distinct Common Samples Across Sites Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1959,7 +2006,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:cs345-overlap">Table 3.28: </span>CS3/CS4/CS5 Common Samples Histotype Distribution</caption>
+<caption><span id="tab:cs345-overlap">Table 3.29: </span>CS3/CS4/CS5 Common Samples Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -1984,7 +2031,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:cs345-pools">Table 3.29: </span>CS3/CS4/CS5 Pools Distribution</caption>
+<caption><span id="tab:cs345-pools">Table 3.30: </span>CS3/CS4/CS5 Pools Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">Pool</th>
@@ -2066,7 +2113,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 <div id="histotype-distribution-in-classifier-datasets" class="section level2" number="3.5">
 <h2><span class="header-section-number">3.5</span> Histotype Distribution in Classifier Datasets</h2>
 <table>
-<caption><span id="tab:train-hist">Table 3.30: </span>Full Training Set Histotype Distribution</caption>
+<caption><span id="tab:train-hist">Table 3.31: </span>Full Training Set Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -2103,7 +2150,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:train-hist-codeset">Table 3.31: </span>Full Training Set Histotype Distribution by CodeSet</caption>
+<caption><span id="tab:train-hist-codeset">Table 3.32: </span>Full Training Set Histotype Distribution by CodeSet</caption>
 <thead>
 <tr class="header">
 <th align="left">Variable</th>
@@ -2166,7 +2213,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:cs1-all-hist">Table 3.32: </span>CS1 All Training Set Histotype Distribution</caption>
+<caption><span id="tab:cs1-all-hist">Table 3.33: </span>CS1 All Training Set Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -2203,7 +2250,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:cs2-all-hist">Table 3.33: </span>CS2 All Training Set Histotype Distribution</caption>
+<caption><span id="tab:cs2-all-hist">Table 3.34: </span>CS2 All Training Set Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -2240,7 +2287,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:conf-hist">Table 3.34: </span>Confirmation Set Histotype Distribution</caption>
+<caption><span id="tab:conf-hist">Table 3.35: </span>Confirmation Set Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -2277,7 +2324,7 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
 </tbody>
 </table>
 <table>
-<caption><span id="tab:val-hist">Table 3.35: </span>Validation Set Histotype Distribution</caption>
+<caption><span id="tab:val-hist">Table 3.36: </span>Validation Set Histotype Distribution</caption>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
