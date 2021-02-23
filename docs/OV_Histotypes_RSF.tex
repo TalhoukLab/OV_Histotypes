@@ -114,7 +114,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2021-02-19}
+\date{2021-02-22}
 
 \begin{document}
 \maketitle
@@ -950,6 +950,23 @@ Because Random1 is a random selection of reference samples, we want to assess th
 \caption{CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures}\label{fig:cc-rand1-cs23-meds}
 \end{figure}
 
+\begin{table}
+
+\caption{\label{tab:metrics-summ-cs23}CS2 vs CS3 Random1 Normalized 100 Runs of Summary Concordance Measures}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+Metric & Min & Median & Max & SD\\
+\hline
+Ca & 0.956 & 0.981 & 0.989 & 0.007\\
+\hline
+R2 & 0.830 & 0.847 & 0.870 & 0.007\\
+\hline
+Rc & 0.867 & 0.891 & 0.907 & 0.008\\
+\hline
+\end{tabular}
+\end{table}
+
 \hypertarget{random3-hgsc}{%
 \subsubsection{Random3 HGSC}\label{random3-hgsc}}
 
@@ -1364,11 +1381,29 @@ CS1-Random1 vs CS3 & 0.229 & 0\\
 
 \begin{figure}[H]
 
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs13-genes-topbot-1} 
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs13-genes-topbot-non-1} 
 
 }
 
-\caption{Pairwise Top/Bottom 3 Genes between CS1 Data vs. CS3}\label{fig:cs13-genes-topbot}
+\caption{Pairwise Genes by Top/Bottom 3 Rc for CS1-Non vs. CS3}\label{fig:cs13-genes-topbot-non}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs13-genes-topbot-rand1-1} 
+
+}
+
+\caption{Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1 vs. CS3}\label{fig:cs13-genes-topbot-rand1}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/cs13-genes-topbot-rand1pools-1} 
+
+}
+
+\caption{Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1+Pools vs. CS3}\label{fig:cs13-genes-topbot-rand1pools}
 \end{figure}
 
 \begin{figure}[H]

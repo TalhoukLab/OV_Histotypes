@@ -765,15 +765,21 @@ metrics_runs_cs23 <- imap_dfr(hist_rand1_list, ~ {
     mutate(Run = .y)
 })
 
-metrics_meds_cs23 <- metrics_runs_cs23 %>% 
-  gather(key = "Metric", value = "Expression", -Run) %>% 
+metrics_meds_cs23 <- metrics_runs_cs23 %>%
+  gather(key = "Metric", value = "Expression", -Run) %>%
   group_by(Metric) %>%
-  mutate(Median = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))) %>%
+  mutate(
+    Min = min(Expression),
+    Median = median(Expression),
+    Max = max(Expression),
+    SD = sd(Expression),
+    Median_lab = paste0("Median = ", scales::number(median(Expression), accuracy = 0.001))
+  ) %>%
   ungroup()
 
 p_meds_cs23 <- ggplot(metrics_meds_cs23, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
-  geom_text(aes(x = 0.8, y = 90, label = Median),
+  geom_text(aes(x = 0.8, y = 90, label = Median_lab),
             hjust = 0,
             vjust = 1,
             check_overlap = TRUE) +
@@ -783,6 +789,17 @@ p_meds_cs23 <- ggplot(metrics_meds_cs23, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 print(p_meds_cs23)
+```
+
+```{r metrics-summ-cs23}
+metrics_summ_cs23 <- metrics_meds_cs23 %>% 
+  arrange(Metric) %>% 
+  select(-c(Run, Expression, Median_lab)) %>% 
+  distinct()
+
+knitr::kable(metrics_summ_cs23, 
+             caption = "CS2 vs CS3 Random1 Normalized 100 Runs of Summary Concordance Measures",
+             digits = 3)
 ```
 
 #### Random3 HGSC
@@ -2061,7 +2078,7 @@ cs13_dsc <- list(
 knitr::kable(cs13_dsc, caption = "DSC for CS1 vs CS3 Comparisons")
 ```
 
-```{r cs13-genes-topbot, fig.cap='Pairwise Top/Bottom 3 Genes between CS1 Data vs. CS3'}
+```{r cs13-genes-topbot}
 counts1v3_df <- counts1v3 %>%
   map_dfr(~ {
     rownames_to_column(.x, "ottaID") %>%
@@ -2069,29 +2086,77 @@ counts1v3_df <- counts1v3 %>%
   },
   .id = "Data") %>%
   mutate(Gene = fct_inorder(Gene)) %>%
-  spread(Data, Expression)
-
-cs13_genes_topbot <- counts1v3_df %>% 
-  group_by(Gene) %>% 
-  summarize(R2 = cor(`CS1-Non`, CS3) ^ 2) %>%
-  filter(dense_rank(R2) <= 3 | dense_rank(desc(R2)) <= 3) %>% 
-  mutate(R2 = paste0("R2 = ", round(R2, 3)))
+  spread(Data, Expression) %>% 
+  gather(Norm, CS1, matches("CS1"))
 
 counts1v3_df_topbot <- counts1v3_df %>% 
-  inner_join(cs13_genes_topbot, by = "Gene") %>% 
-  gather("Norm", "CS1", matches("CS1"))
+  group_by(Norm, Gene) %>% 
+  summarize(Rc = epiR::epi.ccc(CS1, CS3)[["rho.c"]][["est"]]) %>% 
+  filter(dense_rank(Rc) <= 3 | dense_rank(desc(Rc)) <= 3) %>% 
+  mutate(Rc_lab = paste0("Rc = ", round(Rc, 3))) %>% 
+  ungroup() %>% 
+  inner_join(counts1v3_df, by = c("Norm", "Gene")) %>% 
+  droplevels()
+```
 
-p_cs13_genes_topbot <-
-  ggplot(counts1v3_df_topbot, aes(x = CS1, y = CS3)) + 
+```{r cs13-genes-topbot-non, fig.cap='Pairwise Genes by Top/Bottom 3 Rc for CS1-Non vs. CS3'}
+p_cs13_genes_topbot_non <-
+  ggplot(counts1v3_df_topbot %>%
+           filter(Norm == "CS1-Non") %>%
+           mutate(Gene = fct_drop(fct_reorder(Gene, Rc))),
+         aes(x = CS1, y = CS3)) + 
   geom_point() +
   geom_abline(intercept = 0, slope = 1, color = "red") +
-  geom_text(aes(label = R2), x = -20, y = 2, size = 3, 
+  geom_text(aes(label = Rc_lab), x = -12, y = 2, size = 3, 
             hjust = 0, check_overlap = TRUE) +
-  facet_grid(rows = vars(Norm), cols = vars(Gene)) +
-  labs(title = "Pairwise Top/Bottom 3 Genes between CS1 Data vs. CS3") +
+  facet_wrap(vars(Gene), nrow = 2, ncol = 3) +
+  scale_x_continuous(breaks = c(-8, -4, 0), limits = c(-12, 4)) +
+  lims(y = c(-10, 3)) +
+  labs(x = "CS1-Non",
+       title = "Pairwise Genes by Top/Bottom 3 Rc for CS1-Non vs. CS3") +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
-print(p_cs13_genes_topbot)
+print(p_cs13_genes_topbot_non)
+```
+
+```{r cs13-genes-topbot-rand1, fig.cap='Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1 vs. CS3'}
+p_cs13_genes_topbot_rand1 <-
+  ggplot(counts1v3_df_topbot %>%
+           filter(Norm == "CS1-Random1") %>%
+           mutate(Gene = fct_drop(fct_reorder(Gene, Rc))),
+         aes(x = CS1, y = CS3)) + 
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, color = "red") +
+  geom_text(aes(label = Rc_lab), x = -12, y = 2, size = 3, 
+            hjust = 0, check_overlap = TRUE) +
+  facet_wrap(vars(Gene), nrow = 2, ncol = 3) +
+  scale_x_continuous(breaks = c(-8, -4, 0), limits = c(-12, 4)) +
+  lims(y = c(-10, 3)) +
+  labs(x = "CS1-Random1",
+       title = "Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1 vs. CS3") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs13_genes_topbot_rand1)
+```
+
+```{r cs13-genes-topbot-rand1pools, fig.cap='Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1+Pools vs. CS3'}
+p_cs13_genes_topbot_rand1pools <-
+  ggplot(counts1v3_df_topbot %>%
+           filter(Norm == "CS1-Random1+Pools") %>%
+           mutate(Gene = fct_drop(fct_reorder(Gene, Rc))),
+         aes(x = CS1, y = CS3)) + 
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, color = "red") +
+  geom_text(aes(label = Rc_lab), x = -12, y = 2, size = 3, 
+            hjust = 0, check_overlap = TRUE) +
+  facet_wrap(vars(Gene), nrow = 2, ncol = 3) +
+  scale_x_continuous(breaks = c(-8, -4, 0), limits = c(-12, 4)) +
+  lims(y = c(-10, 3)) +
+  labs(x = "CS1-Random1+Pools",
+       title = "Pairwise Genes by Top/Bottom 3 Rc for CS1-Random1+Pools vs. CS3") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+print(p_cs13_genes_topbot_rand1pools)
 ```
 
 ```{r cs-chain-rand1-cs2v3, fig.cap='CS2 CodeSet Chaining Concordance Measure Distributions'}
