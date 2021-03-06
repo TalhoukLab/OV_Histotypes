@@ -2111,7 +2111,7 @@ counts1v3_df_topbot <- bind_rows(counts1v3_df_topbot_non,
 
 ```{r cs13-genes-pairwise, fig.cap='Pairwise Genes by Top/Bottom 3 Rc for CS1 vs. CS3'}
 p_cs13_genes_topbot <-
-  ggplot(tmp, aes(x = CS1, y = CS3)) + 
+  ggplot(counts1v3_df_topbot, aes(x = CS1, y = CS3)) + 
   geom_point() +
   geom_abline(intercept = 0, slope = 1, color = "red") +
   geom_text(aes(label = Rc_lab), x = -12, y = 2, size = 3, 
