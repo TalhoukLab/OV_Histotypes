@@ -622,7 +622,7 @@ kable(ivsts1_f1_class_table,
   kable_styling()
 ```
 
-```{r train-step1-f1-class-table}
+```{r train-step2-f1-class-table}
 ivsts2_f1_class_table <- ivsts2_f1_class %>%
   arrange(algorithm) %>%
   mutate(across(where(is.numeric), round, digits = 3)) %>%
