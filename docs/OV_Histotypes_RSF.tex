@@ -5,14 +5,13 @@
 %
 \documentclass[
 ]{report}
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amsmath}
 \usepackage{ifxetex,ifluatex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
-  \usepackage{amssymb}
 \else % if luatex or xetex
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
@@ -48,7 +47,7 @@
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
-\usepackage{longtable,booktabs}
+\usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -114,7 +113,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2021-03-05}
+\date{2021-07-06}
 
 \begin{document}
 \maketitle
@@ -2159,11 +2158,602 @@ smote & MUC & 0.927 & 0.9 & 0.928 & 0.933 & 0.926\\
 \end{tabular}
 \end{table}
 
-\hypertarget{cs1-set}{%
-\section{CS1 Set}\label{cs1-set}}
+\hypertarget{two-step-training-set}{%
+\section{Two-Step Training Set}\label{two-step-training-set}}
 
 \hypertarget{accuracy-1}{%
 \subsection{Accuracy}\label{accuracy-1}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step1-accuracy-1} 
+
+}
+
+\caption{Training Set Step 1 Accuracy}\label{fig:train-step1-accuracy}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step2-accuracy-1} 
+
+}
+
+\caption{Training Set Step 2 Accuracy}\label{fig:train-step2-accuracy}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-step1-accuracy-table}Training Set Step 1 Accuracy by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+\hline
+none & \textbf{0.958} & 0.955 & 0.951 & 0.946 & 0.944\\
+\hline
+up & 0.957 & 0.956 & 0.954 & 0.938 & 0.935\\
+\hline
+down & 0.941 & 0.938 & 0.942 & 0.934 & 0.927\\
+\hline
+smote & 0.956 & 0.954 & 0.952 & 0.943 & 0.941\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-step2-accuracy-table}Training Set Step 2 Accuracy by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & 0.879 & 0.876 & \textbf{0.881} & 0.869 & 0.868\\
+\hline
+up & \textbf{0.881} & 0.876 & 0.877 & 0.868 & 0.867\\
+\hline
+down & 0.866 & 0.862 & 0.866 & 0.86 & 0.854\\
+\hline
+smote & 0.877 & 0.874 & 0.873 & 0.867 & 0.866\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step1-accuracy-class-1} 
+
+}
+
+\caption{Training Set Step 1 Class-Specific Accuracy}\label{fig:train-step1-accuracy-class}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step2-accuracy-class-1} 
+
+}
+
+\caption{Training Set Step 2 Class-Specific Accuracy}\label{fig:train-step2-accuracy-class}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-step1-accuracy-class-table}Training Set Step 1 Class-Specific Accuracy by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l|l}
+\hline
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & HGSC & \textbf{0.958} & 0.955 & 0.946 & 0.951 & 0.944\\
+\hline
+none & non-HGSC & \textbf{0.958} & 0.955 & 0.946 & 0.951 & 0.944\\
+\hline
+up & HGSC & 0.957 & 0.956 & 0.938 & 0.954 & 0.935\\
+\hline
+up & non-HGSC & 0.957 & 0.956 & 0.938 & 0.954 & 0.935\\
+\hline
+down & HGSC & 0.941 & 0.938 & 0.934 & 0.942 & 0.927\\
+\hline
+down & non-HGSC & 0.941 & 0.938 & 0.934 & 0.942 & 0.927\\
+\hline
+smote & HGSC & 0.956 & 0.954 & 0.943 & 0.952 & 0.941\\
+\hline
+smote & non-HGSC & 0.956 & 0.954 & 0.943 & 0.952 & 0.941\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-step2-accuracy-class-table}Training Set Step 2 Class-Specific Accuracy by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l|l}
+\hline
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & CCOC & 0.948 & 0.928 & 0.936 & 0.942 & 0.933\\
+\hline
+none & ENOC & 0.901 & 0.912 & 0.903 & 0.894 & 0.899\\
+\hline
+none & LGSC & 0.968 & \textbf{0.982} & 0.973 & 0.972 & 0.966\\
+\hline
+none & MUC & 0.942 & 0.936 & 0.95 & 0.931 & 0.94\\
+\hline
+up & CCOC & 0.948 & 0.926 & 0.934 & 0.939 & 0.933\\
+\hline
+up & ENOC & 0.903 & 0.912 & 0.904 & 0.895 & 0.898\\
+\hline
+up & LGSC & 0.967 & \textbf{0.982} & 0.966 & 0.968 & 0.965\\
+\hline
+up & MUC & 0.943 & 0.935 & 0.948 & 0.934 & 0.938\\
+\hline
+down & CCOC & 0.939 & 0.919 & 0.932 & 0.934 & 0.932\\
+\hline
+down & ENOC & 0.894 & 0.901 & 0.899 & 0.888 & 0.895\\
+\hline
+down & LGSC & 0.966 & 0.976 & 0.958 & 0.966 & 0.958\\
+\hline
+down & MUC & 0.937 & 0.93 & 0.942 & 0.93 & 0.927\\
+\hline
+smote & CCOC & 0.943 & 0.926 & 0.934 & 0.938 & 0.933\\
+\hline
+smote & ENOC & 0.903 & 0.911 & 0.904 & 0.895 & 0.899\\
+\hline
+smote & LGSC & 0.967 & 0.976 & 0.964 & 0.973 & 0.964\\
+\hline
+smote & MUC & 0.943 & 0.935 & 0.947 & 0.933 & 0.936\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{f1-score-1}{%
+\subsection{F1-Score}\label{f1-score-1}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step1-f1-1} 
+
+}
+
+\caption{Training Set Step 1 F1-Score}\label{fig:train-step1-f1}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step2-f1-1} 
+
+}
+
+\caption{Training Set Step 2 F1-Score}\label{fig:train-step2-f1}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-step1-f1-table}Training Set Step 1 Macro-Averaged F1-Score by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & \textbf{0.974} & 0.972 & 0.966 & 0.97 & 0.965\\
+\hline
+up & 0.973 & 0.973 & 0.96 & 0.971 & 0.958\\
+\hline
+down & 0.962 & 0.96 & 0.957 & 0.963 & 0.953\\
+\hline
+smote & 0.972 & 0.971 & 0.964 & 0.97 & 0.963\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-step2-f1-table}Training Set Step 2 Macro-Averaged F1-Score by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & 0.879 & \textbf{0.88} & 0.879 & 0.869 & 0.865\\
+\hline
+up & 0.879 & \textbf{0.88} & 0.873 & 0.869 & 0.862\\
+\hline
+down & 0.865 & 0.867 & 0.861 & 0.858 & 0.848\\
+\hline
+smote & 0.877 & 0.878 & 0.871 & 0.866 & 0.862\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step1-f1-class-1} 
+
+}
+
+\caption{Training Set Step 1 Class-Specific F1-Score}\label{fig:train-step1-f1-class}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step2-f1-class-1} 
+
+}
+
+\caption{Training Set Step 2 Class-Specific F1-Score}\label{fig:train-step2-f1-class}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-step1-f1-class-table}Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l|l}
+\hline
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & HGSC & \textbf{0.974} & 0.972 & 0.966 & 0.97 & 0.965\\
+\hline
+none & non-HGSC & 0.891 & 0.889 & 0.863 & 0.872 & 0.861\\
+\hline
+up & HGSC & 0.973 & 0.973 & 0.96 & 0.971 & 0.958\\
+\hline
+up & non-HGSC & 0.89 & 0.89 & 0.859 & 0.887 & 0.851\\
+\hline
+down & HGSC & 0.962 & 0.96 & 0.957 & 0.963 & 0.953\\
+\hline
+down & non-HGSC & 0.865 & 0.861 & 0.852 & 0.868 & 0.839\\
+\hline
+smote & HGSC & 0.972 & 0.971 & 0.964 & 0.97 & 0.963\\
+\hline
+smote & non-HGSC & 0.892 & 0.887 & 0.865 & 0.881 & 0.861\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-step2-f1-class-table}Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l|l}
+\hline
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & CCOC & \textbf{0.92} & 0.892 & 0.903 & 0.911 & 0.899\\
+\hline
+none & ENOC & 0.831 & 0.844 & 0.833 & 0.818 & 0.822\\
+\hline
+none & LGSC & 0.88 & 0.917 & 0.886 & 0.88 & 0.857\\
+\hline
+none & MUC & 0.889 & 0.879 & 0.904 & 0.867 & 0.885\\
+\hline
+up & CCOC & 0.919 & 0.891 & 0.899 & 0.905 & 0.896\\
+\hline
+up & ENOC & 0.831 & 0.847 & 0.833 & 0.824 & 0.82\\
+\hline
+up & LGSC & 0.875 & 0.917 & 0.867 & 0.88 & 0.857\\
+\hline
+up & MUC & 0.889 & 0.877 & 0.899 & 0.876 & 0.881\\
+\hline
+down & CCOC & 0.907 & 0.875 & 0.892 & 0.897 & 0.895\\
+\hline
+down & ENOC & 0.812 & 0.825 & 0.827 & 0.806 & 0.812\\
+\hline
+down & LGSC & 0.868 & 0.909 & 0.846 & 0.87 & 0.839\\
+\hline
+down & MUC & 0.877 & 0.862 & 0.889 & 0.867 & 0.857\\
+\hline
+smote & CCOC & 0.914 & 0.886 & 0.898 & 0.901 & 0.897\\
+\hline
+smote & ENOC & 0.833 & 0.845 & 0.833 & 0.818 & 0.822\\
+\hline
+smote & LGSC & 0.877 & 0.909 & 0.857 & 0.882 & 0.857\\
+\hline
+smote & MUC & 0.892 & 0.875 & 0.897 & 0.871 & 0.877\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{kappa-1}{%
+\subsection{Kappa}\label{kappa-1}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step1-kappa-1} 
+
+}
+
+\caption{Training Set Step 1 Kappa}\label{fig:train-step1-kappa}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step2-kappa-1} 
+
+}
+
+\caption{Training Set Step 2 Kappa}\label{fig:train-step2-kappa}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-step1-kappa-table}Training Set Step 1 Kappa by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & \textbf{0.865} & 0.861 & 0.83 & 0.842 & 0.826\\
+\hline
+up & 0.863 & 0.862 & 0.82 & 0.859 & 0.809\\
+\hline
+down & 0.827 & 0.821 & 0.809 & 0.831 & 0.791\\
+\hline
+smote & 0.864 & 0.858 & 0.829 & 0.851 & 0.824\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-step2-kappa-table}Training Set Step 2 Kappa by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & 0.834 & 0.829 & 0.836 & 0.82 & 0.819\\
+\hline
+up & \textbf{0.837} & 0.828 & 0.83 & 0.819 & 0.816\\
+\hline
+down & 0.815 & 0.811 & 0.816 & 0.806 & 0.799\\
+\hline
+smote & 0.831 & 0.826 & 0.826 & 0.816 & 0.815\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step1-kappa-class-1} 
+
+}
+
+\caption{Training Set Step 1 Class-Specific Kappa}\label{fig:train-step1-kappa-class}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step2-kappa-class-1} 
+
+}
+
+\caption{Training Set Step 2 Class-Specific Kappa}\label{fig:train-step2-kappa-class}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-step1-kappa-class-table}Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l|l}
+\hline
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & HGSC & \textbf{0.865} & 0.861 & 0.83 & 0.842 & 0.826\\
+\hline
+none & non-HGSC & \textbf{0.865} & 0.861 & 0.83 & 0.842 & 0.826\\
+\hline
+up & HGSC & 0.863 & 0.862 & 0.82 & 0.859 & 0.809\\
+\hline
+up & non-HGSC & 0.863 & 0.862 & 0.82 & 0.859 & 0.809\\
+\hline
+down & HGSC & 0.827 & 0.821 & 0.809 & 0.831 & 0.791\\
+\hline
+down & non-HGSC & 0.827 & 0.821 & 0.809 & 0.831 & 0.791\\
+\hline
+smote & HGSC & 0.864 & 0.858 & 0.829 & 0.851 & 0.824\\
+\hline
+smote & non-HGSC & 0.864 & 0.858 & 0.829 & 0.851 & 0.824\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-step2-kappa-class-table}Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l|l}
+\hline
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & CCOC & 0.882 & 0.837 & 0.855 & 0.868 & 0.849\\
+\hline
+none & ENOC & 0.76 & 0.784 & 0.765 & 0.743 & 0.75\\
+\hline
+none & LGSC & 0.862 & \textbf{0.907} & 0.868 & 0.865 & 0.84\\
+\hline
+none & MUC & 0.849 & 0.836 & 0.87 & 0.821 & 0.844\\
+\hline
+up & CCOC & 0.88 & 0.834 & 0.85 & 0.859 & 0.845\\
+\hline
+up & ENOC & 0.763 & 0.785 & 0.766 & 0.748 & 0.749\\
+\hline
+up & LGSC & 0.856 & 0.905 & 0.846 & 0.862 & 0.839\\
+\hline
+up & MUC & 0.851 & 0.832 & 0.863 & 0.832 & 0.837\\
+\hline
+down & CCOC & 0.86 & 0.815 & 0.842 & 0.849 & 0.844\\
+\hline
+down & ENOC & 0.738 & 0.753 & 0.755 & 0.726 & 0.739\\
+\hline
+down & LGSC & 0.848 & 0.894 & 0.824 & 0.854 & 0.814\\
+\hline
+down & MUC & 0.834 & 0.814 & 0.85 & 0.819 & 0.81\\
+\hline
+smote & CCOC & 0.871 & 0.831 & 0.849 & 0.855 & 0.848\\
+\hline
+smote & ENOC & 0.763 & 0.781 & 0.766 & 0.745 & 0.751\\
+\hline
+smote & LGSC & 0.857 & 0.899 & 0.837 & 0.866 & 0.837\\
+\hline
+smote & MUC & 0.852 & 0.831 & 0.862 & 0.825 & 0.832\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{g-mean-1}{%
+\subsection{G-mean}\label{g-mean-1}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step1-gmean-1} 
+
+}
+
+\caption{Training Set Step 1 G-mean}\label{fig:train-step1-gmean}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step2-gmean-1} 
+
+}
+
+\caption{Training Set Step 2 G-mean}\label{fig:train-step2-gmean}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-step1-gmean-table}Training Set Step 1 G-mean by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & 0.915 & 0.922 & 0.902 & 0.896 & 0.9\\
+\hline
+up & 0.914 & 0.92 & 0.929 & 0.922 & 0.924\\
+\hline
+down & \textbf{0.935} & \textbf{0.935} & 0.929 & 0.933 & 0.925\\
+\hline
+smote & 0.928 & 0.926 & 0.92 & 0.921 & 0.919\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-step2-gmean-table}Training Set Step 2 G-mean by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & 0.881 & 0.878 & 0.88 & 0.871 & 0.867\\
+\hline
+up & \textbf{0.884} & 0.878 & 0.88 & 0.873 & 0.868\\
+\hline
+down & 0.873 & 0.869 & 0.873 & 0.865 & 0.859\\
+\hline
+smote & 0.882 & 0.875 & 0.878 & 0.872 & 0.87\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step1-gmean-class-1} 
+
+}
+
+\caption{Training Set Step 1 Class-Specific G-mean}\label{fig:train-step1-gmean-class}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-step2-gmean-class-1} 
+
+}
+
+\caption{Training Set Step 2 Class-Specific G-mean}\label{fig:train-step2-gmean-class}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-step1-gmean-class-table}Training Set Step 1 Class-Specific G-mean by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l|l}
+\hline
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & HGSC & 0.915 & 0.922 & 0.902 & 0.896 & 0.9\\
+\hline
+none & non-HGSC & 0.915 & 0.922 & 0.902 & 0.896 & 0.9\\
+\hline
+up & HGSC & 0.914 & 0.92 & 0.929 & 0.922 & 0.924\\
+\hline
+up & non-HGSC & 0.914 & 0.92 & 0.929 & 0.922 & 0.924\\
+\hline
+down & HGSC & \textbf{0.935} & \textbf{0.935} & 0.929 & 0.933 & 0.925\\
+\hline
+down & non-HGSC & \textbf{0.935} & \textbf{0.935} & 0.929 & 0.933 & 0.925\\
+\hline
+smote & HGSC & 0.928 & 0.926 & 0.92 & 0.921 & 0.919\\
+\hline
+smote & non-HGSC & 0.928 & 0.926 & 0.92 & 0.921 & 0.919\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-step2-gmean-class-table}Training Set Step 2 Class-Specific G-mean by Algorithm and Subsampling Method}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l|l}
+\hline
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
+\hline
+none & CCOC & 0.939 & 0.921 & 0.925 & 0.928 & 0.923\\
+\hline
+none & ENOC & 0.885 & 0.891 & 0.885 & 0.877 & 0.874\\
+\hline
+none & LGSC & 0.944 & 0.953 & 0.94 & 0.938 & 0.922\\
+\hline
+none & MUC & 0.918 & 0.92 & 0.933 & 0.908 & 0.924\\
+\hline
+up & CCOC & 0.936 & 0.92 & 0.92 & 0.921 & 0.918\\
+\hline
+up & ENOC & 0.889 & 0.891 & 0.885 & 0.88 & 0.871\\
+\hline
+up & LGSC & 0.947 & 0.951 & 0.947 & 0.942 & 0.941\\
+\hline
+up & MUC & 0.92 & 0.913 & 0.929 & 0.913 & 0.921\\
+\hline
+down & CCOC & 0.923 & 0.907 & 0.913 & 0.918 & 0.918\\
+\hline
+down & ENOC & 0.871 & 0.877 & 0.879 & 0.859 & 0.867\\
+\hline
+down & LGSC & 0.951 & \textbf{0.957} & 0.948 & 0.954 & 0.946\\
+\hline
+down & MUC & 0.912 & 0.904 & 0.92 & 0.913 & 0.901\\
+\hline
+smote & CCOC & 0.929 & 0.914 & 0.917 & 0.918 & 0.92\\
+\hline
+smote & ENOC & 0.888 & 0.895 & 0.887 & 0.877 & 0.873\\
+\hline
+smote & LGSC & 0.951 & 0.951 & 0.946 & 0.951 & 0.945\\
+\hline
+smote & MUC & 0.919 & 0.916 & 0.928 & 0.913 & 0.918\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{cs1-set}{%
+\section{CS1 Set}\label{cs1-set}}
+
+\hypertarget{accuracy-2}{%
+\subsection{Accuracy}\label{accuracy-2}}
 
 \begin{figure}[H]
 
@@ -2180,15 +2770,15 @@ smote & MUC & 0.927 & 0.9 & 0.928 & 0.933 & 0.926\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & 0.816 & \textbf{0.842} & 0.8 & 0.832 & 0.823\\
+none & 0.816 & \textbf{0.842} & 0.832 & 0.8 & 0.823\\
 \hline
-up & 0.835 & 0.833 & 0.825 & 0.83 & 0.814\\
+up & 0.835 & 0.833 & 0.83 & 0.825 & 0.814\\
 \hline
-down & 0.798 & 0.802 & 0.776 & 0.788 & 0.764\\
+down & 0.798 & 0.802 & 0.788 & 0.776 & 0.764\\
 \hline
-smote & 0.837 & 0.837 & 0.828 & 0.83 & 0.814\\
+smote & 0.837 & 0.837 & 0.83 & 0.828 & 0.814\\
 \hline
 \end{tabular}
 \end{table}
@@ -2208,53 +2798,53 @@ smote & 0.837 & 0.837 & 0.828 & 0.83 & 0.814\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l|l}
 \hline
-sampling & histotype & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & CCOC & 0.939 & 0.943 & 0.939 & 0.935 & 0.931\\
+none & CCOC & 0.939 & 0.943 & 0.935 & 0.939 & 0.931\\
 \hline
-none & ENOC & 0.894 & 0.917 & 0.892 & 0.902 & 0.9\\
+none & ENOC & 0.894 & 0.917 & 0.902 & 0.892 & 0.9\\
 \hline
-none & HGSC & 0.891 & 0.894 & 0.87 & 0.903 & 0.896\\
+none & HGSC & 0.891 & 0.894 & 0.903 & 0.87 & 0.896\\
 \hline
-none & LGSC & 0.95 & 0.969 & 0.943 & 0.96 & 0.957\\
+none & LGSC & 0.95 & 0.969 & 0.96 & 0.943 & 0.957\\
 \hline
-none & MUC & 0.966 & 0.962 & 0.96 & 0.969 & 0.969\\
+none & MUC & 0.966 & 0.962 & 0.969 & 0.96 & 0.969\\
 \hline
-up & CCOC & 0.942 & 0.938 & 0.939 & 0.927 & 0.918\\
+up & CCOC & 0.942 & 0.938 & 0.927 & 0.939 & 0.918\\
 \hline
-up & ENOC & 0.902 & 0.906 & 0.897 & 0.899 & 0.885\\
+up & ENOC & 0.902 & 0.906 & 0.899 & 0.897 & 0.885\\
 \hline
-up & HGSC & 0.907 & 0.894 & 0.897 & 0.908 & 0.903\\
+up & HGSC & 0.907 & 0.894 & 0.908 & 0.897 & 0.903\\
 \hline
-up & LGSC & 0.96 & \textbf{0.971} & 0.958 & 0.959 & 0.958\\
+up & LGSC & 0.96 & \textbf{0.971} & 0.959 & 0.958 & 0.958\\
 \hline
-up & MUC & 0.967 & 0.963 & 0.961 & 0.968 & 0.969\\
+up & MUC & 0.967 & 0.963 & 0.968 & 0.961 & 0.969\\
 \hline
-down & CCOC & 0.936 & 0.938 & 0.932 & 0.937 & 0.922\\
+down & CCOC & 0.936 & 0.938 & 0.937 & 0.932 & 0.922\\
 \hline
-down & ENOC & 0.887 & 0.895 & 0.876 & 0.892 & 0.878\\
+down & ENOC & 0.887 & 0.895 & 0.892 & 0.876 & 0.878\\
 \hline
-down & HGSC & 0.883 & 0.874 & 0.869 & 0.872 & 0.858\\
+down & HGSC & 0.883 & 0.874 & 0.872 & 0.869 & 0.858\\
 \hline
-down & LGSC & 0.939 & 0.949 & 0.935 & 0.925 & 0.921\\
+down & LGSC & 0.939 & 0.949 & 0.925 & 0.935 & 0.921\\
 \hline
-down & MUC & 0.958 & 0.954 & 0.95 & 0.96 & 0.957\\
+down & MUC & 0.958 & 0.954 & 0.96 & 0.95 & 0.957\\
 \hline
-smote & CCOC & 0.94 & 0.939 & 0.939 & 0.929 & 0.926\\
+smote & CCOC & 0.94 & 0.939 & 0.929 & 0.939 & 0.926\\
 \hline
-smote & ENOC & 0.892 & 0.905 & 0.888 & 0.896 & 0.891\\
+smote & ENOC & 0.892 & 0.905 & 0.896 & 0.888 & 0.891\\
 \hline
-smote & HGSC & 0.916 & 0.897 & 0.905 & 0.907 & 0.894\\
+smote & HGSC & 0.916 & 0.897 & 0.907 & 0.905 & 0.894\\
 \hline
-smote & LGSC & 0.961 & 0.97 & 0.963 & 0.96 & 0.957\\
+smote & LGSC & 0.961 & 0.97 & 0.96 & 0.963 & 0.957\\
 \hline
-smote & MUC & 0.962 & 0.967 & 0.96 & 0.968 & 0.969\\
+smote & MUC & 0.962 & 0.967 & 0.968 & 0.96 & 0.969\\
 \hline
 \end{tabular}
 \end{table}
 
-\hypertarget{f1-score-1}{%
-\subsection{F1-Score}\label{f1-score-1}}
+\hypertarget{f1-score-2}{%
+\subsection{F1-Score}\label{f1-score-2}}
 
 \begin{figure}[H]
 
@@ -2271,15 +2861,15 @@ smote & MUC & 0.962 & 0.967 & 0.96 & 0.968 & 0.969\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & 0.731 & \textbf{0.791} & 0.707 & 0.771 & 0.761\\
+none & 0.731 & \textbf{0.791} & 0.771 & 0.707 & 0.761\\
 \hline
-up & 0.77 & 0.781 & 0.755 & 0.786 & 0.77\\
+up & 0.77 & 0.781 & 0.786 & 0.755 & 0.77\\
 \hline
-down & 0.746 & 0.754 & 0.728 & 0.745 & 0.716\\
+down & 0.746 & 0.754 & 0.745 & 0.728 & 0.716\\
 \hline
-smote & 0.779 & 0.789 & 0.773 & 0.784 & 0.773\\
+smote & 0.779 & 0.789 & 0.784 & 0.773 & 0.773\\
 \hline
 \end{tabular}
 \end{table}
@@ -2299,53 +2889,53 @@ smote & 0.779 & 0.789 & 0.773 & 0.784 & 0.773\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l|l}
 \hline
-sampling & histotype & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & CCOC & 0.824 & 0.828 & 0.824 & 0.812 & 0.8\\
+none & CCOC & 0.824 & 0.828 & 0.812 & 0.824 & 0.8\\
 \hline
-none & ENOC & 0.762 & 0.8 & 0.745 & 0.769 & 0.772\\
+none & ENOC & 0.762 & 0.8 & 0.769 & 0.745 & 0.772\\
 \hline
-none & HGSC & 0.889 & 0.893 & 0.873 & 0.9 & 0.891\\
+none & HGSC & 0.889 & 0.893 & 0.9 & 0.873 & 0.891\\
 \hline
-none & LGSC & 0.5 & 0.75 & 0.4 & 0.667 & 0.615\\
+none & LGSC & 0.5 & 0.75 & 0.667 & 0.4 & 0.615\\
 \hline
-none & MUC & 0.667 & 0.714 & 0.667 & 0.75 & 0.75\\
+none & MUC & 0.667 & 0.714 & 0.75 & 0.667 & 0.75\\
 \hline
-up & CCOC & 0.833 & 0.815 & 0.824 & 0.8 & 0.773\\
+up & CCOC & 0.833 & 0.815 & 0.8 & 0.824 & 0.773\\
 \hline
-up & ENOC & 0.78 & 0.783 & 0.765 & 0.769 & 0.744\\
+up & ENOC & 0.78 & 0.783 & 0.769 & 0.765 & 0.744\\
 \hline
-up & HGSC & 0.905 & 0.893 & 0.895 & 0.901 & 0.891\\
+up & HGSC & 0.905 & 0.893 & 0.901 & 0.895 & 0.891\\
 \hline
-up & LGSC & 0.667 & 0.769 & 0.615 & 0.727 & 0.714\\
+up & LGSC & 0.667 & 0.769 & 0.727 & 0.615 & 0.714\\
 \hline
-up & MUC & 0.727 & 0.667 & 0.714 & 0.75 & 0.762\\
+up & MUC & 0.727 & 0.667 & 0.75 & 0.714 & 0.762\\
 \hline
-down & CCOC & 0.822 & 0.824 & 0.811 & 0.821 & 0.786\\
+down & CCOC & 0.822 & 0.824 & 0.821 & 0.811 & 0.786\\
 \hline
-down & ENOC & 0.75 & 0.769 & 0.718 & 0.762 & 0.723\\
+down & ENOC & 0.75 & 0.769 & 0.762 & 0.718 & 0.723\\
 \hline
-down & HGSC & 0.864 & 0.857 & 0.85 & 0.851 & 0.835\\
+down & HGSC & 0.864 & 0.857 & 0.851 & 0.85 & 0.835\\
 \hline
-down & LGSC & 0.632 & 0.667 & 0.615 & 0.588 & 0.571\\
+down & LGSC & 0.632 & 0.667 & 0.588 & 0.615 & 0.571\\
 \hline
-down & MUC & 0.706 & 0.706 & 0.667 & 0.714 & 0.667\\
+down & MUC & 0.706 & 0.706 & 0.714 & 0.667 & 0.667\\
 \hline
-smote & CCOC & 0.829 & 0.828 & 0.828 & 0.81 & 0.789\\
+smote & CCOC & 0.829 & 0.828 & 0.81 & 0.828 & 0.789\\
 \hline
-smote & ENOC & 0.769 & 0.783 & 0.756 & 0.766 & 0.757\\
+smote & ENOC & 0.769 & 0.783 & 0.766 & 0.756 & 0.757\\
 \hline
-smote & HGSC & \textbf{0.909} & 0.892 & 0.899 & 0.897 & 0.884\\
+smote & HGSC & \textbf{0.909} & 0.892 & 0.897 & 0.899 & 0.884\\
 \hline
-smote & LGSC & 0.714 & 0.75 & 0.714 & 0.727 & 0.706\\
+smote & LGSC & 0.714 & 0.75 & 0.727 & 0.714 & 0.706\\
 \hline
-smote & MUC & 0.727 & 0.714 & 0.706 & 0.75 & 0.762\\
+smote & MUC & 0.727 & 0.714 & 0.75 & 0.706 & 0.762\\
 \hline
 \end{tabular}
 \end{table}
 
-\hypertarget{kappa-1}{%
-\subsection{Kappa}\label{kappa-1}}
+\hypertarget{kappa-2}{%
+\subsection{Kappa}\label{kappa-2}}
 
 \begin{figure}[H]
 
@@ -2362,15 +2952,15 @@ smote & MUC & 0.727 & 0.714 & 0.706 & 0.75 & 0.762\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & 0.724 & \textbf{0.767} & 0.697 & 0.752 & 0.74\\
+none & 0.724 & \textbf{0.767} & 0.752 & 0.697 & 0.74\\
 \hline
-up & 0.756 & 0.752 & 0.741 & 0.757 & 0.732\\
+up & 0.756 & 0.752 & 0.757 & 0.741 & 0.732\\
 \hline
-down & 0.716 & 0.72 & 0.687 & 0.706 & 0.673\\
+down & 0.716 & 0.72 & 0.706 & 0.687 & 0.673\\
 \hline
-smote & 0.763 & 0.759 & 0.751 & 0.755 & 0.736\\
+smote & 0.763 & 0.759 & 0.755 & 0.751 & 0.736\\
 \hline
 \end{tabular}
 \end{table}
@@ -2390,53 +2980,53 @@ smote & 0.763 & 0.759 & 0.751 & 0.755 & 0.736\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l|l}
 \hline
-sampling & histotype & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & CCOC & 0.786 & 0.794 & 0.785 & 0.773 & 0.764\\
+none & CCOC & 0.786 & 0.794 & 0.773 & 0.785 & 0.764\\
 \hline
-none & ENOC & 0.693 & 0.75 & 0.678 & 0.707 & 0.704\\
+none & ENOC & 0.693 & 0.75 & 0.707 & 0.678 & 0.704\\
 \hline
-none & HGSC & 0.781 & 0.787 & 0.741 & 0.806 & 0.792\\
+none & HGSC & 0.781 & 0.787 & 0.806 & 0.741 & 0.792\\
 \hline
-none & LGSC & 0.477 & 0.728 & 0.273 & 0.646 & 0.587\\
+none & LGSC & 0.477 & 0.728 & 0.646 & 0.273 & 0.587\\
 \hline
-none & MUC & 0.652 & 0.693 & 0.647 & 0.729 & 0.739\\
+none & MUC & 0.652 & 0.693 & 0.729 & 0.647 & 0.739\\
 \hline
-up & CCOC & 0.797 & 0.777 & 0.787 & 0.76 & 0.718\\
+up & CCOC & 0.797 & 0.777 & 0.76 & 0.787 & 0.718\\
 \hline
-up & ENOC & 0.718 & 0.723 & 0.699 & 0.702 & 0.669\\
+up & ENOC & 0.718 & 0.723 & 0.702 & 0.699 & 0.669\\
 \hline
-up & HGSC & 0.814 & 0.788 & 0.795 & 0.816 & 0.802\\
+up & HGSC & 0.814 & 0.788 & 0.816 & 0.795 & 0.802\\
 \hline
-up & LGSC & 0.647 & 0.753 & 0.585 & 0.696 & 0.692\\
+up & LGSC & 0.647 & 0.753 & 0.696 & 0.585 & 0.692\\
 \hline
-up & MUC & 0.71 & 0.647 & 0.692 & 0.739 & 0.74\\
+up & MUC & 0.71 & 0.647 & 0.739 & 0.692 & 0.74\\
 \hline
-down & CCOC & 0.784 & 0.786 & 0.767 & 0.778 & 0.735\\
+down & CCOC & 0.784 & 0.786 & 0.778 & 0.767 & 0.735\\
 \hline
-down & ENOC & 0.674 & 0.701 & 0.636 & 0.69 & 0.647\\
+down & ENOC & 0.674 & 0.701 & 0.69 & 0.636 & 0.647\\
 \hline
-down & HGSC & 0.761 & 0.742 & 0.734 & 0.741 & 0.711\\
+down & HGSC & 0.761 & 0.742 & 0.741 & 0.734 & 0.711\\
 \hline
-down & LGSC & 0.594 & 0.64 & 0.587 & 0.553 & 0.528\\
+down & LGSC & 0.594 & 0.64 & 0.553 & 0.587 & 0.528\\
 \hline
-down & MUC & 0.678 & 0.675 & 0.647 & 0.693 & 0.65\\
+down & MUC & 0.678 & 0.675 & 0.693 & 0.647 & 0.65\\
 \hline
-smote & CCOC & 0.795 & 0.79 & 0.79 & 0.762 & 0.747\\
+smote & CCOC & 0.795 & 0.79 & 0.762 & 0.79 & 0.747\\
 \hline
-smote & ENOC & 0.699 & 0.725 & 0.678 & 0.7 & 0.685\\
+smote & ENOC & 0.699 & 0.725 & 0.7 & 0.678 & 0.685\\
 \hline
 smote & HGSC & \textbf{0.829} & 0.792 & 0.81 & 0.81 & 0.787\\
 \hline
-smote & LGSC & 0.691 & 0.74 & 0.694 & 0.711 & 0.676\\
+smote & LGSC & 0.691 & 0.74 & 0.711 & 0.694 & 0.676\\
 \hline
-smote & MUC & 0.709 & 0.694 & 0.678 & 0.73 & 0.74\\
+smote & MUC & 0.709 & 0.694 & 0.73 & 0.678 & 0.74\\
 \hline
 \end{tabular}
 \end{table}
 
-\hypertarget{g-mean-1}{%
-\subsection{G-mean}\label{g-mean-1}}
+\hypertarget{g-mean-2}{%
+\subsection{G-mean}\label{g-mean-2}}
 
 \begin{figure}[H]
 
@@ -2453,15 +3043,15 @@ smote & MUC & 0.709 & 0.694 & 0.678 & 0.73 & 0.74\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & 0.638 & 0.747 & 0.557 & 0.728 & 0.72\\
+none & 0.638 & 0.747 & 0.728 & 0.557 & 0.72\\
 \hline
-up & 0.713 & 0.718 & 0.703 & \textbf{0.794} & 0.769\\
+up & 0.713 & 0.718 & \textbf{0.794} & 0.703 & 0.769\\
 \hline
-down & 0.778 & 0.791 & 0.761 & 0.779 & 0.753\\
+down & 0.778 & 0.791 & 0.779 & 0.761 & 0.753\\
 \hline
-smote & 0.76 & 0.75 & 0.766 & 0.789 & 0.782\\
+smote & 0.76 & 0.75 & 0.789 & 0.766 & 0.782\\
 \hline
 \end{tabular}
 \end{table}
@@ -2481,47 +3071,47 @@ smote & 0.76 & 0.75 & 0.766 & 0.789 & 0.782\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l|l}
 \hline
-sampling & histotype & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & CCOC & 0.889 & 0.889 & 0.884 & 0.889 & 0.879\\
+none & CCOC & 0.889 & 0.889 & 0.889 & 0.884 & 0.879\\
 \hline
-none & ENOC & 0.854 & 0.868 & 0.831 & 0.845 & 0.851\\
+none & ENOC & 0.854 & 0.868 & 0.845 & 0.831 & 0.851\\
 \hline
-none & HGSC & 0.892 & 0.896 & 0.871 & 0.905 & 0.896\\
+none & HGSC & 0.892 & 0.896 & 0.905 & 0.871 & 0.896\\
 \hline
-none & LGSC & 0.577 & 0.812 & 0.408 & 0.707 & 0.707\\
+none & LGSC & 0.577 & 0.812 & 0.707 & 0.408 & 0.707\\
 \hline
-none & MUC & 0.756 & 0.791 & 0.745 & 0.836 & 0.816\\
+none & MUC & 0.756 & 0.791 & 0.836 & 0.745 & 0.816\\
 \hline
-up & CCOC & 0.893 & 0.886 & 0.886 & 0.889 & 0.868\\
+up & CCOC & 0.893 & 0.886 & 0.889 & 0.886 & 0.868\\
 \hline
-up & ENOC & 0.863 & 0.848 & 0.848 & 0.847 & 0.836\\
+up & ENOC & 0.863 & 0.848 & 0.847 & 0.848 & 0.836\\
 \hline
-up & HGSC & 0.909 & 0.895 & 0.898 & 0.906 & 0.899\\
+up & HGSC & 0.909 & 0.895 & 0.906 & 0.898 & 0.899\\
 \hline
-up & LGSC & 0.707 & 0.793 & 0.703 & 0.88 & 0.873\\
+up & LGSC & 0.707 & 0.793 & 0.88 & 0.703 & 0.873\\
 \hline
-up & MUC & 0.812 & 0.745 & 0.808 & 0.866 & 0.853\\
+up & MUC & 0.812 & 0.745 & 0.866 & 0.808 & 0.853\\
 \hline
-down & CCOC & 0.896 & 0.889 & 0.89 & 0.897 & 0.883\\
+down & CCOC & 0.896 & 0.889 & 0.897 & 0.89 & 0.883\\
 \hline
-down & ENOC & 0.847 & 0.859 & 0.817 & 0.848 & 0.823\\
+down & ENOC & 0.847 & 0.859 & 0.848 & 0.817 & 0.823\\
 \hline
-down & HGSC & 0.873 & 0.866 & 0.861 & 0.862 & 0.848\\
+down & HGSC & 0.873 & 0.866 & 0.862 & 0.861 & 0.848\\
 \hline
-down & LGSC & 0.871 & 0.865 & 0.866 & 0.877 & 0.851\\
+down & LGSC & 0.871 & 0.865 & 0.877 & 0.866 & 0.851\\
 \hline
-down & MUC & 0.854 & 0.902 & 0.855 & 0.856 & 0.837\\
+down & MUC & 0.854 & 0.902 & 0.856 & 0.855 & 0.837\\
 \hline
-smote & CCOC & 0.895 & 0.892 & 0.893 & 0.889 & 0.887\\
+smote & CCOC & 0.895 & 0.892 & 0.889 & 0.893 & 0.887\\
 \hline
 smote & ENOC & 0.87 & 0.868 & 0.856 & 0.856 & 0.853\\
 \hline
-smote & HGSC & \textbf{0.913} & 0.897 & 0.904 & 0.902 & 0.89\\
+smote & HGSC & \textbf{0.913} & 0.897 & 0.902 & 0.904 & 0.89\\
 \hline
-smote & LGSC & 0.804 & 0.812 & 0.812 & 0.861 & 0.857\\
+smote & LGSC & 0.804 & 0.812 & 0.861 & 0.812 & 0.857\\
 \hline
-smote & MUC & 0.832 & 0.791 & 0.82 & 0.857 & 0.861\\
+smote & MUC & 0.832 & 0.791 & 0.857 & 0.82 & 0.861\\
 \hline
 \end{tabular}
 \end{table}
@@ -2529,8 +3119,8 @@ smote & MUC & 0.832 & 0.791 & 0.82 & 0.857 & 0.861\\
 \hypertarget{cs2-set}{%
 \section{CS2 Set}\label{cs2-set}}
 
-\hypertarget{accuracy-2}{%
-\subsection{Accuracy}\label{accuracy-2}}
+\hypertarget{accuracy-3}{%
+\subsection{Accuracy}\label{accuracy-3}}
 
 \begin{figure}[H]
 
@@ -2547,15 +3137,15 @@ smote & MUC & 0.832 & 0.791 & 0.82 & 0.857 & 0.861\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & 0.921 & 0.925 & 0.905 & \textbf{0.933} & 0.927\\
+none & 0.921 & 0.925 & \textbf{0.933} & 0.905 & 0.927\\
 \hline
-up & 0.925 & 0.923 & 0.93 & 0.918 & 0.916\\
+up & 0.925 & 0.923 & 0.918 & 0.93 & 0.916\\
 \hline
-down & 0.855 & 0.838 & 0.839 & 0.812 & 0.811\\
+down & 0.855 & 0.838 & 0.812 & 0.839 & 0.811\\
 \hline
-smote & 0.925 & 0.92 & 0.921 & 0.909 & 0.896\\
+smote & 0.925 & 0.92 & 0.909 & 0.921 & 0.896\\
 \hline
 \end{tabular}
 \end{table}
@@ -2575,53 +3165,53 @@ smote & 0.925 & 0.92 & 0.921 & 0.909 & 0.896\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l|l}
 \hline
-sampling & histotype & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & CCOC & 0.984 & 0.981 & 0.981 & \textbf{0.987} & 0.983\\
+none & CCOC & 0.984 & 0.981 & \textbf{0.987} & 0.981 & 0.983\\
 \hline
-none & ENOC & 0.973 & 0.978 & 0.965 & 0.977 & 0.974\\
+none & ENOC & 0.973 & 0.978 & 0.977 & 0.965 & 0.974\\
 \hline
-none & HGSC & 0.927 & 0.935 & 0.908 & 0.946 & 0.943\\
+none & HGSC & 0.927 & 0.935 & 0.946 & 0.908 & 0.943\\
 \hline
 none & LGSC & 0.977 & 0.977 & 0.977 & 0.977 & 0.976\\
 \hline
-none & MUC & 0.981 & 0.978 & 0.98 & 0.983 & 0.98\\
+none & MUC & 0.981 & 0.978 & 0.983 & 0.98 & 0.98\\
 \hline
-up & CCOC & 0.986 & 0.98 & 0.986 & \textbf{0.987} & 0.986\\
+up & CCOC & 0.986 & 0.98 & \textbf{0.987} & 0.986 & 0.986\\
 \hline
-up & ENOC & 0.977 & 0.979 & 0.98 & 0.967 & 0.966\\
+up & ENOC & 0.977 & 0.979 & 0.967 & 0.98 & 0.966\\
 \hline
-up & HGSC & 0.93 & 0.93 & 0.94 & 0.935 & 0.936\\
+up & HGSC & 0.93 & 0.93 & 0.935 & 0.94 & 0.936\\
 \hline
-up & LGSC & 0.977 & 0.98 & 0.978 & 0.971 & 0.972\\
+up & LGSC & 0.977 & 0.98 & 0.971 & 0.978 & 0.972\\
 \hline
-up & MUC & 0.982 & 0.978 & 0.98 & 0.975 & 0.976\\
+up & MUC & 0.982 & 0.978 & 0.975 & 0.98 & 0.976\\
 \hline
-down & CCOC & 0.981 & 0.953 & 0.978 & 0.976 & 0.971\\
+down & CCOC & 0.981 & 0.953 & 0.976 & 0.978 & 0.971\\
 \hline
-down & ENOC & 0.958 & 0.954 & 0.957 & 0.952 & 0.939\\
+down & ENOC & 0.958 & 0.954 & 0.952 & 0.957 & 0.939\\
 \hline
-down & HGSC & 0.876 & 0.862 & 0.865 & 0.84 & 0.839\\
+down & HGSC & 0.876 & 0.862 & 0.84 & 0.865 & 0.839\\
 \hline
-down & LGSC & 0.952 & 0.956 & 0.94 & 0.921 & 0.922\\
+down & LGSC & 0.952 & 0.956 & 0.921 & 0.94 & 0.922\\
 \hline
-down & MUC & 0.95 & 0.96 & 0.946 & 0.945 & 0.961\\
+down & MUC & 0.95 & 0.96 & 0.945 & 0.946 & 0.961\\
 \hline
-smote & CCOC & 0.985 & 0.979 & 0.984 & 0.986 & 0.981\\
+smote & CCOC & 0.985 & 0.979 & 0.986 & 0.984 & 0.981\\
 \hline
-smote & ENOC & 0.975 & 0.977 & 0.974 & 0.963 & 0.957\\
+smote & ENOC & 0.975 & 0.977 & 0.963 & 0.974 & 0.957\\
 \hline
-smote & HGSC & 0.939 & 0.932 & 0.939 & 0.928 & 0.919\\
+smote & HGSC & 0.939 & 0.932 & 0.928 & 0.939 & 0.919\\
 \hline
-smote & LGSC & 0.98 & 0.98 & 0.98 & 0.97 & 0.964\\
+smote & LGSC & 0.98 & 0.98 & 0.97 & 0.98 & 0.964\\
 \hline
-smote & MUC & 0.972 & 0.975 & 0.968 & 0.974 & 0.973\\
+smote & MUC & 0.972 & 0.975 & 0.974 & 0.968 & 0.973\\
 \hline
 \end{tabular}
 \end{table}
 
-\hypertarget{f1-score-2}{%
-\subsection{F1-Score}\label{f1-score-2}}
+\hypertarget{f1-score-3}{%
+\subsection{F1-Score}\label{f1-score-3}}
 
 \begin{figure}[H]
 
@@ -2638,15 +3228,15 @@ smote & MUC & 0.972 & 0.975 & 0.968 & 0.974 & 0.973\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & 0.718 & 0.762 & 0.736 & 0.752 & 0.74\\
+none & 0.718 & 0.762 & 0.752 & 0.736 & 0.74\\
 \hline
-up & 0.719 & 0.751 & 0.74 & 0.773 & 0.754\\
+up & 0.719 & 0.751 & 0.773 & 0.74 & 0.754\\
 \hline
-down & 0.699 & 0.668 & 0.675 & 0.652 & 0.645\\
+down & 0.699 & 0.668 & 0.652 & 0.675 & 0.645\\
 \hline
-smote & \textbf{0.782} & 0.755 & 0.769 & 0.762 & 0.732\\
+smote & \textbf{0.782} & 0.755 & 0.762 & 0.769 & 0.732\\
 \hline
 \end{tabular}
 \end{table}
@@ -2666,53 +3256,53 @@ smote & \textbf{0.782} & 0.755 & 0.769 & 0.762 & 0.732\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l|l}
 \hline
-sampling & histotype & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & CCOC & 0.889 & 0.857 & 0.857 & 0.905 & 0.878\\
+none & CCOC & 0.889 & 0.857 & 0.905 & 0.857 & 0.878\\
 \hline
-none & ENOC & 0.5 & 0.667 & 0.222 & 0.636 & 0.609\\
+none & ENOC & 0.5 & 0.667 & 0.636 & 0.222 & 0.609\\
 \hline
-none & HGSC & 0.955 & 0.96 & 0.945 & \textbf{0.966} & 0.964\\
+none & HGSC & 0.955 & 0.96 & \textbf{0.966} & 0.945 & 0.964\\
 \hline
-none & LGSC & 0.222 & 0.5 & 0.268 & 0.364 & 0.4\\
+none & LGSC & 0.222 & 0.5 & 0.364 & 0.268 & 0.4\\
 \hline
-none & MUC & 0.87 & 0.842 & 0.851 & 0.875 & 0.863\\
+none & MUC & 0.87 & 0.842 & 0.875 & 0.851 & 0.863\\
 \hline
-up & CCOC & 0.894 & 0.842 & 0.9 & 0.909 & 0.896\\
+up & CCOC & 0.894 & 0.842 & 0.909 & 0.9 & 0.896\\
 \hline
-up & ENOC & 0.571 & 0.667 & 0.667 & 0.606 & 0.581\\
+up & ENOC & 0.571 & 0.667 & 0.606 & 0.667 & 0.581\\
 \hline
-up & HGSC & 0.958 & 0.957 & 0.963 & 0.958 & 0.959\\
+up & HGSC & 0.958 & 0.957 & 0.958 & 0.963 & 0.959\\
 \hline
-up & LGSC & 0.25 & 0.5 & 0.308 & 0.571 & 0.526\\
+up & LGSC & 0.25 & 0.5 & 0.571 & 0.308 & 0.526\\
 \hline
-up & MUC & 0.864 & 0.833 & 0.86 & 0.84 & 0.837\\
+up & MUC & 0.864 & 0.833 & 0.84 & 0.86 & 0.837\\
 \hline
-down & CCOC & 0.875 & 0.739 & 0.863 & 0.84 & 0.809\\
+down & CCOC & 0.875 & 0.739 & 0.84 & 0.863 & 0.809\\
 \hline
-down & ENOC & 0.563 & 0.519 & 0.545 & 0.515 & 0.452\\
+down & ENOC & 0.563 & 0.519 & 0.515 & 0.545 & 0.452\\
 \hline
-down & HGSC & 0.916 & 0.907 & 0.908 & 0.888 & 0.89\\
+down & HGSC & 0.916 & 0.907 & 0.888 & 0.908 & 0.89\\
 \hline
-down & LGSC & 0.435 & 0.444 & 0.375 & 0.341 & 0.34\\
+down & LGSC & 0.435 & 0.444 & 0.341 & 0.375 & 0.34\\
 \hline
-down & MUC & 0.72 & 0.742 & 0.7 & 0.696 & 0.75\\
+down & MUC & 0.72 & 0.742 & 0.696 & 0.7 & 0.75\\
 \hline
-smote & CCOC & 0.9 & 0.839 & 0.898 & 0.903 & 0.872\\
+smote & CCOC & 0.9 & 0.839 & 0.903 & 0.898 & 0.872\\
 \hline
-smote & ENOC & 0.667 & 0.632 & 0.645 & 0.581 & 0.533\\
+smote & ENOC & 0.667 & 0.632 & 0.581 & 0.645 & 0.533\\
 \hline
-smote & HGSC & 0.961 & 0.958 & 0.961 & 0.953 & 0.947\\
+smote & HGSC & 0.961 & 0.958 & 0.953 & 0.961 & 0.947\\
 \hline
-smote & LGSC & 0.556 & 0.545 & 0.556 & 0.545 & 0.5\\
+smote & LGSC & 0.556 & 0.545 & 0.545 & 0.556 & 0.5\\
 \hline
-smote & MUC & 0.821 & 0.818 & 0.8 & 0.833 & 0.824\\
+smote & MUC & 0.821 & 0.818 & 0.833 & 0.8 & 0.824\\
 \hline
 \end{tabular}
 \end{table}
 
-\hypertarget{kappa-2}{%
-\subsection{Kappa}\label{kappa-2}}
+\hypertarget{kappa-3}{%
+\subsection{Kappa}\label{kappa-3}}
 
 \begin{figure}[H]
 
@@ -2729,15 +3319,15 @@ smote & MUC & 0.821 & 0.818 & 0.8 & 0.833 & 0.824\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & 0.75 & 0.774 & 0.678 & \textbf{0.803} & 0.788\\
+none & 0.75 & 0.774 & \textbf{0.803} & 0.678 & 0.788\\
 \hline
-up & 0.763 & 0.76 & 0.791 & 0.787 & 0.775\\
+up & 0.763 & 0.76 & 0.787 & 0.791 & 0.775\\
 \hline
-down & 0.67 & 0.629 & 0.642 & 0.601 & 0.594\\
+down & 0.67 & 0.629 & 0.601 & 0.642 & 0.594\\
 \hline
-smote & 0.798 & 0.762 & 0.788 & 0.77 & 0.736\\
+smote & 0.798 & 0.762 & 0.77 & 0.788 & 0.736\\
 \hline
 \end{tabular}
 \end{table}
@@ -2757,53 +3347,53 @@ smote & 0.798 & 0.762 & 0.788 & 0.77 & 0.736\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l|l}
 \hline
-sampling & histotype & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & CCOC & 0.88 & 0.849 & 0.846 & 0.897 & 0.869\\
+none & CCOC & 0.88 & 0.849 & 0.897 & 0.846 & 0.869\\
 \hline
-none & ENOC & 0.484 & 0.661 & 0.162 & 0.623 & 0.595\\
+none & ENOC & 0.484 & 0.661 & 0.623 & 0.162 & 0.595\\
 \hline
-none & HGSC & 0.754 & 0.786 & 0.669 & 0.828 & 0.82\\
+none & HGSC & 0.754 & 0.786 & 0.828 & 0.669 & 0.82\\
 \hline
-none & LGSC & 0.173 & 0.486 & 0 & 0.353 & 0.386\\
+none & LGSC & 0.173 & 0.486 & 0.353 & 0 & 0.386\\
 \hline
-none & MUC & 0.859 & 0.831 & 0.84 & 0.865 & 0.85\\
+none & MUC & 0.859 & 0.831 & 0.865 & 0.84 & 0.85\\
 \hline
-up & CCOC & 0.885 & 0.831 & 0.893 & \textbf{0.902} & 0.888\\
+up & CCOC & 0.885 & 0.831 & \textbf{0.902} & 0.893 & 0.888\\
 \hline
-up & ENOC & 0.559 & 0.656 & 0.655 & 0.588 & 0.559\\
+up & ENOC & 0.559 & 0.656 & 0.588 & 0.655 & 0.559\\
 \hline
-up & HGSC & 0.761 & 0.769 & 0.804 & 0.813 & 0.812\\
+up & HGSC & 0.761 & 0.769 & 0.813 & 0.804 & 0.812\\
 \hline
-up & LGSC & 0.214 & 0.488 & 0.282 & 0.558 & 0.512\\
+up & LGSC & 0.214 & 0.488 & 0.558 & 0.282 & 0.512\\
 \hline
-up & MUC & 0.854 & 0.823 & 0.848 & 0.826 & 0.825\\
+up & MUC & 0.854 & 0.823 & 0.826 & 0.848 & 0.825\\
 \hline
-down & CCOC & 0.864 & 0.714 & 0.85 & 0.826 & 0.793\\
+down & CCOC & 0.864 & 0.714 & 0.826 & 0.85 & 0.793\\
 \hline
-down & ENOC & 0.542 & 0.494 & 0.528 & 0.49 & 0.423\\
+down & ENOC & 0.542 & 0.494 & 0.49 & 0.528 & 0.423\\
 \hline
-down & HGSC & 0.68 & 0.645 & 0.657 & 0.614 & 0.605\\
+down & HGSC & 0.68 & 0.645 & 0.614 & 0.657 & 0.605\\
 \hline
-down & LGSC & 0.418 & 0.425 & 0.352 & 0.313 & 0.312\\
+down & LGSC & 0.418 & 0.425 & 0.313 & 0.352 & 0.312\\
 \hline
-down & MUC & 0.693 & 0.72 & 0.673 & 0.665 & 0.73\\
+down & MUC & 0.693 & 0.72 & 0.665 & 0.673 & 0.73\\
 \hline
-smote & CCOC & 0.893 & 0.83 & 0.889 & 0.897 & 0.863\\
+smote & CCOC & 0.893 & 0.83 & 0.897 & 0.889 & 0.863\\
 \hline
-smote & ENOC & 0.655 & 0.62 & 0.627 & 0.559 & 0.511\\
+smote & ENOC & 0.655 & 0.62 & 0.559 & 0.627 & 0.511\\
 \hline
-smote & HGSC & 0.82 & 0.778 & 0.817 & 0.796 & 0.771\\
+smote & HGSC & 0.82 & 0.778 & 0.796 & 0.817 & 0.771\\
 \hline
-smote & LGSC & 0.542 & 0.523 & 0.542 & 0.531 & 0.482\\
+smote & LGSC & 0.542 & 0.523 & 0.531 & 0.542 & 0.482\\
 \hline
-smote & MUC & 0.805 & 0.805 & 0.783 & 0.82 & 0.809\\
+smote & MUC & 0.805 & 0.805 & 0.82 & 0.783 & 0.809\\
 \hline
 \end{tabular}
 \end{table}
 
-\hypertarget{g-mean-2}{%
-\subsection{G-mean}\label{g-mean-2}}
+\hypertarget{g-mean-3}{%
+\subsection{G-mean}\label{g-mean-3}}
 
 \begin{figure}[H]
 
@@ -2820,15 +3410,15 @@ smote & MUC & 0.805 & 0.805 & 0.783 & 0.82 & 0.809\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-sampling & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & 0.401 & 0.683 & 0 & 0.645 & 0.654\\
+none & 0.401 & 0.683 & 0.645 & 0 & 0.654\\
 \hline
-up & 0.508 & 0.642 & 0.589 & \textbf{0.835} & 0.766\\
+up & 0.508 & 0.642 & \textbf{0.835} & 0.589 & 0.766\\
 \hline
-down & 0.829 & 0.792 & 0.804 & 0.801 & 0.786\\
+down & 0.829 & 0.792 & 0.801 & 0.804 & 0.786\\
 \hline
-smote & 0.776 & 0.677 & 0.763 & 0.825 & 0.801\\
+smote & 0.776 & 0.677 & 0.825 & 0.763 & 0.801\\
 \hline
 \end{tabular}
 \end{table}
@@ -2848,47 +3438,47 @@ smote & 0.776 & 0.677 & 0.763 & 0.825 & 0.801\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l|l}
 \hline
-sampling & histotype & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+sampling & histotype & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-none & CCOC & 0.909 & 0.888 & 0.872 & 0.934 & 0.924\\
+none & CCOC & 0.909 & 0.888 & 0.934 & 0.872 & 0.924\\
 \hline
-none & ENOC & 0.577 & 0.764 & 0.302 & 0.737 & 0.73\\
+none & ENOC & 0.577 & 0.764 & 0.737 & 0.302 & 0.73\\
 \hline
-none & HGSC & 0.824 & 0.861 & 0.754 & 0.888 & 0.892\\
+none & HGSC & 0.824 & 0.861 & 0.888 & 0.754 & 0.892\\
 \hline
-none & LGSC & 0.316 & 0.667 & 0 & 0.534 & 0.575\\
+none & LGSC & 0.316 & 0.667 & 0.534 & 0 & 0.575\\
 \hline
-none & MUC & 0.918 & 0.884 & 0.887 & 0.932 & 0.932\\
+none & MUC & 0.918 & 0.884 & 0.932 & 0.887 & 0.932\\
 \hline
-up & CCOC & 0.909 & 0.858 & 0.929 & \textbf{0.965} & 0.941\\
+up & CCOC & 0.909 & 0.858 & \textbf{0.965} & 0.929 & 0.941\\
 \hline
-up & ENOC & 0.632 & 0.737 & 0.73 & 0.81 & 0.78\\
+up & ENOC & 0.632 & 0.737 & 0.81 & 0.73 & 0.78\\
 \hline
-up & HGSC & 0.826 & 0.836 & 0.871 & 0.933 & 0.919\\
+up & HGSC & 0.826 & 0.836 & 0.933 & 0.871 & 0.919\\
 \hline
-up & LGSC & 0.354 & 0.628 & 0.446 & 0.902 & 0.807\\
+up & LGSC & 0.354 & 0.628 & 0.902 & 0.446 & 0.807\\
 \hline
-up & MUC & 0.905 & 0.87 & 0.928 & 0.935 & 0.922\\
+up & MUC & 0.905 & 0.87 & 0.935 & 0.928 & 0.922\\
 \hline
-down & CCOC & 0.959 & 0.931 & 0.948 & 0.927 & 0.917\\
+down & CCOC & 0.959 & 0.931 & 0.927 & 0.948 & 0.917\\
 \hline
-down & ENOC & 0.832 & 0.809 & 0.803 & 0.796 & 0.78\\
+down & ENOC & 0.832 & 0.809 & 0.796 & 0.803 & 0.78\\
 \hline
-down & HGSC & 0.901 & 0.884 & 0.891 & 0.878 & 0.872\\
+down & HGSC & 0.901 & 0.884 & 0.878 & 0.891 & 0.872\\
 \hline
-down & LGSC & 0.892 & 0.886 & 0.872 & 0.884 & 0.891\\
+down & LGSC & 0.892 & 0.886 & 0.884 & 0.872 & 0.891\\
 \hline
-down & MUC & 0.916 & 0.882 & 0.917 & 0.92 & 0.901\\
+down & MUC & 0.916 & 0.882 & 0.92 & 0.917 & 0.901\\
 \hline
-smote & CCOC & 0.956 & 0.877 & 0.954 & 0.961 & 0.941\\
+smote & CCOC & 0.956 & 0.877 & 0.961 & 0.954 & 0.941\\
 \hline
-smote & ENOC & 0.812 & 0.734 & 0.796 & 0.808 & 0.793\\
+smote & ENOC & 0.812 & 0.734 & 0.808 & 0.796 & 0.793\\
 \hline
-smote & HGSC & 0.919 & 0.857 & 0.918 & 0.928 & 0.919\\
+smote & HGSC & 0.919 & 0.857 & 0.928 & 0.918 & 0.919\\
 \hline
-smote & LGSC & 0.744 & 0.703 & 0.749 & 0.887 & 0.861\\
+smote & LGSC & 0.744 & 0.703 & 0.887 & 0.749 & 0.861\\
 \hline
-smote & MUC & 0.93 & 0.88 & 0.926 & 0.93 & 0.919\\
+smote & MUC & 0.93 & 0.88 & 0.93 & 0.926 & 0.919\\
 \hline
 \end{tabular}
 \end{table}
@@ -2911,13 +3501,13 @@ smote & MUC & 0.93 & 0.88 & 0.926 & 0.93 & 0.919\\
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
-dataset & rf & svm & adaboost & mlr\_ridge & mlr\_lasso\\
+dataset & rf & svm & mlr\_ridge & adaboost & mlr\_lasso\\
 \hline
-Training & \textbf{0.83} & 0.81 & 0.809 & 0.766 & 0.758\\
+Training & \textbf{0.83} & 0.81 & 0.766 & 0.809 & 0.758\\
 \hline
-CS1 & 0.763 & 0.759 & 0.751 & 0.755 & 0.736\\
+CS1 & 0.763 & 0.759 & 0.755 & 0.751 & 0.736\\
 \hline
-CS2 & 0.798 & 0.762 & 0.788 & 0.77 & 0.736\\
+CS2 & 0.798 & 0.762 & 0.77 & 0.788 & 0.736\\
 \hline
 \end{tabular}
 \end{table}
