@@ -265,6 +265,17 @@ train_class <- train_ref[["revHist"]]
 saveRDS(train_data, here::here("data/train_data.rds"))
 saveRDS(train_class, here::here("data/train_class.rds"))
 
+# Training set for 2-step process
+train_step1_data <- train_data
+train_step1_class <- ifelse(train_class == "HGSC", "HGSC", "non-HGSC")
+train_step2_data <- train_data[train_step1_class != "HGSC", ]
+train_step2_class <- train_class[train_step1_class != "HGSC"]
+
+saveRDS(train_step1_data, here::here("data/train_step1_data.rds"))
+saveRDS(train_step1_class, here::here("data/train_step1_class.rds"))
+saveRDS(train_step2_data, here::here("data/train_step2_data.rds"))
+saveRDS(train_step2_class, here::here("data/train_step2_class.rds"))
+
 # CS1 all set, n=287-19=268 (CS1 - other histotypes), common genes with CS3 n=79
 cs1_all_ref <- cs1_all_train %>%
   rownames_to_column("FileName") %>%
