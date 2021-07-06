@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.3",
+    "Version": "4.1.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -262,6 +262,15 @@
       "Version": "0.1.1",
       "Source": "Local",
       "Hash": "62332f0ba52491c573d72ed34a7692f1"
+    },
+    "ber": {
+      "Package": "ber",
+      "Version": "4.0",
+      "Source": "URL",
+      "Repository": "CRAN",
+      "RemoteType": "url",
+      "RemoteUrl": "https://cran.r-project.org/src/contrib/Archive/ber/ber_4.0.tar.gz",
+      "Hash": "99dcd81587766734e46deca48c028af0"
     },
     "bibtex": {
       "Package": "bibtex",
