@@ -1439,12 +1439,12 @@
       "Version": "0.2.1.9000",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "AlineTalhouk",
       "RemoteRepo": "splendid",
       "RemoteRef": "master",
-      "RemoteSha": "b58ba6ff6c6abebaca8d239e5a10bcdfbdf84de4",
-      "RemoteHost": "api.github.com",
-      "Hash": "30497fad3bf5511f31f068b8a9ed6739"
+      "RemoteSha": "49729e0df254782f010673d6adde8d19ca2f6aad",
+      "Hash": "36b90324e9d5bd71116bdc088c269ca1"
     },
     "stringi": {
       "Package": "stringi",
