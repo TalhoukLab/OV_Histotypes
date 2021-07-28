@@ -16,6 +16,8 @@ ivsts1 <- readRDS(here("data/iv_summary_train_step1.rds"))
 ivsts2 <- readRDS(here("data/iv_summary_train_step2.rds"))
 ivs1 <- readRDS(here("data/iv_summary_cs1_all.rds"))
 ivs2 <- readRDS(here("data/iv_summary_cs2_all.rds"))
+train_data <- readRDS(here("data/train_data.rds"))
+coefmat <- readRDS(here("data/coefmat.rds"))
 ```
 
 ```{r ivs-combine}
@@ -1621,3 +1623,11 @@ p <-
   )
 print(p)
 ```
+
+## Overlap with SPOT
+
+```{r overlap-SPOT}
+overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
+```
+
+There are `r length(overlap_SPOT)` genes out of the `r ncol(train_data)` classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
