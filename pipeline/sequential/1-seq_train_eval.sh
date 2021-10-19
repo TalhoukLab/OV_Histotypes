@@ -21,7 +21,7 @@ for s in $(seq -f "%0${#reps}g" 1 $reps); do
           R_file=$RSubDir/$samp"_seq"$nseq"_"$s.R
           echo 'reps <- "'$s'"' > $R_file
           echo 'samp <- "'$samp'"' >> $R_file
-          echo 'nseq <- "'$nseq'"' >> $R_file
+          echo 'nseq <- '$nseq >> $R_file
           echo 'inputDir <- "'$inputDir'"' >> $R_file
           echo 'outputDir <- "'$outputDir'"' >> $R_file
           echo 'norm_by <- "'$norm_by'"' >> $R_file
