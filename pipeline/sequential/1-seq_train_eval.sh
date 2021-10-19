@@ -18,7 +18,7 @@ for s in $(seq -f "%0${#reps}g" 1 $reps); do
     for samp in "${samps[@]}"; do
         for nseq in $(seq 1 $nseq); do
           # Content of R file
-          R_file=$RSubDir/$samp_"seq"$nseq"_"$s.R
+          R_file=$RSubDir/$samp"_seq"$nseq"_"$s.R
           echo 'reps <- "'$s'"' > $R_file
           echo 'samp <- "'$samp'"' >> $R_file
           echo 'nseq <- "'$nseq'"' >> $R_file
@@ -30,7 +30,7 @@ for s in $(seq -f "%0${#reps}g" 1 $reps); do
           echo 'source("pipeline/sequential/1-seq_train_eval.R")' >> $R_file
 
           # Content of sh file
-          job_file=$shSubDir/$samp_"seq"$nseq"_"$s.sh
+          job_file=$shSubDir/$samp"_seq"$nseq"_"$s.sh
           cat ./assets/sbatch_params.sh > $job_file
           echo "cd $projDir" >> $job_file
           echo "Rscript $R_file" >> $job_file
