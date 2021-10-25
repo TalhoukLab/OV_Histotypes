@@ -19,14 +19,18 @@ eval_files <-
 # across sequences and resamples
 eval_merged <- eval_files %>%
   purrr::map_depth(3, readRDS) %>%
-  purrr::map_depth(2, ~ purrr::flatten(purrr::transpose(.))) %>%
-  purrr::map(~ apply(
-    data.frame(purrr::flatten(.)),
-    1,
-    quantile,
-    probs = c(0.5, 0.05, 0.95),
-    na.rm = TRUE
-  ))
+  purrr::map_depth(2, ~ {
+    purrr::transpose(.) %>%
+      purrr::flatten() %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column("measure")
+  }) %>%
+  purrr::map(~ {
+    purrr::reduce(.x, dplyr::full_join, by = "measure") %>%
+      dplyr::filter(!grepl("class_0", measure)) %>%
+      tibble::column_to_rownames("measure") %>%
+      apply(1, quantile, probs = c(0.5, 0.05, 0.95), na.rm = TRUE)
+  })
 
 # Write all evaluations merged
 saveRDS(
