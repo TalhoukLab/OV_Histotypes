@@ -4,6 +4,7 @@
 # Load packages and data
 library(dplyr)
 library(purrr)
+library(tibble)
 library(tidyr)
 library(ggplot2)
 library(forcats)
@@ -1698,5 +1699,6 @@ f1_top <- RankAggreg(
   seed = 2021,
   verbose = FALSE
 )
-f1_top[["top.list"]]
 ```
+
+Out of the `r ncol(f1_ranks)` methods (algorithm-sampling combinations), the top 10 aggregated list comprise of: `r paste(head(f1_top[["top.list"]], 10), collapse = ", ")`.
