@@ -8,7 +8,7 @@ eval_files <-
   purrr::map(samps, function(s) {
     purrr::map(seqs, function(n) {
       list.files(
-        path = file.path(outputDir, "train_eval"),
+        path = file.path(outputDir, "sequential", "train_eval"),
         pattern = paste0(s, "_seq", n),
         full.names = TRUE
       )
@@ -31,5 +31,5 @@ eval_merged <- eval_files %>%
 # Write all evaluations merged
 saveRDS(
   eval_merged,
-  file.path(outputDir, "merge_eval", paste0("merge_eval_sequential.rds"))
+  file.path(outputDir, "sequential", "merge_eval", paste0("merge_eval_sequential.rds"))
 )
