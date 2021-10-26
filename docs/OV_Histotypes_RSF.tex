@@ -1,14 +1,18 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
 ]{report}
+\title{Ovarian Cancer Histotypes: Report of Statistical Findings}
+\author{Derek Chiu}
+\date{2021-10-25}
+
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -40,10 +44,10 @@
   pdftitle={Ovarian Cancer Histotypes: Report of Statistical Findings},
   pdfauthor={Derek Chiu},
   colorlinks=true,
-  linkcolor=Maroon,
-  filecolor=Maroon,
-  citecolor=Blue,
-  urlcolor=Blue,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
@@ -105,15 +109,11 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
-\ifluatex
+\ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
-
-\title{Ovarian Cancer Histotypes: Report of Statistical Findings}
-\author{Derek Chiu}
-\date{2021-07-27}
 
 \begin{document}
 \maketitle
@@ -123,8 +123,8 @@
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
-\listoftables
 \listoffigures
+\listoftables
 \hypertarget{preface}{%
 \chapter*{Preface}\label{preface}}
 \addcontentsline{toc}{chapter}{Preface}
@@ -818,9 +818,9 @@ CodeSets 1 and 2 are calibrated to CodeSet3 as follows:
 \begin{itemize}
 \tightlist
 \item
-  \texttt{X\^{}1(norm)\ =\ X\^{}1\ -\ R\^{}1\ +\ R\^{}3}~\\
+  \texttt{X\^{}1(norm)\ =\ X\^{}1\ -\ R\^{}1\ +\ R\^{}3}\strut \\
 \item
-  \texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
+  \texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}\strut \\
 \item
   \texttt{X\^{}3(norm)\ =\ X\^{}3}
 \end{itemize}
@@ -1049,7 +1049,7 @@ We use the Random1 method to normalize CS3-USC and CS3-AOC to CS3-VAN. There are
 CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=84 common samples.
 
 CodeSet2 is calibrated to CodeSet3 as follows:\\
-\texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
+\texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}\strut \\
 \texttt{X\^{}3(norm)\ =\ X\^{}3}
 
 \begin{figure}[H]
@@ -3526,6 +3526,35 @@ CS2 & 0.798 & 0.762 & 0.77 & 0.788 & 0.736\\
 
 There are 13 genes out of the 72 classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.
 
+\hypertarget{summary}{%
+\section{Summary}\label{summary}}
+
+\begin{table}
+
+\caption{\label{tab:summary}F1-Score Summary by Model and Class}
+\centering
+\begin{tabular}[t]{l|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r|r}
+\hline
+class & svm-none & svm-up & svm-down & svm-smote & rf-none & rf-up & rf-down & rf-smote & adaboost-none & adaboost-up & adaboost-down & adaboost-smote & mlr\_lasso-none & mlr\_lasso-up & mlr\_lasso-down & mlr\_lasso-smote & mlr\_ridge-none & mlr\_ridge-up & mlr\_ridge-down & mlr\_ridge-smote & 2S-svm-none & 2S-svm-up & 2S-svm-down & 2S-svm-smote & 2S-rf-none & 2S-rf-up & 2S-rf-down & 2S-rf-smote & 2S-adaboost-none & 2S-adaboost-up & 2S-adaboost-down & 2S-adaboost-smote & 2S-mlr\_lasso-none & 2S-mlr\_lasso-up & 2S-mlr\_lasso-down & 2S-mlr\_lasso-smote & 2S-mlr\_ridge-none & 2S-mlr\_ridge-up & 2S-mlr\_ridge-down & 2S-mlr\_ridge-smote & sequential-none & sequential-up & sequential-down & sequential-smote\\
+\hline
+CCOC & 0.848 & 0.822 & 0.790 & 0.824 & 0.866 & 0.864 & 0.841 & 0.862 & 0.846 & 0.865 & 0.833 & 0.850 & 0.843 & 0.778 & 0.792 & 0.813 & 0.853 & 0.833 & 0.821 & 0.835 & 0.892 & 0.891 & 0.875 & 0.886 & 0.920 & 0.919 & 0.907 & 0.914 & 0.911 & 0.905 & 0.897 & 0.901 & 0.899 & 0.896 & 0.895 & 0.897 & 0.903 & 0.899 & 0.892 & 0.898 & 0.904 & 0.892 & 0.904 & 0.905\\
+\hline
+ENOC & 0.786 & 0.750 & 0.629 & 0.759 & 0.724 & 0.767 & 0.641 & 0.759 & 0.681 & 0.754 & 0.615 & 0.721 & 0.740 & 0.638 & 0.605 & 0.675 & 0.757 & 0.667 & 0.627 & 0.710 & 0.844 & 0.847 & 0.825 & 0.845 & 0.831 & 0.831 & 0.812 & 0.833 & 0.818 & 0.824 & 0.806 & 0.818 & 0.822 & 0.820 & 0.812 & 0.822 & 0.833 & 0.833 & 0.827 & 0.833 & 0.972 & 0.970 & 0.971 & 0.971\\
+\hline
+HGSC & 0.970 & 0.969 & 0.928 & 0.968 & 0.967 & 0.969 & 0.930 & 0.974 & 0.959 & 0.974 & 0.927 & 0.969 & 0.968 & 0.954 & 0.907 & 0.954 & 0.967 & 0.944 & 0.917 & 0.953 & 0.972 & 0.973 & 0.960 & 0.971 & 0.974 & 0.973 & 0.962 & 0.972 & 0.970 & 0.971 & 0.963 & 0.970 & 0.965 & 0.958 & 0.953 & 0.963 & 0.966 & 0.960 & 0.957 & 0.964 & 0.971 & 0.971 & 0.963 & 0.972\\
+\hline
+LGSC & 0.667 & 0.714 & 0.526 & 0.706 & 0.375 & 0.522 & 0.487 & 0.710 & 0.200 & 0.690 & 0.481 & 0.706 & 0.471 & 0.611 & 0.368 & 0.571 & 0.353 & 0.524 & 0.413 & 0.545 & 0.917 & 0.917 & 0.909 & 0.909 & 0.880 & 0.875 & 0.868 & 0.877 & 0.880 & 0.880 & 0.870 & 0.882 & 0.857 & 0.857 & 0.839 & 0.857 & 0.886 & 0.867 & 0.846 & 0.857 & 0.933 & 0.929 & 0.933 & 0.929\\
+\hline
+MUC & 0.857 & 0.846 & 0.762 & 0.847 & 0.852 & 0.852 & 0.765 & 0.829 & 0.827 & 0.839 & 0.741 & 0.810 & 0.849 & 0.808 & 0.769 & 0.833 & 0.872 & 0.841 & 0.811 & 0.847 & 0.879 & 0.877 & 0.862 & 0.875 & 0.889 & 0.889 & 0.877 & 0.892 & 0.867 & 0.876 & 0.867 & 0.871 & 0.885 & 0.881 & 0.857 & 0.877 & 0.904 & 0.899 & 0.889 & 0.897 & 0.893 & 0.889 & 0.893 & 0.906\\
+\hline
+\end{tabular}
+\end{table}
+
+Did not converge after 1000 iterations.
+
+Out of the 44 methods (algorithm-sampling combinations), the top 10 aggregated list comprise of: sequential-smote, 2S-rf-none, sequential-up, 2S-mlr\_ridge-none, sequential-none, sequential-down, 2S-adaboost-smote, 2S-rf-smote, 2S-svm-none, 2S-svm-smote.
+
   \bibliography{packages.bib}
+\addcontentsline{toc}{chapter}{\bibname}
 
 \end{document}

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings</title>
   <meta name="description" content="3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings" />
-  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
   <meta property="og:title" content="3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2021-07-27" />
+<meta name="date" content="2021-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +33,9 @@
   
 <link rel="prev" href="methods.html"/>
 <link rel="next" href="results.html"/>
-<script src="assets/header-attrs-2.6/header-attrs.js"></script>
-<script src="assets/jquery-2.2.3/jquery.min.js"></script>
+<script src="assets/header-attrs-2.11/header-attrs.js"></script>
+<script src="assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="assets/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="assets/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="assets/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +51,11 @@
 
 
 
-
+<link href="assets/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="assets/anchor-sections-1.0.1/anchor-sections.js"></script>
 <script src="assets/kePrint-0.0.1/kePrint.js"></script>
 <link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
 
 
 
@@ -135,6 +138,7 @@
 </ul></li>
 <li class="chapter" data-level="4.5" data-path="results.html"><a href="results.html#smote-kappa-summary"><i class="fa fa-check"></i><b>4.5</b> SMOTE Kappa Summary</a></li>
 <li class="chapter" data-level="4.6" data-path="results.html"><a href="results.html#overlap-with-spot"><i class="fa fa-check"></i><b>4.6</b> Overlap with SPOT</a></li>
+<li class="chapter" data-level="4.7" data-path="results.html"><a href="results.html#summary"><i class="fa fa-check"></i><b>4.7</b> Summary</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 </ul>
@@ -219,6 +223,12 @@ First we validate the CS2 normalization process by looking at the distribution o
 </table>
 <table>
 <caption><span id="tab:dist-all">Table 3.2: </span>All CodeSet Histotypes</caption>
+<colgroup>
+<col width="85%" />
+<col width="4%" />
+<col width="4%" />
+<col width="5%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">revHist</th>
@@ -637,6 +647,11 @@ First we validate the CS2 normalization process by looking at the distribution o
 </table>
 <table>
 <caption><span id="tab:dist-cs3">Table 3.7: </span>CS3 Histotypes</caption>
+<colgroup>
+<col width="9%" />
+<col width="85%" />
+<col width="5%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">CodeSet</th>
@@ -827,13 +842,13 @@ First we validate the CS2 normalization process by looking at the distribution o
 <div id="random3" class="section level4" number="3.3.1.1">
 <h4><span class="header-section-number">3.3.1.1</span> Random3</h4>
 <p>Randomly choose 3 samples from each of the 5 histotypes as the reference set (n=15). The rest are validated.</p>
-<div class="figure" style="text-align: center"><span id="fig:cc-non3"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-non3"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-non3-1.png" alt="Random3 Non-Normalized Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.1: Random3 Non-Normalized Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-rand3"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand3"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-rand3-1.png" alt="Random3 Normalized Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.2: Random3 Normalized Concordance Measure Distributions
@@ -843,13 +858,13 @@ Figure 3.2: Random3 Normalized Concordance Measure Distributions
 <div id="random2" class="section level4" number="3.3.1.2">
 <h4><span class="header-section-number">3.3.1.2</span> Random2</h4>
 <p>Randomly choose 2 samples from each of the 5 histotypes as the reference set (n=10). The rest are validated.</p>
-<div class="figure" style="text-align: center"><span id="fig:cc-non2"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-non2"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-non2-1.png" alt="Random2 Non-Normalized Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.3: Random2 Non-Normalized Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-rand2"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand2"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-rand2-1.png" alt="Random2 Normalized Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.4: Random2 Normalized Concordance Measure Distributions
@@ -859,13 +874,13 @@ Figure 3.4: Random2 Normalized Concordance Measure Distributions
 <div id="random1" class="section level4" number="3.3.1.3">
 <h4><span class="header-section-number">3.3.1.3</span> Random1</h4>
 <p>Randomly choose 1 sample from each of the 5 histotypes as the reference set (n=5). The rest are validated.</p>
-<div class="figure" style="text-align: center"><span id="fig:cc-non1"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-non1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-non1-1.png" alt="Random1 Non-Normalized Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.5: Random1 Non-Normalized Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-rand1"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-rand1-1.png" alt="Random1 Normalized Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.6: Random1 Normalized Concordance Measure Distributions
@@ -995,7 +1010,7 @@ Figure 3.6: Random1 Normalized Concordance Measure Distributions
 </tbody>
 </table>
 <p>Because Random1 is a random selection of reference samples, we want to assess the variability of the concordance measures by repeating Random1 on different selections and observing the distribution of the medians.</p>
-<div class="figure" style="text-align: center"><span id="fig:cc-rand1-cs23-meds"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand1-cs23-meds"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-rand1-cs23-meds-1.png" alt="CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures" width="672" />
 <p class="caption">
 Figure 3.7: CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures
@@ -1040,7 +1055,7 @@ Figure 3.7: CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measu
 <div id="random3-hgsc" class="section level4" number="3.3.1.4">
 <h4><span class="header-section-number">3.3.1.4</span> Random3 HGSC</h4>
 <p>Randomly choose n=3 HGSC samples as the reference set, and use the rest as validation. This was tried in lieu of the fact that some non-HGSC histotypes have at most n=3 samples in total, so using Random3 or even Random2 would leave no samples remaining in the validation set for these histotypes.</p>
-<div class="figure" style="text-align: center"><span id="fig:cc-rand"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-rand-1.png" alt="Random3 HGSC Normalized Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.8: Random3 HGSC Normalized Concordance Measure Distributions
@@ -1173,7 +1188,7 @@ Figure 3.8: Random3 HGSC Normalized Concordance Measure Distributions
 <div id="random1-for-sites" class="section level4" number="3.3.1.5">
 <h4><span class="header-section-number">3.3.1.5</span> Random1 for Sites</h4>
 <p>We use the Random1 method to normalize CS3-USC and CS3-AOC to CS3-VAN. There aren’t enough samples in the USC and AOC cohorts to perform Random2 or Random3.</p>
-<div class="figure" style="text-align: center"><span id="fig:cc-site-non1"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-site-non1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-site-non1-1.png" alt="Cross-Site Random1 Non-Normalized Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.9: Cross-Site Random1 Non-Normalized Concordance Measure Distributions
@@ -1190,19 +1205,19 @@ Figure 3.9: Cross-Site Random1 Non-Normalized Concordance Measure Distributions
 <p>CodeSet2 is calibrated to CodeSet3 as follows:<br />
 <code>X^2(norm) = X^2 - R^2 + R^3</code><br />
 <code>X^3(norm) = X^3</code></p>
-<div class="figure" style="text-align: center"><span id="fig:cc-cs2non-vs-cs2pools"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-cs2non-vs-cs2pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-cs2non-vs-cs2pools-1.png" alt="CS2Non vs. CS2Pools Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.10: CS2Non vs. CS2Pools Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-cs2non-vs-cs3"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-cs2non-vs-cs3"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-cs2non-vs-cs3-1.png" alt="CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.11: CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-cs2pools-vs-cs3"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-cs2pools-vs-cs3"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-cs2pools-vs-cs3-1.png" alt="CS2 Normalized Pools vs. CS3 Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.12: CS2 Normalized Pools vs. CS3 Concordance Measure Distributions
@@ -1298,25 +1313,25 @@ Figure 3.12: CS2 Normalized Pools vs. CS3 Concordance Measure Distributions
 <div id="usc-vs.-van" class="section level4" number="3.3.2.2">
 <h4><span class="header-section-number">3.3.2.2</span> USC vs. VAN</h4>
 <p>In CodeSet 3, we normalize the USC and AOC cohorts to the VAN cohort which is used as the reference dataset.</p>
-<div class="figure" style="text-align: center"><span id="fig:cc-uscnon-vs-uscpools"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-uscnon-vs-uscpools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-uscnon-vs-uscpools-1.png" alt="USC-Non vs. USC-Pools Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.13: USC-Non vs. USC-Pools Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-uscnon-vs-vannon"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-uscnon-vs-vannon"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-uscnon-vs-vannon-1.png" alt="USC-Non vs. VAN-Non Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.14: USC-Non vs. VAN-Non Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-uscpools-vs-vannon"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-uscpools-vs-vannon"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-uscpools-vs-vannon-1.png" alt="USC-Pools vs. VAN-Non Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.15: USC-Pools vs. VAN-Non Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:usc-vs-van-comps"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:usc-vs-van-comps"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/usc-vs-van-comps-1.png" alt="USC vs. VAN Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.16: USC vs. VAN Comparisons of Concordance Measure Distributions
@@ -1325,25 +1340,25 @@ Figure 3.16: USC vs. VAN Comparisons of Concordance Measure Distributions
 </div>
 <div id="aoc-vs.-van" class="section level4" number="3.3.2.3">
 <h4><span class="header-section-number">3.3.2.3</span> AOC vs. VAN</h4>
-<div class="figure" style="text-align: center"><span id="fig:cc-aocnon-vs-aocpools"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-aocnon-vs-aocpools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-aocnon-vs-aocpools-1.png" alt="AOC-Non vs. AOC-Pools Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.17: AOC-Non vs. AOC-Pools Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-aocnon-vs-vannon"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-aocnon-vs-vannon"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-aocnon-vs-vannon-1.png" alt="AOC-Non vs. VAN-Non Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.18: AOC-Non vs. VAN-Non Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cc-aocpools-vs-vannon"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-aocpools-vs-vannon"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cc-aocpools-vs-vannon-1.png" alt="AOC-Pools vs. VAN-Non Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.19: AOC-Pools vs. VAN-Non Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:aoc-vs-van-comps"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:aoc-vs-van-comps"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/aoc-vs-van-comps-1.png" alt="AOC vs. VAN Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.20: AOC vs. VAN Comparisons of Concordance Measure Distributions
@@ -1359,7 +1374,7 @@ Figure 3.20: AOC vs. VAN Comparisons of Concordance Measure Distributions
 <li>Common Samples Method</li>
 <li>Pools Method</li>
 </ul>
-<div class="figure" style="text-align: center"><span id="fig:rand3-vs-pools"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:rand3-vs-pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/rand3-vs-pools-1.png" alt="Random3 Samples Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.21: Random3 Samples Comparisons of Concordance Measure Distributions
@@ -1367,6 +1382,18 @@ Figure 3.21: Random3 Samples Comparisons of Concordance Measure Distributions
 </div>
 <table>
 <caption><span id="tab:rand3-vs-pools-stats">Table 3.17: </span>Random3 Samples Comparisons Statistics by Histotypes</caption>
+<colgroup>
+<col width="6%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1420,7 +1447,7 @@ Figure 3.21: Random3 Samples Comparisons of Concordance Measure Distributions
 </tr>
 </tbody>
 </table>
-<div class="figure" style="text-align: center"><span id="fig:rand2-vs-pools"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:rand2-vs-pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/rand2-vs-pools-1.png" alt="Random2 Samples Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.22: Random2 Samples Comparisons of Concordance Measure Distributions
@@ -1428,6 +1455,18 @@ Figure 3.22: Random2 Samples Comparisons of Concordance Measure Distributions
 </div>
 <table>
 <caption><span id="tab:rand2-vs-pools-stats">Table 3.18: </span>Random2 Samples Comparisons Statistics by Histotypes</caption>
+<colgroup>
+<col width="6%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1505,7 +1544,7 @@ Figure 3.22: Random2 Samples Comparisons of Concordance Measure Distributions
 </tr>
 </tbody>
 </table>
-<div class="figure" style="text-align: center"><span id="fig:rand1-vs-pools"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:rand1-vs-pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/rand1-vs-pools-1.png" alt="Random1 Samples Comparisons of Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.23: Random1 Samples Comparisons of Concordance Measure Distributions
@@ -1513,6 +1552,18 @@ Figure 3.23: Random1 Samples Comparisons of Concordance Measure Distributions
 </div>
 <table>
 <caption><span id="tab:rand1-vs-pools-stats">Table 3.19: </span>Random1 Samples Comparisons Statistics by Histotypes</caption>
+<colgroup>
+<col width="6%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">hist</th>
@@ -1622,25 +1673,25 @@ Figure 3.23: Random1 Samples Comparisons of Concordance Measure Distributions
 <h3><span class="header-section-number">3.3.4</span> CodeSet Chaining</h3>
 <div id="cs1-cs2-cs3" class="section level4" number="3.3.4.1">
 <h4><span class="header-section-number">3.3.4.1</span> CS1, CS2, CS3</h4>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-rand1"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-1.png" alt="Random1 Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.24: Random1 Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-rand1-cs2pools"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1-cs2pools"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs2pools-1.png" alt="Random1 + Pools Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.25: Random1 + Pools Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-rand1-cs1v3"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1-cs1v3"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs1v3-1.png" alt="CS1 CodeSet Chaining Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.26: CS1 CodeSet Chaining Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-rand1-cs1v3-2"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1-cs1v3-2"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs1v3-2-1.png" alt="CS1 CodeSet Chaining Concordance Measure Distributions 2" width="672" />
 <p class="caption">
 Figure 3.27: CS1 CodeSet Chaining Concordance Measure Distributions 2
@@ -1673,13 +1724,13 @@ Figure 3.27: CS1 CodeSet Chaining Concordance Measure Distributions 2
 </tr>
 </tbody>
 </table>
-<div class="figure" style="text-align: center"><span id="fig:cs13-genes-pairwise"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs13-genes-pairwise"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs13-genes-pairwise-1.png" alt="Pairwise Genes by Top/Bottom 3 Rc for CS1 vs. CS3" width="672" />
 <p class="caption">
 Figure 3.28: Pairwise Genes by Top/Bottom 3 Rc for CS1 vs. CS3
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-rand1-cs2v3"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1-cs2v3"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs2v3-1.png" alt="CS2 CodeSet Chaining Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.29: CS2 CodeSet Chaining Concordance Measure Distributions
@@ -1688,13 +1739,13 @@ Figure 3.29: CS2 CodeSet Chaining Concordance Measure Distributions
 </div>
 <div id="cs3-cs4-cs5-using-set-ba" class="section level4" number="3.3.4.2">
 <h4><span class="header-section-number">3.3.4.2</span> CS3, CS4, CS5 using Set B/A</h4>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-setBA"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setBA"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-1.png" alt="CS5 Set B/A Chaining Concordance  Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.30: CS5 Set B/A Chaining Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-setBA-2"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setBA-2"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-2-1.png" alt="CS5 Set B/A Chaining Concordance  Measure Distributions 2" width="672" />
 <p class="caption">
 Figure 3.31: CS5 Set B/A Chaining Concordance Measure Distributions 2
@@ -1727,13 +1778,13 @@ Figure 3.31: CS5 Set B/A Chaining Concordance Measure Distributions 2
 </tr>
 </tbody>
 </table>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-cs4-setA"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs4-setA"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs4-setA-1.png" alt="CS4 Set A Chaining Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.32: CS4 Set A Chaining Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-cs4-B"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-cs4-B"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-cs4-B-1.png" alt="CS4 and CS5 using Set B Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.33: CS4 and CS5 using Set B Concordance Measure Distributions
@@ -1742,13 +1793,13 @@ Figure 3.33: CS4 and CS5 using Set B Concordance Measure Distributions
 </div>
 <div id="cs3-cs4-cs5-using-set-ca" class="section level4" number="3.3.4.3">
 <h4><span class="header-section-number">3.3.4.3</span> CS3, CS4, CS5 using Set C/A</h4>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-setCA"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setCA"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setCA-1.png" alt="CS5 Set C/A Chaining Concordance  Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.34: CS5 Set C/A Chaining Concordance Measure Distributions
 </p>
 </div>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-setCA-2"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setCA-2"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setCA-2-1.png" alt="CS5 Set C/A Chaining Concordance  Measure Distributions 2" width="672" />
 <p class="caption">
 Figure 3.35: CS5 Set C/A Chaining Concordance Measure Distributions 2
@@ -1781,7 +1832,7 @@ Figure 3.35: CS5 Set C/A Chaining Concordance Measure Distributions 2
 </tr>
 </tbody>
 </table>
-<div class="figure" style="text-align: center"><span id="fig:cs-chain-cs5-cs4-C"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-cs4-C"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-cs4-C-1.png" alt="CS4 and CS5 using Set C Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
@@ -2369,7 +2420,6 @@ Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
     </div>
   </div>
 <script src="assets/gitbook-2.6.7/js/app.min.js"></script>
-<script src="assets/gitbook-2.6.7/js/lunr.js"></script>
 <script src="assets/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="assets/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="assets/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -2388,6 +2438,7 @@ gitbook.start({
 "weibo": false,
 "instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
@@ -2408,6 +2459,10 @@ gitbook.start({
 "text": null
 },
 "download": ["OV_Histotypes_RSF.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }
