@@ -8,6 +8,7 @@ samps=(none up down smote)
 norm_by="none"
 norm_type="conventional"
 min_var=0
+nseq=4
 
 # Directory parameters
 user="$(whoami)"
