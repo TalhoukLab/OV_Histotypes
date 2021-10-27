@@ -1639,14 +1639,14 @@ There are `r length(overlap_SPOT)` genes out of the `r ncol(train_data)` classif
 ## Summary
 
 ```{r summary}
+# IV summary from multinomial, 2-stage, and sequential algorithm
 ivs_multi_f1 <- ivst %>%
   filter(grepl("f1\\.", measure)) %>%
   transmute(
     model = paste(algorithm, sampling, sep = "-"),
     class = gsub("f1\\.", "", measure),
     median_f1 = percentile_50
-  ) %>%
-  pivot_wider(names_from = "model", values_from = "median_f1")
+  )
 
 ivs_2S_f1 <-
   bind_rows(ivsts1_f1_class %>% filter(grepl("^HGSC$", measure)),
@@ -1655,8 +1655,7 @@ ivs_2S_f1 <-
     model = paste("2S", algorithm, sampling, sep = "-"),
     class = gsub("f1\\.", "", measure),
     median_f1 = percentile_50
-  ) %>%
-  pivot_wider(names_from = "model", values_from = "median_f1")
+  )
 
 ivs_seq_f1 <- ivsseq %>%
   filter(grepl("f1\\.(?!class_0)", measure, perl = TRUE)) %>%
@@ -1664,41 +1663,38 @@ ivs_seq_f1 <- ivsseq %>%
     model = paste(algorithm, sampling, sep = "-"),
     class = gsub("f1\\.", "", measure),
     median_f1 = percentile_50
-  ) %>%
-  pivot_wider(names_from = "model", values_from = "median_f1")
+  )
 
-# F1-score summary
-ivs_f1_summary <- list(ivs_multi_f1,
-                       ivs_2S_f1,
-                       ivs_seq_f1) %>%
-  reduce(full_join, by = "class") %>% 
-  mutate(across(where(is.numeric), round, digits = 3))
+ivs_comb <- bind_rows(ivs_multi_f1, ivs_2S_f1, ivs_seq_f1)
 
-kable(ivs_f1_summary,
-      caption = "F1-Score Summary by Model and Class") %>%
-  kable_styling() %>% 
-  scroll_box(width = "100%", box_css = "border: 0px;")
-```
-
-```{r f1-ranks}
-f1_ranks <- ivs_f1_summary %>% 
-  pivot_longer(cols = -class, names_to = "model", values_to = "f1") %>% 
+# Rank aggregation
+f1_ranks <- ivs_comb %>% 
   group_by(class) %>% 
-  mutate(rank = factor(row_number(-f1))) %>% 
+  mutate(rank = factor(row_number(-median_f1))) %>% 
   ungroup() %>% 
-  select(-f1) %>% 
+  select(-median_f1) %>% 
   arrange(rank) %>% 
   pivot_wider(names_from = "rank", values_from = "model") %>% 
   column_to_rownames("class") %>% 
   as.matrix()
 
-f1_top <- RankAggreg(
+f1_top <- splendid:::sink_output(RankAggreg(
   x = f1_ranks,
   k = ncol(f1_ranks),
   method = "GA",
   seed = 2021,
   verbose = FALSE
-)
+))
+
+# F1-score summary
+ivs_f1_summary <- ivs_comb %>% 
+  pivot_wider(names_from = "class", values_from = "median_f1") %>% 
+  mutate(across(where(is.numeric), round, digits = 3)) %>% 
+  magrittr::extract(match(f1_top[["top.list"]], .$model), )
+
+kable(ivs_f1_summary,
+      caption = "F1-Score Summary by Model and Class") %>%
+  kable_styling()
 ```
 
-Out of the `r ncol(f1_ranks)` methods (algorithm-sampling combinations), the top 10 aggregated list comprise of: `r paste(head(f1_top[["top.list"]], 10), collapse = ", ")`.
+The `r ncol(f1_ranks)` methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.
