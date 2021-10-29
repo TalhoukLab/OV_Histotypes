@@ -11,6 +11,7 @@ library(forcats)
 library(knitr)
 library(kableExtra)
 library(RankAggreg)
+library(splendid)
 library(magrittr)
 library(here)
 source(here("src/funs.R"))
@@ -1636,7 +1637,7 @@ overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
 
 There are `r length(overlap_SPOT)` genes out of the `r ncol(train_data)` classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
 
-## Summary
+## Rank Aggregation
 
 ```{r summary}
 # IV summary from multinomial, 2-stage, and sequential algorithm
@@ -1698,3 +1699,264 @@ kable(ivs_f1_summary,
 ```
 
 The `r ncol(f1_ranks)` methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.
+
+## Test Set Performance
+
+Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
+
+The best 2-step and sequential methods are:
+
+- **2S-rf-none**: 2-step method using random forest algorithm with no subsampling
+- **sequential-none**: sequential algorithm with no subsampling. The sequence of models and algorithms used are: 
+  - HGSC vs. non-HGSC using SVM
+  - MUC vs. non-MUC using ridge regression
+  - CCOC vs. non-CCOC using random forest
+  - ENOC vs. LGSC using SVM
+  
+As a comparison we also show the F1-scores from the **rf-none** to see how the best methods improve from it.
+
+```{r top-models}
+# Train using top 2-step method -------------------------------------------
+
+# Training set step 1 and step 2 data
+train_step1_class <- readRDS(here("data", "train_step1_class.rds"))
+train_step1_data <- readRDS(here("data", "train_step1_data.rds"))
+train_step2_class <- readRDS(here("data", "train_step2_class.rds"))
+train_step2_data <- readRDS(here("data", "train_step2_data.rds"))
+
+# Top method: 2-Step classifier using random forest algorithm and no subsampling
+mod_step1 <- classification(
+  data = train_step1_data,
+  class = train_step1_class,
+  algorithm = "rf",
+  sampling = "none",
+  seed_alg = 2021
+)
+mod_step2 <- classification(
+  data = train_step2_data,
+  class = train_step2_class,
+  algorithm = "rf",
+  sampling = "none",
+  seed_alg = 2021
+)
+
+
+# Train using top sequential method ---------------------------------------
+
+# Sequential data
+samp <- "none"
+seq_data <- readRDS(here("data", "seq_data.rds"))[[samp]]
+seq_class <- readRDS(here("data", "seq_class.rds"))[[samp]]
+seq_algs <- readRDS(here("data", "seq_algs.rds"))[[samp]]
+
+mod_seq <- pmap(list(seq_data, seq_class, seq_algs), ~ {
+  classification(
+    data = ..1,
+    class = ..2,
+    algorithm = ..3,
+    sampling = samp,
+    seed_alg = 2021
+  )
+})
+
+
+# Train using multinomial equivalent of top method ------------------------
+
+# Training set data
+train_data <- readRDS(here("data", "train_data.rds"))
+train_class <- readRDS(here("data", "train_class.rds"))
+
+mod_full <- classification(
+  data = train_data,
+  class = train_class,
+  algorithm = "rf",
+  sampling = "none",
+  seed_alg = 2021
+)
+```
+
+### Confirmation Set
+
+```{r confirmation-set}
+# Load data
+conf_class <- readRDS(here("data", "conf_class.rds"))
+conf_data <- readRDS(here("data", "conf_data.rds"))
+
+# Create step 1 and step 2 splits
+conf_step1_data <- conf_data
+conf_step1_class <- factor(ifelse(conf_class == "HGSC", "HGSC", "non-HGSC"))
+conf_step2_data <- conf_data[conf_step1_class != "HGSC", ]
+conf_step2_class <- factor(conf_class[conf_step1_class != "HGSC"])
+
+# Predict and evaluate
+conf_step1_pred <- prediction(mod_step1, conf_step1_data, conf_step1_class)
+conf_step1_eval <- evaluation(conf_step1_class, conf_step1_pred)
+conf_step2_pred <- prediction(mod_step2, conf_step2_data, conf_step2_class)
+conf_step2_eval <- evaluation(conf_step2_class, conf_step2_pred)
+
+# Combine evaluations from both steps
+conf_2S_eval <- list(conf_step1_eval, conf_step2_eval) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "2S-rf-none", .before = 1)
+
+# Create sequential splits
+conf_df <- cbind(conf_data, class = conf_class)
+
+seq_conf_ranks <- seq_class %>%
+  map(unique) %>%
+  map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
+  unlist() %>%
+  accumulate(c) %>%
+  head(-1)
+
+seq_conf_data <- map(seq_conf_ranks, ~ {
+  conf_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    select(-class)
+})
+
+seq_conf_class <- imap(seq_conf_ranks, ~ {
+  cl <- conf_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    pull(class)
+  if (.y != length(seq_conf_ranks)) {
+    factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
+  } else {
+    factor(cl)
+  }
+})
+
+# Predict and evaluate
+conf_seq_eval <-
+  pmap(list(mod_seq, seq_conf_data, seq_conf_class), ~ {
+    pred <- prediction(..1, ..2, ..3)
+    eval <- evaluation(..3, pred)
+    eval
+  }) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap( ~ .x[grepl("f1\\.(?!class_0)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with( ~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "sequential-none", .before = 1)
+
+# Fit on full data as comparison
+conf_class <- factor(conf_class)
+conf_pred <- prediction(mod_full, conf_data, conf_class)
+conf_eval <- evaluation(conf_class, conf_pred)
+
+conf_full_eval <- conf_eval %>%
+  pluck("cs") %>%
+  imap(~ .x[grepl("f1\\.", .y)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "rf-none", .before = 1)
+
+# Comparison of evaluation measures from all methods
+conf_summary <- bind_rows(conf_2S_eval, conf_seq_eval, conf_full_eval)
+kable(conf_summary,
+      caption = "Class-specific F1-scores on Confirmation Sets",
+      digits = 3)
+```
+
+In the confirmation set, **2S-rf-none** improves drastically in LGSC classification compard to **rf-none**, with moderate improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. **sequential-none** improves on **2S-rf-none** in all classes except for marginal decrease in HGSC performance.
+
+### Validation Set
+
+```{r validation-set}
+# Load data
+val_class <- readRDS(here("data", "val_class.rds"))
+val_data <- readRDS(here("data", "val_data.rds"))
+
+# Create step 1 and step 2 splits
+val_step1_data <- val_data
+val_step1_class <- factor(ifelse(val_class == "HGSC", "HGSC", "non-HGSC"))
+val_step2_data <- val_data[val_step1_class != "HGSC", ]
+val_step2_class <- factor(val_class[val_step1_class != "HGSC"])
+
+# Predict and evaluate
+val_step1_pred <- prediction(mod_step1, val_step1_data, val_step1_class)
+val_step1_eval <- evaluation(val_step1_class, val_step1_pred)
+val_step2_pred <- prediction(mod_step2, val_step2_data, val_step2_class)
+val_step2_eval <- evaluation(val_step2_class, val_step2_pred)
+
+# Combine evaluations from both steps
+val_2S_eval <- list(val_step1_eval, val_step2_eval) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "2S-rf-none", .before = 1)
+
+# Create sequential splits
+val_df <- cbind(val_data, class = val_class)
+
+seq_val_ranks <- seq_class %>%
+  map(unique) %>%
+  map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
+  unlist() %>%
+  accumulate(c) %>%
+  head(-1)
+
+seq_val_data <- map(seq_val_ranks, ~ {
+  val_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    select(-class)
+})
+
+seq_val_class <- imap(seq_val_ranks, ~ {
+  cl <- val_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    pull(class)
+  if (.y != length(seq_val_ranks)) {
+    factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
+  } else {
+    factor(cl)
+  }
+})
+
+# Predict and evaluate
+val_seq_eval <-
+  pmap(list(mod_seq, seq_val_data, seq_val_class), ~ {
+    pred <- prediction(..1, ..2, ..3)
+    eval <- evaluation(..3, pred)
+    eval
+  }) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap( ~ .x[grepl("f1\\.(?!class_0)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with( ~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "sequential-none", .before = 1)
+
+# Fit on full data as comparison
+val_class <- factor(val_class)
+val_pred <- prediction(mod_full, val_data, val_class)
+val_eval <- evaluation(val_class, val_pred)
+
+val_full_eval <- val_eval %>%
+  pluck("cs") %>%
+  imap(~ .x[grepl("f1\\.", .y)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "rf-none", .before = 1)
+
+# Comparison of evaluation measures from both methods
+val_summary <- bind_rows(val_2S_eval, val_seq_eval, val_full_eval)
+kable(val_summary,
+      caption = "Class-specific F1-scores on Validation Sets",
+      digits = 3)
+```
+
+Similarly in the validation set, **2S-rf-none** improves drastically in LGSC classification compared to **rf-none**, with large improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. **sequential-none** improves on **2S-rf-none** in all classes except for a small decrease in CCOC performance and same performance for LGSC.
