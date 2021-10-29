@@ -7,7 +7,7 @@
 ]{report}
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2021-10-27}
+\date{2021-10-28}
 
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -3526,8 +3526,8 @@ CS2 & 0.798 & 0.762 & 0.77 & 0.788 & 0.736\\
 
 There are 13 genes out of the 72 classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.
 
-\hypertarget{summary}{%
-\section{Summary}\label{summary}}
+\hypertarget{rank-aggregation}{%
+\section{Rank Aggregation}\label{rank-aggregation}}
 
 \begin{table}
 
@@ -3629,6 +3629,79 @@ mlr\_lasso-down & 0.792 & 0.605 & 0.907 & 0.368 & 0.769\\
 \end{table}
 
 The 44 methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.
+
+\hypertarget{test-set-performance}{%
+\section{Test Set Performance}\label{test-set-performance}}
+
+Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
+
+The best 2-step and sequential methods are:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{2S-rf-none}: 2-step method using random forest algorithm with no subsampling
+\item
+  \textbf{sequential-none}: sequential algorithm with no subsampling. The sequence of models and algorithms used are:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    HGSC vs.~non-HGSC using SVM
+  \item
+    MUC vs.~non-MUC using ridge regression
+  \item
+    CCOC vs.~non-CCOC using random forest
+  \item
+    ENOC vs.~LGSC using SVM
+  \end{itemize}
+\end{itemize}
+
+As a comparison we also show the F1-scores from the \textbf{rf-none} to see how the best methods improve from it.
+
+\hypertarget{confirmation-set}{%
+\subsection{Confirmation Set}\label{confirmation-set}}
+
+\begin{table}
+
+\caption{\label{tab:confirmation-set}Class-specific F1-scores on Confirmation Sets}
+\centering
+\begin{tabular}[t]{l|r|r|r|r|r}
+\hline
+method & HGSC & CCOC & ENOC & LGSC & MUC\\
+\hline
+2S-rf-none & 0.915 & 0.904 & 0.772 & 0.419 & 0.679\\
+\hline
+sequential-none & 0.905 & 0.917 & 0.917 & 0.485 & 0.711\\
+\hline
+rf-none & 0.893 & 0.887 & 0.486 & 0.133 & 0.745\\
+\hline
+\end{tabular}
+\end{table}
+
+In the confirmation set, \textbf{2S-rf-none} improves drastically in LGSC classification compard to \textbf{rf-none}, with moderate improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. \textbf{sequential-none} improves on \textbf{2S-rf-none} in all classes except for marginal decrease in HGSC performance.
+
+\hypertarget{validation-set}{%
+\subsection{Validation Set}\label{validation-set}}
+
+\begin{table}
+
+\caption{\label{tab:validation-set}Class-specific F1-scores on Validation Sets}
+\centering
+\begin{tabular}[t]{l|r|r|r|r|r}
+\hline
+method & HGSC & CCOC & ENOC & LGSC & MUC\\
+\hline
+2S-rf-none & 0.931 & 0.920 & 0.823 & 0.750 & 0.571\\
+\hline
+sequential-none & 0.943 & 0.862 & 0.964 & 0.750 & 0.725\\
+\hline
+rf-none & 0.920 & 0.839 & 0.540 & 0.174 & 0.686\\
+\hline
+\end{tabular}
+\end{table}
+
+Similarly in the validation set, \textbf{2S-rf-none} improves drastically in LGSC classification compared to \textbf{rf-none}, with large improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. \textbf{sequential-none} improves on \textbf{2S-rf-none} in all classes except for a small decrease in CCOC performance and same performance for LGSC.
 
   \bibliography{packages.bib}
 \addcontentsline{toc}{chapter}{\bibname}

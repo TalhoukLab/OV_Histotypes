@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2021-10-27" />
+<meta name="date" content="2021-10-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -138,7 +138,12 @@
 </ul></li>
 <li class="chapter" data-level="4.5" data-path="results.html"><a href="results.html#smote-kappa-summary"><i class="fa fa-check"></i><b>4.5</b> SMOTE Kappa Summary</a></li>
 <li class="chapter" data-level="4.6" data-path="results.html"><a href="results.html#overlap-with-spot"><i class="fa fa-check"></i><b>4.6</b> Overlap with SPOT</a></li>
-<li class="chapter" data-level="4.7" data-path="results.html"><a href="results.html#summary"><i class="fa fa-check"></i><b>4.7</b> Summary</a></li>
+<li class="chapter" data-level="4.7" data-path="results.html"><a href="results.html#rank-aggregation"><i class="fa fa-check"></i><b>4.7</b> Rank Aggregation</a></li>
+<li class="chapter" data-level="4.8" data-path="results.html"><a href="results.html#test-set-performance"><i class="fa fa-check"></i><b>4.8</b> Test Set Performance</a>
+<ul>
+<li class="chapter" data-level="4.8.1" data-path="results.html"><a href="results.html#confirmation-set"><i class="fa fa-check"></i><b>4.8.1</b> Confirmation Set</a></li>
+<li class="chapter" data-level="4.8.2" data-path="results.html"><a href="results.html#validation-set"><i class="fa fa-check"></i><b>4.8.2</b> Validation Set</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 </ul>
@@ -11117,8 +11122,8 @@ Figure 4.42: SMOTE Class-Specific Kappa by Algorithm and Dataset
 <h2><span class="header-section-number">4.6</span> Overlap with SPOT</h2>
 <p>There are 13 genes out of the 72 classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.</p>
 </div>
-<div id="summary" class="section level2" number="4.7">
-<h2><span class="header-section-number">4.7</span> Summary</h2>
+<div id="rank-aggregation" class="section level2" number="4.7">
+<h2><span class="header-section-number">4.7</span> Rank Aggregation</h2>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:summary">Table 4.42: </span>F1-Score Summary by Model and Class
@@ -12029,7 +12034,209 @@ mlr_lasso-down
 </tbody>
 </table>
 <p>The 44 methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.</p>
+</div>
+<div id="test-set-performance" class="section level2" number="4.8">
+<h2><span class="header-section-number">4.8</span> Test Set Performance</h2>
+<p>Now we’d like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.</p>
+<p>The best 2-step and sequential methods are:</p>
+<ul>
+<li><strong>2S-rf-none</strong>: 2-step method using random forest algorithm with no subsampling</li>
+<li><strong>sequential-none</strong>: sequential algorithm with no subsampling. The sequence of models and algorithms used are:
+<ul>
+<li>HGSC vs. non-HGSC using SVM</li>
+<li>MUC vs. non-MUC using ridge regression</li>
+<li>CCOC vs. non-CCOC using random forest</li>
+<li>ENOC vs. LGSC using SVM</li>
+</ul></li>
+</ul>
+<p>As a comparison we also show the F1-scores from the <strong>rf-none</strong> to see how the best methods improve from it.</p>
+<div id="confirmation-set" class="section level3" number="4.8.1">
+<h3><span class="header-section-number">4.8.1</span> Confirmation Set</h3>
+<table>
+<caption>
+<span id="tab:confirmation-set">Table 4.43: </span>Class-specific F1-scores on Confirmation Sets
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+method
+</th>
+<th style="text-align:right;">
+HGSC
+</th>
+<th style="text-align:right;">
+CCOC
+</th>
+<th style="text-align:right;">
+ENOC
+</th>
+<th style="text-align:right;">
+LGSC
+</th>
+<th style="text-align:right;">
+MUC
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2S-rf-none
+</td>
+<td style="text-align:right;">
+0.915
+</td>
+<td style="text-align:right;">
+0.904
+</td>
+<td style="text-align:right;">
+0.772
+</td>
+<td style="text-align:right;">
+0.419
+</td>
+<td style="text-align:right;">
+0.679
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sequential-none
+</td>
+<td style="text-align:right;">
+0.905
+</td>
+<td style="text-align:right;">
+0.917
+</td>
+<td style="text-align:right;">
+0.917
+</td>
+<td style="text-align:right;">
+0.485
+</td>
+<td style="text-align:right;">
+0.711
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rf-none
+</td>
+<td style="text-align:right;">
+0.893
+</td>
+<td style="text-align:right;">
+0.887
+</td>
+<td style="text-align:right;">
+0.486
+</td>
+<td style="text-align:right;">
+0.133
+</td>
+<td style="text-align:right;">
+0.745
+</td>
+</tr>
+</tbody>
+</table>
+<p>In the confirmation set, <strong>2S-rf-none</strong> improves drastically in LGSC classification compard to <strong>rf-none</strong>, with moderate improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. <strong>sequential-none</strong> improves on <strong>2S-rf-none</strong> in all classes except for marginal decrease in HGSC performance.</p>
+</div>
+<div id="validation-set" class="section level3" number="4.8.2">
+<h3><span class="header-section-number">4.8.2</span> Validation Set</h3>
+<table>
+<caption>
+<span id="tab:validation-set">Table 4.44: </span>Class-specific F1-scores on Validation Sets
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+method
+</th>
+<th style="text-align:right;">
+HGSC
+</th>
+<th style="text-align:right;">
+CCOC
+</th>
+<th style="text-align:right;">
+ENOC
+</th>
+<th style="text-align:right;">
+LGSC
+</th>
+<th style="text-align:right;">
+MUC
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2S-rf-none
+</td>
+<td style="text-align:right;">
+0.931
+</td>
+<td style="text-align:right;">
+0.920
+</td>
+<td style="text-align:right;">
+0.823
+</td>
+<td style="text-align:right;">
+0.750
+</td>
+<td style="text-align:right;">
+0.571
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sequential-none
+</td>
+<td style="text-align:right;">
+0.943
+</td>
+<td style="text-align:right;">
+0.862
+</td>
+<td style="text-align:right;">
+0.964
+</td>
+<td style="text-align:right;">
+0.750
+</td>
+<td style="text-align:right;">
+0.725
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rf-none
+</td>
+<td style="text-align:right;">
+0.920
+</td>
+<td style="text-align:right;">
+0.839
+</td>
+<td style="text-align:right;">
+0.540
+</td>
+<td style="text-align:right;">
+0.174
+</td>
+<td style="text-align:right;">
+0.686
+</td>
+</tr>
+</tbody>
+</table>
+<p>Similarly in the validation set, <strong>2S-rf-none</strong> improves drastically in LGSC classification compared to <strong>rf-none</strong>, with large improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. <strong>sequential-none</strong> improves on <strong>2S-rf-none</strong> in all classes except for a small decrease in CCOC performance and same performance for LGSC.</p>
 
+</div>
 </div>
 </div>
             </section>
