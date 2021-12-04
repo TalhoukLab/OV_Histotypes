@@ -236,6 +236,153 @@ The pools method was used to normalize CodeSet2 and CodeSet3. The three referenc
 
 Concordance between CodeSets using the different normalization strategies was compared in common samples, excluding those used for the normalization, using Pearson's correlation coefficient (R^2^), coefficient of accuracy (Ca), and Lin's concordance correlation (Rc = R^2^ x Ca).
 
+### Overlap of Common Samples in All CodeSets
+
+```{r overlap-samples-all-venn}
+cs4_exp <- filter(annotNEW, CodeSet == "CS4")
+cs4_qc <- NanoStringQC(raw = cs4, exp = cs4_exp, detect = 50, sn = 170)
+cs4_qc_failed <- filter(cs4_qc, normFlag == "Failed")[["File.Name"]]
+cs4_dat <- HKnorm(cs4) %>% select(-any_of(cs4_qc_failed))
+
+cs5_exp <- filter(annotNEW, CodeSet == "CS5")
+cs5_qc <- NanoStringQC(raw = cs5, exp = cs5_exp, detect = 50, sn = 170)
+cs5_qc_failed <- filter(cs5_qc, normFlag == "Failed", !grepl("POOL", File.Name))[["File.Name"]]
+cs5_dat <- HKnorm(cs5) %>% select(-any_of(cs5_qc_failed))
+
+annot_cs45 <- annotNEW %>%
+  select(FileName = File.Name, ottaID, CodeSet) %>% 
+  filter(!FileName %in% c(cs4_qc_failed, cs5_qc_failed))
+
+annot_cs123 <- annot_cs %>% select(FileName, ottaID, CodeSet)
+
+annot_full <- bind_rows(annot_cs123, annot_cs45)
+
+common_cs_full <- annot_full %>%
+  count(CodeSet, ottaID) %>%
+  spread(CodeSet, n, fill = 0) %>%
+  mutate(
+    all_codesets = rowSums(.[, -1:-2])
+  ) %>% 
+  filter(!is.na(ottaID))
+
+cs1_ottaID <- common_cs_full %>% filter(CS1 > 0) %>% pull(ottaID)
+cs2_ottaID <- common_cs_full %>% filter(CS2 > 0) %>% pull(ottaID)
+cs3_ottaID <- common_cs_full %>% filter(CS3 > 0) %>% pull(ottaID)
+cs4_ottaID <- common_cs_full %>% filter(CS4 > 0) %>% pull(ottaID)
+cs5_ottaID <- common_cs_full %>% filter(CS5 > 0) %>% pull(ottaID)
+
+venn_ottaID <- venn.diagram(
+  x = list(cs1_ottaID, cs2_ottaID, cs3_ottaID, cs4_ottaID, cs5_ottaID),
+  category.names = c("CS1", "CS2", "CS3", "CS4", "CS5"),
+  filename = NULL,
+  output = TRUE,
+  imagetype = "png",
+  height = 400,
+  width = 400,
+  resolution = 300,
+  compression = "lzw",
+  lwd = 1,
+  col = c("#440154ff", '#21908dff', '#fde725ff', 'orange', 'brown'),
+  fill = c(alpha("#440154ff", 0.3),
+           alpha('#21908dff', 0.3),
+           alpha('#fde725ff', 0.3),
+           alpha('orange', 0.3),
+           alpha('brown', 0.3)),
+  cex = 2,
+  fontfamily = "sans",
+  cat.cex = 1.5,
+  cat.default.pos = "outer",
+  cat.fontfamily = "sans"
+)
+
+grid.draw(venn_ottaID)
+```
+
+```{r overlap-samples-all-table}
+overlap_samples_all <- common_cs_full %>% 
+  select(CS1:CS5) %>% 
+  mutate(across(.fns = ~ ifelse(. > 0, 1, 0))) %>% 
+  count(CS1, CS2, CS3, CS4, CS5) %>% 
+  mutate(n_overlap = rowSums(.[, 1:5])) %>% 
+  arrange(desc(n_overlap)) %>% 
+  select(-n_overlap)
+
+overlap_samples_all %>% 
+  kable(caption = "Overlapping Samples from All CodeSets")
+```
+
+### Overlap of Common Genes in All CodeSets
+
+```{r overlap-all-genes-venn}
+cs1_genes <- cs1_norm %>%
+  filter(Code.Class == "Endogenous") %>%
+  pull(Name)
+cs2_genes <- cs2_norm %>%
+  filter(Code.Class == "Endogenous") %>%
+  pull(Name)
+cs3_genes <- cs3_norm_van %>%
+  filter(Code.Class == "Endogenous") %>%
+  pull(Name)
+cs4_genes <- cs4_dat %>% 
+  filter(Code.Class == "Endogenous") %>% 
+  pull(Name)
+cs5_genes <- cs5_dat %>% 
+  filter(Code.Class == "Endogenous") %>% 
+  pull(Name)
+
+venn_genes_all <- venn.diagram(
+  x = list(cs1_genes, cs2_genes, cs3_genes, cs4_genes, cs5_genes),
+  category.names = c("CS1", "CS2", "CS3", "CS4", "CS5"),
+  filename = NULL,
+  output = TRUE,
+  imagetype = "png",
+  height = 400,
+  width = 400,
+  resolution = 300,
+  compression = "lzw",
+  lwd = 1,
+  col = c("#440154ff", '#21908dff', '#fde725ff', 'orange', 'brown'),
+  fill = c(alpha("#440154ff", 0.3),
+           alpha('#21908dff', 0.3),
+           alpha('#fde725ff', 0.3),
+           alpha('orange', 0.3),
+           alpha('brown', 0.3)),
+  cex = 2,
+  fontfamily = "sans",
+  cat.cex = 1.5,
+  cat.default.pos = "outer",
+  cat.fontfamily = "sans"
+)
+
+grid.draw(venn_genes_all)
+```
+
+```{r overlap-genes-all-table}
+list(CS1 = cs1_genes, CS2 = cs2_genes, CS3 = cs3_genes,
+     CS4 = cs4_genes, CS5 = cs5_genes) %>% 
+  reduce(full_join)
+
+overlap_genes_all <-
+  list(
+    CS1 = cs1_genes,
+    CS2 = cs2_genes,
+    CS3 = cs3_genes,
+    CS4 = cs4_genes,
+    CS5 = cs5_genes
+  ) %>%
+  imap_dfr( ~ data.frame(CodeSet = .y, Gene = .x)) %>%
+  count(CodeSet, Gene) %>%
+  spread(CodeSet, n, fill = 0) %>%
+  count(CS1, CS2, CS3, CS4, CS5) %>%
+  mutate(n_overlap = rowSums(.[, 1:5])) %>%
+  arrange(desc(n_overlap)) %>%
+  select(-n_overlap)
+
+overlap_genes_all %>% 
+  kable(caption = "Overlapping Genes from All CodeSets")
+```
+
+
 ## Histotype Classification
 
 We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for the Training Set, CS1 and CS2. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. Implementations of the techniques below were called from the [splendid](https://alinetalhouk.github.io/splendid/) package.
