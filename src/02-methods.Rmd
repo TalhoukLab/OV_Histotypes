@@ -370,10 +370,6 @@ grid.draw(venn_genes_all)
 ```
 
 ```{r overlap-genes-all-table}
-list(CS1 = cs1_genes, CS2 = cs2_genes, CS3 = cs3_genes,
-     CS4 = cs4_genes, CS5 = cs5_genes) %>% 
-  reduce(full_join)
-
 overlap_genes_all <-
   list(
     CS1 = cs1_genes,
