@@ -239,6 +239,18 @@ Concordance between CodeSets using the different normalization strategies was co
 ### Overlap of Common Samples in All CodeSets
 
 ```{r overlap-samples-all-venn}
+annotNEW <- annotNEW %>%
+  mutate(
+    ottaID = gsub(".*_(.*)_[0-9]{2}$", "\\1", File.Name) %>%
+      gsub("-N1$", "", .),
+    CodeSet = recode_factor(
+      geneRLF,
+      OTTA2017_C6082 = "CS4",
+      OTTA2018_C6830 = "CS5",
+      OTTA2018_C8440 = "CS6"
+    )
+  )
+
 cs4_exp <- filter(annotNEW, CodeSet == "CS4")
 cs4_qc <- NanoStringQC(raw = cs4, exp = cs4_exp, detect = 50, sn = 170)
 cs4_qc_failed <- filter(cs4_qc, normFlag == "Failed")[["File.Name"]]
