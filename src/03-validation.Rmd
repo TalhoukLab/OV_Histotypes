@@ -2219,7 +2219,12 @@ cs45_overlap <-
   select(ottaID, File.Name.CS4, File.Name.CS5)
 
 # Common samples and genes
-cs345_common_samples <- unique(cs45_overlap[["ottaID"]])
+cs345_overlap <- annot_cs %>% 
+  filter(CodeSet == "CS3") %>% 
+  select(ottaID, File.Name.CS3 = FileName) %>% 
+  inner_join(cs45_overlap, by = "ottaID")
+
+cs345_common_samples <- unique(cs345_overlap$ottaID)
 cs345_common_genes <- cs5_dat[["Name"]]
 
 # Subtitle for common counts
@@ -2316,7 +2321,7 @@ cs4_norm_A <-
   spread(Name, exp)
 ```
 
-```{r cs-chain-cs5-setBA, fig.cap='CS5 Set B/A Chaining Concordance  Measure Distributions', fig.height=6}
+```{r cs-chain-cs5-setBA, fig.cap='CS5 Set B/A Chaining Concordance Measure Distributions', fig.height=6}
 cs35_norm <- cs3_norm_full %>%
   select(-one_of(names(ref_pools))) %>%
   gather(FileName, exp, -1:-3) %>%
@@ -2336,7 +2341,7 @@ counts5_BA <-
   set_names(c("CS3-Non", "CS5-Non", "CS5-NormB", "CS5-NormBA", "CS5-NormA")) %>% 
   map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
            spread(Name, exp) %>% 
-           inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
+           inner_join(cs345_overlap, by = "File.Name.CS5") %>% 
            select(-matches("File.Name")) %>% 
            group_by(ottaID) %>% 
            summarize_if(is.double, mean) %>% 
@@ -2376,7 +2381,7 @@ p_pools5_BA <- ggplot(metrics_pools5_BA, aes(Expression)) +
 print(p_pools5_BA)
 ```
 
-```{r cs-chain-cs5-setBA-2, fig.cap='CS5 Set B/A Chaining Concordance  Measure Distributions 2', fig.height=6}
+```{r cs-chain-cs5-setBA-2, fig.cap='CS5 Set B/A Chaining Concordance Measure Distributions 2', fig.height=6}
 comps5_BA <- tibble(
   `CS3-Non_vs_CS5-Non` = c("CS3-Non", "CS5-Non"),
   `CS3-Non_vs_CS5-NormBA` = c("CS3-Non", "CS5-NormBA"),
@@ -2447,7 +2452,7 @@ cs4_non <- cs4_norm_counts %>%
 counts4_A <-
   list(cs34_norm, cs4_non, cs4_norm_A) %>%
   set_names(c("CS3-Non", "CS4-Non", "CS4-NormA")) %>% 
-  map_at(-1, ~ inner_join(., cs45_overlap,
+  map_at(-1, ~ inner_join(., cs345_overlap,
                           by = c("FileName" = "File.Name.CS4")) %>% 
            select(-matches("File.Name")) %>% 
            group_by(ottaID) %>% 
@@ -2502,7 +2507,7 @@ counts45_B <-
   set_names(c("CS4-Non", "CS5-Non", "CS5-NormB")) %>% 
   map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
            spread(Name, exp) %>% 
-           inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
+           inner_join(cs345_overlap, by = "File.Name.CS5") %>% 
            select(-matches("File.Name")) %>% 
            group_by(ottaID) %>% 
            summarize_if(is.double, mean) %>% 
@@ -2629,7 +2634,7 @@ counts5_CA <-
   set_names(c("CS3-Non", "CS5-Non", "CS5-NormC", "CS5-NormCA", "CS5-NormA")) %>% 
   map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
            spread(Name, exp) %>% 
-           inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
+           inner_join(cs345_overlap, by = "File.Name.CS5") %>% 
            select(-matches("File.Name")) %>% 
            group_by(ottaID) %>% 
            summarize_if(is.double, mean) %>% 
@@ -2720,7 +2725,7 @@ counts45_C <-
   set_names(c("CS4-Non", "CS5-Non", "CS5-NormC")) %>% 
   map_at(-1, ~ gather(., File.Name.CS5, exp, -Name) %>% 
            spread(Name, exp) %>% 
-           inner_join(cs45_overlap, by = "File.Name.CS5") %>% 
+           inner_join(cs345_overlap, by = "File.Name.CS5") %>% 
            select(-matches("File.Name")) %>% 
            group_by(ottaID) %>% 
            summarize_if(is.double, mean) %>% 
