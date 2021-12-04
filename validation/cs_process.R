@@ -5,6 +5,7 @@ library(readxl)
 library(naniar)
 library(nanostringr)
 library(otta)
+library(knitr)
 library(here)
 
 
