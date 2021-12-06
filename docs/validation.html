@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2021-10-28" />
+<meta name="date" content="2021-12-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -89,6 +89,8 @@
 <li class="chapter" data-level="2.2.1" data-path="methods.html"><a href="methods.html#common-samples-method"><i class="fa fa-check"></i><b>2.2.1</b> Common Samples Method</a></li>
 <li class="chapter" data-level="2.2.2" data-path="methods.html"><a href="methods.html#pools-method"><i class="fa fa-check"></i><b>2.2.2</b> Pools Method</a></li>
 <li class="chapter" data-level="2.2.3" data-path="methods.html"><a href="methods.html#concordance-comparison"><i class="fa fa-check"></i><b>2.2.3</b> Concordance Comparison</a></li>
+<li class="chapter" data-level="2.2.4" data-path="methods.html"><a href="methods.html#overlap-of-common-samples-in-all-codesets"><i class="fa fa-check"></i><b>2.2.4</b> Overlap of Common Samples in All CodeSets</a></li>
+<li class="chapter" data-level="2.2.5" data-path="methods.html"><a href="methods.html#overlap-of-common-genes-in-all-codesets"><i class="fa fa-check"></i><b>2.2.5</b> Overlap of Common Genes in All CodeSets</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="methods.html"><a href="methods.html#histotype-classification"><i class="fa fa-check"></i><b>2.3</b> Histotype Classification</a></li>
 </ul></li>
@@ -244,16 +246,16 @@ First we validate the CS2 normalization process by looking at the distribution o
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">CARCINOMA-NOS</td>
-<td align="right">0</td>
-<td align="right">61</td>
-<td align="right">23</td>
-</tr>
-<tr class="even">
 <td align="left">Carcinoma, NOS</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">CARCINOMA-NOS</td>
+<td align="right">0</td>
+<td align="right">61</td>
+<td align="right">23</td>
 </tr>
 <tr class="odd">
 <td align="left">CCOC</td>
@@ -328,28 +330,28 @@ First we validate the CS2 normalization process by looking at the distribution o
 <td align="right">0</td>
 </tr>
 <tr class="odd">
+<td align="left">mixed cell</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
 <td align="left">MIXED (ENOC/CCOC)</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">MIXED (ENOC/LGSC)</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">1</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">MIXED (HGSC/CCOC)</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">mixed cell</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">7</td>
 </tr>
 <tr class="odd">
 <td align="left">MMMT</td>
@@ -364,16 +366,16 @@ First we validate the CS2 normalization process by looking at the distribution o
 <td align="right">77</td>
 </tr>
 <tr class="odd">
-<td align="left">Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
 <td align="left">Other/Exclude</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
 <td align="left">SBOT</td>
@@ -667,13 +669,13 @@ First we validate the CS2 normalization process by looking at the distribution o
 <tbody>
 <tr class="odd">
 <td align="left">CS3</td>
-<td align="left">CARCINOMA-NOS</td>
-<td align="right">23</td>
+<td align="left">Carcinoma, NOS</td>
+<td align="right">2</td>
 </tr>
 <tr class="even">
 <td align="left">CS3</td>
-<td align="left">Carcinoma, NOS</td>
-<td align="right">2</td>
+<td align="left">CARCINOMA-NOS</td>
+<td align="right">23</td>
 </tr>
 <tr class="odd">
 <td align="left">CS3</td>
@@ -707,23 +709,23 @@ First we validate the CS2 normalization process by looking at the distribution o
 </tr>
 <tr class="odd">
 <td align="left">CS3</td>
-<td align="left">MIXED (ENOC/CCOC)</td>
-<td align="right">1</td>
+<td align="left">mixed cell</td>
+<td align="right">7</td>
 </tr>
 <tr class="even">
 <td align="left">CS3</td>
-<td align="left">MIXED (ENOC/LGSC)</td>
+<td align="left">MIXED (ENOC/CCOC)</td>
 <td align="right">1</td>
 </tr>
 <tr class="odd">
 <td align="left">CS3</td>
-<td align="left">MIXED (HGSC/CCOC)</td>
+<td align="left">MIXED (ENOC/LGSC)</td>
 <td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="left">CS3</td>
-<td align="left">mixed cell</td>
-<td align="right">7</td>
+<td align="left">MIXED (HGSC/CCOC)</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
 <td align="left">CS3</td>
@@ -737,13 +739,13 @@ First we validate the CS2 normalization process by looking at the distribution o
 </tr>
 <tr class="odd">
 <td align="left">CS3</td>
-<td align="left">Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial</td>
-<td align="right">1</td>
+<td align="left">Other/Exclude</td>
+<td align="right">8</td>
 </tr>
 <tr class="even">
 <td align="left">CS3</td>
-<td align="left">Other/Exclude</td>
-<td align="right">8</td>
+<td align="left">Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial</td>
+<td align="right">1</td>
 </tr>
 <tr class="odd">
 <td align="left">CS3</td>
@@ -1745,13 +1747,13 @@ Figure 3.29: CS2 CodeSet Chaining Concordance Measure Distributions
 <div id="cs3-cs4-cs5-using-set-ba" class="section level4" number="3.3.4.2">
 <h4><span class="header-section-number">3.3.4.2</span> CS3, CS4, CS5 using Set B/A</h4>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setBA"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-1.png" alt="CS5 Set B/A Chaining Concordance  Measure Distributions" width="672" />
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-1.png" alt="CS5 Set B/A Chaining Concordance Measure Distributions" width="672" />
 <p class="caption">
 Figure 3.30: CS5 Set B/A Chaining Concordance Measure Distributions
 </p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setBA-2"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-2-1.png" alt="CS5 Set B/A Chaining Concordance  Measure Distributions 2" width="672" />
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-2-1.png" alt="CS5 Set B/A Chaining Concordance Measure Distributions 2" width="672" />
 <p class="caption">
 Figure 3.31: CS5 Set B/A Chaining Concordance Measure Distributions 2
 </p>
@@ -1768,18 +1770,18 @@ Figure 3.31: CS5 Set B/A Chaining Concordance Measure Distributions 2
 <tbody>
 <tr class="odd">
 <td align="left">CS3 vs CS5-None</td>
-<td align="right">0.126</td>
-<td align="right">0.101</td>
+<td align="right">0.118</td>
+<td align="right">0.425</td>
 </tr>
 <tr class="even">
 <td align="left">CS3 vs CS5-NormBA</td>
-<td align="right">0.087</td>
-<td align="right">0.320</td>
+<td align="right">0.081</td>
+<td align="right">0.712</td>
 </tr>
 <tr class="odd">
 <td align="left">CS3 vs CS5-NormA</td>
-<td align="right">0.144</td>
-<td align="right">0.047</td>
+<td align="right">0.149</td>
+<td align="right">0.250</td>
 </tr>
 </tbody>
 </table>
@@ -1822,18 +1824,18 @@ Figure 3.35: CS5 Set C/A Chaining Concordance Measure Distributions 2
 <tbody>
 <tr class="odd">
 <td align="left">CS3 vs CS5-None</td>
-<td align="right">0.126</td>
-<td align="right">0.101</td>
+<td align="right">0.118</td>
+<td align="right">0.425</td>
 </tr>
 <tr class="even">
 <td align="left">CS3 vs CS5-NormCA</td>
-<td align="right">0.383</td>
+<td align="right">0.385</td>
 <td align="right">0.000</td>
 </tr>
 <tr class="odd">
 <td align="left">CS3 vs CS5-NormA</td>
-<td align="right">0.144</td>
-<td align="right">0.047</td>
+<td align="right">0.149</td>
+<td align="right">0.250</td>
 </tr>
 </tbody>
 </table>

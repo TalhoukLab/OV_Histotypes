@@ -1,18 +1,14 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 %
 \documentclass[
 ]{report}
-\title{Ovarian Cancer Histotypes: Report of Statistical Findings}
-\author{Derek Chiu}
-\date{2021-10-28}
-
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{iftex}
-\ifPDFTeX
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -44,10 +40,10 @@
   pdftitle={Ovarian Cancer Histotypes: Report of Statistical Findings},
   pdfauthor={Derek Chiu},
   colorlinks=true,
-  linkcolor={Maroon},
-  filecolor={Maroon},
-  citecolor={Blue},
-  urlcolor={Blue},
+  linkcolor=Maroon,
+  filecolor=Maroon,
+  citecolor=Blue,
+  urlcolor=Blue,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
@@ -109,11 +105,15 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
-\ifLuaTeX
+\ifluatex
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
+
+\title{Ovarian Cancer Histotypes: Report of Statistical Findings}
+\author{Derek Chiu}
+\date{2021-12-06}
 
 \begin{document}
 \maketitle
@@ -123,8 +123,8 @@
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
-\listoffigures
 \listoftables
+\listoffigures
 \hypertarget{preface}{%
 \chapter*{Preface}\label{preface}}
 \addcontentsline{toc}{chapter}{Preface}
@@ -469,6 +469,112 @@ The pools method was used to normalize CodeSet2 and CodeSet3. The three referenc
 
 Concordance between CodeSets using the different normalization strategies was compared in common samples, excluding those used for the normalization, using Pearson's correlation coefficient (R\textsuperscript{2}), coefficient of accuracy (Ca), and Lin's concordance correlation (Rc = R\textsuperscript{2} x Ca).
 
+\hypertarget{overlap-of-common-samples-in-all-codesets}{%
+\subsection{Overlap of Common Samples in All CodeSets}\label{overlap-of-common-samples-in-all-codesets}}
+
+\begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/overlap-samples-all-venn-1} \end{center}
+
+\begin{table}
+
+\caption{\label{tab:overlap-samples-all-table}Overlapping Samples from All CodeSets}
+\centering
+\begin{tabular}[t]{r|r|r|r|r|r}
+\hline
+CS1 & CS2 & CS3 & CS4 & CS5 & n\\
+\hline
+1 & 1 & 1 & 1 & 1 & 1\\
+\hline
+1 & 0 & 1 & 1 & 1 & 1\\
+\hline
+1 & 1 & 1 & 1 & 0 & 1\\
+\hline
+0 & 0 & 1 & 1 & 1 & 30\\
+\hline
+0 & 1 & 1 & 1 & 0 & 1\\
+\hline
+1 & 1 & 1 & 0 & 0 & 70\\
+\hline
+0 & 0 & 0 & 1 & 1 & 40\\
+\hline
+0 & 0 & 1 & 0 & 1 & 18\\
+\hline
+0 & 0 & 1 & 1 & 0 & 10\\
+\hline
+0 & 1 & 0 & 0 & 1 & 3\\
+\hline
+0 & 1 & 1 & 0 & 0 & 13\\
+\hline
+1 & 0 & 1 & 0 & 0 & 19\\
+\hline
+1 & 1 & 0 & 0 & 0 & 87\\
+\hline
+0 & 0 & 0 & 0 & 1 & 17\\
+\hline
+0 & 0 & 0 & 1 & 0 & 86\\
+\hline
+0 & 0 & 1 & 0 & 0 & 2108\\
+\hline
+0 & 1 & 0 & 0 & 0 & 669\\
+\hline
+1 & 0 & 0 & 0 & 0 & 95\\
+\hline
+0 & 0 & 0 & 0 & 0 & 3\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{overlap-of-common-genes-in-all-codesets}{%
+\subsection{Overlap of Common Genes in All CodeSets}\label{overlap-of-common-genes-in-all-codesets}}
+
+\begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/overlap-all-genes-venn-1} \end{center}
+
+\begin{table}
+
+\caption{\label{tab:overlap-genes-all-table}Overlapping Genes from All CodeSets}
+\centering
+\begin{tabular}[t]{r|r|r|r|r|r}
+\hline
+CS1 & CS2 & CS3 & CS4 & CS5 & n\\
+\hline
+1 & 1 & 1 & 1 & 1 & 16\\
+\hline
+0 & 1 & 1 & 1 & 1 & 21\\
+\hline
+1 & 1 & 1 & 1 & 0 & 22\\
+\hline
+0 & 0 & 1 & 1 & 1 & 18\\
+\hline
+0 & 1 & 1 & 1 & 0 & 23\\
+\hline
+1 & 0 & 1 & 1 & 0 & 5\\
+\hline
+1 & 1 & 0 & 1 & 0 & 2\\
+\hline
+1 & 1 & 1 & 0 & 0 & 34\\
+\hline
+0 & 0 & 1 & 1 & 0 & 112\\
+\hline
+0 & 1 & 0 & 1 & 0 & 11\\
+\hline
+0 & 1 & 1 & 0 & 0 & 20\\
+\hline
+1 & 0 & 0 & 1 & 0 & 2\\
+\hline
+1 & 0 & 1 & 0 & 0 & 2\\
+\hline
+1 & 1 & 0 & 0 & 0 & 48\\
+\hline
+0 & 0 & 0 & 1 & 0 & 103\\
+\hline
+0 & 0 & 1 & 0 & 0 & 240\\
+\hline
+0 & 1 & 0 & 0 & 0 & 168\\
+\hline
+1 & 0 & 0 & 0 & 0 & 125\\
+\hline
+\end{tabular}
+\end{table}
+
 \hypertarget{histotype-classification}{%
 \section{Histotype Classification}\label{histotype-classification}}
 
@@ -538,9 +644,9 @@ non-HGSC & 196 & 373 & 677\\
 \hline
 revHist & CS1 & CS2 & CS3\\
 \hline
-CARCINOMA-NOS & 0 & 61 & 23\\
-\hline
 Carcinoma, NOS & 0 & 0 & 2\\
+\hline
+CARCINOMA-NOS & 0 & 61 & 23\\
 \hline
 CCOC & 57 & 68 & 182\\
 \hline
@@ -566,21 +672,21 @@ MBOT & 0 & 20 & 3\\
 \hline
 MET-NOP & 0 & 21 & 0\\
 \hline
+mixed cell & 0 & 0 & 7\\
+\hline
 MIXED (ENOC/CCOC) & 0 & 0 & 1\\
 \hline
 MIXED (ENOC/LGSC) & 0 & 0 & 1\\
 \hline
 MIXED (HGSC/CCOC) & 0 & 0 & 1\\
 \hline
-mixed cell & 0 & 0 & 7\\
-\hline
 MMMT & 0 & 0 & 30\\
 \hline
 MUC & 20 & 61 & 77\\
 \hline
-Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial & 0 & 0 & 1\\
-\hline
 Other/Exclude & 0 & 0 & 8\\
+\hline
+Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial & 0 & 0 & 1\\
 \hline
 SBOT & 19 & 10 & 3\\
 \hline
@@ -713,9 +819,9 @@ CS2 & SQAMOUS & 1\\
 \hline
 CodeSet & revHist & n\\
 \hline
-CS3 & CARCINOMA-NOS & 23\\
-\hline
 CS3 & Carcinoma, NOS & 2\\
+\hline
+CS3 & CARCINOMA-NOS & 23\\
 \hline
 CS3 & CCOC & 182\\
 \hline
@@ -729,21 +835,21 @@ CS3 & LGSC & 50\\
 \hline
 CS3 & MBOT & 3\\
 \hline
+CS3 & mixed cell & 7\\
+\hline
 CS3 & MIXED (ENOC/CCOC) & 1\\
 \hline
 CS3 & MIXED (ENOC/LGSC) & 1\\
 \hline
 CS3 & MIXED (HGSC/CCOC) & 1\\
 \hline
-CS3 & mixed cell & 7\\
-\hline
 CS3 & MMMT & 30\\
 \hline
 CS3 & MUC & 77\\
 \hline
-CS3 & Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial & 1\\
-\hline
 CS3 & Other/Exclude & 8\\
+\hline
+CS3 & Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial & 1\\
 \hline
 CS3 & SBOT & 3\\
 \hline
@@ -818,9 +924,9 @@ CodeSets 1 and 2 are calibrated to CodeSet3 as follows:
 \begin{itemize}
 \tightlist
 \item
-  \texttt{X\^{}1(norm)\ =\ X\^{}1\ -\ R\^{}1\ +\ R\^{}3}\strut \\
+  \texttt{X\^{}1(norm)\ =\ X\^{}1\ -\ R\^{}1\ +\ R\^{}3}~\\
 \item
-  \texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}\strut \\
+  \texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
 \item
   \texttt{X\^{}3(norm)\ =\ X\^{}3}
 \end{itemize}
@@ -1049,7 +1155,7 @@ We use the Random1 method to normalize CS3-USC and CS3-AOC to CS3-VAN. There are
 CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=84 common samples.
 
 CodeSet2 is calibrated to CodeSet3 as follows:\\
-\texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}\strut \\
+\texttt{X\^{}2(norm)\ =\ X\^{}2\ -\ R\^{}2\ +\ R\^{}3}~\\
 \texttt{X\^{}3(norm)\ =\ X\^{}3}
 
 \begin{figure}[H]
@@ -1405,7 +1511,7 @@ CS1-Random1 vs CS3 & 0.229 & 0\\
 
 }
 
-\caption{CS5 Set B/A Chaining Concordance  Measure Distributions}\label{fig:cs-chain-cs5-setBA}
+\caption{CS5 Set B/A Chaining Concordance Measure Distributions}\label{fig:cs-chain-cs5-setBA}
 \end{figure}
 
 \begin{figure}[H]
@@ -1414,7 +1520,7 @@ CS1-Random1 vs CS3 & 0.229 & 0\\
 
 }
 
-\caption{CS5 Set B/A Chaining Concordance  Measure Distributions 2}\label{fig:cs-chain-cs5-setBA-2}
+\caption{CS5 Set B/A Chaining Concordance Measure Distributions 2}\label{fig:cs-chain-cs5-setBA-2}
 \end{figure}
 
 \begin{table}
@@ -1425,11 +1531,11 @@ CS1-Random1 vs CS3 & 0.229 & 0\\
 \hline
 Comparisons & DSC & pval\\
 \hline
-CS3 vs CS5-None & 0.126 & 0.101\\
+CS3 vs CS5-None & 0.118 & 0.425\\
 \hline
-CS3 vs CS5-NormBA & 0.087 & 0.320\\
+CS3 vs CS5-NormBA & 0.081 & 0.712\\
 \hline
-CS3 vs CS5-NormA & 0.144 & 0.047\\
+CS3 vs CS5-NormA & 0.149 & 0.250\\
 \hline
 \end{tabular}
 \end{table}
@@ -1481,11 +1587,11 @@ CS3 vs CS5-NormA & 0.144 & 0.047\\
 \hline
 Comparisons & DSC & pval\\
 \hline
-CS3 vs CS5-None & 0.126 & 0.101\\
+CS3 vs CS5-None & 0.118 & 0.425\\
 \hline
-CS3 vs CS5-NormCA & 0.383 & 0.000\\
+CS3 vs CS5-NormCA & 0.385 & 0.000\\
 \hline
-CS3 vs CS5-NormA & 0.144 & 0.047\\
+CS3 vs CS5-NormA & 0.149 & 0.250\\
 \hline
 \end{tabular}
 \end{table}
@@ -3670,11 +3776,11 @@ As a comparison we also show the F1-scores from the \textbf{rf-none} to see how 
 \hline
 method & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
-2S-rf-none & 0.915 & 0.904 & 0.772 & 0.419 & 0.679\\
+2S-rf-none & 0.916 & 0.904 & 0.772 & 0.419 & 0.679\\
 \hline
 sequential-none & 0.905 & 0.917 & 0.917 & 0.485 & 0.711\\
 \hline
-rf-none & 0.893 & 0.887 & 0.486 & 0.133 & 0.745\\
+rf-none & 0.894 & 0.887 & 0.497 & 0.133 & 0.745\\
 \hline
 \end{tabular}
 \end{table}
@@ -3692,11 +3798,11 @@ In the confirmation set, \textbf{2S-rf-none} improves drastically in LGSC classi
 \hline
 method & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
-2S-rf-none & 0.931 & 0.920 & 0.823 & 0.750 & 0.571\\
+2S-rf-none & 0.934 & 0.920 & 0.823 & 0.750 & 0.571\\
 \hline
 sequential-none & 0.943 & 0.862 & 0.964 & 0.750 & 0.725\\
 \hline
-rf-none & 0.920 & 0.839 & 0.540 & 0.174 & 0.686\\
+rf-none & 0.920 & 0.846 & 0.550 & 0.167 & 0.706\\
 \hline
 \end{tabular}
 \end{table}

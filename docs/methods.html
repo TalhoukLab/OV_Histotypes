@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2021-10-28" />
+<meta name="date" content="2021-12-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -89,6 +89,8 @@
 <li class="chapter" data-level="2.2.1" data-path="methods.html"><a href="methods.html#common-samples-method"><i class="fa fa-check"></i><b>2.2.1</b> Common Samples Method</a></li>
 <li class="chapter" data-level="2.2.2" data-path="methods.html"><a href="methods.html#pools-method"><i class="fa fa-check"></i><b>2.2.2</b> Pools Method</a></li>
 <li class="chapter" data-level="2.2.3" data-path="methods.html"><a href="methods.html#concordance-comparison"><i class="fa fa-check"></i><b>2.2.3</b> Concordance Comparison</a></li>
+<li class="chapter" data-level="2.2.4" data-path="methods.html"><a href="methods.html#overlap-of-common-samples-in-all-codesets"><i class="fa fa-check"></i><b>2.2.4</b> Overlap of Common Samples in All CodeSets</a></li>
+<li class="chapter" data-level="2.2.5" data-path="methods.html"><a href="methods.html#overlap-of-common-genes-in-all-codesets"><i class="fa fa-check"></i><b>2.2.5</b> Overlap of Common Genes in All CodeSets</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="methods.html"><a href="methods.html#histotype-classification"><i class="fa fa-check"></i><b>2.3</b> Histotype Classification</a></li>
 </ul></li>
@@ -502,6 +504,340 @@
 <div id="concordance-comparison" class="section level3" number="2.2.3">
 <h3><span class="header-section-number">2.2.3</span> Concordance Comparison</h3>
 <p>Concordance between CodeSets using the different normalization strategies was compared in common samples, excluding those used for the normalization, using Pearson’s correlation coefficient (R<sup>2</sup>), coefficient of accuracy (Ca), and Lin’s concordance correlation (Rc = R<sup>2</sup> x Ca).</p>
+</div>
+<div id="overlap-of-common-samples-in-all-codesets" class="section level3" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> Overlap of Common Samples in All CodeSets</h3>
+<p><img src="OV_Histotypes_RSF_files/figure-html/overlap-samples-all-venn-1.png" width="672" style="display: block; margin: auto;" /></p>
+<table>
+<caption><span id="tab:overlap-samples-all-table">Table 2.3: </span>Overlapping Samples from All CodeSets</caption>
+<thead>
+<tr class="header">
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+<th align="right">CS4</th>
+<th align="right">CS5</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">30</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">70</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">40</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">18</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">19</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">87</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">17</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">86</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2108</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">669</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">95</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="overlap-of-common-genes-in-all-codesets" class="section level3" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> Overlap of Common Genes in All CodeSets</h3>
+<p><img src="OV_Histotypes_RSF_files/figure-html/overlap-all-genes-venn-1.png" width="672" style="display: block; margin: auto;" /></p>
+<table>
+<caption><span id="tab:overlap-genes-all-table">Table 2.4: </span>Overlapping Genes from All CodeSets</caption>
+<thead>
+<tr class="header">
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+<th align="right">CS4</th>
+<th align="right">CS5</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">16</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">21</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">22</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">18</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">23</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">34</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">112</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">11</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">48</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">103</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">240</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">168</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">125</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="histotype-classification" class="section level2" number="2.3">
