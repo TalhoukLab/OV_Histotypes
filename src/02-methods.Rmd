@@ -238,7 +238,7 @@ Concordance between CodeSets using the different normalization strategies was co
 
 ### Overlap of Common Samples in All CodeSets
 
-```{r overlap-samples-all-venn, fig.width=9, fig.height=7}
+```{r overlap-samples-all-venn, fig.width=13, fig.height=7}
 annotNEW <- annotNEW %>%
   mutate(
     ottaID = gsub(".*_(.*)_[0-9]{2}$", "\\1", File.Name) %>%
@@ -302,9 +302,11 @@ venn_ottaID <- venn.diagram(
            alpha('brown', 0.3)),
   cex = 2,
   fontfamily = "sans",
-  cat.cex = 1.5,
+  cat.cex = 1.1,
   cat.default.pos = "outer",
-  cat.fontfamily = "sans"
+  cat.fontfamily = "sans",
+  cat.fontface = "bold",
+  cat.dist = 0.17
 )
 
 grid.draw(venn_ottaID)
@@ -325,7 +327,7 @@ overlap_samples_all %>%
 
 ### Overlap of Common Genes in All CodeSets
 
-```{r overlap-all-genes-venn, fig.width=9, fig.height=7}
+```{r overlap-all-genes-venn, fig.width=13, fig.height=7}
 cs1_genes <- cs1_norm %>%
   filter(Code.Class == "Endogenous") %>%
   pull(Name)
@@ -361,9 +363,11 @@ venn_genes_all <- venn.diagram(
            alpha('brown', 0.3)),
   cex = 2,
   fontfamily = "sans",
-  cat.cex = 1.5,
+  cat.cex = 1.1,
   cat.default.pos = "outer",
-  cat.fontfamily = "sans"
+  cat.fontfamily = "sans",
+  cat.fontface = "bold",
+  cat.dist = 0.17
 )
 
 grid.draw(venn_genes_all)
