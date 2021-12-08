@@ -24,7 +24,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2021-12-06" />
+<meta name="date" content="2021-12-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -55,6 +55,22 @@
 <script src="assets/anchor-sections-1.0.1/anchor-sections.js"></script>
 <script src="assets/kePrint-0.0.1/kePrint.js"></script>
 <link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<script src="assets/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="assets/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="assets/datatables-binding-0.20/datatables.js"></script>
+<link href="assets/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="assets/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="assets/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
+<link href="assets/dt-ext-fixedcolumns-1.11.3/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
+<script src="assets/dt-ext-fixedcolumns-1.11.3/js/dataTables.fixedColumns.min.js"></script>
+<link href="assets/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="assets/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="assets/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="assets/selectize-0.12.0/selectize.min.js"></script>
+<script src="assets/dt-plugin-ellipsis-1.11.3/source.js"></script>
+<script src="assets/dt-plugin-natural-1.11.3/source.js"></script>
+<link href="assets/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="assets/crosstalk-1.2.0/js/crosstalk.min.js"></script>
 
 
 
@@ -3742,622 +3758,10 @@ Figure 4.15: Training Set Step 1 Class-Specific F1-Score
 Figure 4.16: Training Set Step 2 Class-Specific F1-Score
 </p>
 </div>
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<caption>
-<span id="tab:train-step1-f1-class-table">Table 4.15: </span>Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-sampling
-</th>
-<th style="text-align:left;">
-histotype
-</th>
-<th style="text-align:left;">
-rf
-</th>
-<th style="text-align:left;">
-svm
-</th>
-<th style="text-align:left;">
-mlr_ridge
-</th>
-<th style="text-align:left;">
-adaboost
-</th>
-<th style="text-align:left;">
-mlr_lasso
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-HGSC
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">0.974</span>
-</td>
-<td style="text-align:left;">
-0.972
-</td>
-<td style="text-align:left;">
-0.966
-</td>
-<td style="text-align:left;">
-0.97
-</td>
-<td style="text-align:left;">
-0.965
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-non-HGSC
-</td>
-<td style="text-align:left;">
-0.891
-</td>
-<td style="text-align:left;">
-0.889
-</td>
-<td style="text-align:left;">
-0.863
-</td>
-<td style="text-align:left;">
-0.872
-</td>
-<td style="text-align:left;">
-0.861
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
-HGSC
-</td>
-<td style="text-align:left;">
-0.973
-</td>
-<td style="text-align:left;">
-0.973
-</td>
-<td style="text-align:left;">
-0.96
-</td>
-<td style="text-align:left;">
-0.971
-</td>
-<td style="text-align:left;">
-0.958
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
-non-HGSC
-</td>
-<td style="text-align:left;">
-0.89
-</td>
-<td style="text-align:left;">
-0.89
-</td>
-<td style="text-align:left;">
-0.859
-</td>
-<td style="text-align:left;">
-0.887
-</td>
-<td style="text-align:left;">
-0.851
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
-HGSC
-</td>
-<td style="text-align:left;">
-0.962
-</td>
-<td style="text-align:left;">
-0.96
-</td>
-<td style="text-align:left;">
-0.957
-</td>
-<td style="text-align:left;">
-0.963
-</td>
-<td style="text-align:left;">
-0.953
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
-non-HGSC
-</td>
-<td style="text-align:left;">
-0.865
-</td>
-<td style="text-align:left;">
-0.861
-</td>
-<td style="text-align:left;">
-0.852
-</td>
-<td style="text-align:left;">
-0.868
-</td>
-<td style="text-align:left;">
-0.839
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-HGSC
-</td>
-<td style="text-align:left;">
-0.972
-</td>
-<td style="text-align:left;">
-0.971
-</td>
-<td style="text-align:left;">
-0.964
-</td>
-<td style="text-align:left;">
-0.97
-</td>
-<td style="text-align:left;">
-0.963
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-non-HGSC
-</td>
-<td style="text-align:left;">
-0.892
-</td>
-<td style="text-align:left;">
-0.887
-</td>
-<td style="text-align:left;">
-0.865
-</td>
-<td style="text-align:left;">
-0.881
-</td>
-<td style="text-align:left;">
-0.861
-</td>
-</tr>
-</tbody>
-</table>
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<caption>
-<span id="tab:train-step2-f1-class-table">Table 4.16: </span>Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-sampling
-</th>
-<th style="text-align:left;">
-histotype
-</th>
-<th style="text-align:left;">
-rf
-</th>
-<th style="text-align:left;">
-svm
-</th>
-<th style="text-align:left;">
-mlr_ridge
-</th>
-<th style="text-align:left;">
-adaboost
-</th>
-<th style="text-align:left;">
-mlr_lasso
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-CCOC
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">0.92</span>
-</td>
-<td style="text-align:left;">
-0.892
-</td>
-<td style="text-align:left;">
-0.903
-</td>
-<td style="text-align:left;">
-0.911
-</td>
-<td style="text-align:left;">
-0.899
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-ENOC
-</td>
-<td style="text-align:left;">
-0.831
-</td>
-<td style="text-align:left;">
-0.844
-</td>
-<td style="text-align:left;">
-0.833
-</td>
-<td style="text-align:left;">
-0.818
-</td>
-<td style="text-align:left;">
-0.822
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-LGSC
-</td>
-<td style="text-align:left;">
-0.88
-</td>
-<td style="text-align:left;">
-0.917
-</td>
-<td style="text-align:left;">
-0.886
-</td>
-<td style="text-align:left;">
-0.88
-</td>
-<td style="text-align:left;">
-0.857
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-MUC
-</td>
-<td style="text-align:left;">
-0.889
-</td>
-<td style="text-align:left;">
-0.879
-</td>
-<td style="text-align:left;">
-0.904
-</td>
-<td style="text-align:left;">
-0.867
-</td>
-<td style="text-align:left;">
-0.885
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
-CCOC
-</td>
-<td style="text-align:left;">
-0.919
-</td>
-<td style="text-align:left;">
-0.891
-</td>
-<td style="text-align:left;">
-0.899
-</td>
-<td style="text-align:left;">
-0.905
-</td>
-<td style="text-align:left;">
-0.896
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
-ENOC
-</td>
-<td style="text-align:left;">
-0.831
-</td>
-<td style="text-align:left;">
-0.847
-</td>
-<td style="text-align:left;">
-0.833
-</td>
-<td style="text-align:left;">
-0.824
-</td>
-<td style="text-align:left;">
-0.82
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
-LGSC
-</td>
-<td style="text-align:left;">
-0.875
-</td>
-<td style="text-align:left;">
-0.917
-</td>
-<td style="text-align:left;">
-0.867
-</td>
-<td style="text-align:left;">
-0.88
-</td>
-<td style="text-align:left;">
-0.857
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
-MUC
-</td>
-<td style="text-align:left;">
-0.889
-</td>
-<td style="text-align:left;">
-0.877
-</td>
-<td style="text-align:left;">
-0.899
-</td>
-<td style="text-align:left;">
-0.876
-</td>
-<td style="text-align:left;">
-0.881
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
-CCOC
-</td>
-<td style="text-align:left;">
-0.907
-</td>
-<td style="text-align:left;">
-0.875
-</td>
-<td style="text-align:left;">
-0.892
-</td>
-<td style="text-align:left;">
-0.897
-</td>
-<td style="text-align:left;">
-0.895
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
-ENOC
-</td>
-<td style="text-align:left;">
-0.812
-</td>
-<td style="text-align:left;">
-0.825
-</td>
-<td style="text-align:left;">
-0.827
-</td>
-<td style="text-align:left;">
-0.806
-</td>
-<td style="text-align:left;">
-0.812
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
-LGSC
-</td>
-<td style="text-align:left;">
-0.868
-</td>
-<td style="text-align:left;">
-0.909
-</td>
-<td style="text-align:left;">
-0.846
-</td>
-<td style="text-align:left;">
-0.87
-</td>
-<td style="text-align:left;">
-0.839
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
-MUC
-</td>
-<td style="text-align:left;">
-0.877
-</td>
-<td style="text-align:left;">
-0.862
-</td>
-<td style="text-align:left;">
-0.889
-</td>
-<td style="text-align:left;">
-0.867
-</td>
-<td style="text-align:left;">
-0.857
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-CCOC
-</td>
-<td style="text-align:left;">
-0.914
-</td>
-<td style="text-align:left;">
-0.886
-</td>
-<td style="text-align:left;">
-0.898
-</td>
-<td style="text-align:left;">
-0.901
-</td>
-<td style="text-align:left;">
-0.897
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-ENOC
-</td>
-<td style="text-align:left;">
-0.833
-</td>
-<td style="text-align:left;">
-0.845
-</td>
-<td style="text-align:left;">
-0.833
-</td>
-<td style="text-align:left;">
-0.818
-</td>
-<td style="text-align:left;">
-0.822
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-LGSC
-</td>
-<td style="text-align:left;">
-0.877
-</td>
-<td style="text-align:left;">
-0.909
-</td>
-<td style="text-align:left;">
-0.857
-</td>
-<td style="text-align:left;">
-0.882
-</td>
-<td style="text-align:left;">
-0.857
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-MUC
-</td>
-<td style="text-align:left;">
-0.892
-</td>
-<td style="text-align:left;">
-0.875
-</td>
-<td style="text-align:left;">
-0.897
-</td>
-<td style="text-align:left;">
-0.871
-</td>
-<td style="text-align:left;">
-0.877
-</td>
-</tr>
-</tbody>
-</table>
+<div id="htmlwidget-a3a9c5b06c7f37c729f1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a3a9c5b06c7f37c729f1">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;none&quot;,&quot;up&quot;,&quot;down&quot;,&quot;smote&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["FixedColumns"],"caption":"<caption>Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method<\/caption>","data":[["none","none","up","up","down","down","smote","smote"],["HGSC","non-HGSC","HGSC","non-HGSC","HGSC","non-HGSC","HGSC","non-HGSC"],["<span style=\" font-weight: bold;    \" >0.974<\/span>","0.891","0.973","0.89","0.962","0.865","0.972","0.892"],["0.972","0.889","0.973","0.89","0.96","0.861","0.971","0.887"],["0.966","0.863","0.96","0.859","0.957","0.852","0.964","0.865"],["0.97","0.872","0.971","0.887","0.963","0.868","0.97","0.881"],["0.965","0.861","0.958","0.851","0.953","0.839","0.963","0.861"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>sampling<\/th>\n      <th>histotype<\/th>\n      <th>rf<\/th>\n      <th>svm<\/th>\n      <th>mlr\\_ridge<\/th>\n      <th>adaboost<\/th>\n      <th>mlr\\_lasso<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"fixedColumns":true,"columnDefs":[{"targets":1,"render":"$.fn.dataTable.render.ellipsis( 10 )"},{"type":"natural","targets":0}],"pageLength":50,"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+<div id="htmlwidget-4ff51c61ef82415c77e7" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4ff51c61ef82415c77e7">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;none&quot;,&quot;up&quot;,&quot;down&quot;,&quot;smote&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["FixedColumns"],"caption":"<caption>Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method<\/caption>","data":[["none","none","none","none","up","up","up","up","down","down","down","down","smote","smote","smote","smote"],["CCOC","ENOC","LGSC","MUC","CCOC","ENOC","LGSC","MUC","CCOC","ENOC","LGSC","MUC","CCOC","ENOC","LGSC","MUC"],["<span style=\" font-weight: bold;    \" >0.92<\/span>","0.831","0.88","0.889","0.919","0.831","0.875","0.889","0.907","0.812","0.868","0.877","0.914","0.833","0.877","0.892"],["0.892","0.844","0.917","0.879","0.891","0.847","0.917","0.877","0.875","0.825","0.909","0.862","0.886","0.845","0.909","0.875"],["0.903","0.833","0.886","0.904","0.899","0.833","0.867","0.899","0.892","0.827","0.846","0.889","0.898","0.833","0.857","0.897"],["0.911","0.818","0.88","0.867","0.905","0.824","0.88","0.876","0.897","0.806","0.87","0.867","0.901","0.818","0.882","0.871"],["0.899","0.822","0.857","0.885","0.896","0.82","0.857","0.881","0.895","0.812","0.839","0.857","0.897","0.822","0.857","0.877"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>sampling<\/th>\n      <th>histotype<\/th>\n      <th>rf<\/th>\n      <th>svm<\/th>\n      <th>mlr\\_ridge<\/th>\n      <th>adaboost<\/th>\n      <th>mlr\\_lasso<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"fixedColumns":true,"columnDefs":[{"targets":1,"render":"$.fn.dataTable.render.ellipsis( 10 )"},{"type":"natural","targets":0}],"pageLength":50,"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 </div>
 <div id="kappa-1" class="section level3" number="4.2.3">
 <h3><span class="header-section-number">4.2.3</span> Kappa</h3>
@@ -4375,7 +3779,7 @@ Figure 4.18: Training Set Step 2 Kappa
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-step1-kappa-table">Table 4.17: </span>Training Set Step 1 Kappa by Algorithm and Subsampling Method
+<span id="tab:train-step1-kappa-table">Table 4.15: </span>Training Set Step 1 Kappa by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -4484,7 +3888,7 @@ smote
 </table>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-step2-kappa-table">Table 4.18: </span>Training Set Step 2 Kappa by Algorithm and Subsampling Method
+<span id="tab:train-step2-kappa-table">Table 4.16: </span>Training Set Step 2 Kappa by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -4605,7 +4009,7 @@ Figure 4.20: Training Set Step 2 Class-Specific Kappa
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-step1-kappa-class-table">Table 4.19: </span>Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method
+<span id="tab:train-step1-kappa-class-table">Table 4.17: </span>Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -4821,7 +4225,7 @@ non-HGSC
 </table>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-step2-kappa-class-table">Table 4.20: </span>Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method
+<span id="tab:train-step2-kappa-class-table">Table 4.18: </span>Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -5236,7 +4640,7 @@ Figure 4.22: Training Set Step 2 G-mean
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-step1-gmean-table">Table 4.21: </span>Training Set Step 1 G-mean by Algorithm and Subsampling Method
+<span id="tab:train-step1-gmean-table">Table 4.19: </span>Training Set Step 1 G-mean by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -5345,7 +4749,7 @@ smote
 </table>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-step2-gmean-table">Table 4.22: </span>Training Set Step 2 G-mean by Algorithm and Subsampling Method
+<span id="tab:train-step2-gmean-table">Table 4.20: </span>Training Set Step 2 G-mean by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -5466,7 +4870,7 @@ Figure 4.24: Training Set Step 2 Class-Specific G-mean
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-step1-gmean-class-table">Table 4.23: </span>Training Set Step 1 Class-Specific G-mean by Algorithm and Subsampling Method
+<span id="tab:train-step1-gmean-class-table">Table 4.21: </span>Training Set Step 1 Class-Specific G-mean by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -5682,7 +5086,7 @@ non-HGSC
 </table>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-step2-gmean-class-table">Table 4.24: </span>Training Set Step 2 Class-Specific G-mean by Algorithm and Subsampling Method
+<span id="tab:train-step2-gmean-class-table">Table 4.22: </span>Training Set Step 2 Class-Specific G-mean by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -6094,7 +5498,7 @@ Figure 4.25: CS1 Set Accuracy
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs1-accuracy-table">Table 4.25: </span>CS1 Set Accuracy by Algorithm and Subsampling Method
+<span id="tab:cs1-accuracy-table">Table 4.23: </span>CS1 Set Accuracy by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -6209,7 +5613,7 @@ Figure 4.26: CS1 Set Class-Specific Accuracy
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs1-accuracy-class-table">Table 4.26: </span>CS1 Set Class-Specific Accuracy by Algorithm and Subsampling Method
+<span id="tab:cs1-accuracy-class-table">Table 4.24: </span>CS1 Set Class-Specific Accuracy by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -6710,7 +6114,7 @@ Figure 4.27: CS1 Set F1-Score
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs1-f1-table">Table 4.27: </span>CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method
+<span id="tab:cs1-f1-table">Table 4.25: </span>CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -6825,7 +6229,7 @@ Figure 4.28: CS1 Set Class-Specific F1-Score
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs1-f1-class-table">Table 4.28: </span>CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method
+<span id="tab:cs1-f1-class-table">Table 4.26: </span>CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -7326,7 +6730,7 @@ Figure 4.29: CS1 Set Kappa
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs1-kappa-table">Table 4.29: </span>CS1 Set Kappa by Algorithm and Subsampling Method
+<span id="tab:cs1-kappa-table">Table 4.27: </span>CS1 Set Kappa by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -7441,7 +6845,7 @@ Figure 4.30: CS1 Set Class-Specific Kappa
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs1-kappa-class-table">Table 4.30: </span>CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method
+<span id="tab:cs1-kappa-class-table">Table 4.28: </span>CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -7942,7 +7346,7 @@ Figure 4.31: CS1 Set G-mean
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs1-gmean-table">Table 4.31: </span>CS1 Set G-mean by Algorithm and Subsampling Method
+<span id="tab:cs1-gmean-table">Table 4.29: </span>CS1 Set G-mean by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -8057,7 +7461,7 @@ Figure 4.32: CS1 Set Class-Specific G-mean
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs1-gmean-class-table">Table 4.32: </span>CS1 Set Class-Specific G-mean by Algorithm and Subsampling Method
+<span id="tab:cs1-gmean-class-table">Table 4.30: </span>CS1 Set Class-Specific G-mean by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -8561,7 +7965,7 @@ Figure 4.33: CS2 Set Accuracy
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs2-accuracy-table">Table 4.33: </span>CS2 Set Accuracy by Algorithm and Subsampling Method
+<span id="tab:cs2-accuracy-table">Table 4.31: </span>CS2 Set Accuracy by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -8676,7 +8080,7 @@ Figure 4.34: CS2 Set Class-Specific Accuracy
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs2-accuracy-class-table">Table 4.34: </span>CS2 Set Class-Specific Accuracy by Algorithm and Subsampling Method
+<span id="tab:cs2-accuracy-class-table">Table 4.32: </span>CS2 Set Class-Specific Accuracy by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -9177,7 +8581,7 @@ Figure 4.35: CS2 Set F1-Score
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs2-f1-table">Table 4.35: </span>CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method
+<span id="tab:cs2-f1-table">Table 4.33: </span>CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -9292,7 +8696,7 @@ Figure 4.36: CS2 Set Class-Specific F1-Score
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs2-f1-class-table">Table 4.36: </span>CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method
+<span id="tab:cs2-f1-class-table">Table 4.34: </span>CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -9793,7 +9197,7 @@ Figure 4.37: CS2 Set Kappa
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs2-kappa-table">Table 4.37: </span>CS2 Set Kappa by Algorithm and Subsampling Method
+<span id="tab:cs2-kappa-table">Table 4.35: </span>CS2 Set Kappa by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -9908,7 +9312,7 @@ Figure 4.38: CS2 Set Class-Specific Kappa
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs2-kappa-class-table">Table 4.38: </span>CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method
+<span id="tab:cs2-kappa-class-table">Table 4.36: </span>CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -10409,7 +9813,7 @@ Figure 4.39: CS2 Set G-mean
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs2-gmean-table">Table 4.39: </span>CS2 Set G-mean by Algorithm and Subsampling Method
+<span id="tab:cs2-gmean-table">Table 4.37: </span>CS2 Set G-mean by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -10524,7 +9928,7 @@ Figure 4.40: CS2 Set Class-Specific G-mean
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:cs2-gmean-class-table">Table 4.40: </span>CS2 Set Class-Specific G-mean by Algorithm and Subsampling Method
+<span id="tab:cs2-gmean-class-table">Table 4.38: </span>CS2 Set Class-Specific G-mean by Algorithm and Subsampling Method
 </caption>
 <thead>
 <tr>
@@ -11026,7 +10430,7 @@ Figure 4.41: SMOTE Kappa by Algorithm and Dataset
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:smote-kappa-table">Table 4.41: </span>SMOTE Kappa by Algorithm and Dataset
+<span id="tab:smote-kappa-table">Table 4.39: </span>SMOTE Kappa by Algorithm and Dataset
 </caption>
 <thead>
 <tr>
@@ -11126,921 +10530,14 @@ Figure 4.42: SMOTE Class-Specific Kappa by Algorithm and Dataset
 </div>
 <div id="rank-aggregation" class="section level2" number="4.7">
 <h2><span class="header-section-number">4.7</span> Rank Aggregation</h2>
-<table class="table" style="margin-left: auto; margin-right: auto;">
-<caption>
-<span id="tab:summary">Table 4.42: </span>F1-Score Summary by Model and Class
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-model
-</th>
-<th style="text-align:right;">
-CCOC
-</th>
-<th style="text-align:right;">
-ENOC
-</th>
-<th style="text-align:right;">
-HGSC
-</th>
-<th style="text-align:right;">
-LGSC
-</th>
-<th style="text-align:right;">
-MUC
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-2S-rf-none
-</td>
-<td style="text-align:right;">
-0.920
-</td>
-<td style="text-align:right;">
-0.831
-</td>
-<td style="text-align:right;">
-0.974
-</td>
-<td style="text-align:right;">
-0.880
-</td>
-<td style="text-align:right;">
-0.889
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-sequential-none
-</td>
-<td style="text-align:right;">
-0.904
-</td>
-<td style="text-align:right;">
-0.972
-</td>
-<td style="text-align:right;">
-0.971
-</td>
-<td style="text-align:right;">
-0.933
-</td>
-<td style="text-align:right;">
-0.893
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-rf-smote
-</td>
-<td style="text-align:right;">
-0.914
-</td>
-<td style="text-align:right;">
-0.833
-</td>
-<td style="text-align:right;">
-0.972
-</td>
-<td style="text-align:right;">
-0.877
-</td>
-<td style="text-align:right;">
-0.892
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-sequential-smote
-</td>
-<td style="text-align:right;">
-0.905
-</td>
-<td style="text-align:right;">
-0.971
-</td>
-<td style="text-align:right;">
-0.972
-</td>
-<td style="text-align:right;">
-0.929
-</td>
-<td style="text-align:right;">
-0.906
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-sequential-up
-</td>
-<td style="text-align:right;">
-0.892
-</td>
-<td style="text-align:right;">
-0.970
-</td>
-<td style="text-align:right;">
-0.971
-</td>
-<td style="text-align:right;">
-0.929
-</td>
-<td style="text-align:right;">
-0.889
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-svm-none
-</td>
-<td style="text-align:right;">
-0.892
-</td>
-<td style="text-align:right;">
-0.844
-</td>
-<td style="text-align:right;">
-0.972
-</td>
-<td style="text-align:right;">
-0.917
-</td>
-<td style="text-align:right;">
-0.879
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-rf-up
-</td>
-<td style="text-align:right;">
-0.919
-</td>
-<td style="text-align:right;">
-0.831
-</td>
-<td style="text-align:right;">
-0.973
-</td>
-<td style="text-align:right;">
-0.875
-</td>
-<td style="text-align:right;">
-0.889
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-svm-up
-</td>
-<td style="text-align:right;">
-0.891
-</td>
-<td style="text-align:right;">
-0.847
-</td>
-<td style="text-align:right;">
-0.973
-</td>
-<td style="text-align:right;">
-0.917
-</td>
-<td style="text-align:right;">
-0.877
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-adaboost-up
-</td>
-<td style="text-align:right;">
-0.905
-</td>
-<td style="text-align:right;">
-0.824
-</td>
-<td style="text-align:right;">
-0.971
-</td>
-<td style="text-align:right;">
-0.880
-</td>
-<td style="text-align:right;">
-0.876
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-sequential-down
-</td>
-<td style="text-align:right;">
-0.904
-</td>
-<td style="text-align:right;">
-0.971
-</td>
-<td style="text-align:right;">
-0.963
-</td>
-<td style="text-align:right;">
-0.933
-</td>
-<td style="text-align:right;">
-0.893
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-adaboost-smote
-</td>
-<td style="text-align:right;">
-0.901
-</td>
-<td style="text-align:right;">
-0.818
-</td>
-<td style="text-align:right;">
-0.970
-</td>
-<td style="text-align:right;">
-0.882
-</td>
-<td style="text-align:right;">
-0.871
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-mlr_ridge-none
-</td>
-<td style="text-align:right;">
-0.903
-</td>
-<td style="text-align:right;">
-0.833
-</td>
-<td style="text-align:right;">
-0.966
-</td>
-<td style="text-align:right;">
-0.886
-</td>
-<td style="text-align:right;">
-0.904
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-mlr_ridge-up
-</td>
-<td style="text-align:right;">
-0.899
-</td>
-<td style="text-align:right;">
-0.833
-</td>
-<td style="text-align:right;">
-0.960
-</td>
-<td style="text-align:right;">
-0.867
-</td>
-<td style="text-align:right;">
-0.899
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-mlr_lasso-none
-</td>
-<td style="text-align:right;">
-0.899
-</td>
-<td style="text-align:right;">
-0.822
-</td>
-<td style="text-align:right;">
-0.965
-</td>
-<td style="text-align:right;">
-0.857
-</td>
-<td style="text-align:right;">
-0.885
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-mlr_ridge-down
-</td>
-<td style="text-align:right;">
-0.892
-</td>
-<td style="text-align:right;">
-0.827
-</td>
-<td style="text-align:right;">
-0.957
-</td>
-<td style="text-align:right;">
-0.846
-</td>
-<td style="text-align:right;">
-0.889
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-mlr_lasso-up
-</td>
-<td style="text-align:right;">
-0.896
-</td>
-<td style="text-align:right;">
-0.820
-</td>
-<td style="text-align:right;">
-0.958
-</td>
-<td style="text-align:right;">
-0.857
-</td>
-<td style="text-align:right;">
-0.881
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-svm-smote
-</td>
-<td style="text-align:right;">
-0.886
-</td>
-<td style="text-align:right;">
-0.845
-</td>
-<td style="text-align:right;">
-0.971
-</td>
-<td style="text-align:right;">
-0.909
-</td>
-<td style="text-align:right;">
-0.875
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-rf-down
-</td>
-<td style="text-align:right;">
-0.907
-</td>
-<td style="text-align:right;">
-0.812
-</td>
-<td style="text-align:right;">
-0.962
-</td>
-<td style="text-align:right;">
-0.868
-</td>
-<td style="text-align:right;">
-0.877
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-adaboost-none
-</td>
-<td style="text-align:right;">
-0.911
-</td>
-<td style="text-align:right;">
-0.818
-</td>
-<td style="text-align:right;">
-0.970
-</td>
-<td style="text-align:right;">
-0.880
-</td>
-<td style="text-align:right;">
-0.867
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-mlr_ridge-none
-</td>
-<td style="text-align:right;">
-0.853
-</td>
-<td style="text-align:right;">
-0.757
-</td>
-<td style="text-align:right;">
-0.967
-</td>
-<td style="text-align:right;">
-0.353
-</td>
-<td style="text-align:right;">
-0.872
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-mlr_ridge-smote
-</td>
-<td style="text-align:right;">
-0.898
-</td>
-<td style="text-align:right;">
-0.833
-</td>
-<td style="text-align:right;">
-0.964
-</td>
-<td style="text-align:right;">
-0.857
-</td>
-<td style="text-align:right;">
-0.897
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-adaboost-down
-</td>
-<td style="text-align:right;">
-0.897
-</td>
-<td style="text-align:right;">
-0.806
-</td>
-<td style="text-align:right;">
-0.963
-</td>
-<td style="text-align:right;">
-0.870
-</td>
-<td style="text-align:right;">
-0.867
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf-up
-</td>
-<td style="text-align:right;">
-0.864
-</td>
-<td style="text-align:right;">
-0.767
-</td>
-<td style="text-align:right;">
-0.969
-</td>
-<td style="text-align:right;">
-0.522
-</td>
-<td style="text-align:right;">
-0.852
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf-none
-</td>
-<td style="text-align:right;">
-0.866
-</td>
-<td style="text-align:right;">
-0.724
-</td>
-<td style="text-align:right;">
-0.967
-</td>
-<td style="text-align:right;">
-0.375
-</td>
-<td style="text-align:right;">
-0.852
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-mlr_lasso-smote
-</td>
-<td style="text-align:right;">
-0.897
-</td>
-<td style="text-align:right;">
-0.822
-</td>
-<td style="text-align:right;">
-0.963
-</td>
-<td style="text-align:right;">
-0.857
-</td>
-<td style="text-align:right;">
-0.877
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-svm-down
-</td>
-<td style="text-align:right;">
-0.875
-</td>
-<td style="text-align:right;">
-0.825
-</td>
-<td style="text-align:right;">
-0.960
-</td>
-<td style="text-align:right;">
-0.909
-</td>
-<td style="text-align:right;">
-0.862
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2S-mlr_lasso-down
-</td>
-<td style="text-align:right;">
-0.895
-</td>
-<td style="text-align:right;">
-0.812
-</td>
-<td style="text-align:right;">
-0.953
-</td>
-<td style="text-align:right;">
-0.839
-</td>
-<td style="text-align:right;">
-0.857
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-mlr_lasso-none
-</td>
-<td style="text-align:right;">
-0.843
-</td>
-<td style="text-align:right;">
-0.740
-</td>
-<td style="text-align:right;">
-0.968
-</td>
-<td style="text-align:right;">
-0.471
-</td>
-<td style="text-align:right;">
-0.849
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf-smote
-</td>
-<td style="text-align:right;">
-0.862
-</td>
-<td style="text-align:right;">
-0.759
-</td>
-<td style="text-align:right;">
-0.974
-</td>
-<td style="text-align:right;">
-0.710
-</td>
-<td style="text-align:right;">
-0.829
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-adaboost-up
-</td>
-<td style="text-align:right;">
-0.865
-</td>
-<td style="text-align:right;">
-0.754
-</td>
-<td style="text-align:right;">
-0.974
-</td>
-<td style="text-align:right;">
-0.690
-</td>
-<td style="text-align:right;">
-0.839
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-adaboost-smote
-</td>
-<td style="text-align:right;">
-0.850
-</td>
-<td style="text-align:right;">
-0.721
-</td>
-<td style="text-align:right;">
-0.969
-</td>
-<td style="text-align:right;">
-0.706
-</td>
-<td style="text-align:right;">
-0.810
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm-none
-</td>
-<td style="text-align:right;">
-0.848
-</td>
-<td style="text-align:right;">
-0.786
-</td>
-<td style="text-align:right;">
-0.970
-</td>
-<td style="text-align:right;">
-0.667
-</td>
-<td style="text-align:right;">
-0.857
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-mlr_ridge-smote
-</td>
-<td style="text-align:right;">
-0.835
-</td>
-<td style="text-align:right;">
-0.710
-</td>
-<td style="text-align:right;">
-0.953
-</td>
-<td style="text-align:right;">
-0.545
-</td>
-<td style="text-align:right;">
-0.847
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-mlr_ridge-up
-</td>
-<td style="text-align:right;">
-0.833
-</td>
-<td style="text-align:right;">
-0.667
-</td>
-<td style="text-align:right;">
-0.944
-</td>
-<td style="text-align:right;">
-0.524
-</td>
-<td style="text-align:right;">
-0.841
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm-up
-</td>
-<td style="text-align:right;">
-0.822
-</td>
-<td style="text-align:right;">
-0.750
-</td>
-<td style="text-align:right;">
-0.969
-</td>
-<td style="text-align:right;">
-0.714
-</td>
-<td style="text-align:right;">
-0.846
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-mlr_lasso-up
-</td>
-<td style="text-align:right;">
-0.778
-</td>
-<td style="text-align:right;">
-0.638
-</td>
-<td style="text-align:right;">
-0.954
-</td>
-<td style="text-align:right;">
-0.611
-</td>
-<td style="text-align:right;">
-0.808
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm-smote
-</td>
-<td style="text-align:right;">
-0.824
-</td>
-<td style="text-align:right;">
-0.759
-</td>
-<td style="text-align:right;">
-0.968
-</td>
-<td style="text-align:right;">
-0.706
-</td>
-<td style="text-align:right;">
-0.847
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-mlr_lasso-smote
-</td>
-<td style="text-align:right;">
-0.813
-</td>
-<td style="text-align:right;">
-0.675
-</td>
-<td style="text-align:right;">
-0.954
-</td>
-<td style="text-align:right;">
-0.571
-</td>
-<td style="text-align:right;">
-0.833
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-adaboost-none
-</td>
-<td style="text-align:right;">
-0.846
-</td>
-<td style="text-align:right;">
-0.681
-</td>
-<td style="text-align:right;">
-0.959
-</td>
-<td style="text-align:right;">
-0.200
-</td>
-<td style="text-align:right;">
-0.827
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rf-down
-</td>
-<td style="text-align:right;">
-0.841
-</td>
-<td style="text-align:right;">
-0.641
-</td>
-<td style="text-align:right;">
-0.930
-</td>
-<td style="text-align:right;">
-0.487
-</td>
-<td style="text-align:right;">
-0.765
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-svm-down
-</td>
-<td style="text-align:right;">
-0.790
-</td>
-<td style="text-align:right;">
-0.629
-</td>
-<td style="text-align:right;">
-0.928
-</td>
-<td style="text-align:right;">
-0.526
-</td>
-<td style="text-align:right;">
-0.762
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-mlr_ridge-down
-</td>
-<td style="text-align:right;">
-0.821
-</td>
-<td style="text-align:right;">
-0.627
-</td>
-<td style="text-align:right;">
-0.917
-</td>
-<td style="text-align:right;">
-0.413
-</td>
-<td style="text-align:right;">
-0.811
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-adaboost-down
-</td>
-<td style="text-align:right;">
-0.833
-</td>
-<td style="text-align:right;">
-0.615
-</td>
-<td style="text-align:right;">
-0.927
-</td>
-<td style="text-align:right;">
-0.481
-</td>
-<td style="text-align:right;">
-0.741
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-mlr_lasso-down
-</td>
-<td style="text-align:right;">
-0.792
-</td>
-<td style="text-align:right;">
-0.605
-</td>
-<td style="text-align:right;">
-0.907
-</td>
-<td style="text-align:right;">
-0.368
-</td>
-<td style="text-align:right;">
-0.769
-</td>
-</tr>
-</tbody>
-</table>
+<div id="htmlwidget-83714dcd4bafae4d06d3" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-83714dcd4bafae4d06d3">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.778\" data-max=\"0.92\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.605\" data-max=\"0.972\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.907\" data-max=\"0.974\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.2\" data-max=\"0.933\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.741\" data-max=\"0.906\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["FixedColumns"],"caption":"<caption>F1-Score Summary by Model and Class<\/caption>","data":[["2S-rf-none","sequential-none","2S-rf-smote","sequential-smote","sequential-up","2S-svm-none","2S-rf-up","2S-svm-up","2S-adaboost-up","sequential-down","2S-adaboost-smote","2S-mlr_ridge-none","2S-mlr_ridge-up","2S-mlr_lasso-none","2S-mlr_ridge-down","2S-mlr_lasso-up","2S-svm-smote","2S-rf-down","2S-adaboost-none","mlr_ridge-none","2S-mlr_ridge-smote","2S-adaboost-down","rf-up","rf-none","2S-mlr_lasso-smote","2S-svm-down","2S-mlr_lasso-down","mlr_lasso-none","rf-smote","adaboost-up","adaboost-smote","svm-none","mlr_ridge-smote","mlr_ridge-up","svm-up","mlr_lasso-up","svm-smote","mlr_lasso-smote","adaboost-none","rf-down","svm-down","mlr_ridge-down","adaboost-down","mlr_lasso-down"],[0.92,0.904,0.914,0.905,0.892,0.892,0.919,0.891,0.905,0.904,0.901,0.903,0.899,0.899,0.892,0.896,0.886,0.907,0.911,0.853,0.898,0.897,0.864,0.866,0.897,0.875,0.895,0.843,0.862,0.865,0.85,0.848,0.835,0.833,0.822,0.778,0.824,0.813,0.846,0.841,0.79,0.821,0.833,0.792],[0.831,0.972,0.833,0.971,0.97,0.844,0.831,0.847,0.824,0.971,0.818,0.833,0.833,0.822,0.827,0.82,0.845,0.812,0.818,0.757,0.833,0.806,0.767,0.724,0.822,0.825,0.812,0.74,0.759,0.754,0.721,0.786,0.71,0.667,0.75,0.638,0.759,0.675,0.681,0.641,0.629,0.627,0.615,0.605],[0.974,0.971,0.972,0.972,0.971,0.972,0.973,0.973,0.971,0.963,0.97,0.966,0.96,0.965,0.957,0.958,0.971,0.962,0.97,0.967,0.964,0.963,0.969,0.967,0.963,0.96,0.953,0.968,0.974,0.974,0.969,0.97,0.953,0.944,0.969,0.954,0.968,0.954,0.959,0.93,0.928,0.917,0.927,0.907],[0.88,0.933,0.877,0.929,0.929,0.917,0.875,0.917,0.88,0.933,0.882,0.886,0.867,0.857,0.846,0.857,0.909,0.868,0.88,0.353,0.857,0.87,0.522,0.375,0.857,0.909,0.839,0.471,0.71,0.69,0.706,0.667,0.545,0.524,0.714,0.611,0.706,0.571,0.2,0.487,0.526,0.413,0.481,0.368],[0.889,0.893,0.892,0.906,0.889,0.879,0.889,0.877,0.876,0.893,0.871,0.904,0.899,0.885,0.889,0.881,0.875,0.877,0.867,0.872,0.897,0.867,0.852,0.852,0.877,0.862,0.857,0.849,0.829,0.839,0.81,0.857,0.847,0.841,0.846,0.808,0.847,0.833,0.827,0.765,0.762,0.811,0.741,0.769]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>model<\/th>\n      <th>CCOC<\/th>\n      <th>ENOC<\/th>\n      <th>HGSC<\/th>\n      <th>LGSC<\/th>\n      <th>MUC<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"fixedColumns":true,"columnDefs":[{"targets":1,"render":"$.fn.dataTable.render.ellipsis( 10 )"},{"type":"natural","targets":0},{"className":"dt-right","targets":[1,2,3,4,5]}],"pageLength":50,"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 <p>The 44 methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.</p>
 </div>
 <div id="test-set-performance" class="section level2" number="4.8">
 <h2><span class="header-section-number">4.8</span> Test Set Performance</h2>
 <p>Now we’d like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.</p>
-<p>The best 2-step and sequential methods are:</p>
+<p>The top 4 methods are:</p>
 <ul>
 <li><strong>2S-rf-none</strong>: 2-step method using random forest algorithm with no subsampling</li>
 <li><strong>sequential-none</strong>: sequential algorithm with no subsampling. The sequence of models and algorithms used are:
@@ -12050,13 +10547,21 @@ mlr_lasso-down
 <li>CCOC vs. non-CCOC using random forest</li>
 <li>ENOC vs. LGSC using SVM</li>
 </ul></li>
+<li><strong>2S-rf-smote</strong>: 2-step method using random forest algorithm with SMOTE subsampling</li>
+<li><strong>sequential-smote</strong>: sequential algorithm with SMOTE subsampling. The sequence of models and algorithms used are:
+<ul>
+<li>HGSC vs. non-HGSC using random forest</li>
+<li>CCOC vs. non-CCOC using random forest</li>
+<li>MUC vs. non-MUC using SVM</li>
+<li>ENOC vs. LGSC using random forest</li>
+</ul></li>
 </ul>
 <p>As a comparison we also show the F1-scores from the <strong>rf-none</strong> to see how the best methods improve from it.</p>
 <div id="confirmation-set" class="section level3" number="4.8.1">
 <h3><span class="header-section-number">4.8.1</span> Confirmation Set</h3>
 <table>
 <caption>
-<span id="tab:confirmation-set">Table 4.43: </span>Class-specific F1-scores on Confirmation Sets
+<span id="tab:confirmation-set">Table 4.40: </span>Class-specific F1-scores on Confirmation Sets
 </caption>
 <thead>
 <tr>
@@ -12086,7 +10591,7 @@ MUC
 2S-rf-none
 </td>
 <td style="text-align:right;">
-0.916
+0.915
 </td>
 <td style="text-align:right;">
 0.904
@@ -12123,16 +10628,56 @@ sequential-none
 </tr>
 <tr>
 <td style="text-align:left;">
+2S-rf-smote
+</td>
+<td style="text-align:right;">
+0.908
+</td>
+<td style="text-align:right;">
+0.878
+</td>
+<td style="text-align:right;">
+0.750
+</td>
+<td style="text-align:right;">
+0.383
+</td>
+<td style="text-align:right;">
+0.691
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sequential-smote
+</td>
+<td style="text-align:right;">
+0.907
+</td>
+<td style="text-align:right;">
+0.923
+</td>
+<td style="text-align:right;">
+0.916
+</td>
+<td style="text-align:right;">
+0.514
+</td>
+<td style="text-align:right;">
+0.679
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 rf-none
 </td>
 <td style="text-align:right;">
-0.894
+0.893
 </td>
 <td style="text-align:right;">
 0.887
 </td>
 <td style="text-align:right;">
-0.497
+0.486
 </td>
 <td style="text-align:right;">
 0.133
@@ -12149,7 +10694,7 @@ rf-none
 <h3><span class="header-section-number">4.8.2</span> Validation Set</h3>
 <table>
 <caption>
-<span id="tab:validation-set">Table 4.44: </span>Class-specific F1-scores on Validation Sets
+<span id="tab:validation-set">Table 4.41: </span>Class-specific F1-scores on Validation Sets
 </caption>
 <thead>
 <tr>
@@ -12179,7 +10724,7 @@ MUC
 2S-rf-none
 </td>
 <td style="text-align:right;">
-0.934
+0.931
 </td>
 <td style="text-align:right;">
 0.920
@@ -12216,22 +10761,62 @@ sequential-none
 </tr>
 <tr>
 <td style="text-align:left;">
+2S-rf-smote
+</td>
+<td style="text-align:right;">
+0.917
+</td>
+<td style="text-align:right;">
+0.920
+</td>
+<td style="text-align:right;">
+0.788
+</td>
+<td style="text-align:right;">
+0.732
+</td>
+<td style="text-align:right;">
+0.538
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sequential-smote
+</td>
+<td style="text-align:right;">
+0.926
+</td>
+<td style="text-align:right;">
+0.902
+</td>
+<td style="text-align:right;">
+0.953
+</td>
+<td style="text-align:right;">
+0.698
+</td>
+<td style="text-align:right;">
+0.617
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 rf-none
 </td>
 <td style="text-align:right;">
 0.920
 </td>
 <td style="text-align:right;">
-0.846
+0.839
 </td>
 <td style="text-align:right;">
-0.550
+0.540
 </td>
 <td style="text-align:right;">
-0.167
+0.174
 </td>
 <td style="text-align:right;">
-0.706
+0.686
 </td>
 </tr>
 </tbody>

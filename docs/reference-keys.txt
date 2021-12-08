@@ -104,8 +104,6 @@ tab:train-step1-f1-table
 tab:train-step2-f1-table
 fig:train-step1-f1-class
 fig:train-step2-f1-class
-tab:train-step1-f1-class-table
-tab:train-step2-f1-class-table
 fig:train-step1-kappa
 fig:train-step2-kappa
 tab:train-step1-kappa-table
@@ -157,7 +155,6 @@ tab:cs2-gmean-class-table
 fig:smote-kappa
 tab:smote-kappa-table
 fig:smote-kappa-class
-tab:summary
 tab:confirmation-set
 tab:validation-set
 introduction
