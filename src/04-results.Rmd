@@ -1704,7 +1704,7 @@ The `r ncol(f1_ranks)` methods (algorithm-sampling combinations) are ordered in 
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
-The best 2-step and sequential methods are:
+The top 4 methods are:
 
 - **2S-rf-none**: 2-step method using random forest algorithm with no subsampling
 - **sequential-none**: sequential algorithm with no subsampling. The sequence of models and algorithms used are: 
@@ -1712,27 +1712,31 @@ The best 2-step and sequential methods are:
   - MUC vs. non-MUC using ridge regression
   - CCOC vs. non-CCOC using random forest
   - ENOC vs. LGSC using SVM
+- **2S-rf-smote**: 2-step method using random forest algorithm with SMOTE subsampling
+- **sequential-smote**: sequential algorithm with SMOTE subsampling. The sequence of models and algorithms used are:
+  - HGSC vs. non-HGSC using random forest
+  - CCOC vs. non-CCOC using random forest
+  - MUC vs. non-MUC using SVM
+  - ENOC vs. LGSC using random forest
   
 As a comparison we also show the F1-scores from the **rf-none** to see how the best methods improve from it.
 
 ```{r top-models}
-# Train using top 2-step method -------------------------------------------
-
 # Training set step 1 and step 2 data
 train_step1_class <- readRDS(here("data", "train_step1_class.rds"))
 train_step1_data <- readRDS(here("data", "train_step1_data.rds"))
 train_step2_class <- readRDS(here("data", "train_step2_class.rds"))
 train_step2_data <- readRDS(here("data", "train_step2_data.rds"))
 
-# Top method: 2-Step classifier using random forest algorithm and no subsampling
-mod_step1 <- classification(
+# 2S-rf-none
+mod_step1_none <- classification(
   data = train_step1_data,
   class = train_step1_class,
   algorithm = "rf",
   sampling = "none",
   seed_alg = 2021
 )
-mod_step2 <- classification(
+mod_step2_none <- classification(
   data = train_step2_data,
   class = train_step2_class,
   algorithm = "rf",
@@ -1740,27 +1744,60 @@ mod_step2 <- classification(
   seed_alg = 2021
 )
 
+# 2S-rf-smote
+mod_step1_smote <- classification(
+  data = train_step1_data,
+  class = train_step1_class,
+  algorithm = "rf",
+  sampling = "smote",
+  seed_alg = 2021
+)
+mod_step2_smote <- classification(
+  data = train_step2_data,
+  class = train_step2_class,
+  algorithm = "rf",
+  sampling = "smote",
+  seed_alg = 2021
+)
 
-# Train using top sequential method ---------------------------------------
+# sequential data
+seq_data <- readRDS(here("data", "seq_data.rds"))
+seq_class <- readRDS(here("data", "seq_class.rds"))
+seq_algs <- readRDS(here("data", "seq_algs.rds"))
 
-# Sequential data
-samp <- "none"
-seq_data <- readRDS(here("data", "seq_data.rds"))[[samp]]
-seq_class <- readRDS(here("data", "seq_class.rds"))[[samp]]
-seq_algs <- readRDS(here("data", "seq_algs.rds"))[[samp]]
+# sequential-none
+seq_data_none <- seq_data[["none"]]
+seq_class_none <- seq_class[["none"]]
+seq_algs_none <- seq_algs[["none"]]
 
-mod_seq <- pmap(list(seq_data, seq_class, seq_algs), ~ {
-  classification(
-    data = ..1,
-    class = ..2,
-    algorithm = ..3,
-    sampling = samp,
-    seed_alg = 2021
-  )
-})
+mod_seq_none <-
+  pmap(list(seq_data_none, seq_class_none, seq_algs_none), ~ {
+    classification(
+      data = ..1,
+      class = ..2,
+      algorithm = ..3,
+      sampling = "none",
+      seed_alg = 2021
+    )
+  })
 
+# sequential-smote
+seq_data_smote <- seq_data[["smote"]]
+seq_class_smote <- seq_class[["smote"]]
+seq_algs_smote <- seq_algs[["smote"]]
 
-# Train using multinomial equivalent of top method ------------------------
+mod_seq_smote <-
+  pmap(list(seq_data_smote, seq_class_smote, seq_algs_smote), ~ {
+    classification(
+      data = ..1,
+      class = ..2,
+      algorithm = ..3,
+      sampling = "smote",
+      seed_alg = 2021
+    )
+  })
+
+# rf-none
 
 # Training set data
 train_data <- readRDS(here("data", "train_data.rds"))
@@ -1789,13 +1826,18 @@ conf_step2_data <- conf_data[conf_step1_class != "HGSC", ]
 conf_step2_class <- factor(conf_class[conf_step1_class != "HGSC"])
 
 # Predict and evaluate
-conf_step1_pred <- prediction(mod_step1, conf_step1_data, conf_step1_class)
-conf_step1_eval <- evaluation(conf_step1_class, conf_step1_pred)
-conf_step2_pred <- prediction(mod_step2, conf_step2_data, conf_step2_class)
-conf_step2_eval <- evaluation(conf_step2_class, conf_step2_pred)
+conf_step1_pred_none <- prediction(mod_step1_none, conf_step1_data, conf_step1_class)
+conf_step1_eval_none <- evaluation(conf_step1_class, conf_step1_pred_none)
+conf_step2_pred_none <- prediction(mod_step2_none, conf_step2_data, conf_step2_class)
+conf_step2_eval_none <- evaluation(conf_step2_class, conf_step2_pred_none)
+
+conf_step1_pred_smote <- prediction(mod_step1_smote, conf_step1_data, conf_step1_class)
+conf_step1_eval_smote <- evaluation(conf_step1_class, conf_step1_pred_smote)
+conf_step2_pred_smote <- prediction(mod_step2_smote, conf_step2_data, conf_step2_class)
+conf_step2_eval_smote <- evaluation(conf_step2_class, conf_step2_pred_smote)
 
 # Combine evaluations from both steps
-conf_2S_eval <- list(conf_step1_eval, conf_step2_eval) %>%
+conf_2S_eval_none <- list(conf_step1_eval_none, conf_step2_eval_none) %>%
   map("cs") %>%
   unlist() %>%
   imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
@@ -1804,27 +1846,60 @@ conf_2S_eval <- list(conf_step1_eval, conf_step2_eval) %>%
   rename_with(~ gsub("f1\\.", "", .)) %>%
   add_column(method = "2S-rf-none", .before = 1)
 
+conf_2S_eval_smote <- list(conf_step1_eval_smote, conf_step2_eval_smote) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "2S-rf-smote", .before = 1)
+
 # Create sequential splits
 conf_df <- cbind(conf_data, class = conf_class)
 
-seq_conf_ranks <- seq_class %>%
+seq_conf_ranks_none <- seq_class_none %>%
   map(unique) %>%
   map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
   unlist() %>%
   accumulate(c) %>%
   head(-1)
 
-seq_conf_data <- map(seq_conf_ranks, ~ {
+seq_conf_ranks_smote <- seq_class_smote %>%
+  map(unique) %>%
+  map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
+  unlist() %>%
+  accumulate(c) %>%
+  head(-1)
+
+seq_conf_data_none <- map(seq_conf_ranks_none, ~ {
   conf_df %>%
     filter(!class %in% head(.x, -1)) %>%
     select(-class)
 })
 
-seq_conf_class <- imap(seq_conf_ranks, ~ {
+seq_conf_data_smote <- map(seq_conf_ranks_smote, ~ {
+  conf_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    select(-class)
+})
+
+seq_conf_class_none <- imap(seq_conf_ranks_none, ~ {
   cl <- conf_df %>%
     filter(!class %in% head(.x, -1)) %>%
     pull(class)
-  if (.y != length(seq_conf_ranks)) {
+  if (.y != length(seq_conf_ranks_none)) {
+    factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
+  } else {
+    factor(cl)
+  }
+})
+
+seq_conf_class_smote <- imap(seq_conf_ranks_smote, ~ {
+  cl <- conf_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    pull(class)
+  if (.y != length(seq_conf_ranks_smote)) {
     factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
   } else {
     factor(cl)
@@ -1832,8 +1907,8 @@ seq_conf_class <- imap(seq_conf_ranks, ~ {
 })
 
 # Predict and evaluate
-conf_seq_eval <-
-  pmap(list(mod_seq, seq_conf_data, seq_conf_class), ~ {
+conf_seq_eval_none <-
+  pmap(list(mod_seq_none, seq_conf_data_none, seq_conf_class_none), ~ {
     pred <- prediction(..1, ..2, ..3)
     eval <- evaluation(..3, pred)
     eval
@@ -1845,6 +1920,20 @@ conf_seq_eval <-
   bind_rows() %>%
   rename_with( ~ gsub("f1\\.", "", .)) %>%
   add_column(method = "sequential-none", .before = 1)
+
+conf_seq_eval_smote <-
+  pmap(list(mod_seq_smote, seq_conf_data_smote, seq_conf_class_smote), ~ {
+    pred <- prediction(..1, ..2, ..3)
+    eval <- evaluation(..3, pred)
+    eval
+  }) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap( ~ .x[grepl("f1\\.(?!class_0)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with( ~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "sequential-smote", .before = 1)
 
 # Fit on full data as comparison
 conf_class <- factor(conf_class)
@@ -1860,7 +1949,14 @@ conf_full_eval <- conf_eval %>%
   add_column(method = "rf-none", .before = 1)
 
 # Comparison of evaluation measures from all methods
-conf_summary <- bind_rows(conf_2S_eval, conf_seq_eval, conf_full_eval)
+conf_summary <-
+  bind_rows(
+    conf_2S_eval_none,
+    conf_seq_eval_none,
+    conf_2S_eval_smote,
+    conf_seq_eval_smote,
+    conf_full_eval
+  )
 kable(conf_summary,
       caption = "Class-specific F1-scores on Confirmation Sets",
       digits = 3)
@@ -1882,13 +1978,18 @@ val_step2_data <- val_data[val_step1_class != "HGSC", ]
 val_step2_class <- factor(val_class[val_step1_class != "HGSC"])
 
 # Predict and evaluate
-val_step1_pred <- prediction(mod_step1, val_step1_data, val_step1_class)
-val_step1_eval <- evaluation(val_step1_class, val_step1_pred)
-val_step2_pred <- prediction(mod_step2, val_step2_data, val_step2_class)
-val_step2_eval <- evaluation(val_step2_class, val_step2_pred)
+val_step1_pred_none <- prediction(mod_step1_none, val_step1_data, val_step1_class)
+val_step1_eval_none <- evaluation(val_step1_class, val_step1_pred_none)
+val_step2_pred_none <- prediction(mod_step2_none, val_step2_data, val_step2_class)
+val_step2_eval_none <- evaluation(val_step2_class, val_step2_pred_none)
+
+val_step1_pred_smote <- prediction(mod_step1_smote, val_step1_data, val_step1_class)
+val_step1_eval_smote <- evaluation(val_step1_class, val_step1_pred_smote)
+val_step2_pred_smote <- prediction(mod_step2_smote, val_step2_data, val_step2_class)
+val_step2_eval_smote <- evaluation(val_step2_class, val_step2_pred_smote)
 
 # Combine evaluations from both steps
-val_2S_eval <- list(val_step1_eval, val_step2_eval) %>%
+val_2S_eval_none <- list(val_step1_eval_none, val_step2_eval_none) %>%
   map("cs") %>%
   unlist() %>%
   imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
@@ -1897,27 +1998,60 @@ val_2S_eval <- list(val_step1_eval, val_step2_eval) %>%
   rename_with(~ gsub("f1\\.", "", .)) %>%
   add_column(method = "2S-rf-none", .before = 1)
 
+val_2S_eval_smote <- list(val_step1_eval_smote, val_step2_eval_smote) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "2S-rf-smote", .before = 1)
+
 # Create sequential splits
 val_df <- cbind(val_data, class = val_class)
 
-seq_val_ranks <- seq_class %>%
+seq_val_ranks_none <- seq_class_none %>%
   map(unique) %>%
   map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
   unlist() %>%
   accumulate(c) %>%
   head(-1)
 
-seq_val_data <- map(seq_val_ranks, ~ {
+seq_val_ranks_smote <- seq_class_smote %>%
+  map(unique) %>%
+  map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
+  unlist() %>%
+  accumulate(c) %>%
+  head(-1)
+
+seq_val_data_none <- map(seq_val_ranks_none, ~ {
   val_df %>%
     filter(!class %in% head(.x, -1)) %>%
     select(-class)
 })
 
-seq_val_class <- imap(seq_val_ranks, ~ {
+seq_val_data_smote <- map(seq_val_ranks_smote, ~ {
+  val_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    select(-class)
+})
+
+seq_val_class_none <- imap(seq_val_ranks_none, ~ {
   cl <- val_df %>%
     filter(!class %in% head(.x, -1)) %>%
     pull(class)
-  if (.y != length(seq_val_ranks)) {
+  if (.y != length(seq_val_ranks_none)) {
+    factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
+  } else {
+    factor(cl)
+  }
+})
+
+seq_val_class_smote <- imap(seq_val_ranks_smote, ~ {
+  cl <- val_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    pull(class)
+  if (.y != length(seq_val_ranks_smote)) {
     factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
   } else {
     factor(cl)
@@ -1925,8 +2059,8 @@ seq_val_class <- imap(seq_val_ranks, ~ {
 })
 
 # Predict and evaluate
-val_seq_eval <-
-  pmap(list(mod_seq, seq_val_data, seq_val_class), ~ {
+val_seq_eval_none <-
+  pmap(list(mod_seq_none, seq_val_data_none, seq_val_class_none), ~ {
     pred <- prediction(..1, ..2, ..3)
     eval <- evaluation(..3, pred)
     eval
@@ -1938,6 +2072,20 @@ val_seq_eval <-
   bind_rows() %>%
   rename_with( ~ gsub("f1\\.", "", .)) %>%
   add_column(method = "sequential-none", .before = 1)
+
+val_seq_eval_smote <-
+  pmap(list(mod_seq_smote, seq_val_data_smote, seq_val_class_smote), ~ {
+    pred <- prediction(..1, ..2, ..3)
+    eval <- evaluation(..3, pred)
+    eval
+  }) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap( ~ .x[grepl("f1\\.(?!class_0)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with( ~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "sequential-smote", .before = 1)
 
 # Fit on full data as comparison
 val_class <- factor(val_class)
@@ -1953,7 +2101,14 @@ val_full_eval <- val_eval %>%
   add_column(method = "rf-none", .before = 1)
 
 # Comparison of evaluation measures from both methods
-val_summary <- bind_rows(val_2S_eval, val_seq_eval, val_full_eval)
+val_summary <-
+  bind_rows(
+    val_2S_eval_none,
+    val_seq_eval_none,
+    val_2S_eval_smote,
+    val_seq_eval_smote,
+    val_full_eval
+  )
 kable(val_summary,
       caption = "Class-specific F1-scores on Validation Sets",
       digits = 3)
