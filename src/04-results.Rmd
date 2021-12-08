@@ -13,6 +13,7 @@ library(kableExtra)
 library(RankAggreg)
 library(splendid)
 library(magrittr)
+library(DT)
 library(here)
 source(here("src/funs.R"))
 ivst <- readRDS(here("data/iv_summary_train.rds"))
@@ -623,10 +624,27 @@ ivsts1_f1_class_table <- ivsts1_f1_class %>%
               values_from = "percentile_50") %>% 
   rename_with(~ gsub("_", "\\\\_", .), matches("_"))
 
-kable(ivsts1_f1_class_table,
-      caption = "Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
+datatable(
+  ivsts1_f1_class_table,
+  options = list(
+    scrollX = TRUE,
+    fixedColumns = TRUE,
+    columnDefs = list(
+      list(
+        targets = 1,
+        render = JS("$.fn.dataTable.render.ellipsis( 10 )")
+      ),
+      list(type = "natural", targets = 0)
+    ),
+    pageLength = 50
+  ),
+  escape = FALSE,
+  rownames = FALSE,
+  caption = "Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method",
+  filter = "top",
+  extensions = "FixedColumns",
+  plugins = c("ellipsis", "natural")
+)
 ```
 
 ```{r train-step2-f1-class-table}
@@ -644,10 +662,27 @@ ivsts2_f1_class_table <- ivsts2_f1_class %>%
               values_from = "percentile_50") %>% 
   rename_with(~ gsub("_", "\\\\_", .), matches("_"))
 
-kable(ivsts2_f1_class_table,
-      caption = "Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
+datatable(
+  ivsts2_f1_class_table,
+  options = list(
+    scrollX = TRUE,
+    fixedColumns = TRUE,
+    columnDefs = list(
+      list(
+        targets = 1,
+        render = JS("$.fn.dataTable.render.ellipsis( 10 )")
+      ),
+      list(type = "natural", targets = 0)
+    ),
+    pageLength = 50
+  ),
+  escape = FALSE,
+  rownames = FALSE,
+  caption = "Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method",
+  filter = "top",
+  extensions = "FixedColumns",
+  plugins = c("ellipsis", "natural")
+)
 ```
 
 ### Kappa
@@ -1693,9 +1728,26 @@ ivs_f1_summary <- ivs_comb %>%
   mutate(across(where(is.numeric), round, digits = 3)) %>% 
   magrittr::extract(match(f1_top[["top.list"]], .$model), )
 
-kable(ivs_f1_summary,
-      caption = "F1-Score Summary by Model and Class") %>%
-  kable_styling()
+datatable(
+  ivs_f1_summary,
+  options = list(
+    scrollX = TRUE,
+    fixedColumns = TRUE,
+    columnDefs = list(
+      list(
+        targets = 1,
+        render = JS("$.fn.dataTable.render.ellipsis( 10 )")
+      ),
+      list(type = "natural", targets = 0)
+    ),
+    pageLength = 50
+  ), 
+  rownames = FALSE,
+  caption = "F1-Score Summary by Model and Class",
+  filter = "top",
+  extensions = "FixedColumns",
+  plugins = c("ellipsis", "natural")
+)
 ```
 
 The `r ncol(f1_ranks)` methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.
