@@ -107,49 +107,36 @@ cs3_R <- cs3_norm %>%
   column_to_rownames("FileName")
 
 # Expression Datasets
-# CS1: 270 samples by 256 genes
-cs1_X <- cs1_norm %>%
+
+# CS1 transposed
+cs1_norm_t <- cs1_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
-  select_if(names(.) %in% c("Name", cs1_samples_X)) %>%
+  select(-c(Code.Class, Accession)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-ottaID:-site) %>%
   column_to_rownames("FileName")
 
+# CS1: 270 samples by 256 genes
+cs1_X <- cs1_norm_t[cs1_samples_X, ]
+
 # CS1 with duplicates: 287 samples by 256 genes
-cs1_all_X <- cs1_norm %>%
+cs1_all_X <- cs1_norm_t[cs1_samples_all_X, ]
+
+# CS2 transposed
+cs2_norm_t <- cs2_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
-  select_if(names(.) %in% c("Name", cs1_samples_all_X)) %>%
+  select(-c(Code.Class, Accession)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-ottaID:-site) %>%
   column_to_rownames("FileName")
 
 # CS2: 840 samples by 365 genes
-cs2_X <- cs2_norm %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select_if(names(.) %in% c("Name", cs2_samples_X)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-ottaID:-site) %>%
-  column_to_rownames("FileName")
+cs2_X <- cs2_norm_t[cs2_samples_X, ]
 
 # CS2 with duplicates: 897 samples by 365 genes
-cs2_all_X <- cs2_norm %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select_if(names(.) %in% c("Name", cs2_samples_all_X)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-ottaID:-site) %>%
-  column_to_rownames("FileName")
+cs2_all_X <- cs2_norm_t[cs2_samples_all_X, ]
 
 # CS3: 2267 samples by 513 genes
 cs3_X <- cs3_norm %>%

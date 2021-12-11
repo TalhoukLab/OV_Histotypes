@@ -82,7 +82,7 @@ annot_all <- annot %>%
   rename(FileName = RCC.File.Name, site = RCC.nanostring.site)
 
 # Filter annotations for CS1/CS2/CS3 samples
-annot_cs <- annot_all %>%
+annot_cs123 <- annot_all %>%
   filter(FileName %in% cs123_samples) %>%
   droplevels()
 
@@ -128,6 +128,57 @@ hist <- hist_all %>%
 
 # Histotypes for each distinct ottaID
 hist_df <- distinct(hist, ottaID, revHist)
+
+# Add ottaID and CodeSet to annotNEW
+annotNEW <- annotNEW %>%
+  mutate(
+    ottaID = gsub(".*_(.*)_[0-9]{2}$", "\\1", File.Name) %>%
+      gsub("-(N1|R)$", "", .),
+    CodeSet = recode_factor(
+      geneRLF,
+      OTTA2017_C6082 = "CS4",
+      OTTA2018_C6830 = "CS5",
+      OTTA2018_C8440 = "CS6"
+    )
+  )
+
+# CS4 data excluding samples that failed QC
+cs4_exp <- filter(annotNEW, CodeSet == "CS4")
+cs4_qc <- NanoStringQC(raw = cs4, exp = cs4_exp, detect = 50, sn = 170)
+cs4_qc_failed <- filter(cs4_qc, normFlag == "Failed")[["File.Name"]]
+cs4_dat <- HKnorm(cs4) %>% select(-any_of(cs4_qc_failed))
+
+# CS5 data excluding samples that failed QC
+cs5_exp <- filter(annotNEW, CodeSet == "CS5")
+cs5_qc <- NanoStringQC(raw = cs5, exp = cs5_exp, detect = 50, sn = 170)
+cs5_qc_failed <- filter(cs5_qc, normFlag == "Failed", !grepl("POOL", File.Name))[["File.Name"]]
+cs5_dat <- HKnorm(cs5) %>% select(-any_of(cs5_qc_failed))
+
+# Common samples amongst all 5 CodeSets
+annot_cs45 <- annotNEW %>%
+  filter(CodeSet %in% c("CS4", "CS5"),
+         !File.Name %in% c(cs4_qc_failed, cs5_qc_failed))
+
+annot_full <- bind_rows(
+  annot_cs123 %>% select(FileName, ottaID, CodeSet),
+  annot_cs45 %>% select(FileName = File.Name, ottaID, CodeSet)
+)
+
+common_cs_full <- annot_full %>%
+  count(CodeSet, ottaID) %>%
+  spread(CodeSet, n, fill = 0) %>%
+  mutate(
+    all_codesets = rowSums(.[, -1]),
+    in_cs123 = pmap_lgl(select(., matches("CS")),
+                        ~ ..1 > 0 & ..2 > 0 & ..3 > 0 & ..4 == 0 & ..5 == 0),
+    in_cs345 = pmap_lgl(select(., matches("CS")),
+                        ~ ..1 == 0 & ..2 == 0 & ..3 > 0 & ..4 > 0 & ..5 > 0)
+  ) %>%
+  filter(!is.na(ottaID))
+
+# Samples removed from multiple chains for downstrea validation
+# common_cs_full %>% filter(CS1 > 0, CS2 > 0, CS3 > 0, CS4 > 0 | CS5 > 0)
+# common_cs_full %>% filter(CS1 > 0 | CS2 > 0, CS3 > 0, CS4 > 0, CS5 > 0)
 
 # CS3 site-specific samples
 ## Van
@@ -193,26 +244,31 @@ cs3_usc <- cs3_norm_usc %>%
 cs3_usc_X <- cs3_norm_usc %>% select(Name, !matches("POOL"))
 cs3_usc_R <- cs3_norm_usc %>% select(Name, matches("POOL"))
 
-# Find summaryID common to all CS
-common_cs <- annot_cs %>%
+# Find summaryID common to CS1/CS2/CS3
+common_cs <- annot_cs123 %>%
   count(CodeSet, summaryID) %>%
   spread(CodeSet, n, fill = 0) %>%
   mutate(
     all_codesets = rowSums(.[, -1]),
-    in_all_cs = select(., 2:4) %>%
-      pmap_lgl(~ every(list(..1, ..2, ..3), ~ . != 0))
+    in_all_cs = pmap_lgl(select(., matches("CS")),
+                         lift_vd(function(x) all(x != 0)))
   )
 
 # Find common summaryID
-common_id <- with(common_cs, summaryID[in_all_cs])
+common_id123 <- with(common_cs_full, ottaID[in_cs123])
+common_id345 <- with(common_cs_full, ottaID[in_cs345])
 
 # Find common samples
-common_samples <- hist %>%
-  filter(ottaID %in% common_id, site == "Vancouver") %>%
+common_samples123 <- hist %>%
+  filter(ottaID %in% common_id123, site == "Vancouver") %>%
   pull(FileName)
 
 # Find common genes
-common_genes <- list(cs1_norm, cs2_norm, cs3_norm_van) %>%
+common_genes123 <- list(cs1_norm, cs2_norm, cs3_norm_van) %>%
+  map(filter, Code.Class == "Endogenous") %>%
+  map("Name") %>%
+  reduce(intersect)
+common_genes345 <- list(cs3_norm_van, cs4_dat, cs5_dat) %>%
   map(filter, Code.Class == "Endogenous") %>%
   map("Name") %>%
   reduce(intersect)
@@ -220,36 +276,36 @@ common_genes <- list(cs1_norm, cs2_norm, cs3_norm_van) %>%
 # Clean data by keeping common samples and genes, add ottaID
 cs1_clean <- cs1_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
-  filter(Name %in% common_genes) %>%
-  select_if(names(.) %in% c("Name", common_samples)) %>%
+  filter(Name %in% common_genes123) %>%
+  select_if(names(.) %in% c("Name", common_samples123)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(FileName, ottaID, all_of(common_genes))
+  select(FileName, ottaID, all_of(common_genes123))
 
 cs2_clean <- cs2_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
-  filter(Name %in% common_genes) %>%
-  select_if(names(.) %in% c("Name", common_samples)) %>%
+  filter(Name %in% common_genes123) %>%
+  select_if(names(.) %in% c("Name", common_samples123)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(FileName, ottaID, all_of(common_genes))
+  select(FileName, ottaID, all_of(common_genes123))
 
 cs3_clean <- cs3_norm_van %>%
   rename_all(~ gsub("^X", "", .)) %>%
-  filter(Name %in% common_genes) %>%
-  select_if(names(.) %in% c("Name", common_samples)) %>%
+  filter(Name %in% common_genes123) %>%
+  select_if(names(.) %in% c("Name", common_samples123)) %>%
   mutate(Name = fct_inorder(Name)) %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(FileName, ottaID, all_of(common_genes))
+  select(FileName, ottaID, all_of(common_genes123))
 
 # Find summaryID common to all site
-common_site <- annot_cs %>%
+common_site <- annot_cs123 %>%
   count(site, summaryID) %>%
   spread(site, n, fill = 0) %>%
   mutate(
