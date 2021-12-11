@@ -203,13 +203,6 @@
       "Repository": "CRAN",
       "Hash": "f6ef89503aaff474873f8bc1823894e1"
     },
-    "VennDiagram": {
-      "Package": "VennDiagram",
-      "Version": "1.6.20",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "ffff3996100ae22360096dd6a3436b0d"
-    },
     "abind": {
       "Package": "abind",
       "Version": "1.4-5",
@@ -618,13 +611,6 @@
       "Repository": "CRAN",
       "Hash": "fbd213a1d55f4709d295304300f3d95d"
     },
-    "formatR": {
-      "Package": "formatR",
-      "Version": "1.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "ad36e26eeeb7393886d8a0e19bc6ee42"
-    },
     "fs": {
       "Package": "fs",
       "Version": "1.3.1",
@@ -638,20 +624,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "c1f60eafdbcbea57078aa6f501974d2a"
-    },
-    "futile.logger": {
-      "Package": "futile.logger",
-      "Version": "1.4.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "99f0ace8c05ec7d3683d27083c4f1e7e"
-    },
-    "futile.options": {
-      "Package": "futile.options",
-      "Version": "1.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0d9bf02413ddc2bbe8da9ce369dcdd2b"
     },
     "future": {
       "Package": "future",
@@ -921,13 +893,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "b32ad05c7e200cf35da87a5441ae4ceb"
-    },
-    "lambda.r": {
-      "Package": "lambda.r",
-      "Version": "1.2.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b1e925c4b9ffeb901bacf812cbe9a6ad"
     },
     "later": {
       "Package": "later",
