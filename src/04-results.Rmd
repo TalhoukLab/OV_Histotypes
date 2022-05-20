@@ -1758,13 +1758,13 @@ Now we'd like to see how our best methods perform in the confirmation and valida
 
 The top 4 methods are:
 
-- **2S-rf-none**: 2-step method using random forest algorithm with no subsampling
 - **sequential-none**: sequential algorithm with no subsampling. The sequence of models and algorithms used are: 
   - HGSC vs. non-HGSC using SVM
   - MUC vs. non-MUC using ridge regression
   - CCOC vs. non-CCOC using random forest
   - ENOC vs. LGSC using SVM
-- **2S-rf-smote**: 2-step method using random forest algorithm with SMOTE subsampling
+- **2S-rf-none**: 2-step method using random forest algorithm with no subsampling
+- **2S-rf-up**: 2-step method using random forest algorithm with upsampling
 - **sequential-smote**: sequential algorithm with SMOTE subsampling. The sequence of models and algorithms used are:
   - HGSC vs. non-HGSC using random forest
   - CCOC vs. non-CCOC using random forest
