@@ -40,20 +40,58 @@ all_xsites <- combn(sites, 2) %>%
   as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 
+# Recode annotation geneRLF and rename file name and site columns
+annot_all <- annot %>%
+  replace_with_na(list(ottaID = c("", "N/A"))) %>%
+  mutate(
+    CodeSet = recode_factor(
+      RCC.geneRLF,
+      `OvCa2103_C953` = "CS1",
+      `PrOTYPE2_v2_C1645` = "CS2",
+      `OTTA2014_C2822` = "CS3"
+    )
+  ) %>%
+  rename_with(~ gsub("^RCC\\.", "", .)) %>%
+  rename(FileName = File.Name, site = nanostring.site)
+
+# CS1/2/3 annotations
+cs1_exp <- filter(annot_all, CodeSet == "CS1")
+cs2_exp <- filter(annot_all, CodeSet == "CS2")
+cs3_exp <- filter(annot_all, CodeSet == "CS3")
+
+# Run QC on CS1/2/3
+cs1_qc <- NanoStringQC(raw = cs1, exp = cs1_exp, detect = 50, sn = 170)
+cs2_qc <- NanoStringQC(raw = cs2, exp = cs2_exp, detect = 50, sn = 170)
+cs3_qc <- NanoStringQC(raw = cs3, exp = cs3_exp, detect = 50, sn = 170)
+
+# Samples that failed QC
+cs1_qc_failed <- filter(cs1_qc, normFlag == "Failed")[["FileName"]]
+cs2_qc_failed <- filter(cs2_qc, normFlag == "Failed")[["FileName"]]
+cs3_qc_failed <- filter(cs3_qc, normFlag == "Failed")[["FileName"]]
+
 # Filter for specific cohorts and extract samples
 cs1_samples <- cohorts %>%
-  filter(file_source == "cs1",
-         cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL")) %>%
+  filter(
+    file_source == "cs1",
+    cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL"),
+    !col_name %in% paste0("X", cs1_qc_failed)
+  ) %>%
   pull(col_name)
 
 cs2_samples <- cohorts %>%
-  filter(file_source == "cs2",
-         cohort %in% c("MAYO", "OOU", "OOUE", "OVAR3", "VOA", "ICON7", "JAPAN", "MTL", "POOL-CTRL")) %>%
+  filter(
+    file_source == "cs2",
+    cohort %in% c("MAYO", "OOU", "OOUE", "OVAR3", "VOA", "ICON7", "JAPAN", "MTL", "POOL-CTRL"),
+    !col_name %in% paste0("X", cs2_qc_failed)
+  ) %>%
   pull(col_name)
 
 cs3_samples <- cohorts %>%
-  filter(file_source == "cs3",
-         cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3")) %>%
+  filter(
+    file_source == "cs3",
+    cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3"),
+    !col_name %in% paste0("X", cs3_qc_failed)
+  ) %>%
   pull(col_name)
 
 cs123_samples <- gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))
@@ -67,19 +105,6 @@ cs3_coh <- select(cs3, Code.Class, Name, Accession, all_of(cs3_samples))
 cs1_norm <- HKnorm(cs1_coh)
 cs2_norm <- HKnorm(cs2_coh)
 cs3_norm <- HKnorm(cs3_coh)
-
-# Recode annotation geneRLF and rename file name and site columns
-annot_all <- annot %>%
-  replace_with_na(list(ottaID = c("", "N/A"))) %>%
-  mutate(
-    CodeSet = recode_factor(
-      RCC.geneRLF,
-      `OvCa2103_C953` = "CS1",
-      `PrOTYPE2_v2_C1645` = "CS2",
-      `OTTA2014_C2822` = "CS3"
-    )
-  ) %>%
-  rename(FileName = RCC.File.Name, site = RCC.nanostring.site)
 
 # Filter annotations for CS1/CS2/CS3 samples
 annot_cs123 <- annot_all %>%

@@ -2,7 +2,7 @@
 
 stats <- readRDS(list.files(
   path = file.path(outputDir, "merge_eval"),
-  pattern = dataset,
+  pattern = paste0(dataset, "\\.rds"),
   full.names = TRUE
 ))
 
