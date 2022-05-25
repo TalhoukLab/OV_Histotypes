@@ -34,7 +34,7 @@ cs3_samples_R <- cohorts %>%
   gsub("^X", "", .)
 
 # Expression Samples
-# CS1: n=262
+# CS1: n=266
 cs1_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
@@ -42,7 +42,7 @@ cs1_samples_X <- cohorts %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
-# CS1 with duplicates: n=278
+# CS1 with duplicates: n=282
 cs1_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
@@ -57,7 +57,7 @@ cs2_samples_X <- cohorts %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
-# CS2 with duplicates: n=883
+# CS2 with duplicates: n=884
 cs2_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
@@ -117,10 +117,10 @@ cs1_norm_t <- cs1_norm %>%
   spread(Name, value) %>%
   column_to_rownames("FileName")
 
-# CS1: 262 samples by 256 genes
+# CS1: 266 samples by 256 genes
 cs1_X <- cs1_norm_t[cs1_samples_X, ]
 
-# CS1 with duplicates: 278 samples by 256 genes
+# CS1 with duplicates: 282 samples by 256 genes
 cs1_all_X <- cs1_norm_t[cs1_samples_all_X, ]
 
 # CS2 transposed
@@ -135,7 +135,7 @@ cs2_norm_t <- cs2_norm %>%
 # CS2: 833 samples by 365 genes
 cs2_X <- cs2_norm_t[cs2_samples_X, ]
 
-# CS2 with duplicates: 883 samples by 365 genes
+# CS2 with duplicates: 884 samples by 365 genes
 cs2_all_X <- cs2_norm_t[cs2_samples_all_X, ]
 
 # CS3: 2111 samples by 513 genes
@@ -237,7 +237,7 @@ cs3_train <-
   column_to_rownames("col_name") %>%
   select(all_of(common_genes123))
 
-# Training set, n=262+833+513-77=1531 (CS1 + CS2 + CS3 excluding TNCO and DOVE
+# Training set, n=266+833+514-77=1536 (CS1 + CS2 + CS3 excluding TNCO and DOVE
 # - other histotypes), common genes n=72
 train_ref <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
@@ -263,7 +263,7 @@ saveRDS(train_step1_class, here::here("data/train_step1_class.rds"))
 saveRDS(train_step2_data, here::here("data/train_step2_data.rds"))
 saveRDS(train_step2_class, here::here("data/train_step2_class.rds"))
 
-# CS1 all set, n=278-19=259 (CS1 - other histotypes), common genes with CS3 n=79
+# CS1 all set, n=282-19=263 (CS1 - other histotypes), common genes with CS3 n=79
 cs1_all_ref <- cs1_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
@@ -276,7 +276,7 @@ cs1_all_class <- cs1_all_ref[["revHist"]]
 saveRDS(cs1_all_data, here::here("data/cs1_all_data.rds"))
 saveRDS(cs1_all_class, here::here("data/cs1_all_class.rds"))
 
-# CS2 all set, n=883-68=815 (CS2 - other histotypes), common genes with CS3 n=136
+# CS2 all set, n=884-69=815 (CS2 - other histotypes), common genes with CS3 n=136
 cs2_all_ref <- cs2_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
@@ -289,7 +289,7 @@ cs2_all_class <- cs2_all_ref[["revHist"]]
 saveRDS(cs2_all_data, here::here("data/cs2_all_data.rds"))
 saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 
-# Confirmation set, n=672-30=642 (TNCO - other histotypes)
+# Confirmation set, n=673-30=643 (TNCO - other histotypes)
 conf_ref <- cs3_X %>%
   rownames_to_column("col_name") %>%
   mutate(col_name = paste0("X", col_name)) %>%
@@ -307,7 +307,7 @@ conf_class <- conf_ref[["revHist"]]
 saveRDS(conf_data, here::here("data/conf_data.rds"))
 saveRDS(conf_class, here::here("data/conf_class.rds"))
 
-# Validation set, n=942-31=911 (DOVE - other histotypes)
+# Validation set, n=940-31=909 (DOVE - other histotypes)
 val_ref <- cs3_X %>%
   rownames_to_column("col_name") %>%
   mutate(col_name = paste0("X", col_name)) %>%
