@@ -1718,7 +1718,7 @@ f1_top <- splendid:::sink_output(RankAggreg(
   x = f1_ranks,
   k = ncol(f1_ranks),
   method = "GA",
-  seed = 2021,
+  seed = 2022,
   verbose = FALSE
 ))
 
@@ -1758,17 +1758,21 @@ Now we'd like to see how our best methods perform in the confirmation and valida
 
 The top 4 methods are:
 
+- **2S-rf-none**: 2-step method using random forest algorithm with no subsampling
+- **sequential-up**: sequential algorithm with upsampling. The sequence of models and algorithms used are: 
+  - HGSC vs. non-HGSC using adaboost
+  - MUC vs. non-MUC using random forest
+  - CCOC vs. non-CCOC using random forest
+  - ENOC vs. LGSC using random forest
 - **sequential-none**: sequential algorithm with no subsampling. The sequence of models and algorithms used are: 
   - HGSC vs. non-HGSC using SVM
   - MUC vs. non-MUC using ridge regression
   - CCOC vs. non-CCOC using random forest
   - ENOC vs. LGSC using SVM
-- **2S-rf-none**: 2-step method using random forest algorithm with no subsampling
-- **2S-rf-up**: 2-step method using random forest algorithm with upsampling
-- **sequential-smote**: sequential algorithm with SMOTE subsampling. The sequence of models and algorithms used are:
+- **sequential-down**: sequential algorithm with downsampling. The sequence of models and algorithms used are:
   - HGSC vs. non-HGSC using random forest
   - CCOC vs. non-CCOC using random forest
-  - MUC vs. non-MUC using SVM
+  - MUC vs. non-MUC using ridge regression
   - ENOC vs. LGSC using random forest
   
 As a comparison we also show the F1-scores from the **rf-none** to see how the best methods improve from it.
