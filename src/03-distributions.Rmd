@@ -9,6 +9,8 @@ library(here)
 source(here("src/funs.R"))
 source(here("validation/cs_process.R"))
 source(here("validation/cs_process_cohorts.R"))
+source(here::here("validation/cs1_generate.R"))
+source(here::here("validation/cs2_generate.R"))
 cs1_class <- readRDS(here("data/cs1_class.rds"))
 cs2_class <- readRDS(here("data/cs2_class.rds"))
 ```
@@ -74,9 +76,28 @@ common_counts %>%
   knitr::kable(caption = "Common Summary ID CodeSet Histotypes")
 ```
 
-## Training Set
+## Training Sets
 
-The training set distributions for CS1 and CS2 are shown below.
+### CS1 Training Set Generation
+
+We use the reference method to normalize CS1 to CS3.
+
+-   CS1 reference set: duplicate samples from CS1
+
+    -   Samples = `r nrow(cs1_ref2)`
+    -   Genes = `r ncol(cs1_ref2)`
+
+-   CS3 reference set: corresponding samples in CS3 also found in CS1 reference set
+
+    -   Samples = `r nrow(cs3_ref)`
+    -   Genes = `r ncol(cs3_ref)`
+
+-   CS1 validation set: remaining CS1 samples with reference set removed
+
+    -   Samples = `r nrow(cs1_val2)`
+    -   Genes = `r ncol(cs1_val2)`
+
+The final CS1 training set has `r nrow(cs1_data)` samples on `r ncol(cs1_data)` genes after normalization and keeping only the major histotypes of interest.
 
 ```{r training-dist-cs1}
 cs1_class %>% 
@@ -85,6 +106,27 @@ cs1_class %>%
   dplyr::mutate(`%` = scales::percent(n / sum(n), accuracy = 0.1)) %>% 
   knitr::kable(caption = "CS1 Training Set Histotypes")
 ```
+
+### CS2 Training Set Generation
+
+We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOType normalization when there are available pools.
+
+-   CS2 pools:
+
+    -   Samples = 12 (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4)
+    -   Genes = `r nrow(cs2_pools)`
+
+-   CS3 pools:
+
+    -   Samples = `r ncol(ref_pools)` (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5)
+    -   Genes = `r nrow(ref_pools)`
+
+-   CS2 validation set: CS2 samples with pools removed
+
+    -   Samples = `r ncol(cs2_norm) - 3 - 9`
+    -   Genes = `r nrow(cs2_norm)`
+
+The final CS2 training set has `r nrow(cs2_data)` samples on `r ncol(cs2_data)` (common) genes after normalization and keeping only the major histotypes of interest.
 
 ```{r training-dist-cs2}
 cs2_class %>% 
