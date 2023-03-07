@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>4 Results | Ovarian Cancer Histotypes: Report of Statistical Findings</title>
   <meta name="description" content="4 Results | Ovarian Cancer Histotypes: Report of Statistical Findings" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
   <meta property="og:title" content="4 Results | Ovarian Cancer Histotypes: Report of Statistical Findings" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2022-05-25" />
+<meta name="date" content="2023-03-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,7 +32,6 @@
   
 <link rel="prev" href="distributions.html"/>
 <link rel="next" href="references.html"/>
-<script src="assets/header-attrs-2.11/header-attrs.js"></script>
 <script src="assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="assets/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -51,8 +49,9 @@
 
 
 
-<link href="assets/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="assets/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="assets/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="assets/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="assets/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="assets/kePrint-0.0.1/kePrint.js"></script>
 <link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <script src="assets/htmlwidgets-1.5.1/htmlwidgets.js"></script>
@@ -93,13 +92,17 @@
 <li class="chapter" data-level="3" data-path="distributions.html"><a href="distributions.html"><i class="fa fa-check"></i><b>3</b> Distributions</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="distributions.html"><a href="distributions.html#full-data"><i class="fa fa-check"></i><b>3.1</b> Full Data</a></li>
-<li class="chapter" data-level="3.2" data-path="distributions.html"><a href="distributions.html#training-set"><i class="fa fa-check"></i><b>3.2</b> Training Set</a></li>
+<li class="chapter" data-level="3.2" data-path="distributions.html"><a href="distributions.html#training-sets"><i class="fa fa-check"></i><b>3.2</b> Training Sets</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="distributions.html"><a href="distributions.html#cs1-training-set-generation"><i class="fa fa-check"></i><b>3.2.1</b> CS1 Training Set Generation</a></li>
+<li class="chapter" data-level="3.2.2" data-path="distributions.html"><a href="distributions.html#cs2-training-set-generation"><i class="fa fa-check"></i><b>3.2.2</b> CS2 Training Set Generation</a></li>
+</ul></li>
 <li class="chapter" data-level="3.3" data-path="distributions.html"><a href="distributions.html#common-samples"><i class="fa fa-check"></i><b>3.3</b> Common Samples</a></li>
 <li class="chapter" data-level="3.4" data-path="distributions.html"><a href="distributions.html#histotypes-in-classifier-data"><i class="fa fa-check"></i><b>3.4</b> Histotypes in Classifier Data</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#training-set-1"><i class="fa fa-check"></i><b>4.1</b> Training Set</a>
+<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#training-set"><i class="fa fa-check"></i><b>4.1</b> Training Set</a>
 <ul>
 <li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#accuracy"><i class="fa fa-check"></i><b>4.1.1</b> Accuracy</a></li>
 <li class="chapter" data-level="4.1.2" data-path="results.html"><a href="results.html#f1-score"><i class="fa fa-check"></i><b>4.1.2</b> F1-Score</a></li>
@@ -154,13 +157,13 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="results" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Results</h1>
+<div id="results" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">4</span> Results<a href="results.html#results" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overallaccuracy of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.</p>
-<div id="training-set-1" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Training Set</h2>
-<div id="accuracy" class="section level3" number="4.1.1">
-<h3><span class="header-section-number">4.1.1</span> Accuracy</h3>
+<div id="training-set" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Training Set<a href="results.html#training-set" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="accuracy" class="section level3 hasAnchor" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Accuracy<a href="results.html#accuracy" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:train-accuracy"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-accuracy-1.png" alt="Training Set Accuracy" width="672" />
 <p class="caption">
@@ -775,8 +778,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="f1-score" class="section level3" number="4.1.2">
-<h3><span class="header-section-number">4.1.2</span> F1-Score</h3>
+<div id="f1-score" class="section level3 hasAnchor" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> F1-Score<a href="results.html#f1-score" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:train-f1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-f1-1.png" alt="Training Set F1-Score" width="672" />
 <p class="caption">
@@ -1391,8 +1394,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="kappa" class="section level3" number="4.1.3">
-<h3><span class="header-section-number">4.1.3</span> Kappa</h3>
+<div id="kappa" class="section level3 hasAnchor" number="4.1.3">
+<h3><span class="header-section-number">4.1.3</span> Kappa<a href="results.html#kappa" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:train-kappa"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-kappa-1.png" alt="Training Set Kappa" width="672" />
 <p class="caption">
@@ -2007,8 +2010,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="g-mean" class="section level3" number="4.1.4">
-<h3><span class="header-section-number">4.1.4</span> G-mean</h3>
+<div id="g-mean" class="section level3 hasAnchor" number="4.1.4">
+<h3><span class="header-section-number">4.1.4</span> G-mean<a href="results.html#g-mean" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:train-gmean"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-gmean-1.png" alt="Training Set G-mean" width="672" />
 <p class="caption">
@@ -2624,10 +2627,10 @@ MUC
 </table>
 </div>
 </div>
-<div id="two-step-training-set" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Two-Step Training Set</h2>
-<div id="accuracy-1" class="section level3" number="4.2.1">
-<h3><span class="header-section-number">4.2.1</span> Accuracy</h3>
+<div id="two-step-training-set" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Two-Step Training Set<a href="results.html#two-step-training-set" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="accuracy-1" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Accuracy<a href="results.html#accuracy-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:train-step1-accuracy"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-step1-accuracy-1.png" alt="Training Set Step 1 Accuracy" width="672" />
 <p class="caption">
@@ -3487,8 +3490,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="f1-score-1" class="section level3" number="4.2.2">
-<h3><span class="header-section-number">4.2.2</span> F1-Score</h3>
+<div id="f1-score-1" class="section level3 hasAnchor" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> F1-Score<a href="results.html#f1-score-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:train-step1-f1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-step1-f1-1.png" alt="Training Set Step 1 F1-Score" width="672" />
 <p class="caption">
@@ -3736,8 +3739,8 @@ Figure 4.16: Training Set Step 2 Class-Specific F1-Score
 <div id="htmlwidget-4ff51c61ef82415c77e7" style="width:100%;height:auto;" class="datatables html-widget"></div>
 <script type="application/json" data-for="htmlwidget-4ff51c61ef82415c77e7">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;none&quot;,&quot;up&quot;,&quot;down&quot;,&quot;smote&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["FixedColumns"],"caption":"<caption>Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method<\/caption>","data":[["none","none","none","none","up","up","up","up","down","down","down","down","smote","smote","smote","smote"],["CCOC","ENOC","LGSC","MUC","CCOC","ENOC","LGSC","MUC","CCOC","ENOC","LGSC","MUC","CCOC","ENOC","LGSC","MUC"],["<span style=\" font-weight: bold;    \" >0.927<\/span>","0.839","0.875","0.892","0.925","0.844","0.875","0.896","0.909","0.824","0.867","0.871","0.919","0.839","0.875","0.889"],["0.894","0.853","0.917","0.885","0.894","0.853","0.914","0.885","0.88","0.829","0.909","0.875","0.889","0.852","0.909","0.88"],["0.899","0.833","0.889","0.912","0.892","0.833","0.87","0.909","0.892","0.828","0.857","0.9","0.894","0.833","0.867","0.909"],["0.914","0.825","0.889","0.887","0.909","0.831","0.871","0.882","0.9","0.806","0.867","0.871","0.911","0.829","0.88","0.871"],["0.9","0.825","0.867","0.896","0.897","0.825","0.857","0.892","0.897","0.808","0.839","0.857","0.901","0.825","0.865","0.883"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>sampling<\/th>\n      <th>histotype<\/th>\n      <th>rf<\/th>\n      <th>svm<\/th>\n      <th>mlr\\_ridge<\/th>\n      <th>adaboost<\/th>\n      <th>mlr\\_lasso<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"fixedColumns":true,"columnDefs":[{"targets":1,"render":"$.fn.dataTable.render.ellipsis( 10 )"},{"type":"natural","targets":0}],"pageLength":50,"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 </div>
-<div id="kappa-1" class="section level3" number="4.2.3">
-<h3><span class="header-section-number">4.2.3</span> Kappa</h3>
+<div id="kappa-1" class="section level3 hasAnchor" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> Kappa<a href="results.html#kappa-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:train-step1-kappa"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-step1-kappa-1.png" alt="Training Set Step 1 Kappa" width="672" />
 <p class="caption">
@@ -4597,8 +4600,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="g-mean-1" class="section level3" number="4.2.4">
-<h3><span class="header-section-number">4.2.4</span> G-mean</h3>
+<div id="g-mean-1" class="section level3 hasAnchor" number="4.2.4">
+<h3><span class="header-section-number">4.2.4</span> G-mean<a href="results.html#g-mean-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:train-step1-gmean"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/train-step1-gmean-1.png" alt="Training Set Step 1 G-mean" width="672" />
 <p class="caption">
@@ -5459,10 +5462,10 @@ MUC
 </table>
 </div>
 </div>
-<div id="cs1-set" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> CS1 Set</h2>
-<div id="accuracy-2" class="section level3" number="4.3.1">
-<h3><span class="header-section-number">4.3.1</span> Accuracy</h3>
+<div id="cs1-set" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> CS1 Set<a href="results.html#cs1-set" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="accuracy-2" class="section level3 hasAnchor" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Accuracy<a href="results.html#accuracy-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs1-accuracy"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs1-accuracy-1.png" alt="CS1 Set Accuracy" width="672" />
 <p class="caption">
@@ -6077,8 +6080,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="f1-score-2" class="section level3" number="4.3.2">
-<h3><span class="header-section-number">4.3.2</span> F1-Score</h3>
+<div id="f1-score-2" class="section level3 hasAnchor" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> F1-Score<a href="results.html#f1-score-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs1-f1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs1-f1-1.png" alt="CS1 Set F1-Score" width="672" />
 <p class="caption">
@@ -6693,8 +6696,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="kappa-2" class="section level3" number="4.3.3">
-<h3><span class="header-section-number">4.3.3</span> Kappa</h3>
+<div id="kappa-2" class="section level3 hasAnchor" number="4.3.3">
+<h3><span class="header-section-number">4.3.3</span> Kappa<a href="results.html#kappa-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs1-kappa"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs1-kappa-1.png" alt="CS1 Set Kappa" width="672" />
 <p class="caption">
@@ -7309,8 +7312,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="g-mean-2" class="section level3" number="4.3.4">
-<h3><span class="header-section-number">4.3.4</span> G-mean</h3>
+<div id="g-mean-2" class="section level3 hasAnchor" number="4.3.4">
+<h3><span class="header-section-number">4.3.4</span> G-mean<a href="results.html#g-mean-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs1-gmean"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs1-gmean-1.png" alt="CS1 Set G-mean" width="672" />
 <p class="caption">
@@ -7926,10 +7929,10 @@ MUC
 </table>
 </div>
 </div>
-<div id="cs2-set" class="section level2" number="4.4">
-<h2><span class="header-section-number">4.4</span> CS2 Set</h2>
-<div id="accuracy-3" class="section level3" number="4.4.1">
-<h3><span class="header-section-number">4.4.1</span> Accuracy</h3>
+<div id="cs2-set" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> CS2 Set<a href="results.html#cs2-set" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="accuracy-3" class="section level3 hasAnchor" number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Accuracy<a href="results.html#accuracy-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs2-accuracy"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs2-accuracy-1.png" alt="CS2 Set Accuracy" width="672" />
 <p class="caption">
@@ -8544,8 +8547,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="f1-score-3" class="section level3" number="4.4.2">
-<h3><span class="header-section-number">4.4.2</span> F1-Score</h3>
+<div id="f1-score-3" class="section level3 hasAnchor" number="4.4.2">
+<h3><span class="header-section-number">4.4.2</span> F1-Score<a href="results.html#f1-score-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs2-f1"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs2-f1-1.png" alt="CS2 Set F1-Score" width="672" />
 <p class="caption">
@@ -9160,8 +9163,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="kappa-3" class="section level3" number="4.4.3">
-<h3><span class="header-section-number">4.4.3</span> Kappa</h3>
+<div id="kappa-3" class="section level3 hasAnchor" number="4.4.3">
+<h3><span class="header-section-number">4.4.3</span> Kappa<a href="results.html#kappa-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs2-kappa"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs2-kappa-1.png" alt="CS2 Set Kappa" width="672" />
 <p class="caption">
@@ -9776,8 +9779,8 @@ MUC
 </tbody>
 </table>
 </div>
-<div id="g-mean-3" class="section level3" number="4.4.4">
-<h3><span class="header-section-number">4.4.4</span> G-mean</h3>
+<div id="g-mean-3" class="section level3 hasAnchor" number="4.4.4">
+<h3><span class="header-section-number">4.4.4</span> G-mean<a href="results.html#g-mean-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs2-gmean"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/cs2-gmean-1.png" alt="CS2 Set G-mean" width="672" />
 <p class="caption">
@@ -10393,8 +10396,8 @@ MUC
 </table>
 </div>
 </div>
-<div id="smote-kappa-summary" class="section level2" number="4.5">
-<h2><span class="header-section-number">4.5</span> SMOTE Kappa Summary</h2>
+<div id="smote-kappa-summary" class="section level2 hasAnchor" number="4.5">
+<h2><span class="header-section-number">4.5</span> SMOTE Kappa Summary<a href="results.html#smote-kappa-summary" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:smote-kappa"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/smote-kappa-1.png" alt="SMOTE Kappa by Algorithm and Dataset" width="672" />
 <p class="caption">
@@ -10497,18 +10500,18 @@ Figure 4.42: SMOTE Class-Specific Kappa by Algorithm and Dataset
 </p>
 </div>
 </div>
-<div id="overlap-with-spot" class="section level2" number="4.6">
-<h2><span class="header-section-number">4.6</span> Overlap with SPOT</h2>
+<div id="overlap-with-spot" class="section level2 hasAnchor" number="4.6">
+<h2><span class="header-section-number">4.6</span> Overlap with SPOT<a href="results.html#overlap-with-spot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>There are 13 genes out of the 72 classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.</p>
 </div>
-<div id="rank-aggregation" class="section level2" number="4.7">
-<h2><span class="header-section-number">4.7</span> Rank Aggregation</h2>
+<div id="rank-aggregation" class="section level2 hasAnchor" number="4.7">
+<h2><span class="header-section-number">4.7</span> Rank Aggregation<a href="results.html#rank-aggregation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div id="htmlwidget-83714dcd4bafae4d06d3" style="width:100%;height:auto;" class="datatables html-widget"></div>
 <script type="application/json" data-for="htmlwidget-83714dcd4bafae4d06d3">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.781\" data-max=\"0.927\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.602\" data-max=\"0.972\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.907\" data-max=\"0.977\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.167\" data-max=\"0.933\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.771\" data-max=\"0.912\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["FixedColumns"],"caption":"<caption>F1-Score Summary by Model and Class<\/caption>","data":[["2S-rf-none","sequential-up","sequential-none","sequential-down","sequential-smote","2S-rf-up","2S-svm-up","2S-svm-smote","2S-rf-smote","2S-mlr_ridge-up","2S-adaboost-up","2S-svm-none","2S-mlr_ridge-none","2S-mlr_ridge-smote","2S-svm-down","2S-adaboost-down","2S-adaboost-smote","2S-adaboost-none","adaboost-up","2S-mlr_lasso-none","2S-mlr_ridge-down","2S-rf-down","2S-mlr_lasso-smote","rf-none","rf-smote","svm-none","mlr_ridge-none","rf-up","adaboost-smote","adaboost-none","2S-mlr_lasso-down","mlr_ridge-smote","svm-smote","mlr_lasso-none","mlr_ridge-up","mlr_lasso-smote","2S-mlr_lasso-up","svm-up","mlr_ridge-down","rf-down","adaboost-down","mlr_lasso-up","svm-down","mlr_lasso-down"],[0.927,0.911,0.909,0.905,0.907,0.925,0.894,0.889,0.919,0.892,0.909,0.894,0.899,0.894,0.88,0.9,0.911,0.914,0.873,0.9,0.892,0.909,0.901,0.875,0.873,0.857,0.871,0.873,0.865,0.862,0.897,0.85,0.831,0.865,0.846,0.83,0.897,0.836,0.829,0.849,0.837,0.8,0.781,0.805],[0.839,0.97,0.972,0.971,0.97,0.844,0.853,0.852,0.839,0.833,0.831,0.853,0.833,0.833,0.829,0.806,0.829,0.825,0.765,0.825,0.828,0.824,0.825,0.733,0.769,0.776,0.758,0.776,0.732,0.702,0.808,0.716,0.762,0.734,0.675,0.676,0.825,0.754,0.625,0.645,0.617,0.646,0.639,0.602],[0.975,0.973,0.973,0.964,0.973,0.975,0.973,0.972,0.974,0.962,0.974,0.973,0.968,0.966,0.963,0.964,0.971,0.971,0.976,0.967,0.959,0.964,0.965,0.969,0.977,0.971,0.97,0.971,0.972,0.961,0.956,0.959,0.969,0.971,0.948,0.957,0.96,0.971,0.92,0.934,0.929,0.958,0.931,0.907],[0.875,0.929,0.933,0.933,0.933,0.875,0.914,0.909,0.875,0.87,0.871,0.917,0.889,0.867,0.909,0.867,0.88,0.889,0.667,0.867,0.857,0.867,0.865,0.375,0.714,0.667,0.37,0.526,0.692,0.167,0.839,0.571,0.71,0.483,0.545,0.588,0.857,0.72,0.418,0.481,0.473,0.615,0.519,0.377],[0.892,0.889,0.897,0.897,0.897,0.896,0.885,0.88,0.889,0.909,0.882,0.885,0.912,0.909,0.875,0.871,0.871,0.887,0.857,0.896,0.9,0.871,0.883,0.873,0.849,0.857,0.885,0.877,0.833,0.857,0.857,0.868,0.851,0.862,0.862,0.847,0.892,0.846,0.841,0.8,0.771,0.821,0.8,0.785]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>model<\/th>\n      <th>CCOC<\/th>\n      <th>ENOC<\/th>\n      <th>HGSC<\/th>\n      <th>LGSC<\/th>\n      <th>MUC<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"fixedColumns":true,"columnDefs":[{"targets":1,"render":"$.fn.dataTable.render.ellipsis( 10 )"},{"type":"natural","targets":0},{"className":"dt-right","targets":[1,2,3,4,5]}],"pageLength":50,"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 <p>The 44 methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.</p>
 </div>
-<div id="test-set-performance" class="section level2" number="4.8">
-<h2><span class="header-section-number">4.8</span> Test Set Performance</h2>
+<div id="test-set-performance" class="section level2 hasAnchor" number="4.8">
+<h2><span class="header-section-number">4.8</span> Test Set Performance<a href="results.html#test-set-performance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Now we’d like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.</p>
 <p>The top 4 methods are:</p>
 <ul>
@@ -10536,8 +10539,8 @@ Figure 4.42: SMOTE Class-Specific Kappa by Algorithm and Dataset
 </ul></li>
 </ul>
 <p>As a comparison we also show the F1-scores from the <strong>rf-none</strong> to see how the best methods improve from it.</p>
-<div id="confirmation-set" class="section level3" number="4.8.1">
-<h3><span class="header-section-number">4.8.1</span> Confirmation Set</h3>
+<div id="confirmation-set" class="section level3 hasAnchor" number="4.8.1">
+<h3><span class="header-section-number">4.8.1</span> Confirmation Set<a href="results.html#confirmation-set" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <table>
 <caption>
 <span id="tab:confirmation-set">Table 4.40: </span>Class-specific F1-scores on Confirmation Sets
@@ -10610,19 +10613,19 @@ sequential-none
 2S-rf-smote
 </td>
 <td style="text-align:right;">
-0.900
+0.903
 </td>
 <td style="text-align:right;">
-0.897
+0.904
 </td>
 <td style="text-align:right;">
-0.788
+0.784
 </td>
 <td style="text-align:right;">
-0.419
+0.400
 </td>
 <td style="text-align:right;">
-0.679
+0.667
 </td>
 </tr>
 <tr>
@@ -10630,16 +10633,16 @@ sequential-none
 sequential-smote
 </td>
 <td style="text-align:right;">
-0.904
+0.907
 </td>
 <td style="text-align:right;">
-0.915
+0.923
 </td>
 <td style="text-align:right;">
-0.905
+0.921
 </td>
 <td style="text-align:right;">
-0.486
+0.556
 </td>
 <td style="text-align:right;">
 0.800
@@ -10669,8 +10672,8 @@ rf-none
 </table>
 <p>In the confirmation set, <strong>2S-rf-none</strong> improves drastically in LGSC classification compard to <strong>rf-none</strong>, with moderate improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. <strong>sequential-none</strong> improves on <strong>2S-rf-none</strong> in all classes except for marginal decrease in HGSC performance.</p>
 </div>
-<div id="validation-set" class="section level3" number="4.8.2">
-<h3><span class="header-section-number">4.8.2</span> Validation Set</h3>
+<div id="validation-set" class="section level3 hasAnchor" number="4.8.2">
+<h3><span class="header-section-number">4.8.2</span> Validation Set<a href="results.html#validation-set" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <table>
 <caption>
 <span id="tab:validation-set">Table 4.41: </span>Class-specific F1-scores on Validation Sets
@@ -10743,19 +10746,19 @@ sequential-none
 2S-rf-smote
 </td>
 <td style="text-align:right;">
-0.934
+0.933
 </td>
 <td style="text-align:right;">
-0.945
+0.940
 </td>
 <td style="text-align:right;">
-0.883
+0.882
 </td>
 <td style="text-align:right;">
 0.750
 </td>
 <td style="text-align:right;">
-0.764
+0.778
 </td>
 </tr>
 <tr>
@@ -10763,16 +10766,16 @@ sequential-none
 sequential-smote
 </td>
 <td style="text-align:right;">
-0.937
+0.940
 </td>
 <td style="text-align:right;">
-0.944
+0.951
 </td>
 <td style="text-align:right;">
-0.958
+0.967
 </td>
 <td style="text-align:right;">
-0.769
+0.821
 </td>
 <td style="text-align:right;">
 0.821

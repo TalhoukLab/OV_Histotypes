@@ -34,18 +34,6 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  pdftitle={Ovarian Cancer Histotypes: Report of Statistical Findings},
-  pdfauthor={Derek Chiu},
-  colorlinks=true,
-  linkcolor={Maroon},
-  filecolor={Maroon},
-  citecolor={Blue},
-  urlcolor={Blue},
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
 \usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
@@ -110,10 +98,22 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Ovarian Cancer Histotypes: Report of Statistical Findings},
+  pdfauthor={Derek Chiu},
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2022-05-25}
+\date{2023-03-07}
 
 \begin{document}
 \maketitle
@@ -375,10 +375,48 @@ MUC & 7 & 5 & 11\\
 \end{tabular}
 \end{table}
 
-\hypertarget{training-set}{%
-\section{Training Set}\label{training-set}}
+\hypertarget{training-sets}{%
+\section{Training Sets}\label{training-sets}}
 
-The training set distributions for CS1 and CS2 are shown below.
+\hypertarget{cs1-training-set-generation}{%
+\subsection{CS1 Training Set Generation}\label{cs1-training-set-generation}}
+
+We use the reference method to normalize CS1 to CS3.
+
+\begin{itemize}
+\item
+  CS1 reference set: duplicate samples from CS1
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 16
+  \item
+    Genes = 72
+  \end{itemize}
+\item
+  CS3 reference set: corresponding samples in CS3 also found in CS1 reference set
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 9
+  \item
+    Genes = 72
+  \end{itemize}
+\item
+  CS1 validation set: remaining CS1 samples with reference set removed
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 273
+  \item
+    Genes = 72
+  \end{itemize}
+\end{itemize}
+
+The final CS1 training set has 254 samples on 72 genes after normalization and keeping only the major histotypes of interest.
 
 \begin{table}
 
@@ -400,6 +438,46 @@ MUC & 16 & 5.3\%\\
 \hline
 \end{tabular}
 \end{table}
+
+\hypertarget{cs2-training-set-generation}{%
+\subsection{CS2 Training Set Generation}\label{cs2-training-set-generation}}
+
+We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOType normalization when there are available pools.
+
+\begin{itemize}
+\item
+  CS2 pools:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 12 (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4)
+  \item
+    Genes = 365
+  \end{itemize}
+\item
+  CS3 pools:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 22 (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5)
+  \item
+    Genes = 513
+  \end{itemize}
+\item
+  CS2 validation set: CS2 samples with pools removed
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Samples = 881
+  \item
+    Genes = 365
+  \end{itemize}
+\end{itemize}
+
+The final CS2 training set has 821 samples on 136 (common) genes after normalization and keeping only the major histotypes of interest.
 
 \begin{table}
 
@@ -632,8 +710,8 @@ Total & N (\%) & 263 (10\%) & 815 (31\%) & 643 (24\%) & 909 (35\%)\\
 
 We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overallaccuracy of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
 
-\hypertarget{training-set-1}{%
-\section{Training Set}\label{training-set-1}}
+\hypertarget{training-set}{%
+\section{Training Set}\label{training-set}}
 
 \hypertarget{accuracy}{%
 \subsection{Accuracy}\label{accuracy}}
@@ -2380,9 +2458,9 @@ method & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
 sequential-none & 0.902 & 0.910 & 0.917 & 0.485 & 0.711\\
 \hline
-2S-rf-smote & 0.900 & 0.897 & 0.788 & 0.419 & 0.679\\
+2S-rf-smote & 0.903 & 0.904 & 0.784 & 0.400 & 0.667\\
 \hline
-sequential-smote & 0.904 & 0.915 & 0.905 & 0.486 & 0.800\\
+sequential-smote & 0.907 & 0.923 & 0.921 & 0.556 & 0.800\\
 \hline
 rf-none & 0.899 & 0.881 & 0.533 & 0.133 & 0.760\\
 \hline
@@ -2406,9 +2484,9 @@ method & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
 sequential-none & 0.948 & 0.963 & 0.963 & 0.789 & 0.784\\
 \hline
-2S-rf-smote & 0.934 & 0.945 & 0.883 & 0.750 & 0.764\\
+2S-rf-smote & 0.933 & 0.940 & 0.882 & 0.750 & 0.778\\
 \hline
-sequential-smote & 0.937 & 0.944 & 0.958 & 0.769 & 0.821\\
+sequential-smote & 0.940 & 0.951 & 0.967 & 0.821 & 0.821\\
 \hline
 rf-none & 0.929 & 0.857 & 0.630 & 0.182 & 0.727\\
 \hline

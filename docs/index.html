@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Ovarian Cancer Histotypes: Report of Statistical Findings</title>
   <meta name="description" content="Ovarian Cancer Histotypes: Report of Statistical Findings" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Ovarian Cancer Histotypes: Report of Statistical Findings" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2022-05-25" />
+<meta name="date" content="2023-03-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,7 +32,6 @@
   
 
 <link rel="next" href="introduction.html"/>
-<script src="assets/header-attrs-2.11/header-attrs.js"></script>
 <script src="assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="assets/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -51,8 +49,9 @@
 
 
 
-<link href="assets/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="assets/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="assets/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="assets/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="assets/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="assets/kePrint-0.0.1/kePrint.js"></script>
 <link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <script src="assets/htmlwidgets-1.5.1/htmlwidgets.js"></script>
@@ -93,13 +92,17 @@
 <li class="chapter" data-level="3" data-path="distributions.html"><a href="distributions.html"><i class="fa fa-check"></i><b>3</b> Distributions</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="distributions.html"><a href="distributions.html#full-data"><i class="fa fa-check"></i><b>3.1</b> Full Data</a></li>
-<li class="chapter" data-level="3.2" data-path="distributions.html"><a href="distributions.html#training-set"><i class="fa fa-check"></i><b>3.2</b> Training Set</a></li>
+<li class="chapter" data-level="3.2" data-path="distributions.html"><a href="distributions.html#training-sets"><i class="fa fa-check"></i><b>3.2</b> Training Sets</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="distributions.html"><a href="distributions.html#cs1-training-set-generation"><i class="fa fa-check"></i><b>3.2.1</b> CS1 Training Set Generation</a></li>
+<li class="chapter" data-level="3.2.2" data-path="distributions.html"><a href="distributions.html#cs2-training-set-generation"><i class="fa fa-check"></i><b>3.2.2</b> CS2 Training Set Generation</a></li>
+</ul></li>
 <li class="chapter" data-level="3.3" data-path="distributions.html"><a href="distributions.html#common-samples"><i class="fa fa-check"></i><b>3.3</b> Common Samples</a></li>
 <li class="chapter" data-level="3.4" data-path="distributions.html"><a href="distributions.html#histotypes-in-classifier-data"><i class="fa fa-check"></i><b>3.4</b> Histotypes in Classifier Data</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#training-set-1"><i class="fa fa-check"></i><b>4.1</b> Training Set</a>
+<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#training-set"><i class="fa fa-check"></i><b>4.1</b> Training Set</a>
 <ul>
 <li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#accuracy"><i class="fa fa-check"></i><b>4.1.1</b> Accuracy</a></li>
 <li class="chapter" data-level="4.1.2" data-path="results.html"><a href="results.html#f1-score"><i class="fa fa-check"></i><b>4.1.2</b> F1-Score</a></li>
@@ -157,10 +160,10 @@
 <div id="header">
 <h1 class="title">Ovarian Cancer Histotypes: Report of Statistical Findings</h1>
 <p class="author"><em>Derek Chiu</em></p>
-<p class="date"><em>2022-05-25</em></p>
+<p class="date"><em>2023-03-07</em></p>
 </div>
-<div id="preface" class="section level1 unnumbered">
-<h1>Preface</h1>
+<div id="preface" class="section level1 unnumbered hasAnchor">
+<h1>Preface<a href="index.html#preface" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>This report of statistical findings describes the classification of ovarian cancer histotypes using data from NanoString CodeSets.</p>
 <p>Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang implemented class imbalance techniques, Derek Chiu conducted the normalization and statistical analysis, and Lauren Tindale and Aline Talhouk are the project leads.</p>
 
