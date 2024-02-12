@@ -1664,13 +1664,22 @@ p <-
 print(p)
 ```
 
-## Overlap with SPOT
+## Gene Optimization
+
+### Overlap with Other Sets
+
+```{r overlap-protype}
+overlap_PrOTYPE <- intersect(names(train_ref), cs5$Name)
+```
+
+There are `r length(overlap_PrOTYPE)` genes out of the `r ncol(train_data)` common classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`
 
 ```{r overlap-SPOT}
 overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
 ```
 
 There are `r length(overlap_SPOT)` genes out of the `r ncol(train_data)` classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
+
 
 ## Rank Aggregation
 
