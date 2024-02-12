@@ -60,14 +60,14 @@ cs2_exp <- filter(annot_all, CodeSet == "CS2")
 cs3_exp <- filter(annot_all, CodeSet == "CS3")
 
 # Run QC on CS1/2/3
-cs1_qc <- NanoStringQC(raw = cs1, exp = cs1_exp, detect = 50, sn = 170)
-cs2_qc <- NanoStringQC(raw = cs2, exp = cs2_exp, detect = 50, sn = 170)
-cs3_qc <- NanoStringQC(raw = cs3, exp = cs3_exp, detect = 50, sn = 170)
+cs1_qc <- NanoStringQC(raw = cs1, exp = cs1_exp, detect = 80, sn = 170)
+cs2_qc <- NanoStringQC(raw = cs2, exp = cs2_exp, detect = 80, sn = 170)
+cs3_qc <- NanoStringQC(raw = cs3, exp = cs3_exp, detect = 80, sn = 170)
 
 # Samples that failed QC
-cs1_qc_failed <- filter(cs1_qc, normFlag == "Failed")[["FileName"]]
-cs2_qc_failed <- filter(cs2_qc, normFlag == "Failed")[["FileName"]]
-cs3_qc_failed <- filter(cs3_qc, normFlag == "Failed")[["FileName"]]
+cs1_qc_failed <- filter(cs1_qc, QCFlag == "Failed")[["FileName"]]
+cs2_qc_failed <- filter(cs2_qc, QCFlag == "Failed")[["FileName"]]
+cs3_qc_failed <- filter(cs3_qc, QCFlag == "Failed")[["FileName"]]
 
 # Filter for specific cohorts and extract samples
 cs1_samples <- cohorts %>%
@@ -169,14 +169,14 @@ annotNEW <- annotNEW %>%
 
 # CS4 data excluding samples that failed QC
 cs4_exp <- filter(annotNEW, CodeSet == "CS4")
-cs4_qc <- NanoStringQC(raw = cs4, exp = cs4_exp, detect = 50, sn = 170)
-cs4_qc_failed <- filter(cs4_qc, normFlag == "Failed")[["File.Name"]]
+cs4_qc <- NanoStringQC(raw = cs4, exp = cs4_exp, detect = 80, sn = 170)
+cs4_qc_failed <- filter(cs4_qc, QCFlag == "Failed")[["File.Name"]]
 cs4_dat <- HKnorm(cs4) %>% select(-any_of(cs4_qc_failed))
 
 # CS5 data excluding samples that failed QC
 cs5_exp <- filter(annotNEW, CodeSet == "CS5")
-cs5_qc <- NanoStringQC(raw = cs5, exp = cs5_exp, detect = 50, sn = 170)
-cs5_qc_failed <- filter(cs5_qc, normFlag == "Failed", !grepl("POOL", File.Name))[["File.Name"]]
+cs5_qc <- NanoStringQC(raw = cs5, exp = cs5_exp, detect = 80, sn = 170)
+cs5_qc_failed <- filter(cs5_qc, QCFlag == "Failed", !grepl("POOL", File.Name))[["File.Name"]]
 cs5_dat <- HKnorm(cs5) %>% select(-any_of(cs5_qc_failed))
 
 # Common samples amongst all 5 CodeSets
