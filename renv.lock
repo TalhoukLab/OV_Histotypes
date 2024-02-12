@@ -120,14 +120,15 @@
     },
     "Cubist": {
       "Package": "Cubist",
-      "Version": "0.2.2",
+      "Version": "0.4.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "lattice",
-        "reshape2"
+        "reshape2",
+        "utils"
       ],
-      "Hash": "6f6491a14839cc004eb8c6353f8e535e"
+      "Hash": "0d1db36bbd21a10577e9b234c248f19c"
     },
     "DBI": {
       "Package": "DBI",
