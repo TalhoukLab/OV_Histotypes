@@ -1684,6 +1684,7 @@ There are `r length(overlap_SPOT)` genes out of the `r ncol(train_data)` classif
 
 ```{r overlap-all}
 overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+candidates <- setdiff(names(train_data), overlap_all)
 ```
 
 There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes based on variable importance to this list and analyze when evaluation metrics (e.g. F1-score) start to plateau. 
