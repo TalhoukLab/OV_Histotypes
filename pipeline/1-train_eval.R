@@ -39,17 +39,19 @@ if (alg == "combined") {
 }
 
 # Supervised learning model output
-sm <- splendid::splendid_model(
-  data = data,
-  class = class,
-  algorithms = a,
-  n = 1,
-  seed_boot = as.integer(reps),
-  seed_samp = 2019,
-  seed_alg = 2019,
-  sampling = samp,
-  stratify = TRUE,
-  tune = TRUE
+suppressWarnings(
+  sm <- splendid::splendid_model(
+    data = data,
+    class = class,
+    algorithms = a,
+    n = 1,
+    seed_boot = as.integer(reps),
+    seed_samp = 2019,
+    seed_alg = 2019,
+    sampling = samp,
+    stratify = TRUE,
+    tune = TRUE
+  )
 )
 
 # Extract variable importance results
