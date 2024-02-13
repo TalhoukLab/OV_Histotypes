@@ -7,4 +7,4 @@
 # Sys.setenv("RENV_PATHS_CELLAR" = file.path(Sys.getenv("I_DRIVE"), "cellar"))
 # Sys.setenv("RENV_PATHS_ROOT" = file.path(Sys.getenv("I_DRIVE"), "renv"))
 
-source("renv/activate.R")
+# source("renv/activate.R")
