@@ -44,3 +44,28 @@ plot_measure <- function(data) {
     theme(plot.title = element_text(face = "bold")) +
     xlab("Algorithm")
 }
+
+# variable importance
+# TODO: implement in splendid
+var_imp <- function(sm, alg) {
+  if (alg %in% c("mlr_lasso", "mlr_ridge", "rf")) {
+    sm %>%
+      purrr::pluck("models", 1, 1) %>%
+      vip::vi()
+  } else if (alg == "svm") {
+    pfun <- function(object, newdata) {
+      caret::predict.train(object, newdata = newdata, type = "prob")[, 1]
+    }
+    sm %>%
+      purrr::pluck("models", 1, 1) %>%
+      vip::vi_shap(pred_wrapper = pfun) %>%
+      dplyr::arrange(dplyr::desc(Importance))
+  } else if (alg == "adaboost") {
+    sm %>%
+      purrr::pluck("models", 1, 1) %>%
+      maboost::varplot.maboost(plot.it = FALSE,
+                               type = "scores",
+                               max.var.show = Inf) %>%
+      tibble::enframe(name = "Variable", value = "Importance")
+  }
+}

@@ -14,6 +14,7 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $RSubDir/$dataset
     mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
+    mkdir -p $outputDir/vi/$dataset
 
     for s in $(seq -f "%0${#reps}g" 1 $reps); do
         for alg in "${algs[@]}"; do

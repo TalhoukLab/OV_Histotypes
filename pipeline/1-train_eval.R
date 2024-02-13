@@ -48,10 +48,39 @@ sm <- splendid::splendid_model(
   seed_samp = 2019,
   seed_alg = 2019,
   sampling = samp,
-  stratify = TRUE
+  stratify = TRUE,
+  tune = TRUE
 )
+
+# Extract variable importance results
+vi_df <- sm[["models"]] %>%
+  imap(~ {
+    mod <- .x[[1]]
+    alg <- .y
+    if (alg %in% c("mlr_lasso", "mlr_ridge", "rf")) {
+      vip::vi(mod)
+    } else if (alg == "svm") {
+      pfun <- function(object, newdata) {
+        caret::predict.train(object, newdata = newdata, type = "prob")[, 1]
+      }
+      mod %>%
+        vip::vi_shap(pred_wrapper = pfun) %>%
+        dplyr::arrange(dplyr::desc(Importance))
+    } else if (alg == "adaboost") {
+      mod %>%
+        maboost::varplot.maboost(plot.it = FALSE,
+                                 type = "scores",
+                                 max.var.show = Inf) %>%
+        tibble::enframe(name = "Variable", value = "Importance")
+    }
+  })
 
 # Write evaluations to file
 outputFile <- file.path(outputDir, "train_eval", dataset,
                         paste0(alg, "_", samp, "_", reps, "_", dataset, ".rds"))
 saveRDS(sm[["evals"]], outputFile)
+
+# Write variable importance to file
+viFile <- file.path(outputDir, "vi", dataset,
+                    paste0("vi_", alg, "_", samp, "_", reps, "_", dataset, ".rds"))
+saveRDS(vi_df, viFile)

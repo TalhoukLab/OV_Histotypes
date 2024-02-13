@@ -1043,6 +1043,20 @@
       "Repository": "CRAN",
       "Hash": "77bd60a6157420d4ffa93b27cf6a58b8"
     },
+    "fastshap": {
+      "Package": "fastshap",
+      "Version": "0.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "RcppArmadillo",
+        "foreach",
+        "utils"
+      ],
+      "Hash": "1f86fb521738095d91bcdef98d1a7ef8"
+    },
     "fdrtool": {
       "Package": "fdrtool",
       "Version": "1.2.15",
@@ -2891,6 +2905,22 @@
         "rlang"
       ],
       "Hash": "c03fa420630029418f7e6da3667aac4a"
+    },
+    "vip": {
+      "Package": "vip",
+      "Version": "0.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "foreach",
+        "ggplot2",
+        "stats",
+        "tibble",
+        "utils",
+        "yardstick"
+      ],
+      "Hash": "4bfee1f7181f71d552a4b63485f8fc25"
     },
     "viridis": {
       "Package": "viridis",
