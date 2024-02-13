@@ -5,6 +5,7 @@ library(Amisc)
 library(batchAdj)
 library(forcats)
 library(scales)
+library(patchwork)
 library(here)
 source(here("src/funs.R"))
 source(here("validation/cs_process.R"))
@@ -380,4 +381,34 @@ hist_codeset_dataset <- list(
 
 knitr::kable(hist_codeset_dataset,
              caption = "Histotype Distribution by CodeSet/Datasets")
+```
+
+## Quality Control
+
+```{r qc-gd-snr-all, fig.cap='% Genes Detected vs. Signal to Noise Ratio'}
+p1 <- ggplot(cs1_qc, aes(sn, pergd)) + 
+  geom_point() +
+  labs(title = "CS1")
+p2 <- ggplot(cs2_qc, aes(sn, pergd)) + 
+  geom_point() +
+  labs(title = "CS2")
+p3 <- ggplot(cs3_qc, aes(sn, pergd)) + 
+  geom_point() +
+  labs(title = "CS3")
+
+p_gd_snr_all <- p1 / p2 / p3 &
+  labs(x = "SNR", y = "% GD") &
+  geom_vline(xintercept = 100, color = "red", linetype = "dashed") &
+  geom_hline(yintercept = 50, color = "red", linetype = "dashed") &
+  plot_annotation(title = "% Genes Detected vs. SNR",
+                  tag_levels = "a")
+print(p_gd_snr_all)
+```
+
+```{r qc-gd-snr-zoomed, fig.cap='% Genes Detected vs. Signal to Noise Ratio (Zoomed)'}
+p_gd_snr_zoomed <- p_gd_snr_all &
+  lims(x = c(0, 2000)) &
+    plot_annotation(title = "% Genes Detected vs. SNR (Zoomed)",
+                  tag_levels = "a")
+print(p_gd_snr_zoomed)
 ```
