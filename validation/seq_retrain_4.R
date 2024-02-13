@@ -21,7 +21,9 @@ seq_summary <- iv_summary_train %>%
     sampling = factor(sampling, levels = c("none", "up", "down", "smote")),
     f1_median = percentile_50
   ) %>%
-  slice_max(order_by = f1_median)
+  nest(.by = sampling) %>%
+  mutate(data = map(data, ~ slice_max(.x, order_by = f1_median))) %>%
+  unnest(cols = data)
 
 # Algorithm and subsampling method used for top class out of n=n_class
 seq_top <- add_column(seq_summary, n_class = n_class)
