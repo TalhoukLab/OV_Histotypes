@@ -385,7 +385,7 @@ knitr::kable(hist_codeset_dataset,
 
 ## Quality Control
 
-```{r qc-gd-snr-all, fig.cap='% Genes Detected vs. Signal to Noise Ratio'}
+```{r qc-gd-snr-all, fig.height=8, fig.cap='% Genes Detected vs. Signal to Noise Ratio'}
 p1 <- ggplot(cs1_qc, aes(sn, pergd)) + 
   geom_point() +
   labs(title = "CS1")
@@ -405,7 +405,7 @@ p_gd_snr_all <- p1 / p2 / p3 &
 print(p_gd_snr_all)
 ```
 
-```{r qc-gd-snr-zoomed, fig.cap='% Genes Detected vs. Signal to Noise Ratio (Zoomed)'}
+```{r qc-gd-snr-zoomed, fig.height=8, fig.cap='% Genes Detected vs. Signal to Noise Ratio (Zoomed)'}
 p_gd_snr_zoomed <- p_gd_snr_all &
   lims(x = c(0, 2000)) &
     plot_annotation(title = "% Genes Detected vs. SNR (Zoomed)",
