@@ -54,7 +54,7 @@ sm <- splendid::splendid_model(
 
 # Extract variable importance results
 vi_df <- sm[["models"]] %>%
-  imap(~ {
+  purrr::imap(~ {
     mod <- .x[[1]]
     alg <- .y
     if (alg %in% c("mlr_lasso", "mlr_ridge", "rf")) {
