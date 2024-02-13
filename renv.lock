@@ -29,7 +29,7 @@
     ]
   },
   "Bioconductor": {
-    "Version": "3.18"
+    "Version": "3.14"
   },
   "Packages": {
     "Amisc": {
@@ -63,7 +63,7 @@
     },
     "Biobase": {
       "Package": "Biobase",
-      "Version": "2.62.0",
+      "Version": "2.54.0",
       "Source": "Bioconductor",
       "Requirements": [
         "BiocGenerics",
@@ -71,11 +71,11 @@
         "methods",
         "utils"
       ],
-      "Hash": "38252a34e82d3ff6bb46b4e2252d2dce"
+      "Hash": "767057b0e2897e2a43b59718be888ccd"
     },
     "BiocGenerics": {
       "Package": "BiocGenerics",
-      "Version": "0.48.1",
+      "Version": "0.40.0",
       "Source": "Bioconductor",
       "Requirements": [
         "R",
@@ -84,7 +84,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "e34278c65d7dffcc08f737bf0944ca9a"
+      "Hash": "ddc1d29bbe66aaef34b0d17620b61a69"
     },
     "BiocManager": {
       "Package": "BiocManager",
@@ -98,13 +98,12 @@
     },
     "BiocVersion": {
       "Package": "BiocVersion",
-      "Version": "3.18.1",
+      "Version": "3.14.0",
       "Source": "Bioconductor",
-      "Repository": "Bioconductor 3.18",
       "Requirements": [
         "R"
       ],
-      "Hash": "2ecaed86684f5fae76ed5530f9d29c4a"
+      "Hash": "e57437f82a5c13263a9cf442b9796ba3"
     },
     "C50": {
       "Package": "C50",
