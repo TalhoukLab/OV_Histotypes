@@ -60,9 +60,9 @@ cs2_exp <- filter(annot_all, CodeSet == "CS2")
 cs3_exp <- filter(annot_all, CodeSet == "CS3")
 
 # Run QC on CS1/2/3
-cs1_qc <- NanoStringQC(raw = cs1, exp = cs1_exp, detect = 50, sn = 150)
-cs2_qc <- NanoStringQC(raw = cs2, exp = cs2_exp, detect = 50, sn = 150)
-cs3_qc <- NanoStringQC(raw = cs3, exp = cs3_exp, detect = 50, sn = 150)
+cs1_qc <- NanoStringQC(raw = cs1, exp = cs1_exp, detect = 50, sn = 100)
+cs2_qc <- NanoStringQC(raw = cs2, exp = cs2_exp, detect = 50, sn = 100)
+cs3_qc <- NanoStringQC(raw = cs3, exp = cs3_exp, detect = 50, sn = 100)
 
 # Samples that failed QC
 cs1_qc_failed <- filter(cs1_qc, QCFlag == "Failed")[["FileName"]]
@@ -169,13 +169,13 @@ annotNEW <- annotNEW %>%
 
 # CS4 data excluding samples that failed QC
 cs4_exp <- filter(annotNEW, CodeSet == "CS4")
-cs4_qc <- NanoStringQC(raw = cs4, exp = cs4_exp, detect = 50, sn = 150)
+cs4_qc <- NanoStringQC(raw = cs4, exp = cs4_exp, detect = 50, sn = 100)
 cs4_qc_failed <- filter(cs4_qc, QCFlag == "Failed")[["File.Name"]]
 cs4_dat <- HKnorm(cs4) %>% select(-any_of(cs4_qc_failed))
 
 # CS5 data excluding samples that failed QC
 cs5_exp <- filter(annotNEW, CodeSet == "CS5")
-cs5_qc <- NanoStringQC(raw = cs5, exp = cs5_exp, detect = 50, sn = 150)
+cs5_qc <- NanoStringQC(raw = cs5, exp = cs5_exp, detect = 50, sn = 100)
 cs5_qc_failed <- filter(cs5_qc, QCFlag == "Failed", !grepl("POOL", File.Name))[["File.Name"]]
 cs5_dat <- HKnorm(cs5) %>% select(-any_of(cs5_qc_failed))
 
