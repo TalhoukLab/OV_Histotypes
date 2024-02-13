@@ -1680,6 +1680,13 @@ overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
 
 There are `r length(overlap_SPOT)` genes out of the `r ncol(train_data)` classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
 
+### Optimal Gene Set
+
+```{r overlap-all}
+overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+```
+
+There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes based on variable importance to this list and analyze when evaluation metrics (e.g. F1-score) start to plateau. 
 
 ## Rank Aggregation
 
