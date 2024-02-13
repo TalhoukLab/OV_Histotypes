@@ -2401,17 +2401,17 @@
     },
     "slider": {
       "Package": "slider",
-      "Version": "0.1.5",
+      "Version": "0.3.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
-        "glue",
+        "cli",
         "rlang",
         "vctrs",
         "warp"
       ],
-      "Hash": "ac1eb08941cacd8ff16f0041ca60a3de"
+      "Hash": "a584625e2b9e4fad4be135c8ea5c99aa"
     },
     "sourcetools": {
       "Package": "sourcetools",
