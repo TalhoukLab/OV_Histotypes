@@ -1,6 +1,7 @@
 # Read in multiclass data, class, and IV summary
 library(dplyr)
 library(purrr)
+library(tibble)
 library(here)
 iv_summary_train <- readRDS(here("data/iv_summary_train.rds"))
 train_data <- readRDS(here("data/train_data.rds"))
@@ -27,14 +28,14 @@ seq_top <- add_column(seq_summary, n_class = n_class)
 
 # Create retrain data and class lists
 retrain_data <- train_df %>%
-  filter(!class %in% top_list[["class"]]) %>%
+  filter(!class %in% seq_top[["class"]]) %>%
   select(-class)
 
 retrain_class <- train_df %>%
-  filter(!class %in% top_list[["class"]]) %>%
+  filter(!class %in% seq_top[["class"]]) %>%
   pull(class)
 
 # Save outputs
-saveRDS(top_list, here("data", paste0("seq_top_c", n_class, ".rds")))
+saveRDS(seq_top, here("data", paste0("seq_top_c", n_class, ".rds")))
 saveRDS(retrain_data, here("data", paste0("retrain_", n_retrain, "_data.rds")))
 saveRDS(retrain_class, here("data", paste0("retrain_", n_retrain, "_class.rds")))
