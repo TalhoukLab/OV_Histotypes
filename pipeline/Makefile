@@ -4,7 +4,7 @@ sequential: seq_train_eval seq_merge_eval seq_iv_summary
 
 retrain: retrain_eval retrain_merge retrain_summary
 
-gene_opt: gene_train_eval
+gene_opt: gene_train_eval gene_seq_train_eval
 
 # Train models and return evaluations
 train_eval:
@@ -40,7 +40,10 @@ retrain_summary:
 
 # Gene optimization
 gene_train_eval:
-	./gene_opt/1-gene_train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+	./gene_opt/1a-gene_train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+
+gene_seq_train_eval:
+	./gene_opt/1b-gene_seq_train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Clean target
 %:

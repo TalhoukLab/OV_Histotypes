@@ -94,8 +94,9 @@ suppressWarnings(
 #   })
 
 # Write evaluations to file
-outputFile <- file.path(outputDir, "gene_train_eval", dataset,
-                        paste0(bestAlg, "_", bestSamp, "_add", ngene, "_", reps, "_", dataset, ".rds"))
+outputFile <- file.path(
+  outputDir, "gene_opt", "train_eval", dataset,
+  paste0(bestAlg, "_", bestSamp, "_add", ngene, "_", reps, "_", dataset, ".rds"))
 saveRDS(sm[["evals"]], outputFile)
 
 # # Write variable importance to file
