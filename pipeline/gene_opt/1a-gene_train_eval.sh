@@ -44,6 +44,7 @@ for dataset in "${dataSets[@]}"; do
                 file_to_submit+=($job_file)
                 echo -e "$GREEN_TICK Added to queue: $job_file"
             fi
+        done
     done
 done
 
