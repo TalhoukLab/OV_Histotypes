@@ -14,7 +14,6 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $RSubDir/$dataset
     mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir
-    mkdir -p $outputDir/ranked_vi/$dataset
 
     # Content of R file
     R_file=$RSubDir/$dataset/retrain_merge.R
