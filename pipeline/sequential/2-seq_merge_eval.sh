@@ -13,6 +13,7 @@ shSubDir=$shDir/$subDir
 mkdir -p $RSubDir
 mkdir -p $shSubDir
 mkdir -p $outputDir/$subDir
+mkdir -p $outputDir/sequential/ranked_vi
 
 # Content of R file
 R_file=$RSubDir/sequential_merge_eval.R

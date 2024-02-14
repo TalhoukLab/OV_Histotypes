@@ -58,3 +58,45 @@ saveRDS(
   all_metrics,
   file.path(outputDir, "sequential", "merge_eval", paste0(seqData, "_merge_eval.rds"))
 )
+
+# All variable importance files
+vi_files <- purrr::map(seq_len(nseq), function(n) {
+  list.files(
+    path = file.path(outputDir, "sequential", "vi", seqData),
+    pattern = paste0("vi_", seqData, n),
+    full.names = TRUE
+  )
+})
+
+# Merge variable importance results
+vi_merged <- vi_files %>%
+  purrr::map(~ purrr::map(., readRDS)) %>%
+  purrr::modify_depth(2, ~ dplyr::bind_rows(.x, .id = "Algorithm")) %>%
+  purrr::modify_depth(1, ~ dplyr::bind_rows(.x, .id = "Bootstrap")) %>%
+  dplyr::bind_rows(.id = "Sequence")
+
+# Rank variables using average importance scores per sampling method and algorithm
+vi_ranked <- vi_merged %>%
+  dplyr::group_by(Sequence, Algorithm, Variable) %>%
+  dplyr::summarise(Mean_Importance = mean(Importance), .groups = "drop_last") %>%
+  dplyr::arrange(Sequence, Algorithm, dplyr::desc(Mean_Importance)) %>%
+  dplyr::mutate(Rank = dplyr::dense_rank(dplyr::desc(Mean_Importance))) %>%
+  dplyr::ungroup()
+
+# Only consider candidate genes not already in PrOTYPE and SPOT
+candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
+                "LIN28B", "TFF3", "MUC5B", "FUT3", "STC1", "BCL2", "PAX8", "GCNT3",
+                "GPR64", "ADCYAP1R1", "IGKC", "BRCA1", "IGJ", "TFF1", "MET",
+                "CYP2C18", "CYP4B1", "SLC3A1", "EPAS1", "HNF1B", "IL6", "ATP5G3",
+                "DKK4", "SENP8", "CAPN2", "C1orf173", "CPNE8", "IGFBP1", "WT1",
+                "TP53", "SEMA6A", "SERPINA5", "ZBED1", "TSPAN8", "SCGB1D2", "LGALS4",
+                "MAP1LC3A")
+
+vi_ranked_candidates <- vi_ranked %>%
+  dplyr::filter(Variable %in% candidates)
+
+# Write ranked variable importance
+saveRDS(
+  vi_ranked_candidates,
+  file.path(outputDir, "sequential", "ranked_vi", paste0("ranked_vi_", seqData, ".rds"))
+)
