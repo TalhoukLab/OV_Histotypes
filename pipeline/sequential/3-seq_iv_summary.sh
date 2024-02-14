@@ -17,6 +17,7 @@ mkdir -p $outputDir/$subDir
 # Content of R file
 R_file=$RSubDir/sequential_iv_summary.R
 echo 'outputDir <- "'$outputDir'"' > $R_file
+echo 'inputDir <- "'$inputDir'"' >> $R_file
 echo 'source("pipeline/sequential/3-seq_iv_summary.R")' >> $R_file
 
 # Content of sh file
