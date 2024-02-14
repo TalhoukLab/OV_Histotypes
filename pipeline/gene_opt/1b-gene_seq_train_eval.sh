@@ -35,7 +35,7 @@ for sq in "${seqData[@]}"; do
                 echo 'norm_by <- "'$norm_by'"' >> $R_file
                 echo 'norm_type <- "'$norm_type'"' >> $R_file
                 echo "min_var <- '$min_var'" >> $R_file
-                echo 'source("pipeline/sequential/1b-gene_seq_train_eval.R")' >> $R_file
+                echo 'source("pipeline/gene_opt/1b-gene_seq_train_eval.R")' >> $R_file
 
                 # Content of sh file
                 job_file=$shSubDir/$sq"_"$nseq"_add"$ng"_"$s.sh

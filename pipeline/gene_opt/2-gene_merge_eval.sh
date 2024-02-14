@@ -21,7 +21,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo "ngenes <- '$ngenes'" >> $R_file
-    echo 'source("pipeline/2-gene_merge_eval.R")' >> $R_file
+    echo 'source("pipeline/gene_opt/2-gene_merge_eval.R")' >> $R_file
 
     # Content of sh file
     job_file=$shSubDir/$dataset/merge_eval.sh
