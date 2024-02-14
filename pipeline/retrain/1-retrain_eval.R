@@ -40,7 +40,7 @@ if (alg == "combined") {
 
 # Best sampling method from classification of full training set
 seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
-samp <- seq_top[["sampling"]]
+samp <- as.character(seq_top[["sampling"]])
 
 # Supervised learning model output
 suppressWarnings(
