@@ -2,6 +2,7 @@
 
 stats <- readRDS(list.files(
   path = file.path(outputDir, "sequential", "merge_eval"),
+  pattern = seqData,
   full.names = TRUE
 ))
 
@@ -13,7 +14,7 @@ df <- stats %>%
   dplyr::rename_with(~ paste0("percentile_", gsub("%", "", .)), where(is.numeric)) %>%
   tibble::add_column(
     dataset = "train",
-    algorithm = "sequential",
+    algorithm = seqData,
     sampling = samp,
     .before = 1
   ) %>%
@@ -22,5 +23,5 @@ df <- stats %>%
 # write results to file
 saveRDS(
   df,
-  file.path(outputDir, "sequential", "summary", "iv_summary_sequential.rds")
+  file.path(outputDir, "sequential", "summary", paste0("iv_summary_", seqData, ".rds"))
 )
