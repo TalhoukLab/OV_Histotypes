@@ -56,5 +56,5 @@ all_metrics <- dplyr::bind_rows(overall_metrics, per_class_metrics)
 # Write all evaluations merged
 saveRDS(
   all_metrics,
-  file.path(outputDir, "sequential", "merge_eval", paste0("merge_eval_sequential.rds"))
+  file.path(outputDir, "sequential", "merge_eval", paste0(seqData, "_merge_eval.rds"))
 )
