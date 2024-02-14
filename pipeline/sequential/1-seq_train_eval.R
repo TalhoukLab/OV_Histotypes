@@ -26,7 +26,7 @@ normalize <- function(data, norm_by = c("none", "genes", "samples"),
 
 # Import sequential training data, class, and algorithm by sampling method
 sq_data <- readRDS(file.path(inputDir, paste0(sq, "_data.rds")))
-sq_class <- readRDS(file.path(inputDir, paste0(sq, "_classs.rds")))
+sq_class <- readRDS(file.path(inputDir, paste0(sq, "_class.rds")))
 sq_algs <- readRDS(file.path(inputDir, paste0(sq, "_algs.rds")))
 
 data <- sq_data[[nseq]]
