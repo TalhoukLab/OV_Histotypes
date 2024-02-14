@@ -40,7 +40,7 @@ retrain_summary:
 
 # Gene optimization
 gene_train_eval:
-	./gene_opt/1a-gene_train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+	./gene_opt/1a-gene_train_eva.sh $(filter-out $@,$(MAKECMDGOALS))
 
 gene_seq_train_eval:
 	./gene_opt/1b-gene_seq_train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
