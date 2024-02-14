@@ -7,7 +7,7 @@ eval_files <-
   purrr::map(seqs, function(n) {
     list.files(
       path = file.path(outputDir, "sequential", "train_eval"),
-      pattern = paste0("seq", n),
+      pattern = paste0(seqData, n),
       full.names = TRUE
     )
   })
@@ -26,7 +26,7 @@ metric_df <- eval_files %>%
       rlang::set_names(c("measure", paste0("Seq", .y, "_B", names(.x))))
   }) %>%
   purrr::reduce(dplyr::full_join, by = "measure") %>%
-  dplyr::filter(!grepl("class_0", measure)) %>%
+  dplyr::filter(!grepl("class_0|non-", measure)) %>%
   tidyr::pivot_longer(
     cols = where(is.numeric),
     names_to = c("Sequence", "Algorithm", "Bootstrap"),

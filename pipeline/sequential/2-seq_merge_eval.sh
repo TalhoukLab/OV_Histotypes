@@ -17,6 +17,7 @@ mkdir -p $outputDir/$subDir
 # Content of R file
 R_file=$RSubDir/sequential_merge_eval.R
 echo 'outputDir <- "'$outputDir'"' > $R_file
+echo 'seqData <- "'$seqData'"' >> $R_file
 echo 'nseq <- '$nseq >> $R_file
 echo 'source("pipeline/sequential/2-seq_merge_eval.R")' >> $R_file
 
