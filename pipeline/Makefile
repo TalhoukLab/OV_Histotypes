@@ -2,7 +2,7 @@ all: train_eval merge_eval iv_summary
 
 sequential: seq_train_eval seq_merge_eval seq_iv_summary
 
-retrain: retrain_eval
+retrain: retrain_eval retrain_merge
 
 # Train models and return evaluations
 train_eval:
@@ -29,6 +29,9 @@ seq_iv_summary:
 # Retrain for sequential and two-step classifiers
 retrain_eval:
 	./retrain/1-retrain_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+
+retrain_merge:
+  ./retrain/2-retrain_merge.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Clean target
 %:
