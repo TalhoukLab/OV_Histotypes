@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Supervised parameters
-dataSets=(retrain_2)
+dataSets=(train)
 reps=50
 algs=(combined mlr_lasso mlr_ridge)
 samps=(none up down smote)
