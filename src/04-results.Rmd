@@ -1669,7 +1669,7 @@ print(p)
 ### Overlap with Other Sets
 
 ```{r overlap-protype}
-overlap_PrOTYPE <- intersect(names(train_ref), cs5$Name)
+overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
 ```
 
 There are `r length(overlap_PrOTYPE)` genes out of the `r ncol(train_data)` common classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`
@@ -1687,7 +1687,7 @@ overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
 candidates <- setdiff(names(train_data), overlap_all)
 ```
 
-There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes based on variable importance to this list and analyze when evaluation metrics (e.g. F1-score) start to plateau. 
+There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining `r length(candidates)` candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry foward for a particular model.
 
 ## Rank Aggregation
 
