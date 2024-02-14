@@ -31,7 +31,7 @@ retrain_eval:
 	./retrain/1-retrain_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 retrain_merge:
-  ./retrain/2-retrain_merge.sh $(filter-out $@,$(MAKECMDGOALS))
+	./retrain/2-retrain_merge.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Clean target
 %:
