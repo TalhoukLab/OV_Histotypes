@@ -12,7 +12,7 @@ train_df <- cbind(train_data, class = train_class)
 n_class <- n_distinct(train_class)
 n_retrain <- n_class - 1
 
-# Top median F1-score per class and sampling
+# Top median F1-score
 seq_summary <- iv_summary_train %>%
   filter(grepl("f1\\.", measure)) %>%
   transmute(
@@ -21,9 +21,7 @@ seq_summary <- iv_summary_train %>%
     sampling = factor(sampling, levels = c("none", "up", "down", "smote")),
     f1_median = percentile_50
   ) %>%
-  nest(.by = sampling) %>%
-  mutate(data = map(data, ~ slice_max(.x, order_by = f1_median))) %>%
-  unnest(cols = data)
+  slice_max(order_by = f1_median)
 
 # Algorithm and subsampling method used for top class out of n=n_class
 seq_top <- add_column(seq_summary, n_class = n_class)
