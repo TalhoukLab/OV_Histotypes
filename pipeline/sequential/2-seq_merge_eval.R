@@ -1,11 +1,6 @@
-# Best sampling method from classification of full training set
-seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
-samp <- as.character(seq_top[["sampling"]])
-
 # All combinations
 `%>%` <- magrittr::`%>%`
 seqs <- seq_len(nseq) %>% purrr::set_names()
-samps <- purrr::set_names(samp)
 
 # All evaluation files
 eval_files <-
@@ -19,23 +14,47 @@ eval_files <-
 
 # Compute median + 95% CI of evaluations within subsampling, merge
 # across sequences and resamples
-eval_merged <- eval_files %>%
-  purrr::map_depth(3, readRDS) %>%
-  purrr::map_depth(2, ~ {
-    purrr::transpose(.) %>%
-      purrr::flatten() %>%
-      as.data.frame() %>%
-      tibble::rownames_to_column("measure")
+metric_df <- eval_files %>%
+  purrr::map(~ purrr::map(., readRDS)) %>%
+  purrr::map(purrr::transpose) %>%
+  purrr::map_depth(2, ~ do.call(cbind, .x) %>%
+                     set_names(seq_len(ncol(.)))) %>%
+  purrr::list_flatten() %>%
+  purrr::imap(~ {
+    .x %>%
+      tibble::rownames_to_column("measure") %>%
+      set_names(c("measure", paste0("Seq", .y, "_B", names(.x))))
   }) %>%
-  purrr::map(~ {
-    purrr::reduce(.x, dplyr::full_join, by = "measure") %>%
-      dplyr::filter(!grepl("class_0", measure)) %>%
-      tibble::column_to_rownames("measure") %>%
-      apply(1, quantile, probs = c(0.5, 0.05, 0.95), na.rm = TRUE)
-  })
+  purrr::reduce(dplyr::full_join, by = "measure") %>%
+  dplyr::filter(!grepl("class_0", measure)) %>%
+  tidyr::pivot_longer(
+    cols = where(is.numeric),
+    names_to = c("Sequence", "Algorithm", "Bootstrap"),
+    names_pattern = "(Seq.)_(.*)_(B.*)",
+    values_to = "value"
+  ) %>%
+  dplyr::mutate(per_class = grepl("\\.", measure))
+
+overall_metrics <- metric_df %>%
+  dplyr::filter(!per_class) %>%
+  dplyr::summarize(quants = list(quantile(
+    value, probs = c(0.5, 0.05, 0.95), na.rm = TRUE
+  )),
+  .by = c(measure)) %>%
+  tidyr::unnest_wider(col = quants)
+
+per_class_metrics <- metric_df %>%
+  dplyr::filter(per_class, !is.na(value)) %>%
+  dplyr::summarize(quants = list(quantile(
+    value, probs = c(0.5, 0.05, 0.95), na.rm = TRUE
+  )),
+  .by = c(measure)) %>%
+  tidyr::unnest_wider(col = quants)
+
+all_metrics <- dplyr::bind_rows(overall_metrics, per_class_metrics)
 
 # Write all evaluations merged
 saveRDS(
-  eval_merged,
+  all_metrics,
   file.path(outputDir, "sequential", "merge_eval", paste0("merge_eval_sequential.rds"))
 )
