@@ -5,7 +5,7 @@
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=merge_eval
+subDir=gene_opt/merge_eval
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 
@@ -14,17 +14,16 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $RSubDir/$dataset
     mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir
-    mkdir -p $outputDir/ranked_vi/$dataset
 
     # Content of R file
-    R_file=$RSubDir/$dataset/merge_eval.R
+    R_file=$RSubDir/$dataset/gene_opt/merge_eval.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo "ngenes <- '$ngenes'" >> $R_file
     echo 'source("pipeline/gene_opt/2-gene_merge_eval.R")' >> $R_file
 
     # Content of sh file
-    job_file=$shSubDir/$dataset/merge_eval.sh
+    job_file=$shSubDir/$dataset/gene_opt/merge_eval.sh
     cat ./assets/sbatch_params.sh > $job_file
     echo "cd $projDir" >> $job_file
     echo "Rscript $R_file" >> $job_file
