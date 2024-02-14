@@ -29,12 +29,16 @@ seq_data <- readRDS(file.path(inputDir, "seq_data.rds"))
 seq_class <- readRDS(file.path(inputDir, "seq_class.rds"))
 seq_algs <- readRDS(file.path(inputDir, "seq_algs.rds"))
 
-data <- seq_data[[samp]][[nseq]]
-class <- seq_class[[samp]][[nseq]]
-alg <- seq_algs[[samp]][[nseq]]
+data <- seq_data[[nseq]]
+class <- seq_class[[nseq]]
+alg <- seq_algs[[nseq]]
 
 # Normalization
 data <- normalize(data, norm_by, norm_type, min_var)
+
+# Best sampling method from classification of full training set
+seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
+samp <- as.character(seq_top[["sampling"]])
 
 # Supervised learning model output
 sm <- splendid::splendid_model(
@@ -51,5 +55,5 @@ sm <- splendid::splendid_model(
 
 # Write evaluations to file
 outputFile <- file.path(outputDir, "sequential", "train_eval",
-                        paste0(samp, "_seq", nseq, "_", reps, ".rds"))
+                        paste0("seq", nseq, "_", reps, ".rds"))
 saveRDS(sm[["evals"]], outputFile)
