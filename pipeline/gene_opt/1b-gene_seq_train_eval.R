@@ -54,7 +54,7 @@ ranked_vi <- readRDS(file.path(outputDir, "sequential", "ranked_vi",
 candidate_genes <- ranked_vi %>%
   dplyr::filter(Sequence == nseq) %>%
   dplyr::arrange(Rank) %>%
-  dplyr::slice_min(order_by = Rank, n = ngene) %>%
+  dplyr::slice_min(order_by = Rank, n = as.numeric(ngene)) %>%
   dplyr::pull(Variable)
 
 # Select genes

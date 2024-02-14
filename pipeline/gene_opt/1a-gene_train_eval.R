@@ -47,7 +47,7 @@ candidate_genes <- ranked_vi %>%
     Algorithm == bestAlg
   ) %>%
   dplyr::arrange(Rank) %>%
-  dplyr::slice_min(order_by = Rank, n = ngene) %>%
+  dplyr::slice_min(order_by = Rank, n = as.numeric(ngene)) %>%
   dplyr::pull(Variable)
 
 # Select genes
