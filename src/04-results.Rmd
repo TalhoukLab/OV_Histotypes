@@ -15,13 +15,15 @@ library(splendid)
 library(magrittr)
 library(DT)
 library(here)
+source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
 ivst <- readRDS(here("data/iv_summary_train.rds"))
 ivsts1 <- readRDS(here("data/iv_summary_train_step1.rds"))
 ivsts2 <- readRDS(here("data/iv_summary_train_step2.rds"))
 ivs1 <- readRDS(here("data/iv_summary_cs1_all.rds"))
 ivs2 <- readRDS(here("data/iv_summary_cs2_all.rds"))
-ivsseq <- readRDS(here("data/iv_summary_sequential.rds"))
+ivs2s <- readRDS(here("data/iv_summary_two_step.rds"))
+ivsseq <- readRDS(here("data/iv_summary_seq.rds"))
 train_data <- readRDS(here("data/train_data.rds"))
 coefmat <- readRDS(here("data/coefmat.rds"))
 ```
@@ -349,647 +351,647 @@ kable(ivst_gmean_class_table,
   kable_styling()
 ```
 
-## Two-Step Training Set
-
-### Accuracy
-
-```{r train-step1-accuracy, fig.cap='Training Set Step 1 Accuracy'}
-ivsts1_accuracy <- ivsts1 %>% 
-  filter(measure == "accuracy") %>% 
-  mutate(algorithm = fct_reorder2(algorithm, sampling, percentile_50))
-
-alg_levels <- levels(ivsts1_accuracy[["algorithm"]])
-
-p <- plot_measure(ivsts1_accuracy) +
-  labs(
-    y = "Accuracy",
-    color = "Subsampling",
-    title = "Training Set Step 1 Accuracy by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step2-accuracy, fig.cap='Training Set Step 2 Accuracy'}
-ivsts2_accuracy <- ivsts2 %>% 
-  filter(measure == "accuracy") %>% 
-  mutate(algorithm = fct_reorder2(algorithm, sampling, percentile_50))
-
-alg_levels <- levels(ivsts2_accuracy[["algorithm"]])
-
-p <- plot_measure(ivsts2_accuracy) +
-  labs(
-    y = "Accuracy",
-    color = "Subsampling",
-    title = "Training Set Step 2 Accuracy by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step1-accuracy-table}
-ivsts1_accuracy_table <- ivsts1_accuracy %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts1_accuracy_table,
-      caption = "Training Set Step 1 Accuracy by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r train-step2-accuracy-table}
-ivsts2_accuracy_table <- ivsts2_accuracy %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts2_accuracy_table,
-      caption = "Training Set Step 2 Accuracy by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r train-step1-accuracy-class, fig.cap='Training Set Step 1 Class-Specific Accuracy', fig.width=8}
-ivsts1_accuracy_class <- ivsts1 %>%
-  filter(grepl("accuracy\\.", measure)) %>%
-  mutate(
-    measure = gsub("accuracy\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts1_accuracy_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "Accuracy",
-    color = "Subsampling",
-    title = "Training Set Step 1 Class-Specific Accuracy by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step2-accuracy-class, fig.cap='Training Set Step 2 Class-Specific Accuracy', fig.width=8}
-ivsts2_accuracy_class <- ivsts2 %>%
-  filter(grepl("accuracy\\.", measure)) %>%
-  mutate(
-    measure = gsub("accuracy\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts2_accuracy_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "Accuracy",
-    color = "Subsampling",
-    title = "Training Set Step 2 Class-Specific Accuracy by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step1-accuracy-class-table}
-ivsts1_accuracy_class_table <- ivsts1_accuracy_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts1_accuracy_class_table,
-      caption = "Training Set Step 1 Class-Specific Accuracy by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-```{r train-step2-accuracy-class-table}
-ivsts2_accuracy_class_table <- ivsts2_accuracy_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts2_accuracy_class_table,
-      caption = "Training Set Step 2 Class-Specific Accuracy by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-### F1-Score
-
-```{r train-step1-f1, fig.cap='Training Set Step 1 F1-Score'}
-ivsts1_f1 <- ivsts1 %>%
-  filter(measure == "macro_f1") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivsts1_f1) +
-  labs(
-    y = "F1-Score",
-    color = "Subsampling",
-    title = "Training Set Step 1 Macro-Averaged F1-Score by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step2-f1, fig.cap='Training Set Step 2 F1-Score'}
-ivsts2_f1 <- ivsts2 %>%
-  filter(measure == "macro_f1") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivsts2_f1) +
-  labs(
-    y = "F1-Score",
-    color = "Subsampling",
-    title = "Training Set Step 2 Macro-Averaged F1-Score by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step1-f1-table}
-ivsts1_f1_table <- ivsts1_f1 %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts1_f1_table,
-      caption = "Training Set Step 1 Macro-Averaged F1-Score by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-```{r train-step2-f1-table}
-ivsts2_f1_table <- ivsts2_f1 %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts2_f1_table,
-      caption = "Training Set Step 2 Macro-Averaged F1-Score by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-```{r train-step1-f1-class, fig.cap='Training Set Step 1 Class-Specific F1-Score', fig.width=8}
-ivsts1_f1_class <- ivsts1 %>%
-  filter(grepl("f1\\.", measure)) %>%
-  mutate(
-    measure = gsub("f1\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts1_f1_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "F1-Score",
-    color = "Subsampling",
-    title = "Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step2-f1-class, fig.cap='Training Set Step 2 Class-Specific F1-Score', fig.width=8}
-ivsts2_f1_class <- ivsts2 %>%
-  filter(grepl("f1\\.", measure)) %>%
-  mutate(
-    measure = gsub("f1\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts2_f1_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "F1-Score",
-    color = "Subsampling",
-    title = "Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step1-f1-class-table}
-ivsts1_f1_class_table <- ivsts1_f1_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-datatable(
-  ivsts1_f1_class_table,
-  options = list(
-    scrollX = TRUE,
-    fixedColumns = TRUE,
-    columnDefs = list(
-      list(
-        targets = 1,
-        render = JS("$.fn.dataTable.render.ellipsis( 10 )")
-      ),
-      list(type = "natural", targets = 0)
-    ),
-    pageLength = 50
-  ),
-  escape = FALSE,
-  rownames = FALSE,
-  caption = "Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method",
-  filter = "top",
-  extensions = "FixedColumns",
-  plugins = c("ellipsis", "natural")
-)
-```
-
-```{r train-step2-f1-class-table}
-ivsts2_f1_class_table <- ivsts2_f1_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-datatable(
-  ivsts2_f1_class_table,
-  options = list(
-    scrollX = TRUE,
-    fixedColumns = TRUE,
-    columnDefs = list(
-      list(
-        targets = 1,
-        render = JS("$.fn.dataTable.render.ellipsis( 10 )")
-      ),
-      list(type = "natural", targets = 0)
-    ),
-    pageLength = 50
-  ),
-  escape = FALSE,
-  rownames = FALSE,
-  caption = "Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method",
-  filter = "top",
-  extensions = "FixedColumns",
-  plugins = c("ellipsis", "natural")
-)
-```
-
-### Kappa
-
-```{r train-step1-kappa, fig.cap='Training Set Step 1 Kappa'}
-ivsts1_kappa <- ivsts1 %>%
-  filter(measure == "kappa") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivsts1_kappa) +
-  labs(
-    y = "Kappa",
-    color = "Subsampling",
-    title = "Training Set Step 1 Kappa by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step2-kappa, fig.cap='Training Set Step 2 Kappa'}
-ivsts2_kappa <- ivsts2 %>%
-  filter(measure == "kappa") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivsts2_kappa) +
-  labs(
-    y = "Kappa",
-    color = "Subsampling",
-    title = "Training Set Step 2 Kappa by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step1-kappa-table}
-ivsts1_kappa_table <- ivsts1_kappa %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts1_kappa_table,
-      caption = "Training Set Step 1 Kappa by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r train-step2-kappa-table}
-ivsts2_kappa_table <- ivsts2_kappa %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts2_kappa_table,
-      caption = "Training Set Step 2 Kappa by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r train-step1-kappa-class, fig.cap='Training Set Step 1 Class-Specific Kappa', fig.width=8}
-ivsts1_kappa_class <- ivsts1 %>%
-  filter(grepl("kappa\\.", measure)) %>%
-  mutate(
-    measure = gsub("kappa\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts1_kappa_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "Kappa",
-    color = "Subsampling",
-    title = "Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step2-kappa-class, fig.cap='Training Set Step 2 Class-Specific Kappa', fig.width=8}
-ivsts2_kappa_class <- ivsts2 %>%
-  filter(grepl("kappa\\.", measure)) %>%
-  mutate(
-    measure = gsub("kappa\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts2_kappa_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "Kappa",
-    color = "Subsampling",
-    title = "Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step1-kappa-class-table}
-ivsts1_kappa_class_table <- ivsts1_kappa_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts1_kappa_class_table,
-      caption = "Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-```{r train-step2-kappa-class-table}
-ivsts2_kappa_class_table <- ivsts2_kappa_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts2_kappa_class_table,
-      caption = "Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-### G-mean
-
-```{r train-step1-gmean, fig.cap='Training Set Step 1 G-mean'}
-ivsts1_gmean <- ivsts1 %>%
-  filter(measure == "gmean") %>%
-  mutate(
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts1_gmean) +
-  labs(
-    y = "G-mean",
-    color = "Subsampling",
-    title = "Training Set Step 1 G-mean by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step2-gmean, fig.cap='Training Set Step 2 G-mean'}
-ivsts2_gmean <- ivsts2 %>%
-  filter(measure == "gmean") %>%
-  mutate(
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts2_gmean) +
-  labs(
-    y = "G-mean",
-    color = "Subsampling",
-    title = "Training Set Step 2 G-mean by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step1-gmean-table}
-ivsts1_gmean_table <- ivsts1_gmean %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts1_gmean_table,
-      caption = "Training Set Step 1 G-mean by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r train-step2-gmean-table}
-ivsts2_gmean_table <- ivsts2_gmean %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts2_gmean_table,
-      caption = "Training Set Step 2 G-mean by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r train-step1-gmean-class, fig.cap='Training Set Step 1 Class-Specific G-mean', fig.width=8}
-ivsts1_gmean_class <- ivsts1 %>%
-  filter(grepl("gmean\\.", measure)) %>%
-  mutate(
-    measure = gsub("gmean\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts1_gmean_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "G-mean",
-    color = "Subsampling",
-    title = "Training Set Step 1 Class Specific G-mean by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step2-gmean-class, fig.cap='Training Set Step 2 Class-Specific G-mean', fig.width=8}
-ivsts2_gmean_class <- ivsts2 %>%
-  filter(grepl("gmean\\.", measure)) %>%
-  mutate(
-    measure = gsub("gmean\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivsts2_gmean_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "G-mean",
-    color = "Subsampling",
-    title = "Training Set Step 2 Class Specific G-mean by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r train-step1-gmean-class-table}
-ivsts1_gmean_class_table <- ivsts1_gmean_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts1_gmean_class_table,
-      caption = "Training Set Step 1 Class-Specific G-mean by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-
-
-
-
-
-
-```{r train-step2-gmean-class-table}
-ivsts2_gmean_class_table <- ivsts2_gmean_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivsts2_gmean_class_table,
-      caption = "Training Set Step 2 Class-Specific G-mean by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
+<!-- ## Two-Step Training Set -->
+
+<!-- ### Accuracy -->
+
+<!-- ```{r train-step1-accuracy, fig.cap='Training Set Step 1 Accuracy'} -->
+<!-- ivsts1_accuracy <- ivsts1 %>%  -->
+<!--   filter(measure == "accuracy") %>%  -->
+<!--   mutate(algorithm = fct_reorder2(algorithm, sampling, percentile_50)) -->
+
+<!-- alg_levels <- levels(ivsts1_accuracy[["algorithm"]]) -->
+
+<!-- p <- plot_measure(ivsts1_accuracy) + -->
+<!--   labs( -->
+<!--     y = "Accuracy", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 1 Accuracy by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-accuracy, fig.cap='Training Set Step 2 Accuracy'} -->
+<!-- ivsts2_accuracy <- ivsts2 %>%  -->
+<!--   filter(measure == "accuracy") %>%  -->
+<!--   mutate(algorithm = fct_reorder2(algorithm, sampling, percentile_50)) -->
+
+<!-- alg_levels <- levels(ivsts2_accuracy[["algorithm"]]) -->
+
+<!-- p <- plot_measure(ivsts2_accuracy) + -->
+<!--   labs( -->
+<!--     y = "Accuracy", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 2 Accuracy by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-accuracy-table} -->
+<!-- ivsts1_accuracy_table <- ivsts1_accuracy %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts1_accuracy_table, -->
+<!--       caption = "Training Set Step 1 Accuracy by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-accuracy-table} -->
+<!-- ivsts2_accuracy_table <- ivsts2_accuracy %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts2_accuracy_table, -->
+<!--       caption = "Training Set Step 2 Accuracy by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-accuracy-class, fig.cap='Training Set Step 1 Class-Specific Accuracy', fig.width=8} -->
+<!-- ivsts1_accuracy_class <- ivsts1 %>% -->
+<!--   filter(grepl("accuracy\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("accuracy\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts1_accuracy_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "Accuracy", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 1 Class-Specific Accuracy by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-accuracy-class, fig.cap='Training Set Step 2 Class-Specific Accuracy', fig.width=8} -->
+<!-- ivsts2_accuracy_class <- ivsts2 %>% -->
+<!--   filter(grepl("accuracy\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("accuracy\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts2_accuracy_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "Accuracy", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 2 Class-Specific Accuracy by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-accuracy-class-table} -->
+<!-- ivsts1_accuracy_class_table <- ivsts1_accuracy_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts1_accuracy_class_table, -->
+<!--       caption = "Training Set Step 1 Class-Specific Accuracy by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-accuracy-class-table} -->
+<!-- ivsts2_accuracy_class_table <- ivsts2_accuracy_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts2_accuracy_class_table, -->
+<!--       caption = "Training Set Step 2 Class-Specific Accuracy by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ### F1-Score -->
+
+<!-- ```{r train-step1-f1, fig.cap='Training Set Step 1 F1-Score'} -->
+<!-- ivsts1_f1 <- ivsts1 %>% -->
+<!--   filter(measure == "macro_f1") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivsts1_f1) + -->
+<!--   labs( -->
+<!--     y = "F1-Score", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 1 Macro-Averaged F1-Score by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-f1, fig.cap='Training Set Step 2 F1-Score'} -->
+<!-- ivsts2_f1 <- ivsts2 %>% -->
+<!--   filter(measure == "macro_f1") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivsts2_f1) + -->
+<!--   labs( -->
+<!--     y = "F1-Score", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 2 Macro-Averaged F1-Score by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-f1-table} -->
+<!-- ivsts1_f1_table <- ivsts1_f1 %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts1_f1_table, -->
+<!--       caption = "Training Set Step 1 Macro-Averaged F1-Score by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-f1-table} -->
+<!-- ivsts2_f1_table <- ivsts2_f1 %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts2_f1_table, -->
+<!--       caption = "Training Set Step 2 Macro-Averaged F1-Score by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-f1-class, fig.cap='Training Set Step 1 Class-Specific F1-Score', fig.width=8} -->
+<!-- ivsts1_f1_class <- ivsts1 %>% -->
+<!--   filter(grepl("f1\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("f1\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts1_f1_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "F1-Score", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-f1-class, fig.cap='Training Set Step 2 Class-Specific F1-Score', fig.width=8} -->
+<!-- ivsts2_f1_class <- ivsts2 %>% -->
+<!--   filter(grepl("f1\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("f1\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts2_f1_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "F1-Score", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-f1-class-table} -->
+<!-- ivsts1_f1_class_table <- ivsts1_f1_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- datatable( -->
+<!--   ivsts1_f1_class_table, -->
+<!--   options = list( -->
+<!--     scrollX = TRUE, -->
+<!--     fixedColumns = TRUE, -->
+<!--     columnDefs = list( -->
+<!--       list( -->
+<!--         targets = 1, -->
+<!--         render = JS("$.fn.dataTable.render.ellipsis( 10 )") -->
+<!--       ), -->
+<!--       list(type = "natural", targets = 0) -->
+<!--     ), -->
+<!--     pageLength = 50 -->
+<!--   ), -->
+<!--   escape = FALSE, -->
+<!--   rownames = FALSE, -->
+<!--   caption = "Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method", -->
+<!--   filter = "top", -->
+<!--   extensions = "FixedColumns", -->
+<!--   plugins = c("ellipsis", "natural") -->
+<!-- ) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-f1-class-table} -->
+<!-- ivsts2_f1_class_table <- ivsts2_f1_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- datatable( -->
+<!--   ivsts2_f1_class_table, -->
+<!--   options = list( -->
+<!--     scrollX = TRUE, -->
+<!--     fixedColumns = TRUE, -->
+<!--     columnDefs = list( -->
+<!--       list( -->
+<!--         targets = 1, -->
+<!--         render = JS("$.fn.dataTable.render.ellipsis( 10 )") -->
+<!--       ), -->
+<!--       list(type = "natural", targets = 0) -->
+<!--     ), -->
+<!--     pageLength = 50 -->
+<!--   ), -->
+<!--   escape = FALSE, -->
+<!--   rownames = FALSE, -->
+<!--   caption = "Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method", -->
+<!--   filter = "top", -->
+<!--   extensions = "FixedColumns", -->
+<!--   plugins = c("ellipsis", "natural") -->
+<!-- ) -->
+<!-- ``` -->
+
+<!-- ### Kappa -->
+
+<!-- ```{r train-step1-kappa, fig.cap='Training Set Step 1 Kappa'} -->
+<!-- ivsts1_kappa <- ivsts1 %>% -->
+<!--   filter(measure == "kappa") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivsts1_kappa) + -->
+<!--   labs( -->
+<!--     y = "Kappa", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 1 Kappa by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-kappa, fig.cap='Training Set Step 2 Kappa'} -->
+<!-- ivsts2_kappa <- ivsts2 %>% -->
+<!--   filter(measure == "kappa") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivsts2_kappa) + -->
+<!--   labs( -->
+<!--     y = "Kappa", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 2 Kappa by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-kappa-table} -->
+<!-- ivsts1_kappa_table <- ivsts1_kappa %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts1_kappa_table, -->
+<!--       caption = "Training Set Step 1 Kappa by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-kappa-table} -->
+<!-- ivsts2_kappa_table <- ivsts2_kappa %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts2_kappa_table, -->
+<!--       caption = "Training Set Step 2 Kappa by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-kappa-class, fig.cap='Training Set Step 1 Class-Specific Kappa', fig.width=8} -->
+<!-- ivsts1_kappa_class <- ivsts1 %>% -->
+<!--   filter(grepl("kappa\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("kappa\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts1_kappa_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "Kappa", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-kappa-class, fig.cap='Training Set Step 2 Class-Specific Kappa', fig.width=8} -->
+<!-- ivsts2_kappa_class <- ivsts2 %>% -->
+<!--   filter(grepl("kappa\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("kappa\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts2_kappa_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "Kappa", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-kappa-class-table} -->
+<!-- ivsts1_kappa_class_table <- ivsts1_kappa_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts1_kappa_class_table, -->
+<!--       caption = "Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-kappa-class-table} -->
+<!-- ivsts2_kappa_class_table <- ivsts2_kappa_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts2_kappa_class_table, -->
+<!--       caption = "Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ### G-mean -->
+
+<!-- ```{r train-step1-gmean, fig.cap='Training Set Step 1 G-mean'} -->
+<!-- ivsts1_gmean <- ivsts1 %>% -->
+<!--   filter(measure == "gmean") %>% -->
+<!--   mutate( -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts1_gmean) + -->
+<!--   labs( -->
+<!--     y = "G-mean", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 1 G-mean by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-gmean, fig.cap='Training Set Step 2 G-mean'} -->
+<!-- ivsts2_gmean <- ivsts2 %>% -->
+<!--   filter(measure == "gmean") %>% -->
+<!--   mutate( -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts2_gmean) + -->
+<!--   labs( -->
+<!--     y = "G-mean", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 2 G-mean by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-gmean-table} -->
+<!-- ivsts1_gmean_table <- ivsts1_gmean %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts1_gmean_table, -->
+<!--       caption = "Training Set Step 1 G-mean by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-gmean-table} -->
+<!-- ivsts2_gmean_table <- ivsts2_gmean %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts2_gmean_table, -->
+<!--       caption = "Training Set Step 2 G-mean by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-gmean-class, fig.cap='Training Set Step 1 Class-Specific G-mean', fig.width=8} -->
+<!-- ivsts1_gmean_class <- ivsts1 %>% -->
+<!--   filter(grepl("gmean\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("gmean\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts1_gmean_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "G-mean", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 1 Class Specific G-mean by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step2-gmean-class, fig.cap='Training Set Step 2 Class-Specific G-mean', fig.width=8} -->
+<!-- ivsts2_gmean_class <- ivsts2 %>% -->
+<!--   filter(grepl("gmean\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("gmean\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivsts2_gmean_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "G-mean", -->
+<!--     color = "Subsampling", -->
+<!--     title = "Training Set Step 2 Class Specific G-mean by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r train-step1-gmean-class-table} -->
+<!-- ivsts1_gmean_class_table <- ivsts1_gmean_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts1_gmean_class_table, -->
+<!--       caption = "Training Set Step 1 Class-Specific G-mean by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+
+
+
+
+
+
+<!-- ```{r train-step2-gmean-class-table} -->
+<!-- ivsts2_gmean_class_table <- ivsts2_gmean_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivsts2_gmean_class_table, -->
+<!--       caption = "Training Set Step 2 Class-Specific G-mean by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
 
 ## CS1 Set
 
@@ -1701,24 +1703,23 @@ ivs_multi_f1 <- ivst %>%
     median_f1 = percentile_50
   )
 
-ivs_2S_f1 <-
-  bind_rows(ivsts1_f1_class %>% filter(grepl("^HGSC$", measure)),
-            ivsts2_f1_class) %>%
-  transmute(
-    model = paste("2S", algorithm, sampling, sep = "-"),
+ivs_two_step_f1 <- ivs2s %>% 
+  filter(grepl("f1\\.", measure)) %>%
+    transmute(
+    model = algorithm,
     class = gsub("f1\\.", "", measure),
     median_f1 = percentile_50
   )
 
 ivs_seq_f1 <- ivsseq %>%
-  filter(grepl("f1\\.(?!class_0)", measure, perl = TRUE)) %>%
+  filter(grepl("f1\\.", measure)) %>%
   transmute(
-    model = paste(algorithm, sampling, sep = "-"),
+    model = algorithm,
     class = gsub("f1\\.", "", measure),
     median_f1 = percentile_50
   )
 
-ivs_comb <- bind_rows(ivs_multi_f1, ivs_2S_f1, ivs_seq_f1)
+ivs_comb <- bind_rows(ivs_multi_f1, ivs_two_step_f1, ivs_seq_f1)
 
 # Rank aggregation
 f1_ranks <- ivs_comb %>% 
@@ -1773,115 +1774,65 @@ The `r ncol(f1_ranks)` methods (algorithm-sampling combinations) are ordered in 
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
-The top 4 methods are:
+The top 3 methods are:
 
-- **2S-rf-none**: 2-step method using random forest algorithm with no subsampling
-- **sequential-up**: sequential algorithm with upsampling. The sequence of models and algorithms used are: 
+- **seq**: sequential algorithm with upsampling at every step. The sequence of algorithms used are:
   - HGSC vs. non-HGSC using adaboost
-  - MUC vs. non-MUC using random forest
   - CCOC vs. non-CCOC using random forest
-  - ENOC vs. LGSC using random forest
-- **sequential-none**: sequential algorithm with no subsampling. The sequence of models and algorithms used are: 
+  - ENOC vs. non-ENOC using ridge regression
+  - MUC vs. LGSC using adaboost
+- **two_step**: two-step algorithm with upsampling at both steps. The sequence of algorithms used are:
+  - HGSC vs. non-HGSC using adaboost
+  - CCOC vs. ENOC vs. MUC vs. LGSC using random forest
+- **adaboost-up**: adaboost algorithm with upsampling. The sequence of models and algorithms used are: 
   - HGSC vs. non-HGSC using SVM
   - MUC vs. non-MUC using ridge regression
   - CCOC vs. non-CCOC using random forest
   - ENOC vs. LGSC using SVM
-- **sequential-down**: sequential algorithm with downsampling. The sequence of models and algorithms used are:
-  - HGSC vs. non-HGSC using random forest
-  - CCOC vs. non-CCOC using random forest
-  - MUC vs. non-MUC using ridge regression
-  - ENOC vs. LGSC using random forest
-  
-As a comparison we also show the F1-scores from the **rf-none** to see how the best methods improve from it.
 
 ```{r top-models}
-# Training set step 1 and step 2 data
-train_step1_class <- readRDS(here("data", "train_step1_class.rds"))
-train_step1_data <- readRDS(here("data", "train_step1_data.rds"))
-train_step2_class <- readRDS(here("data", "train_step2_class.rds"))
-train_step2_data <- readRDS(here("data", "train_step2_data.rds"))
+# Two-step model
+two_step_data <- readRDS(here("data", "two_step_data.rds"))
+two_step_class <- readRDS(here("data", "two_step_class.rds"))
+two_step_algs <- readRDS(here("data", "two_step_algs.rds"))
 
-# 2S-rf-none
-mod_step1_none <- classification(
-  data = train_step1_data,
-  class = train_step1_class,
-  algorithm = "rf",
-  sampling = "none",
-  seed_alg = 2021
-)
-mod_step2_none <- classification(
-  data = train_step2_data,
-  class = train_step2_class,
-  algorithm = "rf",
-  sampling = "none",
-  seed_alg = 2021
-)
+mod_two_step <-
+  pmap(list(two_step_data, two_step_class, two_step_algs), ~ {
+    classification(
+      data = ..1,
+      class = ..2,
+      algorithm = ..3,
+      sampling = "up",
+      seed_alg = 2024
+    )
+  })
 
-# 2S-rf-smote
-mod_step1_smote <- classification(
-  data = train_step1_data,
-  class = train_step1_class,
-  algorithm = "rf",
-  sampling = "smote",
-  seed_alg = 2021
-)
-mod_step2_smote <- classification(
-  data = train_step2_data,
-  class = train_step2_class,
-  algorithm = "rf",
-  sampling = "smote",
-  seed_alg = 2021
-)
-
-# sequential data
+# sequential model
 seq_data <- readRDS(here("data", "seq_data.rds"))
 seq_class <- readRDS(here("data", "seq_class.rds"))
 seq_algs <- readRDS(here("data", "seq_algs.rds"))
 
-# sequential-none
-seq_data_none <- seq_data[["none"]]
-seq_class_none <- seq_class[["none"]]
-seq_algs_none <- seq_algs[["none"]]
-
-mod_seq_none <-
-  pmap(list(seq_data_none, seq_class_none, seq_algs_none), ~ {
+mod_seq <-
+  pmap(list(seq_data, seq_class, seq_algs), ~ {
     classification(
       data = ..1,
       class = ..2,
       algorithm = ..3,
-      sampling = "none",
-      seed_alg = 2021
+      sampling = "up",
+      seed_alg = 2024
     )
   })
 
-# sequential-smote
-seq_data_smote <- seq_data[["smote"]]
-seq_class_smote <- seq_class[["smote"]]
-seq_algs_smote <- seq_algs[["smote"]]
-
-mod_seq_smote <-
-  pmap(list(seq_data_smote, seq_class_smote, seq_algs_smote), ~ {
-    classification(
-      data = ..1,
-      class = ..2,
-      algorithm = ..3,
-      sampling = "smote",
-      seed_alg = 2021
-    )
-  })
-
-# rf-none
-
-# Training set data
+# adaboost-up
 train_data <- readRDS(here("data", "train_data.rds"))
 train_class <- readRDS(here("data", "train_class.rds"))
 
 mod_full <- classification(
   data = train_data,
   class = train_class,
-  algorithm = "rf",
-  sampling = "none",
-  seed_alg = 2021
+  algorithm = "adaboost",
+  sampling = "up",
+  seed_alg = 2024
 )
 ```
 
@@ -1899,80 +1850,47 @@ conf_step2_data <- conf_data[conf_step1_class != "HGSC", ]
 conf_step2_class <- factor(conf_class[conf_step1_class != "HGSC"])
 
 # Predict and evaluate
-conf_step1_pred_none <- prediction(mod_step1_none, conf_step1_data, conf_step1_class)
-conf_step1_eval_none <- evaluation(conf_step1_class, conf_step1_pred_none)
-conf_step2_pred_none <- prediction(mod_step2_none, conf_step2_data, conf_step2_class)
-conf_step2_eval_none <- evaluation(conf_step2_class, conf_step2_pred_none)
+conf_step1_pred <-
+  prediction(mod_two_step[[1]], conf_step1_data, conf_step1_class)
+conf_step1_eval <-
+  evaluation(conf_step1_class, conf_step1_pred)
 
-conf_step1_pred_smote <- prediction(mod_step1_smote, conf_step1_data, conf_step1_class)
-conf_step1_eval_smote <- evaluation(conf_step1_class, conf_step1_pred_smote)
-conf_step2_pred_smote <- prediction(mod_step2_smote, conf_step2_data, conf_step2_class)
-conf_step2_eval_smote <- evaluation(conf_step2_class, conf_step2_pred_smote)
+conf_step2_pred <-
+  prediction(mod_two_step[[2]], conf_step2_data, conf_step2_class)
+conf_step2_eval <-
+  evaluation(conf_step2_class, conf_step2_pred)
 
 # Combine evaluations from both steps
-conf_2S_eval_none <- list(conf_step1_eval_none, conf_step2_eval_none) %>%
+conf_2S_eval <- list(conf_step1_eval, conf_step2_eval) %>%
   map("cs") %>%
   unlist() %>%
   imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
   compact() %>%
   bind_rows() %>%
   rename_with(~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "2S-rf-none", .before = 1)
-
-conf_2S_eval_smote <- list(conf_step1_eval_smote, conf_step2_eval_smote) %>%
-  map("cs") %>%
-  unlist() %>%
-  imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
-  compact() %>%
-  bind_rows() %>%
-  rename_with(~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "2S-rf-smote", .before = 1)
+  add_column(method = "two_step", .before = 1)
 
 # Create sequential splits
 conf_df <- cbind(conf_data, class = conf_class)
 
-seq_conf_ranks_none <- seq_class_none %>%
+seq_conf_ranks <- seq_class %>%
   map(unique) %>%
   map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
   unlist() %>%
   accumulate(c) %>%
   head(-1)
 
-seq_conf_ranks_smote <- seq_class_smote %>%
-  map(unique) %>%
-  map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
-  unlist() %>%
-  accumulate(c) %>%
-  head(-1)
-
-seq_conf_data_none <- map(seq_conf_ranks_none, ~ {
+seq_conf_data <- map(seq_conf_ranks, ~ {
   conf_df %>%
     filter(!class %in% head(.x, -1)) %>%
     select(-class)
 })
 
-seq_conf_data_smote <- map(seq_conf_ranks_smote, ~ {
-  conf_df %>%
-    filter(!class %in% head(.x, -1)) %>%
-    select(-class)
-})
-
-seq_conf_class_none <- imap(seq_conf_ranks_none, ~ {
+seq_conf_class <- imap(seq_conf_ranks, ~ {
   cl <- conf_df %>%
     filter(!class %in% head(.x, -1)) %>%
     pull(class)
-  if (.y != length(seq_conf_ranks_none)) {
-    factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
-  } else {
-    factor(cl)
-  }
-})
-
-seq_conf_class_smote <- imap(seq_conf_ranks_smote, ~ {
-  cl <- conf_df %>%
-    filter(!class %in% head(.x, -1)) %>%
-    pull(class)
-  if (.y != length(seq_conf_ranks_smote)) {
+  if (.y != length(seq_conf_ranks)) {
     factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
   } else {
     factor(cl)
@@ -1980,8 +1898,8 @@ seq_conf_class_smote <- imap(seq_conf_ranks_smote, ~ {
 })
 
 # Predict and evaluate
-conf_seq_eval_none <-
-  pmap(list(mod_seq_none, seq_conf_data_none, seq_conf_class_none), ~ {
+conf_seq_eval <-
+  pmap(list(mod_seq, seq_conf_data, seq_conf_class), ~ {
     pred <- prediction(..1, ..2, ..3)
     eval <- evaluation(..3, pred)
     eval
@@ -1992,21 +1910,7 @@ conf_seq_eval_none <-
   compact() %>%
   bind_rows() %>%
   rename_with( ~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "sequential-none", .before = 1)
-
-conf_seq_eval_smote <-
-  pmap(list(mod_seq_smote, seq_conf_data_smote, seq_conf_class_smote), ~ {
-    pred <- prediction(..1, ..2, ..3)
-    eval <- evaluation(..3, pred)
-    eval
-  }) %>%
-  map("cs") %>%
-  unlist() %>%
-  imap( ~ .x[grepl("f1\\.(?!class_0)", .y, perl = TRUE)]) %>%
-  compact() %>%
-  bind_rows() %>%
-  rename_with( ~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "sequential-smote", .before = 1)
+  add_column(method = "sequential", .before = 1)
 
 # Fit on full data as comparison
 conf_class <- factor(conf_class)
@@ -2019,25 +1923,117 @@ conf_full_eval <- conf_eval %>%
   compact() %>%
   bind_rows() %>%
   rename_with(~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "rf-none", .before = 1)
+  add_column(method = "adaboost-up", .before = 1)
 
 # Comparison of evaluation measures from all methods
-conf_summary <-
-  bind_rows(
-    conf_2S_eval_none,
-    conf_seq_eval_none,
-    conf_2S_eval_smote,
-    conf_seq_eval_smote,
-    conf_full_eval
-  )
+conf_summary <- bind_rows(conf_2S_eval,
+                          conf_seq_eval,
+                          conf_full_eval)
 kable(conf_summary,
       caption = "Class-specific F1-scores on Confirmation Sets",
       digits = 3)
 ```
 
-In the confirmation set, **2S-rf-none** improves drastically in LGSC classification compard to **rf-none**, with moderate improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. **sequential-none** improves on **2S-rf-none** in all classes except for marginal decrease in HGSC performance.
+In the confirmation set, **sequential** improves drastically in LGSC classification compared to **adaboost-up**, with moderate improvement in ENOC, and minor improvement in CCOC. **sequential** improves on **two_step** in all classes.
 
 ### Validation Set
+
+```{r validation-set}
+# Load data
+val_class <- readRDS(here("data", "val_class.rds"))
+val_data <- readRDS(here("data", "val_data.rds"))
+
+# Create step 1 and step 2 splits
+val_step1_data <- val_data
+val_step1_class <- factor(ifelse(val_class == "HGSC", "HGSC", "non-HGSC"))
+val_step2_data <- val_data[val_step1_class != "HGSC", ]
+val_step2_class <- factor(val_class[val_step1_class != "HGSC"])
+
+# Predict and evaluate
+val_step1_pred <-
+  prediction(mod_two_step[[1]], val_step1_data, val_step1_class)
+val_step1_eval <-
+  evaluation(val_step1_class, val_step1_pred)
+
+val_step2_pred <-
+  prediction(mod_two_step[[2]], val_step2_data, val_step2_class)
+val_step2_eval <-
+  evaluation(val_step2_class, val_step2_pred)
+
+# Combine evaluations from both steps
+val_2S_eval <- list(val_step1_eval, val_step2_eval) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "two_step", .before = 1)
+
+# Create sequential splits
+val_df <- cbind(val_data, class = val_class)
+
+seq_val_ranks <- seq_class %>%
+  map(unique) %>%
+  map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
+  unlist() %>%
+  accumulate(c) %>%
+  head(-1)
+
+seq_val_data <- map(seq_val_ranks, ~ {
+  val_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    select(-class)
+})
+
+seq_val_class <- imap(seq_val_ranks, ~ {
+  cl <- val_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    pull(class)
+  if (.y != length(seq_val_ranks)) {
+    factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
+  } else {
+    factor(cl)
+  }
+})
+
+# Predict and evaluate
+val_seq_eval <-
+  pmap(list(mod_seq, seq_val_data, seq_val_class), ~ {
+    pred <- prediction(..1, ..2, ..3)
+    eval <- evaluation(..3, pred)
+    eval
+  }) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap( ~ .x[grepl("f1\\.(?!class_0)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with( ~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "sequential", .before = 1)
+
+# Fit on full data as comparison
+val_class <- factor(val_class)
+val_pred <- prediction(mod_full, val_data, val_class)
+val_eval <- evaluation(val_class, val_pred)
+
+val_full_eval <- val_eval %>%
+  pluck("cs") %>%
+  imap(~ .x[grepl("f1\\.", .y)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "adaboost-up", .before = 1)
+
+# Comparison of evaluation measures from all methods
+val_summary <- bind_rows(val_2S_eval,
+                          val_seq_eval,
+                          val_full_eval)
+kable(val_summary,
+      caption = "Class-specific F1-scores on valirmation Sets",
+      digits = 3)
+```
+
 
 ```{r validation-set}
 # Load data
@@ -2187,4 +2183,4 @@ kable(val_summary,
       digits = 3)
 ```
 
-Similarly in the validation set, **2S-rf-none** improves drastically in LGSC classification compared to **rf-none**, with large improvement in ENOC, and minor improvement in HGSC and CCOC. There is a decrease in MUC performance. **sequential-none** improves on **2S-rf-none** in all classes except for a small decrease in CCOC performance and same performance for LGSC.
+Similarly in the validation set, **two_step** and **sequential** improve drastically in LGSC classification compared to **adaboost-up**, with moderate improvement in ENOC and MUC, and minor improvement in CCOC. There is a decrease in MUC performance. **sequential** improves on **two_step** in all classes except for a small decrease in HGSC performance.
