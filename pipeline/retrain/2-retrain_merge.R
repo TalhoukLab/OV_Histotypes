@@ -32,7 +32,7 @@ eval_merged <- eval_files %>%
 # Write all evaluations merged
 saveRDS(
   eval_merged,
-  file.path(outputDir, "merge_eval", paste0("merge_eval_", dataset, ".rds"))
+  file.path(outputDir, "retrain_merge", paste0("merge_eval_", dataset, ".rds"))
 )
 
 # All variable importance files
