@@ -25,13 +25,13 @@ normalize <- function(data, norm_by = c("none", "genes", "samples"),
 }
 
 # Import sequential training data, class, and algorithm by sampling method
-seq_data <- readRDS(file.path(inputDir, "seq_data.rds"))
-seq_class <- readRDS(file.path(inputDir, "seq_class.rds"))
-seq_algs <- readRDS(file.path(inputDir, "seq_algs.rds"))
+sq_data <- readRDS(file.path(inputDir, paste0(sq, "_data.rds")))
+sq_class <- readRDS(file.path(inputDir, paste0(sq, "_classs.rds")))
+sq_algs <- readRDS(file.path(inputDir, paste0(sq, "_algs.rds")))
 
-data <- seq_data[[nseq]]
-class <- seq_class[[nseq]]
-alg <- seq_algs[[nseq]]
+data <- sq_data[[nseq]]
+class <- sq_class[[nseq]]
+alg <- sq_algs[[nseq]]
 
 # Normalization
 data <- normalize(data, norm_by, norm_type, min_var)
@@ -55,5 +55,5 @@ sm <- splendid::splendid_model(
 
 # Write evaluations to file
 outputFile <- file.path(outputDir, "sequential", "train_eval",
-                        paste0("seq", nseq, "_", reps, ".rds"))
+                        paste0(sq, nseq, "_", reps, ".rds"))
 saveRDS(sm[["evals"]], outputFile)

@@ -1,13 +1,14 @@
 #!/bin/bash
 
 # Supervised parameters
-dataSets=(retrain_4)
+dataSets=(retrain_2)
 reps=500
 algs=(combined mlr_lasso mlr_ridge)
 samps=(none up down smote)
 norm_by="none"
 norm_type="conventional"
 min_var=0
+seqData=(seq)
 nseq=4
 
 # Directory parameters
