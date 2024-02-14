@@ -1,18 +1,20 @@
+# Best sampling method from classification of full training set
+seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
+samp <- as.character(seq_top[["sampling"]])
+
 # All combinations
 `%>%` <- magrittr::`%>%`
 seqs <- seq_len(nseq) %>% purrr::set_names()
-samps <- purrr::set_names(samps)
+samps <- purrr::set_names(samp)
 
 # All evaluation files
 eval_files <-
-  purrr::map(samps, function(s) {
-    purrr::map(seqs, function(n) {
-      list.files(
-        path = file.path(outputDir, "sequential", "train_eval"),
-        pattern = paste0(s, "_seq", n),
-        full.names = TRUE
-      )
-    })
+  purrr::map(seqs, function(n) {
+    list.files(
+      path = file.path(outputDir, "sequential", "train_eval"),
+      pattern = paste0("seq", n),
+      full.names = TRUE
+    )
   })
 
 # Compute median + 95% CI of evaluations within subsampling, merge
