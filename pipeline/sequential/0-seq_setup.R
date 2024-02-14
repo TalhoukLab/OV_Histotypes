@@ -19,6 +19,10 @@ seq_class <- list(train_class,
                   retrain_3_class,
                   retrain_2_class) %>%
   map2(seq_top[["class"]], ~ {
-    ifelse(.x == .y, .x, "class_0")
+    if (.y != "MUC") {
+      ifelse(.x == .y, .x, "class_0")
+    } else {
+      .x
+    }
   })
 saveRDS(seq_class, here("data/seq_class.rds"))
