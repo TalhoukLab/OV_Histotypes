@@ -30,7 +30,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'norm_by <- "'$norm_by'"' >> $R_file
             echo 'norm_type <- "'$norm_type'"' >> $R_file
             echo "min_var <- '$min_var'" >> $R_file
-            echo 'source("pipeline/gene_opt/1-gene_train_eval.R")' >> $R_file
+            echo 'source("pipeline/gene_opt/1a-gene_train_eval.R")' >> $R_file
 
             # Content of sh file
             job_file=$shSubDir/$dataset/$bestAlg"_"$bestSamp"_add"$ng"_"$s.sh
