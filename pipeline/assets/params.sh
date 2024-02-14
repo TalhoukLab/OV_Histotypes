@@ -2,7 +2,7 @@
 
 # Supervised parameters
 dataSets=(retrain_2)
-reps=500
+reps=50
 algs=(combined mlr_lasso mlr_ridge)
 samps=(none up down smote)
 norm_by="none"
@@ -10,7 +10,7 @@ norm_type="conventional"
 min_var=0
 seqData=(two_step)
 nseq=2
-bestAlg="rf"
+bestAlg="adaboost"
 bestSamp="up"
 ngenes=44
 
