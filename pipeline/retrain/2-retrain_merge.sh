@@ -20,6 +20,7 @@ for dataset in "${dataSets[@]}"; do
     R_file=$RSubDir/$dataset/retrain_merge.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
+    echo 'inputDir <- "'$inputDir'"' >> $R_file
     echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file
     echo 'source("pipeline/retrain/2-retrain_merge.R")' >> $R_file
 
