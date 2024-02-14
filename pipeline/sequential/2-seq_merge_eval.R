@@ -1,6 +1,6 @@
 # All combinations
 `%>%` <- magrittr::`%>%`
-seqs <- seq_len(nseq) %>% purrr::set_names()
+seqs <- seq_len(nseq) %>% rlang::set_names()
 
 # All evaluation files
 eval_files <-
@@ -18,12 +18,12 @@ metric_df <- eval_files %>%
   purrr::map(~ purrr::map(., readRDS)) %>%
   purrr::map(purrr::transpose) %>%
   purrr::map_depth(2, ~ do.call(cbind, .x) %>%
-                     set_names(seq_len(ncol(.)))) %>%
+                     rlang::set_names(seq_len(ncol(.)))) %>%
   purrr::list_flatten() %>%
   purrr::imap(~ {
     .x %>%
       tibble::rownames_to_column("measure") %>%
-      set_names(c("measure", paste0("Seq", .y, "_B", names(.x))))
+      rlang::set_names(c("measure", paste0("Seq", .y, "_B", names(.x))))
   }) %>%
   purrr::reduce(dplyr::full_join, by = "measure") %>%
   dplyr::filter(!grepl("class_0", measure)) %>%
