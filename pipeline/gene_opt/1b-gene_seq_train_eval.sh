@@ -25,7 +25,7 @@ for sq in "${seqData[@]}"; do
         for nseq in $(seq 1 $nseq); do
             for ng in $(seq 1 $ngenes); do
                 # Content of R file
-                R_file=$RSubDir/$sq"_"$nseq"_"$s.R
+                R_file=$RSubDir/$sq"_"$nseq"_add"$ng"_"$s.R
                 echo 'reps <- "'$s'"' > $R_file
                 echo "ngene <- '$ng'" >> $R_file
                 echo 'sq <- "'$sq'"' >> $R_file
@@ -38,7 +38,7 @@ for sq in "${seqData[@]}"; do
                 echo 'source("pipeline/sequential/1b-gene_seq_train_eval.R")' >> $R_file
 
                 # Content of sh file
-                job_file=$shSubDir/$sq"_"$nseq"_"$s.sh
+                job_file=$shSubDir/$sq"_"$nseq"_add"$ng"_"$s.sh
                 cat ./assets/sbatch_params.sh > $job_file
                 echo "cd $projDir" >> $job_file
                 echo "Rscript $R_file" >> $job_file
