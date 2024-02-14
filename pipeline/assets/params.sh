@@ -8,8 +8,11 @@ samps=(none up down smote)
 norm_by="none"
 norm_type="conventional"
 min_var=0
-seqData=(seq)
+seqData=(two_step)
 nseq=4
+bestAlg="rf"
+bestSamp="up"
+ngenes=44
 
 # Directory parameters
 user="$(whoami)"

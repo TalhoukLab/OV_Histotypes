@@ -1,0 +1,55 @@
+#!/bin/bash
+
+. ./assets/params.sh
+
+file_to_submit=()
+
+# Make directories for R script, shell script
+subDir=gene_opt/train_eval
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
+
+for dataset in "${dataSets[@]}"; do
+    # Make job and output directories for dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
+    mkdir -p $outputDir/$subDir/$dataset
+    #mkdir -p $outputDir/vi/$dataset
+
+    for s in $(seq -f "%0${#reps}g" 1 $reps); do
+        for ng in $(seq 1 $ngenes); do
+            # Content of R file
+            R_file=$RSubDir/$dataset/$bestAlg"_"$bestSamp"_add"$ng"_"$s.R
+            echo 'dataset <- "'$dataset'"' > $R_file
+            echo 'reps <- "'$s'"' >> $R_file
+            echo "ngene <- '$ng'" >> $R_file
+            echo 'bestAlg <- "'$bestAlg'"' >> $R_file
+            echo 'bestSamp <- "'$bestSamp'"' >> $R_file
+            echo 'inputDir <- "'$inputDir'"' >> $R_file
+            echo 'outputDir <- "'$outputDir'"' >> $R_file
+            echo 'norm_by <- "'$norm_by'"' >> $R_file
+            echo 'norm_type <- "'$norm_type'"' >> $R_file
+            echo "min_var <- '$min_var'" >> $R_file
+            echo 'source("pipeline/gene_opt/1-gene_train_eval.R")' >> $R_file
+
+            # Content of sh file
+            job_file=$shSubDir/$dataset/$bestAlg"_"$bestSamp"_add"$ng"_"$s.sh
+            cat ./assets/sbatch_params.sh > $job_file
+            echo "cd $projDir" >> $job_file
+            echo "Rscript $R_file" >> $job_file
+            chmod +x $job_file
+
+            # Add to queue if sbatch exists
+            if command -v sbatch &>/dev/null; then
+                file_to_submit+=($job_file)
+                echo -e "$GREEN_TICK Added to queue: $job_file"
+            fi
+    done
+done
+
+# Submit to queue if sbatch exists
+logDir=$logDir/$subDir
+outputDir=$outputDir/$subDir
+if command -v sbatch &>/dev/null; then
+    . ./assets/submit_slurm.sh
+fi
