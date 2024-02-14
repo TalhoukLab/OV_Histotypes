@@ -87,6 +87,6 @@ outputFile <- file.path(outputDir, "retrain_eval", dataset,
 saveRDS(sm[["evals"]], outputFile)
 
 # Write variable importance to file
-viFile <- file.path(outputDir, "vi", dataset,
+viFile <- file.path(outputDir, "retrain_vi", dataset,
                     paste0("vi_", alg, "_", samp, "_", reps, "_", dataset, ".rds"))
 saveRDS(vi_df, viFile)
