@@ -5,15 +5,18 @@ stats <- readRDS(list.files(
   full.names = TRUE
 ))
 
+# Best sampling method from classification of full training set
+seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
+samp <- as.character(seq_top[["sampling"]])
+
 df <- stats %>%
-  purrr::imap_dfr(~ {
-    t(.x) %>%
-      as.data.frame() %>%
-      purrr::set_names(paste0("percentile_", gsub("%", "", names(.)))) %>%
-      tibble::rownames_to_column("measure") %>%
-      tibble::add_column(algorithm = "sequential", sampling = .y, .before = 1)
-  }) %>%
-  tibble::add_column(dataset = "train", .before = 1) %>%
+  dplyr::rename_with(~ paste0("percentile_", gsub("%", "", .)), where(is.numeric)) %>%
+  tibble::add_column(
+    dataset = "train",
+    algorithm = "sequential",
+    sampling = samp,
+    .before = 1
+  ) %>%
   tibble::as_tibble()
 
 # write results to file
