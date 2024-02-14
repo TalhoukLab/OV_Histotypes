@@ -1,7 +1,7 @@
 # All combinations
 `%>%` <- magrittr::`%>%`
-algs <- purrr::set_names(algs)
-samps <- purrr::set_names(samps)
+algs <- rlang::set_names(algs)
+samps <- rlang::set_names(samps)
 
 # All evaluation files
 eval_files <-
@@ -49,7 +49,7 @@ vi_merged <- vi_files %>%
   purrr::modify_depth(3, ~ dplyr::bind_rows(.x, .id = "Algorithm")) %>%
   purrr::modify_depth(2, ~ dplyr::bind_rows(.x, .id = "Bootstrap")) %>%
   purrr::map(~ .x %>%
-               set_names(samps) %>%
+               rlang::set_names(samps) %>%
                dplyr::bind_rows(.id = "Sampling")) %>%
   dplyr::bind_rows()
 
