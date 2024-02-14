@@ -19,7 +19,7 @@ for sq in "${seqData[@]}"; do
     mkdir -p $RSubDir/$sq
     mkdir -p $shSubDir/$sq
     mkdir -p $outputDir/$subDir/$sq
-    #mkdir -p $outputDir/vi/$dataset
+    mkdir -p $outputDir/sequential/vi/$sq
 
     for s in $(seq -f "%0${#reps}g" 1 $reps); do
         for nseq in $(seq 1 $nseq); do

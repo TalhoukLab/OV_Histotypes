@@ -41,19 +41,50 @@ seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
 samp <- as.character(seq_top[["sampling"]])
 
 # Supervised learning model output
-sm <- splendid::splendid_model(
-  data = data,
-  class = class,
-  algorithms = alg,
-  n = 1,
-  seed_boot = as.integer(reps),
-  seed_samp = 2019,
-  seed_alg = 2019,
-  sampling = samp,
-  stratify = TRUE
+suppressWarnings(
+  sm <- splendid::splendid_model(
+    data = data,
+    class = class,
+    algorithms = alg,
+    n = 1,
+    seed_boot = as.integer(reps),
+    seed_samp = 2019,
+    seed_alg = 2019,
+    sampling = samp,
+    stratify = TRUE,
+    tune = TRUE
+  )
 )
+
+# Extract variable importance results
+vi_df <- sm[["models"]] %>%
+  purrr::imap(~ {
+    mod <- .x[[1]]
+    alg <- .y
+    if (alg %in% c("mlr_lasso", "mlr_ridge", "rf")) {
+      vip::vi(mod)
+    } else if (alg == "svm") {
+      pfun <- function(object, newdata) {
+        caret::predict.train(object, newdata = newdata, type = "prob")[, 1]
+      }
+      mod %>%
+        vip::vi_shap(pred_wrapper = pfun) %>%
+        dplyr::arrange(dplyr::desc(Importance))
+    } else if (alg == "adaboost") {
+      mod %>%
+        maboost::varplot.maboost(plot.it = FALSE,
+                                 type = "scores",
+                                 max.var.show = Inf) %>%
+        tibble::enframe(name = "Variable", value = "Importance")
+    }
+  })
 
 # Write evaluations to file
 outputFile <- file.path(outputDir, "sequential", "train_eval",
                         paste0(sq, nseq, "_", reps, ".rds"))
 saveRDS(sm[["evals"]], outputFile)
+
+# Write variable importance to file
+viFile <- file.path(outputDir, "sequential", "vi", sq,
+                    paste0("vi_", sq, nseq, "_", reps, ".rds"))
+saveRDS(vi_df, viFile)
