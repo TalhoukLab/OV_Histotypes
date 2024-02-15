@@ -2237,10 +2237,21 @@ val_seq_eval_opt <-
   }) %>%
   map("cs") %>%
   unlist() %>%
-  imap( ~ .x[grepl("f1\\.(?!class_0)", .y, perl = TRUE)]) %>%
+  imap(~ .x[grepl("\\.(?!class_0)", .y, perl = TRUE)]) %>%
   compact() %>%
   bind_rows() %>%
-  rename_with( ~ gsub("f1\\.", "", .)) %>%
+   pivot_longer(
+    cols = everything(),
+    names_to = c("measure", "class"),
+    names_sep = "\\.",
+    values_to = "value"
+  ) %>% 
+  filter(measure %in% c("accuracy", "f1", "kappa", "gmean")) %>% 
+  pivot_wider(
+    id_cols = measure,
+    names_from = "class",
+    values_from = "value"
+  ) %>% 
   add_column(method = "sequential_opt", .before = 1)
 
 # Comparison of evaluation measures from all methods
@@ -2248,7 +2259,9 @@ val_summary <- bind_rows(val_seq_eval_opt)
 
 kable(val_summary,
       caption = "Class-specific F1-scores on Validation Set Model",
-      digits = 3)
+      digits = 3) %>% 
+  kable_styling() %>% 
+  collapse_rows(columns = 1)
 ```
 
 Per-class F1-scores in the validation set are all above 0.9.
