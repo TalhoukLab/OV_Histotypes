@@ -26,6 +26,7 @@ ivs2s <- readRDS(here("data/iv_summary_two_step.rds"))
 ivsseq <- readRDS(here("data/iv_summary_seq.rds"))
 train_data <- readRDS(here("data/train_data.rds"))
 coefmat <- readRDS(here("data/coefmat.rds"))
+gene2s <- readRDS(here("data/merge_eval_two_step.rds"))
 ```
 
 ```{r ivs-combine}
@@ -1691,38 +1692,50 @@ candidates <- setdiff(names(train_data), overlap_all)
 
 There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining `r length(candidates)` candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry foward for a particular model.
 
+```{r gene_2s, fig.cap='Gene Optimzation for Two-Step Classifier'}
+dat_gene2s <- gene2s %>% 
+  filter(
+    (measure == "f1.HGSC" & Sequence == 1) |
+      (measure == "macro_f1" & Sequence == 2)
+  ) %>% 
+  mutate(
+    Genes = as.numeric(Genes),
+    label = paste0(
+      "Sequence: ",
+      Sequence,
+      ", Algorithm: ",
+      Algorithm,
+      ", Measure: ",
+      measure)
+  )
+
+p_gene_2s <- ggplot(dat_gene2s, aes(x = Genes, y = `50%`)) +
+  facet_wrap(~ label, ncol = 1, scales = "free_y") +
+  geom_point() +
+  theme_bw() +
+  labs(x = "Genes Added",
+       y = "Median",
+       title = "Gene Optimzation for Two-Step Classifier")
+print(p_gene_2s)
+```
+
 ## Rank Aggregation
 
 ```{r summary}
 # IV summary from multinomial, 2-stage, and sequential algorithm
-ivs_multi_f1 <- ivst %>%
+ivs_comb <- bind_rows(ivst, ivs2s, ivsseq)
+ivs_comb_f1 <- ivs_comb %>% 
   filter(grepl("f1\\.", measure)) %>%
   transmute(
-    model = paste(algorithm, sampling, sep = "-"),
+    model = ifelse(algorithm %in% c("seq", "two_step"),
+                   algorithm,
+                   paste(algorithm, sampling, sep = "-")),
     class = gsub("f1\\.", "", measure),
     median_f1 = percentile_50
   )
-
-ivs_two_step_f1 <- ivs2s %>% 
-  filter(grepl("f1\\.", measure)) %>%
-    transmute(
-    model = algorithm,
-    class = gsub("f1\\.", "", measure),
-    median_f1 = percentile_50
-  )
-
-ivs_seq_f1 <- ivsseq %>%
-  filter(grepl("f1\\.", measure)) %>%
-  transmute(
-    model = algorithm,
-    class = gsub("f1\\.", "", measure),
-    median_f1 = percentile_50
-  )
-
-ivs_comb <- bind_rows(ivs_multi_f1, ivs_two_step_f1, ivs_seq_f1)
 
 # Rank aggregation
-f1_ranks <- ivs_comb %>% 
+f1_ranks <- ivs_comb_f1 %>% 
   group_by(class) %>% 
   mutate(rank = factor(row_number(-median_f1))) %>% 
   ungroup() %>% 
@@ -1741,7 +1754,7 @@ f1_top <- splendid:::sink_output(RankAggreg(
 ))
 
 # F1-score summary
-ivs_f1_summary <- ivs_comb %>% 
+ivs_f1_summary <- ivs_comb_f1 %>% 
   pivot_wider(names_from = "class", values_from = "median_f1") %>% 
   mutate(across(where(is.numeric), round, digits = 3)) %>% 
   magrittr::extract(match(f1_top[["top.list"]], .$model), )
@@ -1769,6 +1782,69 @@ datatable(
 ```
 
 The `r ncol(f1_ranks)` methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.
+
+## Top 4 Model Summary
+
+### Overall Metrics
+
+```{r ivs-top4-overall, fig.cap='Top 4 Model Evaluation Metrics'}
+models_top4 <- f1_top[["top.list"]][seq_len(4)]
+ivs_comb_top4 <- ivs_comb %>% 
+  mutate(model = ifelse(
+    algorithm %in% c("seq", "two_step"),
+    algorithm,
+    paste(algorithm, sampling, sep = "-")
+  ),
+  .after = sampling) %>% 
+  filter(
+    algorithm %in% c("seq", "two_step") |
+      model %in% c("adaboost-up", "rf-smote")
+  )
+
+ivs_top4_overall <- ivs_comb_top4 %>% 
+  filter(measure %in% c("auc", "accuracy", "kappa", "macro_f1", "gmean")) %>% 
+  mutate(model = fct_reorder(model, percentile_50, .desc = TRUE))
+
+p <- 
+  ggplot(ivs_top4_overall, aes(x = model, y = percentile_50, color = measure)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4)) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Model",
+    y = "Measure",
+    color = "Measure",
+    title = "Top 4 Model Overall Evaluation Metrics"
+  )
+print(p)
+```
+
+### Per-Class Metrics
+
+```{r ivs-top4-per-class, fig.cap='Top 4 Model Per-Class Evaluation Metrics'}
+ivs_top4_per_class <- ivs_comb_top4 %>% 
+  filter(grepl("\\.", measure)) %>%
+  separate(measure, c("measure", "class")) %>% 
+  filter(measure %in% c("accuracy", "kappa", "f1", "gmean")) %>% 
+  mutate(model = fct_reorder(model, percentile_50, .desc = TRUE))
+
+p <- 
+  ggplot(ivs_top4_per_class, aes(x = model, y = percentile_50, color = measure)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4),
+                  fatten = 1) +
+  facet_wrap(vars(class), ncol = 2) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Model",
+    y = "Measure",
+    color = "Measure",
+    title = "Top 4 Model Per-Class Evaluation Metrics"
+  )
+print(p)
+```
 
 ## Test Set Performance
 
