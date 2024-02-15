@@ -1884,6 +1884,29 @@ p <-
 print(p)
 ```
 
+```{r ivs-top4-per-class-f1, fig.cap='Top 4 Model Per-Class F1-Scores'}
+ivs_top4_per_class_f1 <- ivs_comb_top4 %>% 
+  filter(grepl("\\.", measure)) %>%
+  separate(measure, c("measure", "class")) %>% 
+  filter(measure %in% "f1") %>% 
+  mutate(model = fct_reorder(model, percentile_50, .desc = TRUE))
+
+p <- 
+  ggplot(ivs_top4_per_class_f1, aes(x = class, y = percentile_50, color = model)) +
+  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
+                  position = position_dodge(width = 0.4),
+                  fatten = 1) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold")) +
+  labs(
+    x = "Class",
+    y = "Measure",
+    color = "Model",
+    title = "Top 4 Model Per-Class F1-Score"
+  )
+print(p)
+```
+
 ## Test Set Performance
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
