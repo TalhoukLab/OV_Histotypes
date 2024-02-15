@@ -1765,7 +1765,7 @@ genes_add_2s <- ranked_vi_2s[seq_len(n_genes_2s)]
 opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
-In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.88 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=28+`r n_genes_2s`=52. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
+Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.88 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=28+`r n_genes_2s`=52. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
 
 ## Rank Aggregation
 
@@ -1922,9 +1922,9 @@ print(p)
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
-The top 3 methods are:
+The top 2 methods are:
 
-- **seq**: sequential algorithm with upsampling at every step. The sequence of algorithms used are:
+- **sequential**: sequential algorithm with upsampling at every step. The sequence of algorithms used are:
   - HGSC vs. non-HGSC using adaboost
   - CCOC vs. non-CCOC using random forest
   - ENOC vs. non-ENOC using ridge regression
@@ -1932,7 +1932,8 @@ The top 3 methods are:
 - **two_step**: two-step algorithm with upsampling at both steps. The sequence of algorithms used are:
   - HGSC vs. non-HGSC using adaboost
   - CCOC vs. ENOC vs. MUC vs. LGSC using random forest
-- **adaboost-up**: adaboost algorithm with upsampling.
+  
+We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these methods.
 
 ```{r top-models}
 # Two-step data
