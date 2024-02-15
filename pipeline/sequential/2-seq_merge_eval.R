@@ -83,6 +83,21 @@ vi_ranked <- vi_merged %>%
   dplyr::mutate(Rank = dplyr::dense_rank(dplyr::desc(Mean_Importance))) %>%
   dplyr::ungroup()
 
+# Rank aggregation across sequence
+vi_rank_aggd <- vi_ranked %>%
+  tidyr::pivot_wider(id_cols = Sequence,
+                     names_from = "Rank",
+                     values_from = "Variable") %>%
+  tibble::column_to_rownames("Sequence") %>%
+  as.matrix() %>%
+  RankAggreg::RankAggreg(
+    x = .,
+    k = ncol(.),
+    method = "GA",
+    seed = 2024,
+    verbose = FALSE
+  )
+
 # Only consider candidate genes not already in PrOTYPE and SPOT
 candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
                 "LIN28B", "TFF3", "MUC5B", "FUT3", "STC1", "BCL2", "PAX8", "GCNT3",
@@ -92,8 +107,9 @@ candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
                 "TP53", "SEMA6A", "SERPINA5", "ZBED1", "TSPAN8", "SCGB1D2", "LGALS4",
                 "MAP1LC3A")
 
-vi_ranked_candidates <- vi_ranked %>%
-  dplyr::filter(Variable %in% candidates)
+vi_ranked_candidates <- vi_rank_aggd %>%
+  purrr::pluck("top.list") %>%
+  purrr::keep(~ . %in% candidates)
 
 # Write ranked variable importance
 saveRDS(
