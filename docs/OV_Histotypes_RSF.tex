@@ -1954,7 +1954,7 @@ We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when w
 \caption{Gene Optimization for Two-Step Classifier}\label{fig:gene-2s}
 \end{figure}
 
-In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.88 when we reach 24 added. The optimal number of genes used will be n=28+24=52. The added genes are: PBX1, LGALS4, HNF1B, IGFBP1, TFF3, C10orf116, PAX8, GPR64, FUT3, CYP4B1, DKK4, GAD1, KLK7, EPAS1, CPNE8, BRCA1, ZBED1, IL6, SERPINA5, TPX2, CAPN2, TSPAN8, LIN28B and SLC3A1.
+Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.88 when we reach 24 added. The optimal number of genes used will be n=28+24=52. The added genes are: PBX1, LGALS4, HNF1B, IGFBP1, TFF3, C10orf116, PAX8, GPR64, FUT3, CYP4B1, DKK4, GAD1, KLK7, EPAS1, CPNE8, BRCA1, ZBED1, IL6, SERPINA5, TPX2, CAPN2, TSPAN8, LIN28B and SLC3A1.
 
 \hypertarget{rank-aggregation}{%
 \section{Rank Aggregation}\label{rank-aggregation}}
@@ -2004,12 +2004,12 @@ The 22 methods (algorithm-sampling combinations) are ordered in the table by the
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
-The top 3 methods are:
+The top 2 methods are:
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{seq}: sequential algorithm with upsampling at every step. The sequence of algorithms used are:
+  \textbf{sequential}: sequential algorithm with upsampling at every step. The sequence of algorithms used are:
 
   \begin{itemize}
   \tightlist
@@ -2032,9 +2032,9 @@ The top 3 methods are:
   \item
     CCOC vs.~ENOC vs.~MUC vs.~LGSC using random forest
   \end{itemize}
-\item
-  \textbf{adaboost-up}: adaboost algorithm with upsampling.
 \end{itemize}
+
+We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these methods.
 
 \hypertarget{confirmation-set}{%
 \subsection{Confirmation Set}\label{confirmation-set}}
