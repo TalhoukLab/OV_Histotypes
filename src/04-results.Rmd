@@ -1699,8 +1699,9 @@ There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPO
 dat_geneseq <- geneseq %>% 
   filter(
     (measure == "f1.HGSC" & Sequence == 1) | 
-      (measure == "f1.ENOC" & Sequence == 2) |
-      (measure == "f1.CCOC" & Sequence == 3)
+      (measure == "f1.CCOC" & Sequence == 2) |
+      (measure == "f1.ENOC" & Sequence == 3) | 
+      (measure == "f1.MUC" & Sequence == 4)
   ) %>% 
   mutate(
     Genes = as.numeric(Genes),
@@ -1722,7 +1723,7 @@ p_gene_seq <- ggplot(dat_geneseq, aes(x = Genes, y = `50%`)) +
        title = "Gene Optimziation for Sequential Classifier")
 print(p_gene_seq)
 
-n_genes_seq <- 25
+n_genes_seq <- 34
 opt_genes_seq <- c(overlap_all, ranked_vi_seq[seq_len(n_genes_seq)])
 ```
 
