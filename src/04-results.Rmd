@@ -1732,7 +1732,7 @@ opt_genes_seq <- c(overlap_all, genes_add_seq)
 
 In the sequential classifier, we use the per-class median F1-scores pertaining to the histotype that had the best performance from each retraining, and sort them on number of genes added. For instance, in sequence 2, we look at the CCOC F1-scores because CCOC had the best performance from retraining after HGSC was removed.
 
-We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when we reach `r n_genes_2s` genes added, hence the optimal number of genes used will be n=28+34=62. The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
+We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=28+34=62. The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
 dat_gene2s <- gene2s %>% 
