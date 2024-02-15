@@ -11,6 +11,7 @@ lot: true
 bibliography: packages.bib
 biblio-style: apalike
 link-citations: true
+description: "This report of statistical findings summarizes results for the classification of ovarian cancer histotypes."
 ---
 
 # Preface {-}

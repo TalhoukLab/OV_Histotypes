@@ -1,8 +1,8 @@
-bookdown::gitbook:
+bookdown::bs4_book:
+  theme:
+    primary: "#096B72"
+  repo: https://github.com/TalhoukLab/OV_Histotypes
   lib_dir: assets
-  split_by: chapter
-  config:
-    download: pdf
 bookdown::pdf_book:
   keep_tex: true
   includes:
