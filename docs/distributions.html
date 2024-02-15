@@ -23,7 +23,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2024-02-14" />
+<meta name="date" content="2024-02-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -99,7 +99,11 @@
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="distributions.html"><a href="distributions.html#common-samples"><i class="fa fa-check"></i><b>3.3</b> Common Samples</a></li>
 <li class="chapter" data-level="3.4" data-path="distributions.html"><a href="distributions.html#histotypes-in-classifier-data"><i class="fa fa-check"></i><b>3.4</b> Histotypes in Classifier Data</a></li>
-<li class="chapter" data-level="3.5" data-path="distributions.html"><a href="distributions.html#quality-control"><i class="fa fa-check"></i><b>3.5</b> Quality Control</a></li>
+<li class="chapter" data-level="3.5" data-path="distributions.html"><a href="distributions.html#quality-control"><i class="fa fa-check"></i><b>3.5</b> Quality Control</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="distributions.html"><a href="distributions.html#failed-samples"><i class="fa fa-check"></i><b>3.5.1</b> Failed Samples</a></li>
+<li class="chapter" data-level="3.5.2" data-path="distributions.html"><a href="distributions.html#gd-vs.-snr"><i class="fa fa-check"></i><b>3.5.2</b> %GD vs. SNR</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
 <ul>
@@ -131,10 +135,15 @@
 <li class="chapter" data-level="4.5.2" data-path="results.html"><a href="results.html#optimal-gene-set"><i class="fa fa-check"></i><b>4.5.2</b> Optimal Gene Set</a></li>
 </ul></li>
 <li class="chapter" data-level="4.6" data-path="results.html"><a href="results.html#rank-aggregation"><i class="fa fa-check"></i><b>4.6</b> Rank Aggregation</a></li>
-<li class="chapter" data-level="4.7" data-path="results.html"><a href="results.html#test-set-performance"><i class="fa fa-check"></i><b>4.7</b> Test Set Performance</a>
+<li class="chapter" data-level="4.7" data-path="results.html"><a href="results.html#top-4-model-summary"><i class="fa fa-check"></i><b>4.7</b> Top 4 Model Summary</a>
 <ul>
-<li class="chapter" data-level="4.7.1" data-path="results.html"><a href="results.html#confirmation-set"><i class="fa fa-check"></i><b>4.7.1</b> Confirmation Set</a></li>
-<li class="chapter" data-level="4.7.2" data-path="results.html"><a href="results.html#validation-set"><i class="fa fa-check"></i><b>4.7.2</b> Validation Set</a></li>
+<li class="chapter" data-level="4.7.1" data-path="results.html"><a href="results.html#overall-metrics"><i class="fa fa-check"></i><b>4.7.1</b> Overall Metrics</a></li>
+<li class="chapter" data-level="4.7.2" data-path="results.html"><a href="results.html#per-class-metrics"><i class="fa fa-check"></i><b>4.7.2</b> Per-Class Metrics</a></li>
+</ul></li>
+<li class="chapter" data-level="4.8" data-path="results.html"><a href="results.html#test-set-performance"><i class="fa fa-check"></i><b>4.8</b> Test Set Performance</a>
+<ul>
+<li class="chapter" data-level="4.8.1" data-path="results.html"><a href="results.html#confirmation-set"><i class="fa fa-check"></i><b>4.8.1</b> Confirmation Set</a></li>
+<li class="chapter" data-level="4.8.2" data-path="results.html"><a href="results.html#validation-set"><i class="fa fa-check"></i><b>4.8.2</b> Validation Set</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -1014,7 +1023,70 @@
 <div id="histotypes-in-classifier-data" class="section level2 hasAnchor" number="3.4">
 <h2><span class="header-section-number">3.4</span> Histotypes in Classifier Data<a href="distributions.html#histotypes-in-classifier-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <table>
-<caption><span id="tab:train-hist-codeset">Table 3.17: </span>Full Training Set Histotype Distribution by CodeSet</caption>
+<caption><span id="tab:preqc-hist-codeset">Table 3.17: </span>Pre-QC Training Set Histotype Distribution by CodeSet</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Levels</th>
+<th align="left">CS1</th>
+<th align="left">CS2</th>
+<th align="left">CS3</th>
+<th align="left">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Histotype</td>
+<td align="left">HGSC</td>
+<td align="left">120 (45%)</td>
+<td align="left">643 (79%)</td>
+<td align="left">515 (92%)</td>
+<td align="left">1278 (78%)</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">CCOC</td>
+<td align="left">48 (18%)</td>
+<td align="left">61 (7%)</td>
+<td align="left">11 (2%)</td>
+<td align="left">120 (7%)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">ENOC</td>
+<td align="left">60 (22%)</td>
+<td align="left">32 (4%)</td>
+<td align="left">11 (2%)</td>
+<td align="left">103 (6%)</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">MUC</td>
+<td align="left">19 (7%)</td>
+<td align="left">62 (8%)</td>
+<td align="left">12 (2%)</td>
+<td align="left">93 (6%)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">LGSC</td>
+<td align="left">20 (7%)</td>
+<td align="left">21 (3%)</td>
+<td align="left">9 (2%)</td>
+<td align="left">50 (3%)</td>
+</tr>
+<tr class="even">
+<td align="left">Total</td>
+<td align="left">N (%)</td>
+<td align="left">267 (16%)</td>
+<td align="left">819 (50%)</td>
+<td align="left">558 (34%)</td>
+<td align="left">1644 (100%)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:train-hist-codeset">Table 3.18: </span>Full Training Set Histotype Distribution by CodeSet</caption>
 <thead>
 <tr class="header">
 <th align="left">Variable</th>
@@ -1077,7 +1149,7 @@
 </tbody>
 </table>
 <table>
-<caption><span id="tab:hist-codeset-dataset">Table 3.18: </span>Histotype Distribution by CodeSet/Datasets</caption>
+<caption><span id="tab:hist-codeset-dataset">Table 3.19: </span>Histotype Distribution by CodeSet/Datasets</caption>
 <thead>
 <tr class="header">
 <th align="left">Variable</th>
@@ -1142,6 +1214,28 @@
 </div>
 <div id="quality-control" class="section level2 hasAnchor" number="3.5">
 <h2><span class="header-section-number">3.5</span> Quality Control<a href="distributions.html#quality-control" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="failed-samples" class="section level3 hasAnchor" number="3.5.1">
+<h3><span class="header-section-number">3.5.1</span> Failed Samples<a href="distributions.html#failed-samples" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<table>
+<caption><span id="tab:qc-failed">Table 3.20: </span>Number of failed sampled by CodeSet</caption>
+<thead>
+<tr class="header">
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">8</td>
+<td align="right">32</td>
+<td align="right">8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="gd-vs.-snr" class="section level3 hasAnchor" number="3.5.2">
+<h3><span class="header-section-number">3.5.2</span> %GD vs. SNR<a href="distributions.html#gd-vs.-snr" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:qc-gd-snr-all"></span>
 <img src="OV_Histotypes_RSF_files/figure-html/qc-gd-snr-all-1.png" alt="% Genes Detected vs. Signal to Noise Ratio" width="672" />
 <p class="caption">
@@ -1155,6 +1249,7 @@ Figure 3.2: % Genes Detected vs. Signal to Noise Ratio (Zoomed)
 </p>
 </div>
 
+</div>
 </div>
 </div>
             </section>

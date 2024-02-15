@@ -23,7 +23,7 @@
 <meta name="author" content="Derek Chiu" />
 
 
-<meta name="date" content="2024-02-14" />
+<meta name="date" content="2024-02-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -99,7 +99,11 @@
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="distributions.html"><a href="distributions.html#common-samples"><i class="fa fa-check"></i><b>3.3</b> Common Samples</a></li>
 <li class="chapter" data-level="3.4" data-path="distributions.html"><a href="distributions.html#histotypes-in-classifier-data"><i class="fa fa-check"></i><b>3.4</b> Histotypes in Classifier Data</a></li>
-<li class="chapter" data-level="3.5" data-path="distributions.html"><a href="distributions.html#quality-control"><i class="fa fa-check"></i><b>3.5</b> Quality Control</a></li>
+<li class="chapter" data-level="3.5" data-path="distributions.html"><a href="distributions.html#quality-control"><i class="fa fa-check"></i><b>3.5</b> Quality Control</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="distributions.html"><a href="distributions.html#failed-samples"><i class="fa fa-check"></i><b>3.5.1</b> Failed Samples</a></li>
+<li class="chapter" data-level="3.5.2" data-path="distributions.html"><a href="distributions.html#gd-vs.-snr"><i class="fa fa-check"></i><b>3.5.2</b> %GD vs. SNR</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
 <ul>
@@ -131,10 +135,15 @@
 <li class="chapter" data-level="4.5.2" data-path="results.html"><a href="results.html#optimal-gene-set"><i class="fa fa-check"></i><b>4.5.2</b> Optimal Gene Set</a></li>
 </ul></li>
 <li class="chapter" data-level="4.6" data-path="results.html"><a href="results.html#rank-aggregation"><i class="fa fa-check"></i><b>4.6</b> Rank Aggregation</a></li>
-<li class="chapter" data-level="4.7" data-path="results.html"><a href="results.html#test-set-performance"><i class="fa fa-check"></i><b>4.7</b> Test Set Performance</a>
+<li class="chapter" data-level="4.7" data-path="results.html"><a href="results.html#top-4-model-summary"><i class="fa fa-check"></i><b>4.7</b> Top 4 Model Summary</a>
 <ul>
-<li class="chapter" data-level="4.7.1" data-path="results.html"><a href="results.html#confirmation-set"><i class="fa fa-check"></i><b>4.7.1</b> Confirmation Set</a></li>
-<li class="chapter" data-level="4.7.2" data-path="results.html"><a href="results.html#validation-set"><i class="fa fa-check"></i><b>4.7.2</b> Validation Set</a></li>
+<li class="chapter" data-level="4.7.1" data-path="results.html"><a href="results.html#overall-metrics"><i class="fa fa-check"></i><b>4.7.1</b> Overall Metrics</a></li>
+<li class="chapter" data-level="4.7.2" data-path="results.html"><a href="results.html#per-class-metrics"><i class="fa fa-check"></i><b>4.7.2</b> Per-Class Metrics</a></li>
+</ul></li>
+<li class="chapter" data-level="4.8" data-path="results.html"><a href="results.html#test-set-performance"><i class="fa fa-check"></i><b>4.8</b> Test Set Performance</a>
+<ul>
+<li class="chapter" data-level="4.8.1" data-path="results.html"><a href="results.html#confirmation-set"><i class="fa fa-check"></i><b>4.8.1</b> Confirmation Set</a></li>
+<li class="chapter" data-level="4.8.2" data-path="results.html"><a href="results.html#validation-set"><i class="fa fa-check"></i><b>4.8.2</b> Validation Set</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -8237,7 +8246,23 @@ Figure 4.26: SMOTE Class-Specific Kappa by Algorithm and Dataset
 </div>
 <div id="optimal-gene-set" class="section level3 hasAnchor" number="4.5.2">
 <h3><span class="header-section-number">4.5.2</span> Optimal Gene Set<a href="results.html#optimal-gene-set" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>There are 28 unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining 44 candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry foward for a particular model.</p>
+<p>There are 28 unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining 44 candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry forward for a particular model.</p>
+<p>Variable importance is calculated using either a model-based approach if it is available, or a SHAP-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by aggregating the base classifier VI scores using rank aggregation.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:gene-seq"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/gene-seq-1.png" alt="Gene Optimization for Sequential Classifier" width="672" />
+<p class="caption">
+Figure 4.27: Gene Optimization for Sequential Classifier
+</p>
+</div>
+<p>In the sequential classifier, we use the per-class median F1-scores pertaining to the histotype that had the best performance from each retraining, and sort them on number of genes added. For instance, in sequence 2, we look at the CCOC F1-scores because CCOC had the best performance from retraining after HGSC was removed.</p>
+<p>We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when we reach 34 genes added, hence the optimal number of genes used will be n=28+34=62. The added genes are: SEMA6A, GPR64, KGFLP2, BCL2, ATP5G3, C1orf173, ZBED1, PBX1, FUT3, KLK7, IGFBP1, STC1, MET, CPNE8, C10orf116, MAP1LC3A, EPAS1, SLC3A1, TPX2, TFF1, CAPN2, WT1, CYP4B1, SERPINA5, HNF1B, EGFL6, LGALS4, TSPAN8, BRCA1, LIN28B, DKK4, ADCYAP1R1, TFF3 and MUC5B.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:gene-2s"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/gene-2s-1.png" alt="Gene Optimization for Two-Step Classifier" width="672" />
+<p class="caption">
+Figure 4.28: Gene Optimization for Two-Step Classifier
+</p>
+</div>
+<p>In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.88 when we reach 24 added. The optimal number of genes used will be n=28+24=52. The added genes are: PBX1, LGALS4, HNF1B, IGFBP1, TFF3, C10orf116, PAX8, GPR64, FUT3, CYP4B1, DKK4, GAD1, KLK7, EPAS1, CPNE8, BRCA1, ZBED1, IL6, SERPINA5, TPX2, CAPN2, TSPAN8, LIN28B and SLC3A1.</p>
 </div>
 </div>
 <div id="rank-aggregation" class="section level2 hasAnchor" number="4.6">
@@ -8246,8 +8271,35 @@ Figure 4.26: SMOTE Class-Specific Kappa by Algorithm and Dataset
 <script type="application/json" data-for="htmlwidget-c4996c6ae920b83bb2b0">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.491\" data-max=\"0.919\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.566\" data-max=\"0.931\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.901\" data-max=\"0.977\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.182\" data-max=\"0.938\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.622\" data-max=\"0.971\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["FixedColumns"],"caption":"<caption>F1-Score Summary by Model and Class<\/caption>","data":[["seq","two_step","adaboost-up","rf-smote","mlr_ridge-none","mlr_lasso-none","adaboost-smote","rf-none","mlr_ridge-smote","adaboost-none","rf-up","mlr_lasso-smote","mlr_ridge-up","svm-none","rf-down","mlr_lasso-up","mlr_ridge-down","adaboost-down","mlr_lasso-down","svm-down","svm-up","svm-smote"],[0.9,0.919,0.872,0.865,0.87,0.861,0.861,0.871,0.853,0.857,0.849,0.825,0.844,0.735,0.833,0.794,0.833,0.838,0.811,0.632,0.491,0.58],[0.931,0.837,0.769,0.761,0.759,0.747,0.738,0.73,0.718,0.688,0.677,0.685,0.676,0.712,0.63,0.648,0.644,0.628,0.615,0.566,0.646,0.571],[0.973,0.974,0.977,0.975,0.97,0.971,0.972,0.97,0.958,0.961,0.959,0.957,0.948,0.958,0.932,0.957,0.921,0.932,0.91,0.901,0.905,0.924],[0.938,0.88,0.667,0.706,0.364,0.476,0.71,0.417,0.567,0.182,0.267,0.579,0.545,0.667,0.47,0.6,0.421,0.477,0.375,0.514,0.645,0.429],[0.971,0.897,0.857,0.836,0.885,0.865,0.831,0.863,0.862,0.851,0.846,0.843,0.857,0.711,0.8,0.821,0.838,0.776,0.794,0.776,0.731,0.622]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>model<\/th>\n      <th>CCOC<\/th>\n      <th>ENOC<\/th>\n      <th>HGSC<\/th>\n      <th>LGSC<\/th>\n      <th>MUC<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"fixedColumns":true,"columnDefs":[{"targets":1,"render":"$.fn.dataTable.render.ellipsis( 10 )"},{"type":"natural","targets":0},{"className":"dt-right","targets":[1,2,3,4,5]}],"pageLength":50,"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 <p>The 22 methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.</p>
 </div>
-<div id="test-set-performance" class="section level2 hasAnchor" number="4.7">
-<h2><span class="header-section-number">4.7</span> Test Set Performance<a href="results.html#test-set-performance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="top-4-model-summary" class="section level2 hasAnchor" number="4.7">
+<h2><span class="header-section-number">4.7</span> Top 4 Model Summary<a href="results.html#top-4-model-summary" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="overall-metrics" class="section level3 hasAnchor" number="4.7.1">
+<h3><span class="header-section-number">4.7.1</span> Overall Metrics<a href="results.html#overall-metrics" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ivs-top4-overall"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/ivs-top4-overall-1.png" alt="Top 4 Model Evaluation Metrics" width="672" />
+<p class="caption">
+Figure 4.29: Top 4 Model Evaluation Metrics
+</p>
+</div>
+</div>
+<div id="per-class-metrics" class="section level3 hasAnchor" number="4.7.2">
+<h3><span class="header-section-number">4.7.2</span> Per-Class Metrics<a href="results.html#per-class-metrics" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ivs-top4-per-class"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/ivs-top4-per-class-1.png" alt="Top 4 Model Per-Class Evaluation Metrics" width="672" />
+<p class="caption">
+Figure 4.30: Top 4 Model Per-Class Evaluation Metrics
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ivs-top4-per-class-f1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/ivs-top4-per-class-f1-1.png" alt="Top 4 Model Per-Class F1-Scores" width="672" />
+<p class="caption">
+Figure 4.31: Top 4 Model Per-Class F1-Scores
+</p>
+</div>
+</div>
+</div>
+<div id="test-set-performance" class="section level2 hasAnchor" number="4.8">
+<h2><span class="header-section-number">4.8</span> Test Set Performance<a href="results.html#test-set-performance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Now we’d like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.</p>
 <p>The top 3 methods are:</p>
 <ul>
@@ -8263,19 +8315,13 @@ Figure 4.26: SMOTE Class-Specific Kappa by Algorithm and Dataset
 <li>HGSC vs. non-HGSC using adaboost</li>
 <li>CCOC vs. ENOC vs. MUC vs. LGSC using random forest</li>
 </ul></li>
-<li><strong>adaboost-up</strong>: adaboost algorithm with upsampling. The sequence of models and algorithms used are:
-<ul>
-<li>HGSC vs. non-HGSC using SVM</li>
-<li>MUC vs. non-MUC using ridge regression</li>
-<li>CCOC vs. non-CCOC using random forest</li>
-<li>ENOC vs. LGSC using SVM</li>
-</ul></li>
+<li><strong>adaboost-up</strong>: adaboost algorithm with upsampling.</li>
 </ul>
-<div id="confirmation-set" class="section level3 hasAnchor" number="4.7.1">
-<h3><span class="header-section-number">4.7.1</span> Confirmation Set<a href="results.html#confirmation-set" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="confirmation-set" class="section level3 hasAnchor" number="4.8.1">
+<h3><span class="header-section-number">4.8.1</span> Confirmation Set<a href="results.html#confirmation-set" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <table>
 <caption>
-<span id="tab:confirmation-set">Table 4.26: </span>Class-specific F1-scores on Confirmation Sets
+<span id="tab:confirmation-set">Table 4.26: </span>Class-specific F1-scores on Confirmation Set Models
 </caption>
 <thead>
 <tr>
@@ -8302,7 +8348,7 @@ MUC
 <tbody>
 <tr>
 <td style="text-align:left;">
-two_step
+two_step_full
 </td>
 <td style="text-align:right;">
 0.903
@@ -8322,10 +8368,30 @@ two_step
 </tr>
 <tr>
 <td style="text-align:left;">
-sequential
+two_step_optimal
 </td>
 <td style="text-align:right;">
-0.907
+0.906
+</td>
+<td style="text-align:right;">
+0.892
+</td>
+<td style="text-align:right;">
+0.814
+</td>
+<td style="text-align:right;">
+0.486
+</td>
+<td style="text-align:right;">
+0.655
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sequential_full
+</td>
+<td style="text-align:right;">
+0.906
 </td>
 <td style="text-align:right;">
 0.922
@@ -8342,33 +8408,33 @@ sequential
 </tr>
 <tr>
 <td style="text-align:left;">
-adaboost-up
+sequential_optimal
 </td>
 <td style="text-align:right;">
-0.912
+0.906
 </td>
 <td style="text-align:right;">
-0.872
+0.914
 </td>
 <td style="text-align:right;">
-0.651
+0.840
 </td>
 <td style="text-align:right;">
-0.400
+0.692
 </td>
 <td style="text-align:right;">
-0.714
+0.852
 </td>
 </tr>
 </tbody>
 </table>
-<p>In the confirmation set, <strong>sequential</strong> improves drastically in LGSC classification compared to <strong>adaboost-up</strong>, with moderate improvement in ENOC, and minor improvement in CCOC. <strong>sequential</strong> improves on <strong>two_step</strong> in all classes.</p>
+<p>In the confirmation set, <strong>sequential_full</strong> and <strong>sequential_optimal</strong> are very similar. Both sequential algorithms have moderate improvement in LGSC and MUC classification. We will select the <strong>sequential_optimal</strong> model to test in the validation set.</p>
 </div>
-<div id="validation-set" class="section level3 hasAnchor" number="4.7.2">
-<h3><span class="header-section-number">4.7.2</span> Validation Set<a href="results.html#validation-set" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="validation-set" class="section level3 hasAnchor" number="4.8.2">
+<h3><span class="header-section-number">4.8.2</span> Validation Set<a href="results.html#validation-set" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <table>
 <caption>
-<span id="tab:validation-set">Table 4.27: </span>Class-specific F1-scores on valirmation Sets
+<span id="tab:validation-set">Table 4.27: </span>Class-specific F1-scores on Validation Set Model
 </caption>
 <thead>
 <tr>
@@ -8395,67 +8461,27 @@ MUC
 <tbody>
 <tr>
 <td style="text-align:left;">
-two_step
+sequential_opt
 </td>
 <td style="text-align:right;">
-0.940
+0.931
+</td>
+<td style="text-align:right;">
+0.962
+</td>
+<td style="text-align:right;">
+0.919
+</td>
+<td style="text-align:right;">
+0.909
 </td>
 <td style="text-align:right;">
 0.945
 </td>
-<td style="text-align:right;">
-0.899
-</td>
-<td style="text-align:right;">
-0.811
-</td>
-<td style="text-align:right;">
-0.737
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-sequential
-</td>
-<td style="text-align:right;">
-0.938
-</td>
-<td style="text-align:right;">
-0.949
-</td>
-<td style="text-align:right;">
-0.915
-</td>
-<td style="text-align:right;">
-0.882
-</td>
-<td style="text-align:right;">
-0.926
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-adaboost-up
-</td>
-<td style="text-align:right;">
-0.936
-</td>
-<td style="text-align:right;">
-0.865
-</td>
-<td style="text-align:right;">
-0.772
-</td>
-<td style="text-align:right;">
-0.476
-</td>
-<td style="text-align:right;">
-0.603
-</td>
 </tr>
 </tbody>
 </table>
-<p>Similarly in the validation set, <strong>two_step</strong> and <strong>sequential</strong> improve drastically in LGSC classification compared to <strong>adaboost-up</strong>, with moderate improvement in ENOC and MUC, and minor improvement in CCOC. There is a decrease in MUC performance. <strong>sequential</strong> improves on <strong>two_step</strong> in all classes except for a small decrease in HGSC performance.</p>
+<p>Per-class F1-scores in the validation set are all above 0.9.</p>
 
 </div>
 </div>
