@@ -1703,7 +1703,7 @@ dat_geneseq <- geneseq %>%
     (measure == "f1.HGSC" & Sequence == 1) | 
       (measure == "f1.CCOC" & Sequence == 2) |
       (measure == "f1.ENOC" & Sequence == 3) | 
-      (measure == "f1.MUC" & Sequence == 4)
+      (measure %in% c("f1.MUC", "f1.LGSC") & Sequence == 4)
   ) %>% 
   mutate(
     Genes = as.numeric(Genes),
