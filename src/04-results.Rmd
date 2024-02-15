@@ -26,7 +26,10 @@ ivs2s <- readRDS(here("data/iv_summary_two_step.rds"))
 ivsseq <- readRDS(here("data/iv_summary_seq.rds"))
 train_data <- readRDS(here("data/train_data.rds"))
 coefmat <- readRDS(here("data/coefmat.rds"))
+geneseq <- readRDS(here("data/merge_eval_seq.rds"))
 gene2s <- readRDS(here("data/merge_eval_two_step.rds"))
+ranked_vi_seq <- readRDS(here("data/ranked_vi_seq.rds"))
+ranked_vi_2s <- readRDS(here("data/ranked_vi_two_step.rds"))
 ```
 
 ```{r ivs-combine}
@@ -1692,7 +1695,38 @@ candidates <- setdiff(names(train_data), overlap_all)
 
 There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining `r length(candidates)` candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry foward for a particular model.
 
-```{r gene_2s, fig.cap='Gene Optimzation for Two-Step Classifier'}
+```{r gene-seq, fig.cap='Gene Optimization for Sequential Classifier'}
+dat_geneseq <- geneseq %>% 
+  filter(
+    (measure == "f1.HGSC" & Sequence == 1) | 
+      (measure == "f1.ENOC" & Sequence == 2) |
+      (measure == "f1.CCOC" & Sequence == 3)
+  ) %>% 
+  mutate(
+    Genes = as.numeric(Genes),
+    label = paste0(
+      "Sequence: ",
+      Sequence,
+      ", Algorithm: ",
+      Algorithm,
+      ", Measure: ",
+      measure)
+  )
+
+p_gene_seq <- ggplot(dat_geneseq, aes(x = Genes, y = `50%`)) +
+  facet_wrap(~ label, ncol = 1, scales = "free_y") +
+  geom_point() +
+  theme_bw() +
+  labs(x = "Genes Added",
+       y = "Median",
+       title = "Gene Optimziation for Sequential Classifier")
+print(p_gene_seq)
+
+n_genes_seq <- 25
+opt_genes_seq <- c(overlap_all, ranked_vi_seq[seq_len(n_genes_seq)])
+```
+
+```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
 dat_gene2s <- gene2s %>% 
   filter(
     (measure == "f1.HGSC" & Sequence == 1) |
@@ -1715,8 +1749,11 @@ p_gene_2s <- ggplot(dat_gene2s, aes(x = Genes, y = `50%`)) +
   theme_bw() +
   labs(x = "Genes Added",
        y = "Median",
-       title = "Gene Optimzation for Two-Step Classifier")
+       title = "Gene Optimization for Two-Step Classifier")
 print(p_gene_2s)
+
+n_genes_2s <- 24
+opt_genes_2s <- c(overlap_all, ranked_vi_2s[seq_len(n_genes_2s)])
 ```
 
 ## Rank Aggregation
@@ -1808,7 +1845,8 @@ ivs_top4_overall <- ivs_comb_top4 %>%
 p <- 
   ggplot(ivs_top4_overall, aes(x = model, y = percentile_50, color = measure)) +
   geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
+                  position = position_dodge(width = 0.4),
+                  fatten = 1) +
   theme_bw() +
   theme(plot.title = element_text(face = "bold")) +
   labs(
@@ -1860,19 +1898,16 @@ The top 3 methods are:
 - **two_step**: two-step algorithm with upsampling at both steps. The sequence of algorithms used are:
   - HGSC vs. non-HGSC using adaboost
   - CCOC vs. ENOC vs. MUC vs. LGSC using random forest
-- **adaboost-up**: adaboost algorithm with upsampling. The sequence of models and algorithms used are: 
-  - HGSC vs. non-HGSC using SVM
-  - MUC vs. non-MUC using ridge regression
-  - CCOC vs. non-CCOC using random forest
-  - ENOC vs. LGSC using SVM
+- **adaboost-up**: adaboost algorithm with upsampling.
 
 ```{r top-models}
-# Two-step model
+# Two-step data
 two_step_data <- readRDS(here("data", "two_step_data.rds"))
 two_step_class <- readRDS(here("data", "two_step_class.rds"))
 two_step_algs <- readRDS(here("data", "two_step_algs.rds"))
 
-mod_two_step <-
+# Two-step full model
+mod_two_step_full <-
   pmap(list(two_step_data, two_step_class, two_step_algs), ~ {
     classification(
       data = ..1,
@@ -1883,15 +1918,40 @@ mod_two_step <-
     )
   })
 
-# sequential model
+# Two-step optimal gene list model
+mod_two_step_opt <- 
+  pmap(list(two_step_data, two_step_class, two_step_algs), ~ {
+    classification(
+      data = ..1 %>% select(all_of(opt_genes_2s)),
+      class = ..2,
+      algorithm = ..3,
+      sampling = "up",
+      seed_alg = 2024
+    )
+  })
+
+# sequential data
 seq_data <- readRDS(here("data", "seq_data.rds"))
 seq_class <- readRDS(here("data", "seq_class.rds"))
 seq_algs <- readRDS(here("data", "seq_algs.rds"))
 
-mod_seq <-
+# Sequential full model
+mod_seq_full <-
   pmap(list(seq_data, seq_class, seq_algs), ~ {
     classification(
       data = ..1,
+      class = ..2,
+      algorithm = ..3,
+      sampling = "up",
+      seed_alg = 2024
+    )
+  })
+
+# Sequential optimal gene list model
+mod_seq_opt <-
+  pmap(list(seq_data, seq_class, seq_algs), ~ {
+    classification(
+      data = ..1 %>% select(all_of(opt_genes_seq)),
       class = ..2,
       algorithm = ..3,
       sampling = "up",
@@ -1920,31 +1980,71 @@ conf_class <- readRDS(here("data", "conf_class.rds"))
 conf_data <- readRDS(here("data", "conf_data.rds"))
 
 # Create step 1 and step 2 splits
-conf_step1_data <- conf_data
+## Full
+conf_step1_data_full <- conf_data
+conf_step1_data_opt <- conf_step1_data_full %>% 
+  select(all_of(opt_genes_2s))
 conf_step1_class <- factor(ifelse(conf_class == "HGSC", "HGSC", "non-HGSC"))
-conf_step2_data <- conf_data[conf_step1_class != "HGSC", ]
+
+## Optimal
+conf_step2_data_full <- conf_data[conf_step1_class != "HGSC", ]
+conf_step2_data_opt <- conf_step2_data_full %>% 
+  select(all_of(opt_genes_2s))
 conf_step2_class <- factor(conf_class[conf_step1_class != "HGSC"])
 
 # Predict and evaluate
-conf_step1_pred <-
-  prediction(mod_two_step[[1]], conf_step1_data, conf_step1_class)
-conf_step1_eval <-
-  evaluation(conf_step1_class, conf_step1_pred)
+## Full
+conf_step1_pred_full <-
+  prediction(mod_two_step_full[[1]],
+             conf_step1_data_full,
+             conf_step1_class)
+conf_step1_eval_full <-
+  evaluation(conf_step1_class, conf_step1_pred_full)
 
-conf_step2_pred <-
-  prediction(mod_two_step[[2]], conf_step2_data, conf_step2_class)
-conf_step2_eval <-
-  evaluation(conf_step2_class, conf_step2_pred)
+conf_step2_pred_full <-
+  prediction(mod_two_step_full[[2]],
+             conf_step2_data_full,
+             conf_step2_class)
+conf_step2_eval_full <-
+  evaluation(conf_step2_class, conf_step2_pred_full)
+
+## Optimal
+conf_step1_pred_opt <-
+  prediction(mod_two_step_opt[[1]],
+             conf_step1_data_opt,
+             conf_step1_class)
+conf_step1_eval_opt <-
+  evaluation(conf_step1_class, conf_step1_pred_opt)
+
+conf_step2_pred_opt <-
+  prediction(mod_two_step_opt[[2]],
+             conf_step2_data_opt,
+             conf_step2_class)
+conf_step2_eval_opt <-
+  evaluation(conf_step2_class, conf_step2_pred_opt)
 
 # Combine evaluations from both steps
-conf_2S_eval <- list(conf_step1_eval, conf_step2_eval) %>%
+## Full
+conf_2S_eval_full <-
+  list(conf_step1_eval_full, conf_step2_eval_full) %>%
   map("cs") %>%
   unlist() %>%
   imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
   compact() %>%
   bind_rows() %>%
   rename_with(~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "two_step", .before = 1)
+  add_column(method = "two_step_full", .before = 1)
+
+## Optimal
+conf_2S_eval_opt <-
+  list(conf_step1_eval_opt, conf_step2_eval_opt) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
+  compact() %>%
+  bind_rows() %>%
+  rename_with(~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "two_step_optimal", .before = 1)
 
 # Create sequential splits
 conf_df <- cbind(conf_data, class = conf_class)
@@ -1955,12 +2055,6 @@ seq_conf_ranks <- seq_class %>%
   unlist() %>%
   accumulate(c) %>%
   head(-1)
-
-seq_conf_data <- map(seq_conf_ranks, ~ {
-  conf_df %>%
-    filter(!class %in% head(.x, -1)) %>%
-    select(-class)
-})
 
 seq_conf_class <- imap(seq_conf_ranks, ~ {
   cl <- conf_df %>%
@@ -1973,9 +2067,21 @@ seq_conf_class <- imap(seq_conf_ranks, ~ {
   }
 })
 
+## Full
+seq_conf_data_full <- map(seq_conf_ranks, ~ {
+  conf_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    select(-class)
+})
+
+## Optimal
+seq_conf_data_opt <- seq_conf_data_full %>% 
+  map(~ .x %>% select(all_of(opt_genes_seq)))
+
 # Predict and evaluate
-conf_seq_eval <-
-  pmap(list(mod_seq, seq_conf_data, seq_conf_class), ~ {
+## Full
+conf_seq_eval_full <-
+  pmap(list(mod_seq_full, seq_conf_data_full, seq_conf_class), ~ {
     pred <- prediction(..1, ..2, ..3)
     eval <- evaluation(..3, pred)
     eval
@@ -1986,31 +2092,46 @@ conf_seq_eval <-
   compact() %>%
   bind_rows() %>%
   rename_with( ~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "sequential", .before = 1)
+  add_column(method = "sequential_full", .before = 1)
 
-# Fit on full data as comparison
-conf_class <- factor(conf_class)
-conf_pred <- prediction(mod_full, conf_data, conf_class)
-conf_eval <- evaluation(conf_class, conf_pred)
-
-conf_full_eval <- conf_eval %>%
-  pluck("cs") %>%
-  imap(~ .x[grepl("f1\\.", .y)]) %>%
+conf_seq_eval_opt <-
+  pmap(list(mod_seq_opt, seq_conf_data_opt, seq_conf_class), ~ {
+    pred <- prediction(..1, ..2, ..3)
+    eval <- evaluation(..3, pred)
+    eval
+  }) %>%
+  map("cs") %>%
+  unlist() %>%
+  imap( ~ .x[grepl("f1\\.(?!class_0)", .y, perl = TRUE)]) %>%
   compact() %>%
   bind_rows() %>%
-  rename_with(~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "adaboost-up", .before = 1)
+  rename_with( ~ gsub("f1\\.", "", .)) %>%
+  add_column(method = "sequential_optimal", .before = 1)
+
+# # Fit on full data as comparison
+# conf_class <- factor(conf_class)
+# conf_pred <- prediction(mod_full, conf_data, conf_class)
+# conf_eval <- evaluation(conf_class, conf_pred)
+# 
+# conf_full_eval <- conf_eval %>%
+#   pluck("cs") %>%
+#   imap(~ .x[grepl("f1\\.", .y)]) %>%
+#   compact() %>%
+#   bind_rows() %>%
+#   rename_with(~ gsub("f1\\.", "", .)) %>%
+#   add_column(method = "adaboost-up", .before = 1)
 
 # Comparison of evaluation measures from all methods
-conf_summary <- bind_rows(conf_2S_eval,
-                          conf_seq_eval,
-                          conf_full_eval)
+conf_summary <- bind_rows(conf_2S_eval_full,
+                          conf_2S_eval_opt,
+                          conf_seq_eval_full,
+                          conf_seq_eval_opt)
 kable(conf_summary,
       caption = "Class-specific F1-scores on Confirmation Sets",
       digits = 3)
 ```
 
-In the confirmation set, **sequential** improves drastically in LGSC classification compared to **adaboost-up**, with moderate improvement in ENOC, and minor improvement in CCOC. **sequential** improves on **two_step** in all classes.
+In the confirmation set, **sequential_full** and **sequential_optimal** are very similar. Both sequential algorithms have moderate improvement in LGSC and MUC classification. We will select the **sequential_optimal** model to test in the validation set.
 
 ### Validation Set
 
