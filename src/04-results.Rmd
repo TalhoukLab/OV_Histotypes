@@ -2132,26 +2132,13 @@ conf_seq_eval_opt <-
   rename_with( ~ gsub("f1\\.", "", .)) %>%
   add_column(method = "sequential_optimal", .before = 1)
 
-# # Fit on full data as comparison
-# conf_class <- factor(conf_class)
-# conf_pred <- prediction(mod_full, conf_data, conf_class)
-# conf_eval <- evaluation(conf_class, conf_pred)
-# 
-# conf_full_eval <- conf_eval %>%
-#   pluck("cs") %>%
-#   imap(~ .x[grepl("f1\\.", .y)]) %>%
-#   compact() %>%
-#   bind_rows() %>%
-#   rename_with(~ gsub("f1\\.", "", .)) %>%
-#   add_column(method = "adaboost-up", .before = 1)
-
 # Comparison of evaluation measures from all methods
 conf_summary <- bind_rows(conf_2S_eval_full,
                           conf_2S_eval_opt,
                           conf_seq_eval_full,
                           conf_seq_eval_opt)
 kable(conf_summary,
-      caption = "Class-specific F1-scores on Confirmation Sets",
+      caption = "Class-specific F1-scores on Confirmation Set Models",
       digits = 3)
 ```
 
@@ -2164,33 +2151,6 @@ In the confirmation set, **sequential_full** and **sequential_optimal** are very
 val_class <- readRDS(here("data", "val_class.rds"))
 val_data <- readRDS(here("data", "val_data.rds"))
 
-# Create step 1 and step 2 splits
-val_step1_data <- val_data
-val_step1_class <- factor(ifelse(val_class == "HGSC", "HGSC", "non-HGSC"))
-val_step2_data <- val_data[val_step1_class != "HGSC", ]
-val_step2_class <- factor(val_class[val_step1_class != "HGSC"])
-
-# Predict and evaluate
-val_step1_pred <-
-  prediction(mod_two_step[[1]], val_step1_data, val_step1_class)
-val_step1_eval <-
-  evaluation(val_step1_class, val_step1_pred)
-
-val_step2_pred <-
-  prediction(mod_two_step[[2]], val_step2_data, val_step2_class)
-val_step2_eval <-
-  evaluation(val_step2_class, val_step2_pred)
-
-# Combine evaluations from both steps
-val_2S_eval <- list(val_step1_eval, val_step2_eval) %>%
-  map("cs") %>%
-  unlist() %>%
-  imap(~ .x[grepl("f1\\.(?!non)", .y, perl = TRUE)]) %>%
-  compact() %>%
-  bind_rows() %>%
-  rename_with(~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "two_step", .before = 1)
-
 # Create sequential splits
 val_df <- cbind(val_data, class = val_class)
 
@@ -2200,12 +2160,6 @@ seq_val_ranks <- seq_class %>%
   unlist() %>%
   accumulate(c) %>%
   head(-1)
-
-seq_val_data <- map(seq_val_ranks, ~ {
-  val_df %>%
-    filter(!class %in% head(.x, -1)) %>%
-    select(-class)
-})
 
 seq_val_class <- imap(seq_val_ranks, ~ {
   cl <- val_df %>%
@@ -2218,9 +2172,20 @@ seq_val_class <- imap(seq_val_ranks, ~ {
   }
 })
 
+## Full
+seq_val_data_full <- map(seq_val_ranks, ~ {
+  val_df %>%
+    filter(!class %in% head(.x, -1)) %>%
+    select(-class)
+})
+
+## Optimal
+seq_val_data_opt <- seq_val_data_full %>% 
+  map(~ .x %>% select(all_of(opt_genes_seq)))
+
 # Predict and evaluate
-val_seq_eval <-
-  pmap(list(mod_seq, seq_val_data, seq_val_class), ~ {
+val_seq_eval_opt <-
+  pmap(list(mod_seq_opt, seq_val_data_opt, seq_val_class), ~ {
     pred <- prediction(..1, ..2, ..3)
     eval <- evaluation(..3, pred)
     eval
@@ -2231,28 +2196,14 @@ val_seq_eval <-
   compact() %>%
   bind_rows() %>%
   rename_with( ~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "sequential", .before = 1)
-
-# Fit on full data as comparison
-val_class <- factor(val_class)
-val_pred <- prediction(mod_full, val_data, val_class)
-val_eval <- evaluation(val_class, val_pred)
-
-val_full_eval <- val_eval %>%
-  pluck("cs") %>%
-  imap(~ .x[grepl("f1\\.", .y)]) %>%
-  compact() %>%
-  bind_rows() %>%
-  rename_with(~ gsub("f1\\.", "", .)) %>%
-  add_column(method = "adaboost-up", .before = 1)
+  add_column(method = "sequential_opt", .before = 1)
 
 # Comparison of evaluation measures from all methods
-val_summary <- bind_rows(val_2S_eval,
-                          val_seq_eval,
-                          val_full_eval)
+val_summary <- bind_rows(val_seq_eval_opt)
+
 kable(val_summary,
-      caption = "Class-specific F1-scores on valirmation Sets",
+      caption = "Class-specific F1-scores on Validation Set Model",
       digits = 3)
 ```
 
-Similarly in the validation set, **two_step** and **sequential** improve drastically in LGSC classification compared to **adaboost-up**, with moderate improvement in ENOC and MUC, and minor improvement in CCOC. There is a decrease in MUC performance. **sequential** improves on **two_step** in all classes except for a small decrease in HGSC performance.
+Per-class F1-scores in the validation set are all above 0.9.
