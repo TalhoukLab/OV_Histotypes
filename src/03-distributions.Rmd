@@ -339,6 +339,63 @@ knitr::kable(cs345_pools, caption = "CS3/CS4/CS5 Pools Distribution")
 source(here("validation/cs_classifier.R"))
 ```
 
+```{r preqc-hist-codeset}
+cs1_samples_preqc <- cohorts %>%
+  filter(
+    file_source == "cs1",
+    cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL")
+  ) %>%
+  pull(col_name)
+
+cs2_samples_preqc <- cohorts %>%
+  filter(
+    file_source == "cs2",
+    cohort %in% c("MAYO", "OOU", "OOUE", "OVAR3", "VOA", "ICON7", "JAPAN", "MTL", "POOL-CTRL"),
+  ) %>%
+  pull(col_name)
+
+cs3_samples_preqc <- cohorts %>%
+  filter(
+    file_source == "cs3",
+    cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3"),
+    !cohort %in% c("TNCO", "DOVE4"),
+    !grepl("pool", col_name, ignore.case = TRUE)
+  ) %>%
+  pull(col_name)
+
+preqc_df <-
+  list(list(cs1, cs2, cs3),
+       list(cs1_samples_preqc, cs2_samples_preqc, cs3_samples_preqc)) %>%
+  pmap( ~ {
+    ..1 %>%
+      dplyr::select(Name, all_of(..2)) %>%
+      column_to_rownames("Name") %>%
+      t() %>%
+      as.data.frame() %>%
+      select(all_of(common_genes123))
+  }) %>% 
+  bind_rows() %>%
+  rownames_to_column("FileName") %>%
+  mutate(FileName = gsub("^X", "", FileName)) %>% 
+  inner_join(hist, by = "FileName") %>%
+  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  column_to_rownames("FileName")
+
+preqc_hist_codeset <- preqc_df %>% 
+  mutate(revHist = fct_infreq(revHist)) %>% 
+  describeBy(
+    var.names = "revHist",
+    var.labels = "Histotype",
+    by1 = "CodeSet",
+    test = FALSE,
+    total = "bottom",
+    bold_var = FALSE
+  )
+
+knitr::kable(preqc_hist_codeset,
+             caption = "Pre-QC Training Set Histotype Distribution by CodeSet")
+```
+
 ```{r train-hist-codeset}
 train_hist_codeset <- train_ref %>% 
   mutate(revHist = fct_infreq(revHist)) %>% 
@@ -384,6 +441,21 @@ knitr::kable(hist_codeset_dataset,
 ```
 
 ## Quality Control
+
+### Failed Samples
+
+```{r qc-failed}
+qc_failed <- list(CS1 = cs1_qc_failed,
+                  CS2 = cs2_qc_failed,
+                  CS3 = cs1_qc_failed) %>% 
+  map_df(length)
+
+qc_failed %>% 
+  kable(caption = "Number of failed sampled by CodeSet")
+```
+
+
+### %GD vs. SNR
 
 ```{r qc-gd-snr-all, fig.height=8, fig.cap='% Genes Detected vs. Signal to Noise Ratio'}
 p1 <- ggplot(cs1_qc, aes(sn, pergd)) + 
