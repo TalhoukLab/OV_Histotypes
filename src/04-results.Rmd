@@ -2156,7 +2156,7 @@ conf_seq_eval_opt <-
     eval <- evaluation(..3, pred)
     eval
   }) %>%
-   map("cs") %>%
+  map("cs") %>%
   unlist() %>%
   imap( ~ .x[grepl("\\.(?!class_0)", .y, perl = TRUE)]) %>%
   compact() %>%
@@ -2174,20 +2174,57 @@ conf_seq_eval_opt <-
     values_from = "value"
   ) %>% 
   add_column(method = "sequential_optimal", .before = 1)
+```
 
-# Comparison of evaluation measures from all methods
-conf_summary <- bind_rows(conf_2S_eval_full,
-                          conf_2S_eval_opt,
-                          conf_seq_eval_full,
-                          conf_seq_eval_opt)
-kable(conf_summary,
-      caption = "Class-specific F1-scores on Confirmation Set Models",
+```{r conf-eval-per-class}
+conf_eval_per_class <- bind_rows(conf_2S_eval_full,
+                                 conf_2S_eval_opt,
+                                 conf_seq_eval_full,
+                                 conf_seq_eval_opt)
+
+kable(conf_eval_per_class,
+      caption = "Class-specific Evaluation Metrics on Confirmation Set Models",
       digits = 3) %>% 
   kable_styling() %>% 
   collapse_rows(columns = 1)
 ```
 
 In the confirmation set, **sequential_full** and **sequential_optimal** are very similar. Both sequential algorithms have moderate improvement in LGSC and MUC classification. We will select the **sequential_optimal** model to test in the validation set.
+
+```{r conf-eval-overall}
+conf_2S_eval_overall <- list(
+  two_step_full_1 = conf_step1_eval_full,
+  two_step_full_2 = conf_step2_eval_full,
+  two_step_optimal_1 = conf_step1_eval_opt,
+  two_step_optimal_2 = conf_step2_eval_opt
+) %>%
+  map(`[`, c("auc", "accuracy", "macro_f1", "kappa", "gmean")) %>%
+  bind_rows(.id = "Step") %>%
+  separate_wider_regex(Step, c(method = ".*", "_", step = ".$"))
+
+conf_seq_eval_overall <- map(list(
+  sequential_full = list(mod_seq_full, seq_conf_data_full, seq_conf_class),
+  sequential_optimal = list(mod_seq_opt, seq_conf_data_opt, seq_conf_class)
+), ~ {
+  pmap(.x, ~ {
+    pred <- prediction(..1, ..2, ..3)
+    eval <- evaluation(..3, pred)
+    eval
+  }) %>%
+    map(`[`, c("auc", "accuracy", "macro_f1", "kappa", "gmean")) %>%
+    bind_rows(.id = "step")
+}) %>%
+  bind_rows(.id = "method")
+
+conf_eval_overall <-
+  bind_rows(conf_2S_eval_overall, conf_seq_eval_overall)
+
+kable(conf_eval_overall,
+      caption = "Overall Evaluation Metrics on Confirmation Set Models",
+      digits = 3) %>%
+  kable_styling() %>%
+  collapse_rows(columns = 1)
+```
 
 ### Validation Set
 
@@ -2227,9 +2264,10 @@ seq_val_data_full <- map(seq_val_ranks, ~ {
 ## Optimal
 seq_val_data_opt <- seq_val_data_full %>% 
   map(~ .x %>% select(all_of(opt_genes_seq)))
+```
 
-# Predict and evaluate
-val_seq_eval_opt <-
+```{r val-eval-per-class}
+val_eval_per_class <-
   pmap(list(mod_seq_opt, seq_val_data_opt, seq_val_class), ~ {
     pred <- prediction(..1, ..2, ..3)
     eval <- evaluation(..3, pred)
@@ -2254,14 +2292,29 @@ val_seq_eval_opt <-
   ) %>% 
   add_column(method = "sequential_opt", .before = 1)
 
-# Comparison of evaluation measures from all methods
-val_summary <- bind_rows(val_seq_eval_opt)
-
-kable(val_summary,
-      caption = "Class-specific F1-scores on Validation Set Model",
+kable(val_eval_per_class,
+      caption = "Class-specific Evaluation Metrics on Validation Set Model",
       digits = 3) %>% 
   kable_styling() %>% 
   collapse_rows(columns = 1)
 ```
 
 Per-class F1-scores in the validation set are all above 0.9.
+
+```{r val-eval-overall}
+val_eval_overall <-
+  pmap(list(mod_seq_opt, seq_val_data_opt, seq_val_class), ~ {
+    pred <- prediction(..1, ..2, ..3)
+    eval <- evaluation(..3, pred)
+    eval
+  }) %>%
+  map(`[`, c("auc", "accuracy", "macro_f1", "kappa", "gmean")) %>%
+  bind_rows(.id = "step") %>%
+  add_column(method = "sequential_opt", .before = 1)
+
+kable(val_eval_overall,
+      caption = "Overall valuation Metrics on Validation Set Model",
+      digits = 3) %>% 
+  kable_styling() %>% 
+  collapse_rows(columns = 1)
+```
