@@ -2041,7 +2041,7 @@ We can test 2 additional methods by using either the full set of genes or the op
 
 \begin{table}
 
-\caption{\label{tab:confirmation-set}Class-specific F1-scores on Confirmation Set Models}
+\caption{\label{tab:conf-eval-per-class}Class-specific Evaluation Metrics on Confirmation Set Models}
 \centering
 \begin{tabular}[t]{l|l|r|r|r|r|r}
 \hline
@@ -2084,12 +2084,47 @@ method & measure & HGSC & CCOC & ENOC & LGSC & MUC\\
 
 In the confirmation set, \textbf{sequential\_full} and \textbf{sequential\_optimal} are very similar. Both sequential algorithms have moderate improvement in LGSC and MUC classification. We will select the \textbf{sequential\_optimal} model to test in the validation set.
 
+\begin{table}
+
+\caption{\label{tab:conf-eval-overall}Overall Evaluation Metrics on Confirmation Set Models}
+\centering
+\begin{tabular}[t]{l|l|r|r|r|r|r}
+\hline
+method & step & auc & accuracy & macro\_f1 & kappa & gmean\\
+\hline
+ & 1 & 0.912 & 0.872 & 0.908 & 0.703 & 0.826\\
+\cline{2-7}
+\multirow{-2}{*}{\raggedright\arraybackslash two\_step\_full} & 2 & 0.921 & 0.778 & 0.702 & 0.667 & 0.749\\
+\cline{1-7}
+ & 1 & 0.911 & 0.869 & 0.906 & 0.695 & 0.819\\
+\cline{2-7}
+\multirow{-2}{*}{\raggedright\arraybackslash two\_step\_optimal} & 2 & 0.914 & 0.792 & 0.712 & 0.686 & 0.757\\
+\cline{1-7}
+ & 1 & 0.907 & 0.871 & 0.792 & 0.700 & 0.825\\
+\cline{2-7}
+ & 2 & 0.951 & 0.950 & 0.922 & 0.886 & 0.928\\
+\cline{2-7}
+ & 3 & 0.852 & 0.767 & 0.614 & 0.449 & 0.736\\
+\cline{2-7}
+\multirow{-4}{*}{\raggedright\arraybackslash sequential\_full} & 4 & 0.906 & 0.800 & 0.692 & 0.544 & 0.768\\
+\cline{1-7}
+ & 1 & 0.907 & 0.869 & 0.788 & 0.695 & 0.821\\
+\cline{2-7}
+ & 2 & 0.947 & 0.946 & 0.914 & 0.875 & 0.921\\
+\cline{2-7}
+ & 3 & 0.866 & 0.781 & 0.652 & 0.496 & 0.771\\
+\cline{2-7}
+\multirow{-4}{*}{\raggedright\arraybackslash sequential\_optimal} & 4 & 0.880 & 0.800 & 0.692 & 0.544 & 0.768\\
+\hline
+\end{tabular}
+\end{table}
+
 \hypertarget{validation-set}{%
 \subsection{Validation Set}\label{validation-set}}
 
 \begin{table}
 
-\caption{\label{tab:validation-set}Class-specific F1-scores on Validation Set Model}
+\caption{\label{tab:val-eval-per-class}Class-specific Evaluation Metrics on Validation Set Model}
 \centering
 \begin{tabular}[t]{l|l|r|r|r|r|r}
 \hline
@@ -2107,6 +2142,25 @@ method & measure & HGSC & CCOC & ENOC & LGSC & MUC\\
 \end{table}
 
 Per-class F1-scores in the validation set are all above 0.9.
+
+\begin{table}
+
+\caption{\label{tab:val-eval-overall}Overall valuation Metrics on Validation Set Model}
+\centering
+\begin{tabular}[t]{l|l|r|r|r|r|r}
+\hline
+method & step & auc & accuracy & macro\_f1 & kappa & gmean\\
+\hline
+ & 1 & 0.949 & 0.897 & 0.803 & 0.734 & 0.870\\
+\cline{2-7}
+ & 2 & 0.995 & 0.974 & 0.962 & 0.942 & 0.968\\
+\cline{2-7}
+ & 3 & 0.954 & 0.888 & 0.817 & 0.737 & 0.881\\
+\cline{2-7}
+\multirow{-4}{*}{\raggedright\arraybackslash sequential\_opt} & 4 & 0.972 & 0.932 & 0.909 & 0.855 & 0.913\\
+\hline
+\end{tabular}
+\end{table}
 
   \bibliography{packages.bib}
 \addcontentsline{toc}{chapter}{\bibname}

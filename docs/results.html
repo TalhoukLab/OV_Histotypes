@@ -7661,7 +7661,7 @@ Figure 4.31: Top 4 Model Per-Class F1-Scores
 </h3>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:confirmation-set">Table 4.26: </span>Class-specific F1-scores on Confirmation Set Models
+<span id="tab:conf-eval-per-class">Table 4.26: </span>Class-specific Evaluation Metrics on Confirmation Set Models
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -8022,6 +8022,288 @@ gmean
 </tbody>
 </table></div>
 <p>In the confirmation set, <strong>sequential_full</strong> and <strong>sequential_optimal</strong> are very similar. Both sequential algorithms have moderate improvement in LGSC and MUC classification. We will select the <strong>sequential_optimal</strong> model to test in the validation set.</p>
+<div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:conf-eval-overall">Table 4.27: </span>Overall Evaluation Metrics on Confirmation Set Models
+</caption>
+<thead><tr>
+<th style="text-align:left;">
+method
+</th>
+<th style="text-align:left;">
+step
+</th>
+<th style="text-align:right;">
+auc
+</th>
+<th style="text-align:right;">
+accuracy
+</th>
+<th style="text-align:right;">
+macro_f1
+</th>
+<th style="text-align:right;">
+kappa
+</th>
+<th style="text-align:right;">
+gmean
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="2">
+two_step_full
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0.912
+</td>
+<td style="text-align:right;">
+0.866
+</td>
+<td style="text-align:right;">
+0.903
+</td>
+<td style="text-align:right;">
+0.689
+</td>
+<td style="text-align:right;">
+0.819
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+0.921
+</td>
+<td style="text-align:right;">
+0.778
+</td>
+<td style="text-align:right;">
+0.702
+</td>
+<td style="text-align:right;">
+0.667
+</td>
+<td style="text-align:right;">
+0.749
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="2">
+two_step_optimal
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0.911
+</td>
+<td style="text-align:right;">
+0.869
+</td>
+<td style="text-align:right;">
+0.906
+</td>
+<td style="text-align:right;">
+0.695
+</td>
+<td style="text-align:right;">
+0.819
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+0.914
+</td>
+<td style="text-align:right;">
+0.792
+</td>
+<td style="text-align:right;">
+0.712
+</td>
+<td style="text-align:right;">
+0.686
+</td>
+<td style="text-align:right;">
+0.757
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="4">
+sequential_full
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0.907
+</td>
+<td style="text-align:right;">
+0.871
+</td>
+<td style="text-align:right;">
+0.792
+</td>
+<td style="text-align:right;">
+0.700
+</td>
+<td style="text-align:right;">
+0.825
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+0.951
+</td>
+<td style="text-align:right;">
+0.950
+</td>
+<td style="text-align:right;">
+0.922
+</td>
+<td style="text-align:right;">
+0.886
+</td>
+<td style="text-align:right;">
+0.928
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:right;">
+0.852
+</td>
+<td style="text-align:right;">
+0.767
+</td>
+<td style="text-align:right;">
+0.614
+</td>
+<td style="text-align:right;">
+0.449
+</td>
+<td style="text-align:right;">
+0.736
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:right;">
+0.906
+</td>
+<td style="text-align:right;">
+0.800
+</td>
+<td style="text-align:right;">
+0.692
+</td>
+<td style="text-align:right;">
+0.544
+</td>
+<td style="text-align:right;">
+0.768
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="4">
+sequential_optimal
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0.907
+</td>
+<td style="text-align:right;">
+0.869
+</td>
+<td style="text-align:right;">
+0.788
+</td>
+<td style="text-align:right;">
+0.695
+</td>
+<td style="text-align:right;">
+0.821
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+0.947
+</td>
+<td style="text-align:right;">
+0.946
+</td>
+<td style="text-align:right;">
+0.914
+</td>
+<td style="text-align:right;">
+0.875
+</td>
+<td style="text-align:right;">
+0.921
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:right;">
+0.866
+</td>
+<td style="text-align:right;">
+0.781
+</td>
+<td style="text-align:right;">
+0.652
+</td>
+<td style="text-align:right;">
+0.496
+</td>
+<td style="text-align:right;">
+0.771
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:right;">
+0.880
+</td>
+<td style="text-align:right;">
+0.800
+</td>
+<td style="text-align:right;">
+0.692
+</td>
+<td style="text-align:right;">
+0.544
+</td>
+<td style="text-align:right;">
+0.768
+</td>
+</tr>
+</tbody>
+</table></div>
 </div>
 <div id="validation-set" class="section level3" number="4.8.2">
 <h3>
@@ -8029,7 +8311,7 @@ gmean
 </h3>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:validation-set">Table 4.27: </span>Class-specific F1-scores on Validation Set Model
+<span id="tab:val-eval-per-class">Table 4.28: </span>Class-specific Evaluation Metrics on Validation Set Model
 </caption>
 <thead><tr>
 <th style="text-align:left;">
@@ -8141,7 +8423,119 @@ gmean
 </tbody>
 </table></div>
 <p>Per-class F1-scores in the validation set are all above 0.9.</p>
-
+<div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:val-eval-overall">Table 4.29: </span>Overall valuation Metrics on Validation Set Model
+</caption>
+<thead><tr>
+<th style="text-align:left;">
+method
+</th>
+<th style="text-align:left;">
+step
+</th>
+<th style="text-align:right;">
+auc
+</th>
+<th style="text-align:right;">
+accuracy
+</th>
+<th style="text-align:right;">
+macro_f1
+</th>
+<th style="text-align:right;">
+kappa
+</th>
+<th style="text-align:right;">
+gmean
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="4">
+sequential_opt
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0.949
+</td>
+<td style="text-align:right;">
+0.897
+</td>
+<td style="text-align:right;">
+0.803
+</td>
+<td style="text-align:right;">
+0.734
+</td>
+<td style="text-align:right;">
+0.870
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+0.995
+</td>
+<td style="text-align:right;">
+0.974
+</td>
+<td style="text-align:right;">
+0.962
+</td>
+<td style="text-align:right;">
+0.942
+</td>
+<td style="text-align:right;">
+0.968
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:right;">
+0.954
+</td>
+<td style="text-align:right;">
+0.888
+</td>
+<td style="text-align:right;">
+0.817
+</td>
+<td style="text-align:right;">
+0.737
+</td>
+<td style="text-align:right;">
+0.881
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:right;">
+0.972
+</td>
+<td style="text-align:right;">
+0.932
+</td>
+<td style="text-align:right;">
+0.909
+</td>
+<td style="text-align:right;">
+0.855
+</td>
+<td style="text-align:right;">
+0.913
+</td>
+</tr>
+</tbody>
+</table></div>
 </div>
 </div>
 </div>
