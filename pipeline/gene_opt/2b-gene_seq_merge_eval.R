@@ -20,7 +20,8 @@ eval_merged <- eval_files %>%
   purrr::map(~ purrr::map(., ~ purrr::map(., ~ readRDS(.)))) %>%
   purrr::modify_depth(2, purrr::transpose) %>%
   purrr::map(purrr::transpose) %>%
-  purrr::flatten()%>%
+  purrr::flatten() %>%
+  rlang::set_names(paste0("Seq", seq_len(length(.)), "_", names(.))) %>%
   purrr::map_depth(2, ~ do.call(cbind, .x) %>%
                      rlang::set_names(seq_len(ncol(.)))) %>%
   purrr::list_flatten() %>%
@@ -33,17 +34,16 @@ eval_merged <- eval_files %>%
   dplyr::filter(!grepl("non-", measure)) %>%
   tidyr::pivot_longer(
     cols = where(is.numeric),
-    names_to = c("Algorithm", "Genes", "Bootstrap"),
-    names_pattern = "Add_(.*)_(.*)_(B.*)",
+    names_to = c("Sequence", "Algorithm", "Genes", "Bootstrap"),
+    names_pattern = "Add_Seq(.)_(.*)_(.*)_(B.*)",
     values_to = "value"
   ) %>%
   dplyr::summarize(quants = list(quantile(
     value, probs = c(0.5, 0.05, 0.95), na.rm = TRUE
   )),
-  .by = c(measure, Genes, Algorithm)) %>%
+  .by = c(measure, Sequence, Algorithm, Genes)) %>%
   tidyr::unnest_wider(col = quants) %>%
-  dplyr::mutate(Sequence = dplyr::dense_rank(Algorithm),
-                .before = Algorithm)
+  dplyr::mutate(Sequence = as.numeric(Sequence))
 
 # Write all evaluations merged
 saveRDS(
