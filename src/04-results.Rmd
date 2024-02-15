@@ -1993,18 +1993,6 @@ mod_seq_opt <-
       seed_alg = 2024
     )
   })
-
-# adaboost-up
-train_data <- readRDS(here("data", "train_data.rds"))
-train_class <- readRDS(here("data", "train_class.rds"))
-
-mod_full <- classification(
-  data = train_data,
-  class = train_class,
-  algorithm = "adaboost",
-  sampling = "up",
-  seed_alg = 2024
-)
 ```
 
 ### Confirmation Set
