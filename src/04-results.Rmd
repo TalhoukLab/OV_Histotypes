@@ -1693,9 +1693,11 @@ overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
 candidates <- setdiff(names(train_data), overlap_all)
 ```
 
-There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining `r length(candidates)` candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry foward for a particular model.
+There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining `r length(candidates)` candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry forward for a particular model.
 
-```{r gene-seq, fig.cap='Gene Optimization for Sequential Classifier'}
+Variable importance is calculated using either a model-based approach if it is available, or a SHAP-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by aggregating the base classifier VI scores using rank aggregation.
+
+```{r gene-seq, fig.height=8, fig.cap='Gene Optimization for Sequential Classifier'}
 dat_geneseq <- geneseq %>% 
   filter(
     (measure == "f1.HGSC" & Sequence == 1) | 
@@ -1724,8 +1726,13 @@ p_gene_seq <- ggplot(dat_geneseq, aes(x = Genes, y = `50%`)) +
 print(p_gene_seq)
 
 n_genes_seq <- 34
-opt_genes_seq <- c(overlap_all, ranked_vi_seq[seq_len(n_genes_seq)])
+genes_add_seq <- ranked_vi_seq[seq_len(n_genes_seq)]
+opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
+
+In the sequential classifier, we use the per-class median F1-scores pertaining to the histotype that had the best performance from each retraining, and sort them on number of genes added. For instance, in sequence 2, we look at the CCOC F1-scores because CCOC had the best performance from retraining after HGSC was removed.
+
+We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when we reach `r n_genes_2s` genes added, hence the optimal number of genes used will be n=28+34=62. The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
 dat_gene2s <- gene2s %>% 
@@ -1754,8 +1761,11 @@ p_gene_2s <- ggplot(dat_gene2s, aes(x = Genes, y = `50%`)) +
 print(p_gene_2s)
 
 n_genes_2s <- 24
-opt_genes_2s <- c(overlap_all, ranked_vi_2s[seq_len(n_genes_2s)])
+genes_add_2s <- ranked_vi_2s[seq_len(n_genes_2s)]
+opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
+
+In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.88 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=28+`r n_genes_2s`=52. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
 
 ## Rank Aggregation
 
