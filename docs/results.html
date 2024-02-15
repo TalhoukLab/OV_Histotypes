@@ -7659,13 +7659,16 @@ Figure 4.31: Top 4 Model Per-Class F1-Scores
 <h3>
 <span class="header-section-number">4.8.1</span> Confirmation Set<a class="anchor" aria-label="anchor" href="#confirmation-set"><i class="fas fa-link"></i></a>
 </h3>
-<div class="inline-table"><table class="table table-sm">
+<div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:confirmation-set">Table 4.26: </span>Class-specific F1-scores on Confirmation Set Models
 </caption>
 <thead><tr>
 <th style="text-align:left;">
 method
+</th>
+<th style="text-align:left;">
+measure
 </th>
 <th style="text-align:right;">
 HGSC
@@ -7685,8 +7688,31 @@ MUC
 </tr></thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="4">
 two_step_full
+</td>
+<td style="text-align:left;">
+accuracy
+</td>
+<td style="text-align:right;">
+0.866
+</td>
+<td style="text-align:right;">
+0.923
+</td>
+<td style="text-align:right;">
+0.814
+</td>
+<td style="text-align:right;">
+0.900
+</td>
+<td style="text-align:right;">
+0.919
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f1
 </td>
 <td style="text-align:right;">
 0.903
@@ -7706,7 +7732,70 @@ two_step_full
 </tr>
 <tr>
 <td style="text-align:left;">
+kappa
+</td>
+<td style="text-align:right;">
+0.689
+</td>
+<td style="text-align:right;">
+0.828
+</td>
+<td style="text-align:right;">
+0.626
+</td>
+<td style="text-align:right;">
+0.403
+</td>
+<td style="text-align:right;">
+0.632
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gmean
+</td>
+<td style="text-align:right;">
+0.819
+</td>
+<td style="text-align:right;">
+0.912
+</td>
+<td style="text-align:right;">
+0.808
+</td>
+<td style="text-align:right;">
+0.795
+</td>
+<td style="text-align:right;">
+0.817
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="4">
 two_step_optimal
+</td>
+<td style="text-align:left;">
+accuracy
+</td>
+<td style="text-align:right;">
+0.869
+</td>
+<td style="text-align:right;">
+0.928
+</td>
+<td style="text-align:right;">
+0.833
+</td>
+<td style="text-align:right;">
+0.914
+</td>
+<td style="text-align:right;">
+0.910
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f1
 </td>
 <td style="text-align:right;">
 0.906
@@ -7726,7 +7815,70 @@ two_step_optimal
 </tr>
 <tr>
 <td style="text-align:left;">
+kappa
+</td>
+<td style="text-align:right;">
+0.695
+</td>
+<td style="text-align:right;">
+0.837
+</td>
+<td style="text-align:right;">
+0.663
+</td>
+<td style="text-align:right;">
+0.444
+</td>
+<td style="text-align:right;">
+0.603
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gmean
+</td>
+<td style="text-align:right;">
+0.819
+</td>
+<td style="text-align:right;">
+0.915
+</td>
+<td style="text-align:right;">
+0.827
+</td>
+<td style="text-align:right;">
+0.801
+</td>
+<td style="text-align:right;">
+0.813
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="4">
 sequential_full
+</td>
+<td style="text-align:left;">
+accuracy
+</td>
+<td style="text-align:right;">
+0.871
+</td>
+<td style="text-align:right;">
+0.950
+</td>
+<td style="text-align:right;">
+0.767
+</td>
+<td style="text-align:right;">
+0.800
+</td>
+<td style="text-align:right;">
+0.800
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f1
 </td>
 <td style="text-align:right;">
 0.906
@@ -7746,7 +7898,70 @@ sequential_full
 </tr>
 <tr>
 <td style="text-align:left;">
+kappa
+</td>
+<td style="text-align:right;">
+0.700
+</td>
+<td style="text-align:right;">
+0.886
+</td>
+<td style="text-align:right;">
+0.449
+</td>
+<td style="text-align:right;">
+0.544
+</td>
+<td style="text-align:right;">
+0.544
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gmean
+</td>
+<td style="text-align:right;">
+0.825
+</td>
+<td style="text-align:right;">
+0.928
+</td>
+<td style="text-align:right;">
+0.736
+</td>
+<td style="text-align:right;">
+0.768
+</td>
+<td style="text-align:right;">
+0.768
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="4">
 sequential_optimal
+</td>
+<td style="text-align:left;">
+accuracy
+</td>
+<td style="text-align:right;">
+0.869
+</td>
+<td style="text-align:right;">
+0.946
+</td>
+<td style="text-align:right;">
+0.781
+</td>
+<td style="text-align:right;">
+0.800
+</td>
+<td style="text-align:right;">
+0.800
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f1
 </td>
 <td style="text-align:right;">
 0.906
@@ -7764,6 +7979,46 @@ sequential_optimal
 0.852
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+kappa
+</td>
+<td style="text-align:right;">
+0.695
+</td>
+<td style="text-align:right;">
+0.875
+</td>
+<td style="text-align:right;">
+0.496
+</td>
+<td style="text-align:right;">
+0.544
+</td>
+<td style="text-align:right;">
+0.544
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gmean
+</td>
+<td style="text-align:right;">
+0.821
+</td>
+<td style="text-align:right;">
+0.921
+</td>
+<td style="text-align:right;">
+0.771
+</td>
+<td style="text-align:right;">
+0.768
+</td>
+<td style="text-align:right;">
+0.768
+</td>
+</tr>
 </tbody>
 </table></div>
 <p>In the confirmation set, <strong>sequential_full</strong> and <strong>sequential_optimal</strong> are very similar. Both sequential algorithms have moderate improvement in LGSC and MUC classification. We will select the <strong>sequential_optimal</strong> model to test in the validation set.</p>
@@ -7772,13 +8027,16 @@ sequential_optimal
 <h3>
 <span class="header-section-number">4.8.2</span> Validation Set<a class="anchor" aria-label="anchor" href="#validation-set"><i class="fas fa-link"></i></a>
 </h3>
-<div class="inline-table"><table class="table table-sm">
+<div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:validation-set">Table 4.27: </span>Class-specific F1-scores on Validation Set Model
 </caption>
 <thead><tr>
 <th style="text-align:left;">
 method
+</th>
+<th style="text-align:left;">
+measure
 </th>
 <th style="text-align:right;">
 HGSC
@@ -7796,9 +8054,33 @@ LGSC
 MUC
 </th>
 </tr></thead>
-<tbody><tr>
-<td style="text-align:left;">
+<tbody>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="4">
 sequential_opt
+</td>
+<td style="text-align:left;">
+accuracy
+</td>
+<td style="text-align:right;">
+0.897
+</td>
+<td style="text-align:right;">
+0.974
+</td>
+<td style="text-align:right;">
+0.888
+</td>
+<td style="text-align:right;">
+0.932
+</td>
+<td style="text-align:right;">
+0.932
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+f1
 </td>
 <td style="text-align:right;">
 0.931
@@ -7815,7 +8097,48 @@ sequential_opt
 <td style="text-align:right;">
 0.945
 </td>
-</tr></tbody>
+</tr>
+<tr>
+<td style="text-align:left;">
+kappa
+</td>
+<td style="text-align:right;">
+0.734
+</td>
+<td style="text-align:right;">
+0.942
+</td>
+<td style="text-align:right;">
+0.737
+</td>
+<td style="text-align:right;">
+0.855
+</td>
+<td style="text-align:right;">
+0.855
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gmean
+</td>
+<td style="text-align:right;">
+0.870
+</td>
+<td style="text-align:right;">
+0.968
+</td>
+<td style="text-align:right;">
+0.881
+</td>
+<td style="text-align:right;">
+0.913
+</td>
+<td style="text-align:right;">
+0.913
+</td>
+</tr>
+</tbody>
 </table></div>
 <p>Per-class F1-scores in the validation set are all above 0.9.</p>
 

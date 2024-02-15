@@ -2043,17 +2043,41 @@ We can test 2 additional methods by using either the full set of genes or the op
 
 \caption{\label{tab:confirmation-set}Class-specific F1-scores on Confirmation Set Models}
 \centering
-\begin{tabular}[t]{l|r|r|r|r|r}
+\begin{tabular}[t]{l|l|r|r|r|r|r}
 \hline
-method & HGSC & CCOC & ENOC & LGSC & MUC\\
+method & measure & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
-two\_step\_full & 0.908 & 0.886 & 0.792 & 0.450 & 0.679\\
-\hline
-two\_step\_optimal & 0.906 & 0.892 & 0.814 & 0.486 & 0.655\\
-\hline
-sequential\_full & 0.906 & 0.922 & 0.833 & 0.692 & 0.852\\
-\hline
-sequential\_optimal & 0.906 & 0.914 & 0.840 & 0.692 & 0.852\\
+ & accuracy & 0.872 & 0.923 & 0.814 & 0.900 & 0.919\\
+\cline{2-7}
+ & f1 & 0.908 & 0.886 & 0.792 & 0.450 & 0.679\\
+\cline{2-7}
+ & kappa & 0.703 & 0.828 & 0.626 & 0.403 & 0.632\\
+\cline{2-7}
+\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_full} & gmean & 0.826 & 0.912 & 0.808 & 0.795 & 0.817\\
+\cline{1-7}
+ & accuracy & 0.869 & 0.928 & 0.833 & 0.914 & 0.910\\
+\cline{2-7}
+ & f1 & 0.906 & 0.892 & 0.814 & 0.486 & 0.655\\
+\cline{2-7}
+ & kappa & 0.695 & 0.837 & 0.663 & 0.444 & 0.603\\
+\cline{2-7}
+\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.819 & 0.915 & 0.827 & 0.801 & 0.813\\
+\cline{1-7}
+ & accuracy & 0.871 & 0.950 & 0.767 & 0.800 & 0.800\\
+\cline{2-7}
+ & f1 & 0.906 & 0.922 & 0.833 & 0.692 & 0.852\\
+\cline{2-7}
+ & kappa & 0.700 & 0.886 & 0.449 & 0.544 & 0.544\\
+\cline{2-7}
+\multirow{-4}{*}{\raggedright\arraybackslash sequential\_full} & gmean & 0.825 & 0.928 & 0.736 & 0.768 & 0.768\\
+\cline{1-7}
+ & accuracy & 0.869 & 0.946 & 0.781 & 0.800 & 0.800\\
+\cline{2-7}
+ & f1 & 0.906 & 0.914 & 0.840 & 0.692 & 0.852\\
+\cline{2-7}
+ & kappa & 0.695 & 0.875 & 0.496 & 0.544 & 0.544\\
+\cline{2-7}
+\multirow{-4}{*}{\raggedright\arraybackslash sequential\_optimal} & gmean & 0.821 & 0.921 & 0.771 & 0.768 & 0.768\\
 \hline
 \end{tabular}
 \end{table}
@@ -2067,11 +2091,17 @@ In the confirmation set, \textbf{sequential\_full} and \textbf{sequential\_optim
 
 \caption{\label{tab:validation-set}Class-specific F1-scores on Validation Set Model}
 \centering
-\begin{tabular}[t]{l|r|r|r|r|r}
+\begin{tabular}[t]{l|l|r|r|r|r|r}
 \hline
-method & HGSC & CCOC & ENOC & LGSC & MUC\\
+method & measure & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
-sequential\_opt & 0.931 & 0.962 & 0.919 & 0.909 & 0.945\\
+ & accuracy & 0.897 & 0.974 & 0.888 & 0.932 & 0.932\\
+\cline{2-7}
+ & f1 & 0.931 & 0.962 & 0.919 & 0.909 & 0.945\\
+\cline{2-7}
+ & kappa & 0.734 & 0.942 & 0.737 & 0.855 & 0.855\\
+\cline{2-7}
+\multirow{-4}{*}{\raggedright\arraybackslash sequential\_opt} & gmean & 0.870 & 0.968 & 0.881 & 0.913 & 0.913\\
 \hline
 \end{tabular}
 \end{table}
