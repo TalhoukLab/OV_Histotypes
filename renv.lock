@@ -121,7 +121,7 @@
     },
     "C50": {
       "Package": "C50",
-      "Version": "0.1.2",
+      "Version": "0.1.8",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -129,7 +129,7 @@
         "R",
         "partykit"
       ],
-      "Hash": "b86e4eee14c3aec663a65aa6e9e81973"
+      "Hash": "9ce1ac05ba2d6aa5b65ad60d266ebd80"
     },
     "Cubist": {
       "Package": "Cubist",
