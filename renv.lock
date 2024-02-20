@@ -1747,7 +1747,7 @@
     },
     "mclust": {
       "Package": "mclust",
-      "Version": "5.4.5",
+      "Version": "6.0.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1757,7 +1757,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "eb4db14d65da50c105be47de0e46a914"
+      "Hash": "6381ce71e9498075fbeb229fd3180f62"
     },
     "memoise": {
       "Package": "memoise",
