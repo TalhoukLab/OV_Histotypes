@@ -7,15 +7,10 @@ library(forcats)
 library(scales)
 library(patchwork)
 library(here)
-source(here("src/funs.R"))
-source(here("validation/cs_process_cohorts.R"))
+source(here("validation/cs_classifier.R"))
 ```
 
 ## Histotypes in Classifier Data
-
-```{r classifier-hist}
-source(here("validation/cs_classifier.R"))
-```
 
 ```{r preqc-hist-codeset}
 cs1_samples_preqc <- cohorts %>%
@@ -90,20 +85,12 @@ knitr::kable(train_hist_codeset,
              caption = "Full Training Set Histotype Distribution by CodeSet")
 ```
 
-```{r hist-codeset-dataset}
-hist_codeset_dataset <- list(
-  `CS1 All` = cs1_all_ref,
-  `CS2 All` = cs2_all_ref,
-  Confirmation = conf_ref,
-  Validation = val_ref
-) %>%
-  map_dfr( ~ select(., revHist), .id = "Data") %>% 
-  mutate(
-    Data = factor(Data, levels = c(
-      "CS1 All", "CS2 All", "Confirmation", "Validation"
-    )),
-    revHist = factor(revHist, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))
-  ) %>%
+```{r hist-conf-val}
+hist_conf_val <- list(Confirmation = conf_ref,
+                      Validation = val_ref) %>% 
+  map_dfr(~ select(., revHist), .id = "Data") %>%
+  mutate(Data = factor(Data, levels = c("Confirmation", "Validation")),
+         revHist = factor(revHist, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) %>%
   describeBy(
     var.names = "revHist",
     var.labels = "Histotype",
@@ -114,8 +101,8 @@ hist_codeset_dataset <- list(
   ) %>% 
   select(-Total)
 
-knitr::kable(hist_codeset_dataset,
-             caption = "Histotype Distribution by CodeSet/Datasets")
+knitr::kable(hist_conf_val,
+             caption = "Histotype Distribution in Confirmation and Validation Sets")
 ```
 
 ## Quality Control
