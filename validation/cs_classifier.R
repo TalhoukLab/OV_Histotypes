@@ -34,7 +34,7 @@ cs3_samples_R <- cohorts %>%
   gsub("^X", "", .)
 
 # Expression Samples
-# CS1: n=266
+# CS1: n=263
 cs1_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
@@ -42,14 +42,14 @@ cs1_samples_X <- cohorts %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
-# CS1 with duplicates: n=282
+# CS1 with duplicates: n=279
 cs1_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
-# CS2: n=833
+# CS2: n=832
 cs2_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
@@ -57,14 +57,14 @@ cs2_samples_X <- cohorts %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
-# CS2 with duplicates: n=884
+# CS2 with duplicates: n=882
 cs2_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
-# CS3: n=2111
+# CS3: n=2107
 cs3_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs3_samples) %>%
@@ -117,10 +117,10 @@ cs1_norm_t <- cs1_norm %>%
   spread(Name, value) %>%
   column_to_rownames("FileName")
 
-# CS1: 266 samples by 256 genes
+# CS1: 263 samples by 256 genes
 cs1_X <- cs1_norm_t[cs1_samples_X, ]
 
-# CS1 with duplicates: 282 samples by 256 genes
+# CS1 with duplicates: 279 samples by 256 genes
 cs1_all_X <- cs1_norm_t[cs1_samples_all_X, ]
 
 # CS2 transposed
