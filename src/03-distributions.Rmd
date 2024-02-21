@@ -105,6 +105,25 @@ knitr::kable(hist_conf_val,
              caption = "Histotype Distribution in Confirmation and Validation Sets")
 ```
 
+## Cohorts in Classifier Data
+
+```{r cohort-dist}
+cohort_dist <- list(Training = train_ref,
+                    Confirmation = conf_ref,
+                    Validation = val_ref) %>%
+  map(~ count(.x, CodeSet, cohort)) %>%
+  list_rbind(names_to = "Data") %>%
+  rename(Cohort = cohort) %>% 
+  pivot_wider(
+    names_from = "Data",
+    values_from = "n",
+    values_fill = list(n = 0)
+  )
+
+knitr::kable(cohort_dist,
+             caption = "Cohort Distribution in Training, Confirmation, and Validation Sets")
+```
+
 ## Quality Control
 
 ### Failed Samples

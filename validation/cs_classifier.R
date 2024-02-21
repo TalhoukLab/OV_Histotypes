@@ -244,6 +244,8 @@ train_ref <-
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  inner_join(transmute(cohorts, FileName = gsub("^X", "", col_name), cohort),
+             by = "FileName") %>%
   column_to_rownames("FileName")
 
 train_data <- select(train_ref, where(is.double))
@@ -296,7 +298,7 @@ conf_ref <- cs3_X %>%
   inner_join(cohorts, by = "col_name") %>%
   filter(cohort == "TNCO") %>%
   mutate(col_name = gsub("^X", "", col_name)) %>%
-  select(FileName = col_name, all_of(common_genes123)) %>%
+  select(FileName = col_name, cohort, all_of(common_genes123)) %>%
   inner_join(hist, by = "FileName") %>%
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
@@ -314,7 +316,7 @@ val_ref <- cs3_X %>%
   inner_join(cohorts, by = "col_name") %>%
   filter(cohort == "DOVE4") %>%
   mutate(col_name = gsub("^X", "", col_name)) %>%
-  select(FileName = col_name, all_of(common_genes123)) %>%
+  select(FileName = col_name, cohort, all_of(common_genes123)) %>%
   inner_join(hist, by = "FileName") %>%
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
