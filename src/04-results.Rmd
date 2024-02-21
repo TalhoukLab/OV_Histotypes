@@ -14,6 +14,7 @@ library(RankAggreg)
 library(splendid)
 library(magrittr)
 library(DT)
+library(plotly)
 library(here)
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
@@ -1698,6 +1699,9 @@ There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPO
 Variable importance is calculated using either a model-based approach if it is available, or a SHAP-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by aggregating the base classifier VI scores using rank aggregation.
 
 ```{r gene-seq, fig.height=8, fig.cap='Gene Optimization for Sequential Classifier'}
+geneseq_names <-
+  enframe(ranked_vi_seq, name = "Genes", value = "Name")
+
 dat_geneseq <- geneseq %>% 
   filter(
     (measure == "f1.HGSC" & Sequence == 1) | 
@@ -1714,16 +1718,18 @@ dat_geneseq <- geneseq %>%
       Algorithm,
       ", Measure: ",
       measure)
-  )
+  ) %>% 
+  inner_join(geneseq_names, by = "Genes")
 
-p_gene_seq <- ggplot(dat_geneseq, aes(x = Genes, y = `50%`)) +
+p_gene_seq <-
+  ggplot(dat_geneseq, aes(x = Genes, y = `50%`, text = Name)) +
   facet_wrap(~ label, ncol = 1, scales = "free_y") +
   geom_point() +
   theme_bw() +
   labs(x = "Genes Added",
        y = "Median",
        title = "Gene Optimziation for Sequential Classifier")
-print(p_gene_seq)
+ggplotly(p_gene_seq)
 
 n_genes_seq <- 34
 genes_add_seq <- ranked_vi_seq[seq_len(n_genes_seq)]
@@ -1735,6 +1741,9 @@ In the sequential classifier, we use the per-class median F1-scores pertaining t
 We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=28+34=62. The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
+gene2s_names <-
+  enframe(ranked_vi_2s, name = "Genes", value = "Name")
+
 dat_gene2s <- gene2s %>% 
   filter(
     (measure == "f1.HGSC" & Sequence == 1) |
@@ -1749,16 +1758,18 @@ dat_gene2s <- gene2s %>%
       Algorithm,
       ", Measure: ",
       measure)
-  )
+  ) %>% 
+  inner_join(gene2s_names, by = "Genes")
 
-p_gene_2s <- ggplot(dat_gene2s, aes(x = Genes, y = `50%`)) +
+p_gene_2s <-
+  ggplot(dat_gene2s, aes(x = Genes, y = `50%`, text = Name)) +
   facet_wrap(~ label, ncol = 1, scales = "free_y") +
   geom_point() +
   theme_bw() +
   labs(x = "Genes Added",
        y = "Median",
        title = "Gene Optimization for Two-Step Classifier")
-print(p_gene_2s)
+ggplotly(p_gene_2s)
 
 n_genes_2s <- 24
 genes_add_2s <- ranked_vi_2s[seq_len(n_genes_2s)]
