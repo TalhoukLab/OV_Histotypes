@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-02-15}
+\date{2024-02-21}
 
 \begin{document}
 \maketitle
@@ -145,6 +145,27 @@ The supervised learning is performed under a consensus framework: we consider va
 
 \hypertarget{methods}{%
 \chapter{Methods}\label{methods}}
+
+\hypertarget{normalization}{%
+\section{Normalization}\label{normalization}}
+
+The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each of the CodeSets.
+
+CS1 was normalized to CS3 using ``Random1'' reference samples. These reference samples are common samples between CS1 and CS3, randomly selected such that we obtain one from each of the five histotypes. Then we use the reference method to normalize CS1 to CS3.
+
+Similarly, CS2 was normalized to CS3 using ``Random1'' reference samples using five common samples between CS2 and CS3 such that there is one from each histotype.
+
+For CS3, we first split the dataset by site: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a ``reference standard'', so we normalized CS3-USC and CS3-AOC to CS3-Vancouver using a ``Random1'' reference method where we reference samples are common between USC and Vancouver, and between AOC and Vancouver. The CS3-Vancouver is also included without further normalization.
+
+\hypertarget{case-selection}{%
+\section{Case Selection}\label{case-selection}}
+
+Duplicate cases (two samples with the same ottaID) were removed from the training set before fitting the classification models. CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver were preferred over CS3-AOC and CS3-USC.
+
+The training, confirmation, and validation sets all used a different set of cohorts.
+
+\hypertarget{classification}{%
+\section{Classification}\label{classification}}
 
 We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for the Training Set, CS1 and CS2. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. Implementations of the techniques below were called from the \href{https://alinetalhouk.github.io/splendid/}{splendid} package.
 
@@ -183,481 +204,6 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
 
 \hypertarget{distributions}{%
 \chapter{Distributions}\label{distributions}}
-
-\hypertarget{full-data}{%
-\section{Full Data}\label{full-data}}
-
-The histotype distributions on the full data are shown below.
-
-\begin{table}
-
-\caption{\label{tab:dist-all-hist-gr}All CodeSet Histotype Groups}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-Histotype Group & CS1 & CS2 & CS3\\
-\hline
-HGSC & 120 & 643 & 1643\\
-\hline
-non-HGSC & 166 & 220 & 583\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:dist-major-hist}All CodeSet Major Reviewed Histotypes}
-\centering
-\begin{tabular}[t]{l|r|r|r|r|r|r}
-\hline
-Reviewed Histotype & CS1 & CS2 & CS3 & CS1 \% & CS2 \% & CS3 \%\\
-\hline
-CCOC & 48 & 61 & 174 & 18.0 & 7.4 & 8.1\\
-\hline
-ENOC & 60 & 32 & 232 & 22.5 & 3.9 & 10.8\\
-\hline
-HGSC & 120 & 643 & 1643 & 44.9 & 78.5 & 76.1\\
-\hline
-LGSC & 20 & 21 & 40 & 7.5 & 2.6 & 1.9\\
-\hline
-MUC & 19 & 62 & 69 & 7.1 & 7.6 & 3.2\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:dist-all}All CodeSet Reviewed Histotypes}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-Reviewed Histotype & CS1 & CS2 & CS3\\
-\hline
-CARCINOMA-NOS & 0 & 1 & 23\\
-\hline
-CCOC & 48 & 61 & 174\\
-\hline
-CTRL & 0 & 12 & 0\\
-\hline
-ENOC & 60 & 32 & 232\\
-\hline
-HGSC & 120 & 643 & 1643\\
-\hline
-LGSC & 20 & 21 & 40\\
-\hline
-MBOT & 0 & 19 & 3\\
-\hline
-MIXED (ENOC/CCOC) & 0 & 0 & 1\\
-\hline
-MIXED (ENOC/LGSC) & 0 & 0 & 1\\
-\hline
-MIXED (HGSC/CCOC) & 0 & 0 & 1\\
-\hline
-MMMT & 0 & 0 & 28\\
-\hline
-MUC & 19 & 62 & 69\\
-\hline
-Other/Exclude & 0 & 0 & 8\\
-\hline
-SBOT & 19 & 12 & 2\\
-\hline
-serous LMP & 0 & 0 & 1\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:dist-cs1}CS1 Histotypes}
-\centering
-\begin{tabular}[t]{l|l|r}
-\hline
-CodeSet & Reviewed Histotype & n\\
-\hline
-CS1 & CCOC & 48\\
-\hline
-CS1 & ENOC & 60\\
-\hline
-CS1 & HGSC & 120\\
-\hline
-CS1 & LGSC & 20\\
-\hline
-CS1 & MUC & 19\\
-\hline
-CS1 & SBOT & 19\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:dist-cs2}CS2 Histotypes}
-\centering
-\begin{tabular}[t]{l|l|r}
-\hline
-CodeSet & Reviewed Histotype & n\\
-\hline
-CS2 & CARCINOMA-NOS & 1\\
-\hline
-CS2 & CCOC & 61\\
-\hline
-CS2 & CTRL & 12\\
-\hline
-CS2 & ENOC & 32\\
-\hline
-CS2 & HGSC & 643\\
-\hline
-CS2 & LGSC & 21\\
-\hline
-CS2 & MBOT & 19\\
-\hline
-CS2 & MUC & 62\\
-\hline
-CS2 & SBOT & 12\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:dist-cs3}CS3 Histotypes}
-\centering
-\begin{tabular}[t]{l|l|r}
-\hline
-CodeSet & Reviewed Histotype & n\\
-\hline
-CS3 & CARCINOMA-NOS & 23\\
-\hline
-CS3 & CCOC & 174\\
-\hline
-CS3 & ENOC & 232\\
-\hline
-CS3 & HGSC & 1643\\
-\hline
-CS3 & LGSC & 40\\
-\hline
-CS3 & MBOT & 3\\
-\hline
-CS3 & MIXED (ENOC/CCOC) & 1\\
-\hline
-CS3 & MIXED (ENOC/LGSC) & 1\\
-\hline
-CS3 & MIXED (HGSC/CCOC) & 1\\
-\hline
-CS3 & MMMT & 28\\
-\hline
-CS3 & MUC & 69\\
-\hline
-CS3 & Other/Exclude & 8\\
-\hline
-CS3 & SBOT & 2\\
-\hline
-CS3 & serous LMP & 1\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:dist-common}Common Summary ID CodeSet Histotypes}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-Reviewed Histotype & CS1 & CS2 & CS3\\
-\hline
-CCOC & 3 & 4 & 9\\
-\hline
-ENOC & 4 & 4 & 9\\
-\hline
-HGSC & 55 & 62 & 94\\
-\hline
-LGSC & 7 & 5 & 8\\
-\hline
-MUC & 7 & 5 & 11\\
-\hline
-\end{tabular}
-\end{table}
-
-\hypertarget{training-sets}{%
-\section{Training Sets}\label{training-sets}}
-
-\hypertarget{cs1-training-set-generation}{%
-\subsection{CS1 Training Set Generation}\label{cs1-training-set-generation}}
-
-We use the reference method to normalize CS1 to CS3.
-
-\begin{itemize}
-\item
-  CS1 reference set: duplicate samples from CS1
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Samples = 16
-  \item
-    Genes = 72
-  \end{itemize}
-\item
-  CS3 reference set: corresponding samples in CS3 also found in CS1 reference set
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Samples = 9
-  \item
-    Genes = 72
-  \end{itemize}
-\item
-  CS1 validation set: remaining CS1 samples with reference set removed
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Samples = 270
-  \item
-    Genes = 72
-  \end{itemize}
-\end{itemize}
-
-The final CS1 training set has 251 samples on 72 genes after normalization and keeping only the major histotypes of interest.
-
-\begin{table}
-
-\caption{\label{tab:training-dist-cs1}CS1 Training Set Histotypes}
-\centering
-\begin{tabular}[t]{l|r|l}
-\hline
-Histotype & n & \%\\
-\hline
-CCC & 57 & 18.8\%\\
-\hline
-ENOCa & 59 & 19.4\%\\
-\hline
-HGSC & 156 & 51.3\%\\
-\hline
-LGSC & 16 & 5.3\%\\
-\hline
-MUC & 16 & 5.3\%\\
-\hline
-\end{tabular}
-\end{table}
-
-\hypertarget{cs2-training-set-generation}{%
-\subsection{CS2 Training Set Generation}\label{cs2-training-set-generation}}
-
-We use the pool method to normalize CS2 to CS3 so we can be consistent with the PrOType normalization when there are available pools.
-
-\begin{itemize}
-\item
-  CS2 pools:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Samples = 12 (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4)
-  \item
-    Genes = 365
-  \end{itemize}
-\item
-  CS3 pools:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Samples = 22 (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5)
-  \item
-    Genes = 513
-  \end{itemize}
-\item
-  CS2 validation set: CS2 samples with pools removed
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Samples = 879
-  \item
-    Genes = 365
-  \end{itemize}
-\end{itemize}
-
-The final CS2 training set has 819 samples on 136 (common) genes after normalization and keeping only the major histotypes of interest.
-
-\begin{table}
-
-\caption{\label{tab:training-dist-cs2}CS2 Training Set Histotypes}
-\centering
-\begin{tabular}[t]{l|r|l}
-\hline
-Histotype & n & \%\\
-\hline
-CCOC & 68 & 7.2\%\\
-\hline
-ENOC & 30 & 3.2\%\\
-\hline
-HGSC & 757 & 80.1\%\\
-\hline
-LGSC & 29 & 3.1\%\\
-\hline
-MUC & 61 & 6.5\%\\
-\hline
-\end{tabular}
-\end{table}
-
-\hypertarget{common-samples}{%
-\section{Common Samples}\label{common-samples}}
-
-\begin{table}
-
-\caption{\label{tab:common-dist-all}All Common Samples Histotype Distribution}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-revHist & CS1 & CS2 & CS3\\
-\hline
-CCOC & 3 & 4 & 3\\
-\hline
-ENOC & 4 & 4 & 3\\
-\hline
-HGSC & 53 & 56 & 68\\
-\hline
-LGSC & 7 & 5 & 4\\
-\hline
-MUC & 7 & 5 & 5\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:common-dist-distinct}Distinct Common Samples Histotype Distribution}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-revHist & CS1 & CS2 & CS3\\
-\hline
-CCOC & 3 & 3 & 3\\
-\hline
-ENOC & 3 & 3 & 3\\
-\hline
-HGSC & 51 & 51 & 51\\
-\hline
-LGSC & 4 & 4 & 4\\
-\hline
-MUC & 5 & 5 & 5\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:common-cs2-cs3-dist-distinct}Distinct Common CS2 and CS3 Samples Histotype Distribution}
-\centering
-\begin{tabular}[t]{l|r|r}
-\hline
-revHist & CS2 & CS3\\
-\hline
-CCOC & 3 & 3\\
-\hline
-ENOC & 3 & 3\\
-\hline
-HGSC & 71 & 71\\
-\hline
-LGSC & 4 & 4\\
-\hline
-MUC & 5 & 5\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:common-dist-sites}Common Samples Across Sites Histotype Distribution}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-revHist & AOC & USC & Vancouver\\
-\hline
-CCOC & 3 & 3 & 3\\
-\hline
-ENOC & 3 & 3 & 3\\
-\hline
-HGSC & 13 & 13 & 26\\
-\hline
-LGSC & 2 & 2 & 2\\
-\hline
-MUC & 3 & 3 & 3\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:common-dist-sites-distinct}Distinct Common Samples Across Sites Histotype Distribution}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-revHist & AOC & USC & Vancouver\\
-\hline
-CCOC & 3 & 3 & 3\\
-\hline
-ENOC & 3 & 3 & 3\\
-\hline
-HGSC & 13 & 13 & 13\\
-\hline
-LGSC & 2 & 2 & 2\\
-\hline
-MUC & 3 & 3 & 3\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:cs345-overlap}CS3/CS4/CS5 Common Samples Histotype Distribution}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-revHist & CS3 & CS4 & CS5\\
-\hline
-HGSC & 47 & 47 & 47\\
-\hline
-NA & 26 & 26 & 26\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:cs345-pools}CS3/CS4/CS5 Pools Distribution}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-Pool & CS3 & CS4 & CS5\\
-\hline
-Pool1 & 12 & 4 & 4\\
-\hline
-Pool2 & 5 & 4 & 4\\
-\hline
-Pool3 & 5 & 4 & 4\\
-\hline
-Pool4 & NA & 1 & 1\\
-\hline
-Pool5 & NA & 1 & 1\\
-\hline
-Pool6 & NA & 1 & 0\\
-\hline
-Pool7 & NA & 1 & 1\\
-\hline
-Pool8 & NA & 1 & 1\\
-\hline
-Pool9 & NA & 1 & 1\\
-\hline
-Pool10 & NA & 1 & 1\\
-\hline
-Pool11 & NA & 1 & 1\\
-\hline
-\end{tabular}
-\end{table}
 
 \hypertarget{histotypes-in-classifier-data}{%
 \section{Histotypes in Classifier Data}\label{histotypes-in-classifier-data}}
@@ -710,23 +256,73 @@ Total & N (\%) & 244 (16\%) & 782 (51\%) & 506 (33\%) & 1532 (100\%)\\
 
 \begin{table}
 
-\caption{\label{tab:hist-codeset-dataset}Histotype Distribution by CodeSet/Datasets}
+\caption{\label{tab:hist-conf-val}Histotype Distribution in Confirmation and Validation Sets}
 \centering
-\begin{tabular}[t]{l|l|l|l|l|l}
+\begin{tabular}[t]{l|l|l|l}
 \hline
-Variable & Levels & CS1 All & CS2 All & Confirmation & Validation\\
+Variable & Levels & Confirmation & Validation\\
 \hline
-Histotype & HGSC & 119 (46\%) & 642 (79\%) & 422 (66\%) & 674 (74\%)\\
+Histotype & HGSC & 422 (66\%) & 674 (74\%)\\
 \hline
- & CCOC & 47 (18\%) & 60 (7\%) & 75 (12\%) & 80 (9\%)\\
+ & CCOC & 75 (12\%) & 80 (9\%)\\
 \hline
- & ENOC & 58 (22\%) & 30 (4\%) & 106 (16\%) & 108 (12\%)\\
+ & ENOC & 106 (16\%) & 108 (12\%)\\
 \hline
- & MUC & 18 (7\%) & 61 (8\%) & 27 (4\%) & 26 (3\%)\\
+ & MUC & 27 (4\%) & 26 (3\%)\\
 \hline
- & LGSC & 18 (7\%) & 20 (2\%) & 13 (2\%) & 18 (2\%)\\
+ & LGSC & 13 (2\%) & 18 (2\%)\\
 \hline
-Total & N (\%) & 260 (10\%) & 813 (31\%) & 643 (25\%) & 906 (35\%)\\
+Total & N (\%) & 643 (42\%) & 906 (58\%)\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{cohorts-in-classifier-data}{%
+\section{Cohorts in Classifier Data}\label{cohorts-in-classifier-data}}
+
+\begin{table}
+
+\caption{\label{tab:cohort-dist}Cohort Distribution in Training, Confirmation, and Validation Sets}
+\centering
+\begin{tabular}[t]{l|l|r|r|r}
+\hline
+CodeSet & Cohort & Training & Confirmation & Validation\\
+\hline
+CS1 & MAYO & 5 & 0 & 0\\
+\hline
+CS1 & MTL & 3 & 0 & 0\\
+\hline
+CS1 & OOU & 96 & 0 & 0\\
+\hline
+CS1 & OOUE & 27 & 0 & 0\\
+\hline
+CS1 & VOA & 113 & 0 & 0\\
+\hline
+CS2 & ICON7 & 365 & 0 & 0\\
+\hline
+CS2 & JAPAN & 8 & 0 & 0\\
+\hline
+CS2 & MAYO & 42 & 0 & 0\\
+\hline
+CS2 & MTL & 59 & 0 & 0\\
+\hline
+CS2 & OOU & 41 & 0 & 0\\
+\hline
+CS2 & OOUE & 29 & 0 & 0\\
+\hline
+CS2 & OVAR3 & 136 & 0 & 0\\
+\hline
+CS2 & VOA & 102 & 0 & 0\\
+\hline
+CS3 & OOU & 18 & 0 & 0\\
+\hline
+CS3 & OOUE & 11 & 0 & 0\\
+\hline
+CS3 & VOA & 477 & 0 & 0\\
+\hline
+CS3 & TNCO & 0 & 643 & 0\\
+\hline
+CS3 & DOVE4 & 0 & 0 & 906\\
 \hline
 \end{tabular}
 \end{table}
@@ -2047,13 +1643,13 @@ We can test 2 additional methods by using either the full set of genes or the op
 \hline
 method & measure & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
- & accuracy & 0.872 & 0.923 & 0.814 & 0.900 & 0.919\\
+ & accuracy & 0.876 & 0.923 & 0.814 & 0.900 & 0.919\\
 \cline{2-7}
- & f1 & 0.908 & 0.886 & 0.792 & 0.450 & 0.679\\
+ & f1 & 0.910 & 0.886 & 0.792 & 0.450 & 0.679\\
 \cline{2-7}
- & kappa & 0.703 & 0.828 & 0.626 & 0.403 & 0.632\\
+ & kappa & 0.710 & 0.828 & 0.626 & 0.403 & 0.632\\
 \cline{2-7}
-\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_full} & gmean & 0.826 & 0.912 & 0.808 & 0.795 & 0.817\\
+\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_full} & gmean & 0.828 & 0.912 & 0.808 & 0.795 & 0.817\\
 \cline{1-7}
  & accuracy & 0.869 & 0.928 & 0.833 & 0.914 & 0.910\\
 \cline{2-7}
@@ -2092,7 +1688,7 @@ In the confirmation set, \textbf{sequential\_full} and \textbf{sequential\_optim
 \hline
 method & step & auc & accuracy & macro\_f1 & kappa & gmean\\
 \hline
- & 1 & 0.912 & 0.872 & 0.908 & 0.703 & 0.826\\
+ & 1 & 0.913 & 0.876 & 0.910 & 0.710 & 0.828\\
 \cline{2-7}
 \multirow{-2}{*}{\raggedright\arraybackslash two\_step\_full} & 2 & 0.921 & 0.778 & 0.702 & 0.667 & 0.749\\
 \cline{1-7}
