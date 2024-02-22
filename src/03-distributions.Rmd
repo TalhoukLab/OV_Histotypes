@@ -168,3 +168,209 @@ p_gd_snr_zoomed <- p_gd_snr_all &
                   tag_levels = "a")
 print(p_gd_snr_zoomed)
 ```
+
+## Pairwise Gene Expression
+
+```{r genes-cs13-rand1, fig.height=10, fig.width=11, fig.cap='Random1-Normalized CS1 vs. CS3 Gene Expression'}
+genes_cs13_rand1 <- train_ref %>%
+  rownames_to_column("FileName") %>%
+  group_by(ottaID) %>%
+  mutate(n_codeset = n_distinct(CodeSet)) %>%
+  filter(all(c("CS1", "CS3") %in% CodeSet)) %>%
+  group_by(ottaID, CodeSet) %>%
+  filter(n_codeset > 1, !duplicated(ottaID)) %>%
+  ungroup() %>%
+  pivot_longer(
+    cols = where(is.double),
+    names_to = "Gene",
+    names_ptypes = list(Gene = factor()),
+    values_to = "Value"
+  ) %>%
+  pivot_wider(
+    id_cols = c(ottaID, Gene),
+    names_from = "CodeSet",
+    values_from = c("Value", "FileName")
+  ) %>%
+  group_by(Gene) %>%
+  mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) %>%
+  ungroup() %>%
+  mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
+         Rc = paste0("Rc = ", round(Rc, digits = 3)))
+
+p_genes_cs13_rand1 <-
+  ggplot(genes_cs13_rand1, aes(x = Value_CS1, y = Value_CS3)) +
+  geom_point() +
+  geom_text(
+    x = -24,
+    y = 5,
+    hjust = 0,
+    vjust = 1,
+    aes(label = Rc),
+    check_overlap = TRUE
+  ) +
+  geom_abline(slope = 1,
+              linetype = "dashed",
+              color = "red") +
+  facet_wrap(~ Gene, nrow = 8, ncol = 9) +
+  theme_bw() +
+  labs(
+    title = "Random1-Normalized CS1 vs. CS3 Gene Expression",
+    subtitle = paste0("Samples=", n_distinct(genes_cs13_rand1[["ottaID"]])),
+    x = "CS1",
+    y = "CS3"
+  )
+
+print(p_genes_cs13_rand1)
+```
+
+```{r genes-cs23-rand1, fig.height=10, fig.width=11, fig.cap='Random1-Normalized CS2 vs. CS3 Gene Expression'}
+genes_cs23_rand1 <- train_ref %>%
+  rownames_to_column("FileName") %>%
+  group_by(ottaID) %>%
+  mutate(n_codeset = n_distinct(CodeSet)) %>%
+  filter(all(c("CS2", "CS3") %in% CodeSet)) %>%
+  group_by(ottaID, CodeSet) %>%
+  filter(n_codeset > 1, !duplicated(ottaID)) %>%
+  ungroup() %>%
+  pivot_longer(
+    cols = where(is.double),
+    names_to = "Gene",
+    names_ptypes = list(Gene = factor()),
+    values_to = "Value"
+  ) %>%
+  pivot_wider(
+    id_cols = c(ottaID, Gene),
+    names_from = "CodeSet",
+    values_from = c("Value", "FileName")
+  ) %>%
+  group_by(Gene) %>%
+  mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) %>%
+  ungroup() %>%
+  mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
+         Rc = paste0("Rc = ", round(Rc, digits = 3)))
+
+p_genes_cs23_rand1 <-
+  ggplot(genes_cs23_rand1, aes(x = Value_CS2, y = Value_CS3)) +
+  geom_point() +
+  geom_text(
+    x = -24,
+    y = 5,
+    hjust = 0,
+    vjust = 1,
+    aes(label = Rc),
+    check_overlap = TRUE
+  ) +
+  geom_abline(slope = 1,
+              linetype = "dashed",
+              color = "red") +
+  facet_wrap(~ Gene, nrow = 8, ncol = 9) +
+  theme_bw() +
+  labs(
+    title = "Random1-Normalized CS2 vs. CS3 Gene Expression",
+    subtitle = paste0("Samples=", n_distinct(genes_cs23_rand1[["ottaID"]])),
+    x = "CS2",
+    y = "CS3"
+  )
+
+print(p_genes_cs23_rand1)
+```
+
+```{r genes-cs13-hkgenes, fig.height=10, fig.width=11, fig.cap='HKgenes-Normalized CS1 vs. CS3 Gene Expression'}
+genes_cs13_hkgenes <-
+  list(CS1 = cs1_norm, CS3 = cs3_norm) %>%
+  imap(~ {
+    .x %>%
+      rename_all(~ gsub("^X", "", .)) %>%
+      pivot_longer(where(is.double),
+                   names_to = "FileName",
+                   values_to = "Value") %>%
+      inner_join(genes_cs13_rand1,
+                 by = c("Name" = "Gene", "FileName" = paste0("FileName_", .y))) %>%
+      select(Name, FileName, ottaID, Value)
+  }) %>%
+  reduce(inner_join,
+         by = c("Name", "ottaID"),
+         suffix = c("_CS1", "_CS3")) %>%
+  select(ottaID, Gene = Name, everything()) %>%
+  group_by(Gene) %>%
+  mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) %>%
+  ungroup() %>%
+  mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
+         Rc = paste0("Rc = ", round(Rc, digits = 3)))
+
+p_genes_cs13_hkgenes <- 
+  ggplot(genes_cs13_hkgenes, aes(x = Value_CS1, y = Value_CS3)) +
+  geom_point() +
+  geom_text(
+    x = -24,
+    y = 5,
+    hjust = 0,
+    vjust = 1,
+    aes(label = Rc),
+    check_overlap = TRUE
+  ) +
+  geom_abline(slope = 1,
+              linetype = "dashed",
+              color = "red") +
+  facet_wrap(~ Gene, nrow = 8, ncol = 9) +
+  theme_bw() +
+  labs(
+    title = "HKgenes-Normalized CS1 vs. CS3 Gene Expression",
+    subtitle = paste0("Samples=",
+                      n_distinct(genes_cs13_hkgenes[["ottaID"]])),
+    x = "CS1",
+    y = "CS3"
+  )
+
+print(p_genes_cs13_hkgenes)
+```
+
+```{r genes-cs23-hkgenes, fig.height=10, fig.width=11, fig.cap='HKgenes-Normalized CS2 vs. CS3 Gene Expression'}
+genes_cs23_hkgenes <-
+  list(CS2 = cs2_norm, CS3 = cs3_norm) %>%
+  imap(~ {
+    .x %>%
+      rename_all(~ gsub("^X", "", .)) %>%
+      pivot_longer(where(is.double),
+                   names_to = "FileName",
+                   values_to = "Value") %>%
+      inner_join(genes_cs23_rand1,
+                 by = c("Name" = "Gene", "FileName" = paste0("FileName_", .y))) %>%
+      select(Name, FileName, ottaID, Value)
+  }) %>%
+  reduce(inner_join,
+         by = c("Name", "ottaID"),
+         suffix = c("_CS2", "_CS3")) %>%
+  select(ottaID, Gene = Name, everything()) %>%
+  group_by(Gene) %>%
+  mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) %>%
+  ungroup() %>%
+  mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
+         Rc = paste0("Rc = ", round(Rc, digits = 3)))
+
+p_genes_cs23_hkgenes <- 
+  ggplot(genes_cs23_hkgenes, aes(x = Value_CS2, y = Value_CS3)) +
+  geom_point() +
+  geom_text(
+    x = -24,
+    y = 5,
+    hjust = 0,
+    vjust = 1,
+    aes(label = Rc),
+    check_overlap = TRUE
+  ) +
+  geom_abline(slope = 1,
+              linetype = "dashed",
+              color = "red") +
+  facet_wrap(~ Gene, nrow = 8, ncol = 9) +
+  theme_bw() +
+  labs(
+    title = "HKgenes-Normalized CS2 vs. CS3 Gene Expression",
+    subtitle = paste0("Samples=",
+                      n_distinct(genes_cs23_hkgenes[["ottaID"]])),
+    x = "CS2",
+    y = "CS3"
+  )
+
+print(p_genes_cs23_hkgenes)
+```
