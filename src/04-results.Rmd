@@ -2203,38 +2203,69 @@ kable(conf_eval_per_class,
 In the confirmation set, **sequential_full** and **sequential_optimal** are very similar. Both sequential algorithms have moderate improvement in LGSC and MUC classification. We will select the **sequential_optimal** model to test in the validation set.
 
 ```{r conf-eval-overall}
-conf_2S_eval_overall <- list(
-  two_step_full_1 = conf_step1_eval_full,
-  two_step_full_2 = conf_step2_eval_full,
-  two_step_optimal_1 = conf_step1_eval_opt,
-  two_step_optimal_2 = conf_step2_eval_opt
-) %>%
-  map(`[`, c("auc", "accuracy", "macro_f1", "kappa", "gmean")) %>%
-  bind_rows(.id = "Step") %>%
-  separate_wider_regex(Step, c(method = ".*", "_", step = ".$"))
+# Confirmation set overall predictions
+conf_pred_overall <- data.frame(FileName = rownames(conf_data),
+                                Truth = conf_class) %>%
+  mutate(
+    p_2s1_full = predict(mod_two_step_full[[1]], conf_data),
+    p_2s2_full = predict(mod_two_step_full[[2]], conf_data),
+    
+    p_2s1_opt = predict(mod_two_step_opt[[1]], conf_step1_data_opt),
+    p_2s2_opt = predict(mod_two_step_opt[[2]], conf_step1_data_opt),
+    
+    p_seq1_full = predict(mod_seq_full[[1]], conf_data),
+    p_seq2_full = predict(mod_seq_full[[2]], conf_data),
+    p_seq3_full = predict(mod_seq_full[[3]], as.matrix(conf_data), type = "class"),
+    p_seq4_full = predict(mod_seq_full[[4]], conf_data),
+    
+    p_seq1_opt = predict(mod_seq_opt[[1]], seq_conf_data_opt[[1]]),
+    p_seq2_opt = predict(mod_seq_opt[[2]], seq_conf_data_opt[[1]]),
+    p_seq3_opt = predict(mod_seq_opt[[3]], as.matrix(seq_conf_data_opt[[1]]), type = "class"),
+    p_seq4_opt = predict(mod_seq_opt[[4]], seq_conf_data_opt[[1]]),
+    
+    across(matches("p"), as.character),
+    Prediction_two_step_full = ifelse(Truth == "HGSC" & p_2s1_full == "HGSC",
+                                      "HGSC",
+                                      p_2s2_full),
+    Prediction_two_step_optimal = ifelse(Truth == "HGSC" & p_2s1_opt == "HGSC",
+                                         "HGSC",
+                                         p_2s2_opt),
+    Prediction_sequential_full = case_when(
+      Truth == "HGSC" & p_seq1_full == "HGSC" ~ "HGSC",
+      Truth == "CCOC" & p_seq2_full == "CCOC" ~ "CCOC",
+      Truth == "ENOC" & p_seq3_full == "ENOC" ~ "ENOC",
+      .default = p_seq4_full
+    ),
+    Prediction_sequential_optimal = case_when(
+      Truth == "HGSC" & p_seq1_opt == "HGSC" ~ "HGSC",
+      Truth == "CCOC" & p_seq2_opt == "CCOC" ~ "CCOC",
+      Truth == "ENOC" & p_seq3_opt == "ENOC" ~ "ENOC",
+      .default = p_seq4_opt
+    ), 
+    across(c("Truth", matches("Prediction")), factor)
+  ) %>%
+  select(-starts_with("p", ignore.case = FALSE)) %>%
+  pivot_longer(
+    cols = matches("Prediction"),
+    names_to = "method",
+    names_prefix = "Prediction_",
+    values_to = "Prediction"
+  )
 
-conf_seq_eval_overall <- map(list(
-  sequential_full = list(mod_seq_full, seq_conf_data_full, seq_conf_class),
-  sequential_optimal = list(mod_seq_opt, seq_conf_data_opt, seq_conf_class)
-), ~ {
-  pmap(.x, ~ {
-    pred <- prediction(..1, ..2, ..3)
-    eval <- evaluation(..3, pred)
-    eval
-  }) %>%
-    map(`[`, c("auc", "accuracy", "macro_f1", "kappa", "gmean")) %>%
-    bind_rows(.id = "step")
-}) %>%
-  bind_rows(.id = "method")
-
-conf_eval_overall <-
-  bind_rows(conf_2S_eval_overall, conf_seq_eval_overall)
+# Confimation set overall metrics
+conf_eval_overall <- conf_pred_overall %>%
+  group_by(method) %>%
+  summarize(
+    accuracy = yardstick::accuracy_vec(Truth, Prediction),
+    kappa = yardstick::kap_vec(Truth, Prediction),
+    f1 = yardstick::f_meas_vec(Truth, Prediction),
+    gmean = splendid:::gmean(table(Prediction, Truth))
+  )
 
 kable(conf_eval_overall,
       caption = "Overall Evaluation Metrics on Confirmation Set Models",
       digits = 3) %>%
-  kable_styling() %>%
-  collapse_rows(columns = 1)
+  kable_styling()
 ```
 
 ### Validation Set
@@ -2313,19 +2344,44 @@ kable(val_eval_per_class,
 Per-class F1-scores in the validation set are all above 0.9.
 
 ```{r val-eval-overall}
-val_eval_overall <-
-  pmap(list(mod_seq_opt, seq_val_data_opt, seq_val_class), ~ {
-    pred <- prediction(..1, ..2, ..3)
-    eval <- evaluation(..3, pred)
-    eval
-  }) %>%
-  map(`[`, c("auc", "accuracy", "macro_f1", "kappa", "gmean")) %>%
-  bind_rows(.id = "step") %>%
-  add_column(method = "sequential_opt", .before = 1)
+# Validation set overall predictions
+val_pred_overall <- data.frame(FileName = rownames(conf_data),
+                               Truth = conf_class) %>%
+  mutate(
+    p_seq1_opt = predict(mod_seq_opt[[1]], seq_conf_data_opt[[1]]),
+    p_seq2_opt = predict(mod_seq_opt[[2]], seq_conf_data_opt[[1]]),
+    p_seq3_opt = predict(mod_seq_opt[[3]], as.matrix(seq_conf_data_opt[[1]]), type = "class"),
+    p_seq4_opt = predict(mod_seq_opt[[4]], seq_conf_data_opt[[1]]),
+    
+    across(matches("p"), as.character),
+    Prediction_sequential_optimal = case_when(
+      Truth == "HGSC" & p_seq1_opt == "HGSC" ~ "HGSC",
+      Truth == "CCOC" & p_seq2_opt == "CCOC" ~ "CCOC",
+      Truth == "ENOC" & p_seq3_opt == "ENOC" ~ "ENOC",
+      .default = p_seq4_opt
+    ), 
+    across(c("Truth", matches("Prediction")), factor)
+  ) %>%
+  select(-starts_with("p", ignore.case = FALSE)) %>%
+  pivot_longer(
+    cols = matches("Prediction"),
+    names_to = "method",
+    names_prefix = "Prediction_",
+    values_to = "Prediction"
+  )
+
+# Valiation set overall metrics
+val_eval_overall <- val_pred_overall %>%
+  group_by(method) %>%
+  summarize(
+    accuracy = yardstick::accuracy_vec(Truth, Prediction),
+    kappa = yardstick::kap_vec(Truth, Prediction),
+    f1 = yardstick::f_meas_vec(Truth, Prediction),
+    gmean = splendid:::gmean(table(Prediction, Truth))
+  )
 
 kable(val_eval_overall,
       caption = "Overall valuation Metrics on Validation Set Model",
       digits = 3) %>% 
-  kable_styling() %>% 
-  collapse_rows(columns = 1)
+  kable_styling()
 ```
