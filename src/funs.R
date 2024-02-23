@@ -69,3 +69,18 @@ var_imp <- function(sm, alg) {
       tibble::enframe(name = "Variable", value = "Importance")
   }
 }
+
+# Geometric mean, implemented in yardstick format
+gmean <- function(data, truth, estimate, ...) {
+  data %>%
+    dplyr::add_count({{truth}}, name = "P") %>%
+    dplyr::add_count({{estimate}}, P, name = "TP") %>%
+    dplyr::filter({{truth}} == {{estimate}}) %>%
+    dplyr::distinct(sens = TP / P) %>%
+    dplyr::summarize(.estimate = purrr::reduce(sens, `*`) ^ (1 / length(sens))) %>%
+    tibble::add_column(.metric = "gmean",
+                       .estimator = "multiclass",
+                       .before = 1)
+}
+class(gmean) <- c("class_metric", "function")
+attr(gmean, "direction") <- "maximize"
