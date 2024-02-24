@@ -82,5 +82,3 @@ gmean <- function(data, truth, estimate, ...) {
                        .estimator = "multiclass",
                        .before = 1)
 }
-class(gmean) <- c("class_metric", "function")
-attr(gmean, "direction") <- "maximize"
