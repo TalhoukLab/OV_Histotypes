@@ -1,13 +1,8 @@
-library(here)
 library(rlang)
 library(parallel)
 library(themis)
-library(rsample)
-library(recipes)
-library(parsnip)
-library(yardstick)
-library(workflowsets)
-library(tune)
+library(tidymodels)
+library(here)
 source(here("validation/cs_classifier.R"))
 
 train_ref <- cbind(train_data, class = factor(train_class))
@@ -101,19 +96,8 @@ wflow_sets <- bind_rows(rf_set, xgb_set, svm_set, mlr_set)
 # Hyperparameter tuning using 10 space-filling parameter grids run in parallel
 
 ## Random Forest
-rf_tuned_set <- rf_set %>%
-  workflow_map(
-    seed = 2024,
-    resamples = train_folds[[as.numeric(id)]],
-    grid = 10,
-    metrics = mset,
-    control = control_grid(save_pred = TRUE, save_workflow = TRUE)
-  ) %>%
-  suppressMessages()
-
-rf_tuned_set2 <- wflow_sets %>%
+rf_tuned_set <- wflow_sets %>%
   filter(grepl("rf", wflow_id)) %>%
-  slice(2:4) %>%
   workflow_map(
     seed = 2024,
     resamples = train_folds[[as.numeric(id)]],
@@ -124,7 +108,8 @@ rf_tuned_set2 <- wflow_sets %>%
   suppressMessages()
 
 ## XGBoost
-xgb_tuned_set <- xgb_set %>%
+xgb_tuned_set <- wflow_sets %>%
+  filter(grepl("xgb", wflow_id)) %>%
   workflow_map(
     seed = 2024,
     resamples = train_folds[[as.numeric(id)]],
@@ -143,7 +128,8 @@ svm_params <-
     rbf_sigma = rbf_sigma(c(-3, 0))
   )
 
-svm_tuned_set <- svm_set  %>%
+svm_tuned_set <- wflow_sets %>%
+  filter(grepl("svm", wflow_id)) %>%
   option_add(param_info = svm_params) %>%
   workflow_map(
     seed = 2024,
@@ -154,15 +140,23 @@ svm_tuned_set <- svm_set  %>%
   ) %>%
   suppressMessages()
 
-# wflow_tuned_set <- wflow_sets %>%
-#   workflow_map(
-#     seed = 2024,
-#     resamples = train_folds[[as.numeric(id)]],
-#     grid = 10,
-#     metrics = mset,
-#     control = control_grid(save_pred = TRUE, save_workflow = TRUE)
-#   ) %>%
-#   suppressMessages()
+### MLR
+mlr_tuned_set <- wflow_sets %>%
+  filter(grepl("mlr", wflow_id)) %>%
+  workflow_map(
+    seed = 2024,
+    resamples = train_folds[[as.numeric(id)]],
+    grid = 10,
+    metrics = mset,
+    control = control_grid(save_pred = TRUE, save_workflow = TRUE)
+  ) %>%
+  suppressMessages()
+
+# Combined tuned sets
+wflow_tuned_set <- bind_rows(rf_tuned_set,
+                             xgb_tuned_set,
+                             svm_tuned_set,
+                             mlr_tuned_set)
 
 # Ranking workflows for selected metric
 ranking <- wflow_tuned_set %>%
