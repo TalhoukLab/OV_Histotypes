@@ -31,13 +31,13 @@ ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 # Pairwise CodeSet comparisons
 codesets <- c("CS1", "CS2", "CS3")
 all_codesets <- combn(codesets, 2) %>%
-  as_tibble(.name_repair = "unique") %>%
+  as.data.frame() %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 
 # Pairwise site comparisons
 sites <- c("USC", "AOC", "VAN")
 all_xsites <- combn(sites, 2) %>%
-  as_tibble(.name_repair = "unique") %>%
+  as.data.frame() %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 
 # Recode annotation geneRLF and rename file name and site columns
@@ -276,7 +276,7 @@ common_cs <- annot_cs123 %>%
   mutate(
     all_codesets = rowSums(.[, -1]),
     in_all_cs = pmap_lgl(select(., matches("CS")),
-                         lift_vd(function(x) all(x != 0)))
+                         ~ every(list(..1, ..2, ..3), ~ . != 0))
   )
 
 # Find common summaryID
