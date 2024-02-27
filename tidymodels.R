@@ -119,7 +119,6 @@ xgb_tuned_set <- wflow_sets %>%
   ) %>%
   suppressMessages()
 
-
 ## SVM
 svm_params <-
   parameters(cost(), rbf_sigma()) %>%
@@ -141,12 +140,18 @@ svm_tuned_set <- wflow_sets %>%
   suppressMessages()
 
 ### MLR
+set.seed(2024)
+mlr_grid <- crossing(
+  grid_latin_hypercube(penalty(), size = 10),
+  grid_regular(mixture(), levels = 10)
+)
+
 mlr_tuned_set <- wflow_sets %>%
-  filter(grepl("mlr", wflow_id)) %>%
+  filter(grepl("mlr", wflow_id))%>%
   workflow_map(
     seed = 2024,
     resamples = train_folds[[as.numeric(id)]],
-    grid = 10,
+    grid = mlr_grid,
     metrics = mset,
     control = control_grid(save_pred = TRUE, save_workflow = TRUE)
   ) %>%
@@ -158,8 +163,10 @@ wflow_tuned_set <- bind_rows(rf_tuned_set,
                              svm_tuned_set,
                              mlr_tuned_set)
 
+tuned_set <- mlr_tuned_set
+
 # Ranking workflows for selected metric
-ranking <- wflow_tuned_set %>%
+ranking <- tuned_set %>%
   rank_results(rank_metric = rank_metric) %>%
   filter(.metric == rank_metric) %>%
   select(model, wflow_id, f_meas = mean, rank)
@@ -168,15 +175,58 @@ ranking <- wflow_tuned_set %>%
 best_wflow <- head(ranking[["wflow_id"]], 1)
 
 # Best tuning parameters of workflow with highest metric
-best_params <- wflow_tuned_set %>%
+best_params <- tuned_set %>%
   extract_workflow_set_result(best_wflow) %>%
   select_best(metric = rank_metric)
 
 # Finalize model with best set of tuning parameters
-best_model <- wflow_tuned_set %>%
+best_model <- tuned_set %>%
   extract_workflow(best_wflow) %>%
   finalize_workflow(best_params)
 
 # Train best model on training set, evaluate on test set
 test_results <- best_model %>%
-  last_fit(split = data_split$splits[[idx]], metrics = mset)
+  last_fit(split = data_split$splits[[id]], metrics = mset)
+
+# Calculate per-class metrics using one-vs-all predictions
+mset_pc <- metric_set(accuracy, f_meas, kap, gmean)
+
+metrics_per_class <- test_results %>%
+  pluck(".predictions", 1) %>%
+  mutate(
+    pred_max = pmap_dbl(select(., matches(".pred") & where(is.double)),
+                        ~ pmap_dbl(list(...), max)),
+    across(matches(".pred") & where(is.double),
+           ~ factor(
+             ifelse(.x == pred_max, as.character(.pred_class), "class_0")
+           ),
+           .names = "{gsub('.pred_', '.pred_class_', {col}, fixed = TRUE)}"),
+    across(matches(".pred_class_.*"),
+           ~ factor(
+             ifelse(class %in% levels(.x), as.character(class), "class_0")
+           ),
+           .names = "{gsub('.pred_', '', {col}, fixed = TRUE)}")
+  ) %>%
+  pivot_longer(
+    matches("^.pred_class_.*"),
+    names_to = ".pred_class_group",
+    names_prefix = ".pred_class_",
+    values_to = ".pred_class_value"
+  ) %>%
+  pivot_longer(
+    matches("^class_.*"),
+    names_to = "class_group",
+    names_prefix = "class_",
+    values_to = "class_value"
+  ) %>%
+  filter(class_group == .pred_class_group) %>%
+  nest(.by = class_group) %>%
+  mutate(data = data %>%
+           map(droplevels) %>%
+           map(mset_pc, truth = class_value, estimate = .pred_class_value)) %>%
+  unnest(cols = data)
+
+# Top class by selected metric
+# metrics_per_class %>%
+#   filter(.metric == "f_meas") %>%
+#   slice_max(order_by = .estimate)
