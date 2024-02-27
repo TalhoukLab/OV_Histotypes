@@ -1,5 +1,16 @@
 # Methods
 
+```{r setup-02}
+library(recipes)
+library(themis)
+library(ggplot2)
+library(dplyr)
+library(rlang)
+train_data <- readRDS(here("data/train_data.rds"))
+train_class <- readRDS(here("data/train_class.rds"))
+```
+
+
 ## Normalization
 
 The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each of the CodeSets.
@@ -23,10 +34,9 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
 -   Classifiers:
 
     -   Random Forest
-    -   SVM
-    -   Adaboost
-    -   Multinomial Regression Model with Ridge Penalty
-    -   Multinomial Regression Model with LASSO Penalty
+    -   Support Vector Machine
+    -   XGBoost
+    -   Regularized Multinomial Regression Model
 
 -   Subsampling:
 
@@ -34,3 +44,41 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
     -   Down-sampling
     -   Up-sampling
     -   SMOTE
+    
+## Subsampling
+
+The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
+
+```{r sampling, fig.cap='Visualization of Subsampling Techniques'}
+train_ref <- cbind(train_data, class = train_class)
+rec <- recipe(class ~ ., train_ref)
+
+preproc_none <- rec
+preproc_down <- step_downsample(rec, class, seed = 2024)
+preproc_up <- step_upsample(rec, class, seed = 2024)
+preproc_smote <- step_smote(rec, class, seed = 2024)
+preproc <- list(
+    none = preproc_none,
+    down = preproc_down,
+    up = preproc_up,
+    smote = preproc_smote
+)
+
+sampling_df <- map(preproc, ~ {
+  exec(prep, .x) %>%
+    pluck("template") %>%
+    count(class)
+}) %>%
+  list_rbind(names_to = "Sampling") %>%
+  mutate(Sampling = factor(Sampling, levels = c("none", "down", "up", "smote")),
+         class = fct_reorder(class, n, .desc = TRUE))
+
+p_sampling <-
+  ggplot(sampling_df, aes(x = Sampling, y = n, fill = class)) +
+  geom_col(position = "dodge") +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(y = "Count", title = "Visualization of Subsampling Techniques") +
+  theme_bw()
+
+print(p_sampling)
+```
