@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-02-22}
+\date{2024-02-27}
 
 \begin{document}
 \maketitle
@@ -178,13 +178,11 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
   \item
     Random Forest
   \item
-    SVM
+    Support Vector Machine
   \item
-    Adaboost
+    XGBoost
   \item
-    Multinomial Regression Model with Ridge Penalty
-  \item
-    Multinomial Regression Model with LASSO Penalty
+    Regularized Multinomial Regression Model
   \end{itemize}
 \item
   Subsampling:
@@ -201,6 +199,20 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
     SMOTE
   \end{itemize}
 \end{itemize}
+
+\hypertarget{subsampling}{%
+\section{Subsampling}\label{subsampling}}
+
+The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/sampling-1} 
+
+}
+
+\caption{Visualization of Subsampling Techniques}\label{fig:sampling}
+\end{figure}
 
 \hypertarget{distributions}{%
 \chapter{Distributions}\label{distributions}}
