@@ -6,10 +6,10 @@ library(themis)
 library(ggplot2)
 library(dplyr)
 library(rlang)
+library(here)
 train_data <- readRDS(here("data/train_data.rds"))
 train_class <- readRDS(here("data/train_class.rds"))
 ```
-
 
 ## Normalization
 
