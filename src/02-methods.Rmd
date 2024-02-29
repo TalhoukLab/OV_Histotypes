@@ -46,8 +46,16 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
     -   Down-sampling
     -   Up-sampling
     -   SMOTE
+    -   Hybrid (using SMOTE and Down-sampling)
     
 ## Subsampling
+
+Here are the specifications of the subsampling methods used to handle class imbalance:
+
+- Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class
+- Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class
+- SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class
+- Hybrid: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.
 
 The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
 
@@ -59,11 +67,15 @@ preproc_none <- rec
 preproc_down <- step_downsample(rec, class, seed = 2024)
 preproc_up <- step_upsample(rec, class, seed = 2024)
 preproc_smote <- step_smote(rec, class, seed = 2024)
+preproc_hybrid <- rec %>%
+  step_smote(class, over_ratio = 0.5, seed = 2024) %>%
+  step_downsample(class, under_ratio = 1, seed = 2024)
 preproc <- list(
-    none = preproc_none,
-    down = preproc_down,
-    up = preproc_up,
-    smote = preproc_smote
+  none = preproc_none,
+  down = preproc_down,
+  up = preproc_up,
+  smote = preproc_smote,
+  hybrid = preproc_hybrid
 )
 
 sampling_df <- map(preproc, ~ {
@@ -72,7 +84,7 @@ sampling_df <- map(preproc, ~ {
     count(class)
 }) %>%
   list_rbind(names_to = "Sampling") %>%
-  mutate(Sampling = factor(Sampling, levels = c("none", "down", "up", "smote")),
+  mutate(Sampling = factor(Sampling, levels = c("none", "down", "up", "smote", "hybrid")),
          class = fct_reorder(class, n, .desc = TRUE))
 
 p_sampling <-
