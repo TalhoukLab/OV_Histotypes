@@ -1,37 +1,50 @@
+# Load packages and data
 library(rlang)
 library(parallel)
 library(themis)
 library(tidymodels)
+library(vip)
 library(here)
 source(here("validation/cs_classifier.R"))
 
 train_ref <- cbind(train_data, class = factor(train_class))
 
-data_split <- bootstraps(data = train_ref,
-                         times = 100,
-                         strata = class)
-train_data_list <- map(data_split[["splits"]], training)
-
+# Nested resampling: 10-fold CV outside, 5-fold CV inside
 set.seed(2024)
-train_folds <- map(train_data_list, vfold_cv, v = 3, strata = class)
-rank_metric <- "roc_auc"
+folds <- nested_cv(
+  train_ref,
+  outside = vfold_cv(v = 10, strata = class),
+  inside = vfold_cv(v = 5, strata = class)
+)
 
+fold_id <- 1
+inner_folds <- folds$inner_resamples[[fold_id]]
+outer_fold <- folds$splits[[1]]
+
+# Metrics
+rank_metric <- "roc_auc"
 gmean <- new_class_metric(gmean, direction = "maximize")
 mset <- metric_set(accuracy, roc_auc, f_meas, kap, gmean)
 
 # Recipe
-id <- 1
-rec <- recipe(class ~ ., train_data_list[[id]])
+rec <- recipe(class ~ ., train_ref)
 
 # Preprocessing for class imbalance
 preproc_none <- rec
 preproc_down <- step_downsample(rec, class, seed = 2024)
 preproc_up <- step_upsample(rec, class, seed = 2024)
 preproc_smote <- step_smote(rec, class, seed = 2024)
-preproc <- list(none = preproc_none,
-                down = preproc_down,
-                up = preproc_up,
-                smote = preproc_smote)
+preproc_hybrid <- rec %>%
+  step_smote(class, over_ratio = 0.5, seed = 2024) %>%
+  step_downsample(class, under_ratio = 1, seed = 2024)
+
+preproc <- list(
+  none = preproc_none,
+  down = preproc_down,
+  up = preproc_up,
+  smote = preproc_smote,
+  hybrid = preproc_hybrid
+)
 
 # Models
 ## Random forest
@@ -93,14 +106,14 @@ wflow_sets <- bind_rows(rf_set, xgb_set, svm_set, mlr_set)
 # cl <- makePSOCKcluster(all_cores)
 # registerDoParallel(cl)
 
-# Hyperparameter tuning using 10 space-filling parameter grids run in parallel
+# Hyperparameter tuning
 
 ## Random Forest
 rf_tuned_set <- wflow_sets %>%
   filter(grepl("rf", wflow_id)) %>%
   workflow_map(
     seed = 2024,
-    resamples = train_folds[[as.numeric(id)]],
+    resamples = inner_folds,
     grid = 10,
     metrics = mset,
     control = control_grid(save_pred = TRUE, save_workflow = TRUE)
@@ -112,7 +125,7 @@ xgb_tuned_set <- wflow_sets %>%
   filter(grepl("xgb", wflow_id)) %>%
   workflow_map(
     seed = 2024,
-    resamples = train_folds[[as.numeric(id)]],
+    resamples = inner_folds,
     grid = 10,
     metrics = mset,
     control = control_grid(save_pred = TRUE, save_workflow = TRUE)
@@ -132,7 +145,7 @@ svm_tuned_set <- wflow_sets %>%
   option_add(param_info = svm_params) %>%
   workflow_map(
     seed = 2024,
-    resamples = train_folds[[as.numeric(id)]],
+    resamples = inner_folds,
     grid = 10,
     metrics = mset,
     control = control_grid(save_pred = TRUE, save_workflow = TRUE)
@@ -150,22 +163,21 @@ mlr_tuned_set <- wflow_sets %>%
   filter(grepl("mlr", wflow_id))%>%
   workflow_map(
     seed = 2024,
-    resamples = train_folds[[as.numeric(id)]],
+    resamples = inner_folds,
     grid = mlr_grid,
     metrics = mset,
     control = control_grid(save_pred = TRUE, save_workflow = TRUE)
   ) %>%
   suppressMessages()
 
-# Combined tuned sets
-wflow_tuned_set <- bind_rows(rf_tuned_set,
-                             xgb_tuned_set,
-                             svm_tuned_set,
-                             mlr_tuned_set)
-
-tuned_set <- mlr_tuned_set
-
 # Ranking workflows for selected metric
+tuned_set <- svm_tuned_set
+
+bind_rows(rf_tuned_set, xgb_tuned_set, svm_tuned_set, mlr_tuned_set) %>%
+  rank_results(rank_metric = rank_metric) %>%
+  filter(.metric == rank_metric) %>%
+  select(model, wflow_id, f_meas = mean, rank)
+
 ranking <- tuned_set %>%
   rank_results(rank_metric = rank_metric) %>%
   filter(.metric == rank_metric) %>%
@@ -186,7 +198,7 @@ best_model <- tuned_set %>%
 
 # Train best model on training set, evaluate on test set
 test_results <- best_model %>%
-  last_fit(split = data_split$splits[[id]], metrics = mset)
+  last_fit(split = outer_fold, metrics = mset)
 
 # Calculate per-class metrics using one-vs-all predictions
 mset_pc <- metric_set(accuracy, f_meas, kap, gmean)
@@ -227,6 +239,39 @@ metrics_per_class <- test_results %>%
   unnest(cols = data)
 
 # Top class by selected metric
-# metrics_per_class %>%
-#   filter(.metric == "f_meas") %>%
-#   slice_max(order_by = .estimate)
+metrics_per_class %>%
+  filter(.metric == "f_meas") %>%
+  slice_max(order_by = .estimate)
+
+# Variable importance metrics
+# Random Forest
+rf_vi <- test_results %>%
+  extract_fit_parsnip() %>%
+  vi()
+
+# XGBoost
+xgb_vi <- test_results %>%
+  extract_fit_parsnip() %>%
+  vi()
+
+# SVM
+svm_pfun <- function(object, newdata) {
+  kernlab::predict(object, new_data = newdata)[[".pred_class"]]
+}
+
+set.seed(2024)
+svm_vi <- test_results %>%
+  extract_fit_parsnip() %>%
+  vi(
+    train = analysis(outer_fold),
+    method = "permute",
+    target = "class",
+    metric = "accuracy",
+    nsim = 5,
+    pred_wrapper = svm_pfun
+  )
+
+# MLR
+mlr_vi <- test_results %>%
+  extract_fit_parsnip() %>%
+  vi()
