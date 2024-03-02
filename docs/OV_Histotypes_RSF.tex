@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-02-27}
+\date{2024-03-01}
 
 \begin{document}
 \maketitle
@@ -197,11 +197,27 @@ We use 5 classification algorithms and 4 subsampling methods across 500 repetiti
     Up-sampling
   \item
     SMOTE
+  \item
+    Hybrid (using SMOTE and Down-sampling)
   \end{itemize}
 \end{itemize}
 
 \hypertarget{subsampling}{%
 \section{Subsampling}\label{subsampling}}
+
+Here are the specifications of the subsampling methods used to handle class imbalance:
+
+\begin{itemize}
+\tightlist
+\item
+  Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class
+\item
+  Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class
+\item
+  SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class
+\item
+  Hybrid: All levels except the majority class have synthetic data generated up to 50\% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.
+\end{itemize}
 
 The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
 
