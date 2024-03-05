@@ -5,6 +5,7 @@ suppressPackageStartupMessages({
   library(here)
 })
 source(here("src/funs.R"))
+source(here("pipeline/0-setup_data.R"))
 
 # Outer fold used for assessment
 id <- as.numeric(fold_id)
@@ -124,3 +125,21 @@ if (grepl("_(rf|xgb|mr)", best_wflow)) {
       pred_wrapper = svm_pfun
     )
 }
+
+# Write all metrics to file
+metrics_file <- file.path(
+  outputDir,
+  "merge_results",
+  dataset,
+  paste0("wflow_", best_wflow, "_metrics_", fold_id, "_", dataset, ".rds")
+)
+saveRDS(all_metrics, metrics_file)
+
+# Write variable importance to file
+vi_file <- file.path(
+  outputDir,
+  "merge_results",
+  dataset,
+  paste0("wflow", best_wflow, "_vi_", fold_id, "_", dataset, ".rds")
+)
+saveRDS(vi_df, vi_file)

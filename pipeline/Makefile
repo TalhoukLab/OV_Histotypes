@@ -9,6 +9,9 @@ gene_opt: gene_train_eval gene_merge_eval gene_seq_train_eval gene_seq_merge_eva
 tune_wflows:
 	./1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
 
+merge_results:
+	./2-merge_results.sh $(filter-out $@,$(MAKECMDGOALS))
+
 # Splendid pipeline
 # Train models and return evaluations
 train_eval:
