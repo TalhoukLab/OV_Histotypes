@@ -15,10 +15,11 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
-    for v in $(seq -f "%0${#folds}g" 1 $folds); do
+    for v in $(seq -f "%0${#n_folds}g" 1 $n_folds); do
         # Content of R file
         R_file=$RSubDir/$dataset/$samp"_"$alg"_"$v.R
         echo 'dataset <- "'$dataset'"' > $R_file
+        echo "n_folds <- $n_folds" >> $R_file
         echo 'fold_id <- "'$v'"' >> $R_file
         echo 'inputDir <- "'$inputDir'"' >> $R_file
         echo 'outputDir <- "'$outputDir'"' >> $R_file

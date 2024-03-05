@@ -7,7 +7,7 @@ train_ref <- cbind(data, class = factor(class))
 set.seed(2024)
 folds <- nested_cv(
   train_ref,
-  outside = vfold_cv(v = folds, strata = class),
+  outside = vfold_cv(v = n_folds, strata = class),
   inside = vfold_cv(v = 5, strata = class)
 )
 
