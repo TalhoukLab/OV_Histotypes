@@ -138,7 +138,7 @@ if (alg %in% c("rf", "xgb")) {
 }
 
 ## Register parallel multicore
-all_cores <- min(detectCores(logical = FALSE), 32L)
+all_cores <- min(detectCores(logical = FALSE), 8L)
 cl <- makePSOCKcluster(all_cores)
 registerDoParallel(cl)
 
