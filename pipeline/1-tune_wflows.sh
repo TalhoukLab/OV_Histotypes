@@ -21,7 +21,6 @@ for dataset in "${dataSets[@]}"; do
                 # Content of R file
                 R_file=$RSubDir/$dataset/$samp"_"$alg"_"$v.R
                 echo 'dataset <- "'$dataset'"' > $R_file
-                echo "folds <- $folds" >> $R_file
                 echo 'fold_id <- "'$v'"' >> $R_file
                 echo 'alg <- "'$alg'"' >> $R_file
                 echo 'samp <- "'$samp'"' >> $R_file
