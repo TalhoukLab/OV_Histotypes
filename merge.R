@@ -104,11 +104,11 @@ top_class <- all_metrics %>%
 # Variable importance metrics
 ## Use model-specific metrics if available, otherwise calculate
 ## permutation-based variable importance
-if (alg %in% c("rf", "xgb", "mr")) {
+if (grepl("_(rf|xgb|mr)", best_wflow)) {
   vi_df <- test_results %>%
     extract_fit_parsnip() %>%
     vi()
-} else if (alg %in% "svm") {
+} else if (grepl("_svm", best_wflow)) {
   svm_pfun <- function(object, newdata) {
     kernlab::predict(object, new_data = newdata)[[".pred_class"]]
   }
