@@ -6,6 +6,10 @@ retrain: retrain_eval retrain_merge retrain_summary
 
 gene_opt: gene_train_eval gene_merge_eval gene_seq_train_eval gene_seq_merge_eval
 
+tune_wflows:
+	./1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Splendid pipeline
 # Train models and return evaluations
 train_eval:
 	./splendid/1-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
