@@ -5,7 +5,7 @@
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=summary
+subDir=merge_eval
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 
@@ -13,16 +13,19 @@ for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
     mkdir -p $RSubDir/$dataset
     mkdir -p $shSubDir/$dataset
-    mkdir -p $outputDir/$subDir/$dataset
+    mkdir -p $outputDir/$subDir
+    mkdir -p $outputDir/ranked_vi/$dataset
 
     # Content of R file
-    R_file=$RSubDir/$dataset/iv_summary.R
+    R_file=$RSubDir/$dataset/merge_eval.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
-    echo 'source("pipeline/3-iv_summary.R")' >> $R_file
+    echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file
+    echo 'samps <- strsplit("'${samps[@]}'", " ")[[1]]' >> $R_file
+    echo 'source("pipeline/splendid/2-merge_eval.R")' >> $R_file
 
     # Content of sh file
-    job_file=$shSubDir/$dataset/iv_summary.sh
+    job_file=$shSubDir/$dataset/merge_eval.sh
     cat ./assets/sbatch_params.sh > $job_file
     echo "cd $projDir" >> $job_file
     echo "Rscript $R_file" >> $job_file
@@ -30,10 +33,10 @@ for dataset in "${dataSets[@]}"; do
 
     # Add to queue if sbatch exists
     if command -v sbatch &>/dev/null; then
-       file_to_submit+=($job_file)
-       echo -e "$GREEN_TICK Added to queue: $job_file"
+        file_to_submit+=($job_file)
+        echo -e "$GREEN_TICK Added to queue: $job_file"
     else
-       bash $job_file
+        bash $shell_file
     fi
 done
 

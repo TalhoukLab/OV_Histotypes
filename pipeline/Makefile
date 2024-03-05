@@ -1,4 +1,4 @@
-all: train_eval merge_eval iv_summary
+splendid: train_eval merge_eval iv_summary
 
 sequential: seq_train_eval seq_merge_eval seq_iv_summary
 
@@ -8,15 +8,15 @@ gene_opt: gene_train_eval gene_merge_eval gene_seq_train_eval gene_seq_merge_eva
 
 # Train models and return evaluations
 train_eval:
-	./1-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+	./splendid/1-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Merge evaluations across reps and algorithms
 merge_eval:
-	./2-merge_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+	./splendid/2-merge_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Internal validation summary and combined across datasets
 iv_summary:
-	./3-iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
+	./splendid/3-iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Sequential classifier
 seq_train_eval:
