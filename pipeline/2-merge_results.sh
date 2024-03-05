@@ -20,6 +20,7 @@ for dataset in "${dataSets[@]}"; do
         R_file=$RSubDir/$dataset/$samp"_"$alg"_"$v.R
         echo 'dataset <- "'$dataset'"' > $R_file
         echo 'fold_id <- "'$v'"' >> $R_file
+        echo 'inputDir <- "'$inputDir'"' >> $R_file
         echo 'outputDir <- "'$outputDir'"' >> $R_file
         echo 'source("pipeline/2-merge_results.R")' >> $R_file
 
