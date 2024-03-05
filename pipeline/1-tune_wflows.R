@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
   library(vip)
   library(here)
 })
+source(here("src/funs.R"))
 
 # Import training data and class labels
 data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))
