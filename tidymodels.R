@@ -112,10 +112,6 @@ models <- list(rf = rf_model,
 wflow_sets <- workflow_set(preproc, models)
 
 # Hyperparameter tuning
-## Register parallel multicore
-all_cores <- min(detectCores(logical = FALSE), 8L)
-cl <- makePSOCKcluster(all_cores)
-registerDoParallel(cl)
 
 ## Algorithm-specific tuning setup
 if (alg %in% c("rf", "xgb")) {
@@ -149,6 +145,11 @@ if (alg %in% c("rf", "xgb")) {
   )
 }
 
+## Register parallel multicore
+all_cores <- min(detectCores(logical = FALSE), 32L)
+cl <- makePSOCKcluster(all_cores)
+registerDoParallel(cl)
+
 ## Tune workflow
 tuned_set <- wflow_set %>%
   workflow_map(
@@ -160,6 +161,13 @@ tuned_set <- wflow_set %>%
   ) %>%
   suppressMessages() %>%
   suppressWarnings()
+
+## Unregister parallel multicore
+unregister_dopar <- function() {
+  env <- foreach:::.foreachGlobals
+  rm(list = ls(name = env), pos = env)
+}
+unregister_dopar()
 
 # Ranking workflows for selected metric
 ranking <- tuned_set %>%
