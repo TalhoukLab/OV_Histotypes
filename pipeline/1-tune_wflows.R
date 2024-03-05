@@ -8,7 +8,6 @@ suppressPackageStartupMessages({
   library(vip)
   library(here)
 })
-source(here("validation/cs_classifier.R"))
 
 # Import training data and class labels
 data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))
