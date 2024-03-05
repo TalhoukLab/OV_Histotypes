@@ -108,7 +108,7 @@ top_class <- all_metrics %>%
 if (grepl("_(rf|xgb|mr)", best_wflow)) {
   vi_df <- test_results %>%
     extract_fit_parsnip() %>%
-    vi()
+    vip::vi()
 } else if (grepl("_svm", best_wflow)) {
   svm_pfun <- function(object, newdata) {
     kernlab::predict(object, new_data = newdata)[[".pred_class"]]
@@ -116,7 +116,7 @@ if (grepl("_(rf|xgb|mr)", best_wflow)) {
   set.seed(2024)
   vi_df <- test_results %>%
     extract_fit_parsnip() %>%
-    vi(
+    vip::vi(
       train = analysis(outer_fold),
       method = "permute",
       target = "class",
