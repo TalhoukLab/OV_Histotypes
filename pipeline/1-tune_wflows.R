@@ -3,6 +3,7 @@ suppressPackageStartupMessages({
   library(rlang)
   library(parallel)
   library(doParallel)
+  library(future)
   library(themis)
   library(tidymodels)
   library(vip)
@@ -140,8 +141,7 @@ if (alg %in% c("rf", "xgb")) {
 
 ## Register parallel multicore
 all_cores <- min(detectCores(logical = FALSE), 8L)
-cl <- makePSOCKcluster(all_cores)
-registerDoParallel(cl)
+plan(multicore, workers = all_cores)
 
 ## Tune workflow
 tuned_set <- wflow_set %>%
@@ -156,11 +156,7 @@ tuned_set <- wflow_set %>%
   suppressWarnings()
 
 ## Unregister parallel multicore
-unregister_dopar <- function() {
-  env <- foreach:::.foreachGlobals
-  rm(list = ls(name = env), pos = env)
-}
-unregister_dopar()
+plan(sequential)
 
 # Write tuned workflow to file
 results_file <- file.path(
