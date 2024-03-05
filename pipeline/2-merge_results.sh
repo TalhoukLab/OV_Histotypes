@@ -17,7 +17,7 @@ for dataset in "${dataSets[@]}"; do
 
     for v in $(seq -f "%0${#n_folds}g" 1 $n_folds); do
         # Content of R file
-        R_file=$RSubDir/$dataset/$samp"_"$alg"_"$v.R
+        R_file=$RSubDir/$dataset/"merge_results_"$v.R
         echo 'dataset <- "'$dataset'"' > $R_file
         echo "n_folds <- $n_folds" >> $R_file
         echo 'fold_id <- "'$v'"' >> $R_file
@@ -26,7 +26,7 @@ for dataset in "${dataSets[@]}"; do
         echo 'source("pipeline/2-merge_results.R")' >> $R_file
 
         # Content of sh file
-        job_file=$shSubDir/$dataset/$samp"_"$alg"_"$v.sh
+        job_file=$shSubDir/$dataset/"merge_results_"$v.sh
         cat ./assets/sbatch_params.sh > $job_file
         echo "cd $projDir" >> $job_file
         echo "Rscript $R_file" >> $job_file
