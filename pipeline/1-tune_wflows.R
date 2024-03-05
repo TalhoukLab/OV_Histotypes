@@ -1,12 +1,3 @@
-# Server constants
-outputDir <- "~/results/OV_Histotypes/outputs"
-inputDir <- "data"
-dataset <- "train"
-rank_metric <- "accuracy"
-alg <- "rf"
-samp <- "hybrid"
-fold_id <- "01"
-
 # Load packages and data
 suppressPackageStartupMessages({
   library(rlang)
@@ -24,16 +15,17 @@ data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))
 class <- readRDS(file.path(inputDir, paste0(dataset, "_class.rds")))
 train_ref <- cbind(data, class = factor(class))
 
-# Nested resampling: 10-fold CV outside, 5-fold CV inside
+# Nested resampling
 set.seed(2024)
 folds <- nested_cv(
   train_ref,
-  outside = vfold_cv(v = 10, strata = class),
+  outside = vfold_cv(v = folds, strata = class),
   inside = vfold_cv(v = 5, strata = class)
 )
 
-inner_folds <- folds$inner_resamples[[fold_id]]
-outer_fold <- folds$splits[[fold_id]]
+id <- as.numeric(fold_id)
+inner_folds <- folds$inner_resamples[[id]]
+outer_fold <- folds$splits[[id]]
 
 # Metrics
 gmean <- new_class_metric(gmean, direction = "maximize")

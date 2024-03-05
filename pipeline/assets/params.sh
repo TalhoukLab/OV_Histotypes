@@ -2,12 +2,14 @@
 
 # Supervised parameters
 dataSets=(train)
-reps=50
-algs=(combined mlr_lasso mlr_ridge)
-samps=(none up down smote)
-norm_by="none"
-norm_type="conventional"
-min_var=0
+#reps=50
+folds=10
+algs=(rf xgb svm mr)
+samps=(none up down smote hybrid)
+rank_metric="accuracy"
+#norm_by="none"
+#norm_type="conventional"
+#min_var=0
 seqData=(seq)
 nseq=4
 bestAlg="adaboost"
