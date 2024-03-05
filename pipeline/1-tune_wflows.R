@@ -12,6 +12,10 @@ suppressPackageStartupMessages({
 source(here("src/funs.R"))
 source(here("pipeline/0-setup_data.R"))
 
+# Inner folds used for tuning
+id <- as.numeric(fold_id)
+inner_folds <- folds$inner_resamples[[id]]
+
 # Recipe
 rec <- recipe(class ~ ., train_ref)
 

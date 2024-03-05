@@ -1,3 +1,26 @@
+# Load packages and data
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidymodels)
+  library(here)
+})
+source(here("src/funs.R"))
+
+# Outer fold used for assessment
+id <- as.numeric(fold_id)
+outer_fold <- folds$splits[[id]]
+
+# Combine tuned workflows for each outer fold
+tuned_set <- list.files(
+  path = file.path(outputDir,
+                   "tune_wflows",
+                   dataset),
+  pattern = paste0("_", fold_id, "_", dataset),
+  full.names = TRUE
+) %>%
+  map(readRDS) %>%
+  list_rbind()
+
 # Ranking workflows for selected metric
 ranking <- tuned_set %>%
   rank_results(rank_metric = rank_metric, select_best = TRUE) %>%

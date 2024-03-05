@@ -11,10 +11,6 @@ folds <- nested_cv(
   inside = vfold_cv(v = 5, strata = class)
 )
 
-id <- as.numeric(fold_id)
-inner_folds <- folds$inner_resamples[[id]]
-outer_fold <- folds$splits[[id]]
-
 # Metrics
 gmean <- new_class_metric(gmean, direction = "maximize")
 mset <- metric_set(accuracy, roc_auc, f_meas, kap, gmean)
