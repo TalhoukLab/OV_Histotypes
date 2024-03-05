@@ -1,13 +1,27 @@
+# Server constants
+inputDir <- "data"
+dataset <- "train"
+fold_id <- 1
+rank_metric <- "accuracy"
+alg <- "rf"
+samp <- "hybrid"
+
 # Load packages and data
-library(rlang)
-library(parallel)
-library(themis)
-library(tidymodels)
-library(vip)
-library(here)
+suppressPackageStartupMessages({
+  library(rlang)
+  library(parallel)
+  library(doParallel)
+  library(themis)
+  library(tidymodels)
+  library(vip)
+  library(here)
+})
 source(here("validation/cs_classifier.R"))
 
-train_ref <- cbind(train_data, class = factor(train_class))
+# Import training data and class labels
+data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))
+class <- readRDS(file.path(inputDir, paste0(dataset, "_class.rds")))
+train_ref <- cbind(data, class = factor(class))
 
 # Nested resampling: 10-fold CV outside, 5-fold CV inside
 set.seed(2024)
@@ -17,51 +31,49 @@ folds <- nested_cv(
   inside = vfold_cv(v = 5, strata = class)
 )
 
-fold_id <- 1
 inner_folds <- folds$inner_resamples[[fold_id]]
-outer_fold <- folds$splits[[1]]
+outer_fold <- folds$splits[[fold_id]]
 
 # Metrics
-rank_metric <- "roc_auc"
 gmean <- new_class_metric(gmean, direction = "maximize")
 mset <- metric_set(accuracy, roc_auc, f_meas, kap, gmean)
 
 # Recipe
 rec <- recipe(class ~ ., train_ref)
 
-# Preprocessing for class imbalance
-preproc_none <- rec
-preproc_down <- step_downsample(rec, class, seed = 2024)
-preproc_up <- step_upsample(rec, class, seed = 2024)
-preproc_smote <- step_smote(rec, class, seed = 2024)
-preproc_hybrid <- rec %>%
+# Preprocessing
+## Class imbalance subsampling methods
+none_samp <- rec
+down_samp <- step_downsample(rec, class, seed = 2024)
+up_samp <- step_upsample(rec, class, seed = 2024)
+smote_samp <- step_smote(rec, class, seed = 2024)
+hybrid_samp <- rec %>%
   step_smote(class, over_ratio = 0.5, seed = 2024) %>%
   step_downsample(class, under_ratio = 1, seed = 2024)
 
 preproc <- list(
-  none = preproc_none,
-  down = preproc_down,
-  up = preproc_up,
-  smote = preproc_smote,
-  hybrid = preproc_hybrid
+  none = none_samp,
+  down = down_samp,
+  up = up_samp,
+  smote = smote_samp,
+  hybrid = hybrid_samp
 )
 
 # Models
 ## Random forest
-rf_model <- list(
-  rf = rand_forest(
+rf_model <-
+  rand_forest(
     mode = "classification",
     engine = "ranger",
     mtry = tune(),
     min_n = tune(),
     trees = 500
   ) %>%
-    set_engine("ranger", importance = "impurity")
-)
+  set_engine("ranger", importance = "impurity")
 
 ## XGBoost
-xgb_model <- list(
-  xgb = boost_tree(
+xgb_model <-
+  boost_tree(
     mode = "classification",
     engine = "xgboost",
     mtry = tune(),
@@ -73,118 +85,89 @@ xgb_model <- list(
     sample_size = tune(),
     stop_iter = tune()
   )
-)
 
-# Support vector machine
-svm_model <- list(
-  svm = svm_rbf(
+## Support vector machine
+svm_model <-
+  svm_rbf(
     mode = "classification",
     engine = "kernlab",
     cost = tune(),
     rbf_sigma = tune()
   )
-)
 
-# Multinomial logistic regression
-mlr_model <- list(
-  mlr = multinom_reg(
+## Multinomial regression
+mr_model <-
+  multinom_reg(
     engine = "glmnet",
     penalty = tune(),
     mixture = tune()
   )
-)
+
+models <- list(rf = rf_model,
+               xgb = xgb_model,
+               svm = svm_model,
+               mr = mr_model)
 
 # Workflow sets
-rf_set <- workflow_set(preproc, rf_model)
-xgb_set <- workflow_set(preproc, xgb_model)
-svm_set <- workflow_set(preproc, svm_model)
-mlr_set <- workflow_set(preproc, mlr_model)
-wflow_sets <- bind_rows(rf_set, xgb_set, svm_set, mlr_set)
-
-# Register parallel multicore
-# all_cores <- min(detectCores(logical = FALSE), 8L)
-# cl <- makePSOCKcluster(all_cores)
-# registerDoParallel(cl)
+wflow_sets <- workflow_set(preproc, models)
 
 # Hyperparameter tuning
+## Register parallel multicore
+all_cores <- min(detectCores(logical = FALSE), 8L)
+cl <- makePSOCKcluster(all_cores)
+registerDoParallel(cl)
 
-## Random Forest
-rf_tuned_set <- wflow_sets %>%
-  filter(grepl("rf", wflow_id)) %>%
-  workflow_map(
-    seed = 2024,
-    resamples = inner_folds,
-    grid = 10,
-    metrics = mset,
-    control = control_grid(save_pred = TRUE, save_workflow = TRUE)
-  ) %>%
-  suppressMessages()
+## Algorithm-specific tuning setup
+if (alg %in% c("rf", "xgb")) {
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == paste(samp, alg, sep = "_"))
 
-## XGBoost
-xgb_tuned_set <- wflow_sets %>%
-  filter(grepl("xgb", wflow_id)) %>%
-  workflow_map(
-    seed = 2024,
-    resamples = inner_folds,
-    grid = 10,
-    metrics = mset,
-    control = control_grid(save_pred = TRUE, save_workflow = TRUE)
-  ) %>%
-  suppressMessages()
+  tuning_grid <- 10
 
-## SVM
-svm_params <-
-  parameters(cost(), rbf_sigma()) %>%
-  update(
-    cost = cost(c(0, 2)),
-    rbf_sigma = rbf_sigma(c(-3, 0))
+} else if (alg %in% "svm") {
+  svm_params <-
+    parameters(cost(), rbf_sigma()) %>%
+    update(
+      cost = cost(c(0, 2)),
+      rbf_sigma = rbf_sigma(c(-3, 0))
+    )
+
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == paste(samp, alg, sep = "_")) %>%
+    option_add(param_info = svm_params)
+
+  tuning_grid <- 10
+
+} else if (alg %in% "mr") {
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == paste(samp, alg, sep = "_"))
+
+  set.seed(2024)
+  tuning_grid <- crossing(
+    grid_latin_hypercube(penalty(), size = 10),
+    grid_regular(mixture(), levels = 10)
   )
+}
 
-svm_tuned_set <- wflow_sets %>%
-  filter(grepl("svm", wflow_id)) %>%
-  option_add(param_info = svm_params) %>%
+## Tune workflow
+tuned_set <- wflow_set %>%
   workflow_map(
     seed = 2024,
     resamples = inner_folds,
-    grid = 10,
+    grid = tuning_grid,
     metrics = mset,
     control = control_grid(save_pred = TRUE, save_workflow = TRUE)
   ) %>%
-  suppressMessages()
-
-### MLR
-set.seed(2024)
-mlr_grid <- crossing(
-  grid_latin_hypercube(penalty(), size = 10),
-  grid_regular(mixture(), levels = 10)
-)
-
-mlr_tuned_set <- wflow_sets %>%
-  filter(grepl("mlr", wflow_id))%>%
-  workflow_map(
-    seed = 2024,
-    resamples = inner_folds,
-    grid = mlr_grid,
-    metrics = mset,
-    control = control_grid(save_pred = TRUE, save_workflow = TRUE)
-  ) %>%
-  suppressMessages()
+  suppressMessages() %>%
+  suppressWarnings()
 
 # Ranking workflows for selected metric
-tuned_set <- svm_tuned_set
-
-bind_rows(rf_tuned_set, xgb_tuned_set, svm_tuned_set, mlr_tuned_set) %>%
-  rank_results(rank_metric = rank_metric) %>%
-  filter(.metric == rank_metric) %>%
-  select(model, wflow_id, f_meas = mean, rank)
-
 ranking <- tuned_set %>%
-  rank_results(rank_metric = rank_metric) %>%
-  filter(.metric == rank_metric) %>%
-  select(model, wflow_id, f_meas = mean, rank)
+  rank_results(rank_metric = rank_metric, select_best = TRUE) %>%
+  filter(.metric == rank_metric)
 
 # Best workflow
-best_wflow <- head(ranking[["wflow_id"]], 1)
+best_wflow <- ranking[["wflow_id"]][1]
 
 # Best tuning parameters of workflow with highest metric
 best_params <- tuned_set %>%
@@ -200,11 +183,20 @@ best_model <- tuned_set %>%
 test_results <- best_model %>%
   last_fit(split = outer_fold, metrics = mset)
 
-# Calculate per-class metrics using one-vs-all predictions
-mset_pc <- metric_set(accuracy, f_meas, kap, gmean)
+# Test set predictions
+test_preds <- test_results %>%
+  collect_predictions()
 
-metrics_per_class <- test_results %>%
-  pluck(".predictions", 1) %>%
+# Calculate overall metrics
+overall_metrics <- test_results %>%
+  collect_metrics() %>%
+  select(-.config) %>%
+  add_column(class_group = "Overall")
+
+# Calculate per-class metrics using one-vs-all predictions
+per_class_mset <- metric_set(accuracy, f_meas, kap, gmean)
+per_class_metrics <- test_results %>%
+  collect_predictions() %>%
   mutate(
     pred_max = pmap_dbl(select(., matches(".pred") & where(is.double)),
                         ~ pmap_dbl(list(...), max)),
@@ -233,45 +225,42 @@ metrics_per_class <- test_results %>%
   ) %>%
   filter(class_group == .pred_class_group) %>%
   nest(.by = class_group) %>%
-  mutate(data = data %>%
-           map(droplevels) %>%
-           map(mset_pc, truth = class_value, estimate = .pred_class_value)) %>%
+  mutate(
+    data = data %>%
+      map(droplevels) %>%
+      map(per_class_mset, truth = class_value, estimate = .pred_class_value)
+  ) %>%
   unnest(cols = data)
 
+# Combine all metrics
+all_metrics <- bind_rows(overall_metrics, per_class_metrics) %>%
+  arrange(.metric)
+
 # Top class by selected metric
-metrics_per_class %>%
-  filter(.metric == "f_meas") %>%
+top_class <- all_metrics %>%
+  filter(.metric == rank_metric, class_group != "Overall") %>%
   slice_max(order_by = .estimate)
 
 # Variable importance metrics
-# Random Forest
-rf_vi <- test_results %>%
-  extract_fit_parsnip() %>%
-  vi()
-
-# XGBoost
-xgb_vi <- test_results %>%
-  extract_fit_parsnip() %>%
-  vi()
-
-# SVM
-svm_pfun <- function(object, newdata) {
-  kernlab::predict(object, new_data = newdata)[[".pred_class"]]
+## Use model-specific metrics if available, otherwise calculate
+## permutation-based variable importance
+if (alg %in% c("rf", "xgb", "mr")) {
+  vi_df <- test_results %>%
+    extract_fit_parsnip() %>%
+    vi()
+} else if (alg %in% "svm") {
+  svm_pfun <- function(object, newdata) {
+    kernlab::predict(object, new_data = newdata)[[".pred_class"]]
+  }
+  set.seed(2024)
+  vi_df <- test_results %>%
+    extract_fit_parsnip() %>%
+    vi(
+      train = analysis(outer_fold),
+      method = "permute",
+      target = "class",
+      metric = "accuracy",
+      nsim = 5,
+      pred_wrapper = svm_pfun
+    )
 }
-
-set.seed(2024)
-svm_vi <- test_results %>%
-  extract_fit_parsnip() %>%
-  vi(
-    train = analysis(outer_fold),
-    method = "permute",
-    target = "class",
-    metric = "accuracy",
-    nsim = 5,
-    pred_wrapper = svm_pfun
-  )
-
-# MLR
-mlr_vi <- test_results %>%
-  extract_fit_parsnip() %>%
-  vi()
