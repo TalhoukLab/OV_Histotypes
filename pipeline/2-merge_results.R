@@ -153,7 +153,7 @@ metrics_file <- file.path(
   outputDir,
   "merge_results",
   dataset,
-  paste0("wflow_", best_wflow, "_metrics_", fold_id, "_", dataset, ".rds")
+  paste0("wflow_", wflow, "_metrics_", dataset, ".rds")
 )
 saveRDS(all_metrics, metrics_file)
 
@@ -162,6 +162,6 @@ vi_file <- file.path(
   outputDir,
   "merge_results",
   dataset,
-  paste0("wflow", best_wflow, "_vi_", fold_id, "_", dataset, ".rds")
+  paste0("wflow", wflow, "_vi_", dataset, ".rds")
 )
 saveRDS(vi_rank_agg, vi_file)
