@@ -52,7 +52,7 @@ best_model <- tuned_set %>%
 # Train best model on outer training sets, evaluate on outer test sets
 outer_folds <- folds$splits
 test_results <- map(outer_folds, ~ {
-  last_fit(best_model, split = .x, metrics = mset)
+  suppressMessages(last_fit(best_model, split = .x, metrics = mset))
 })
 
 # Test set predictions
@@ -63,7 +63,8 @@ test_preds <- test_results %>%
 # Calculate overall metrics
 overall_metrics <- test_preds %>%
   mset(truth = class, .pred_CCOC:.pred_MUC, estimate = .pred_class) %>%
-  add_column(class_group = "Overall")
+  add_column(class_group = "Overall") %>%
+  suppressWarnings()
 
 # Calculate per-class metrics using one-vs-all predictions
 per_class_mset <- metric_set(accuracy, f_meas, kap, gmean)
@@ -97,7 +98,8 @@ per_class_metrics <- test_preds %>%
     data = data %>%
       map(~ mutate(.x, across(matches("class_value"),
                               ~ factor(.x, levels = unique(c(.pred_class_group, .x)))))) %>%
-      map(per_class_mset, truth = class_value, estimate = .pred_class_value)
+      map(per_class_mset, truth = class_value, estimate = .pred_class_value) %>%
+      suppressWarnings()
   ) %>%
   unnest(cols = data)
 
