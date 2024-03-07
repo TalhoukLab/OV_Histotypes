@@ -95,7 +95,8 @@ per_class_metrics <- test_preds %>%
   nest(.by = class_group) %>%
   mutate(
     data = data %>%
-      map(~ mutate(.x, across(matches("class_value"), factor))) %>%
+      map(~ mutate(.x, across(matches("class_value"),
+                              ~ factor(.x, levels = unique(c(.pred_class_group, .x)))))) %>%
       map(per_class_mset, truth = class_value, estimate = .pred_class_value)
   ) %>%
   unnest(cols = data)
