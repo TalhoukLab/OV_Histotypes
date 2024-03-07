@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
 source(here("src/funs.R"))
 source(here("pipeline/0-setup_data.R"))
 
-# Combined tuned workflow across folds
+# Combine tuned workflows across folds
 wflow <- paste(samp, alg, sep = "_")
 tune_wflows_files <- list.files(
   path = file.path(outputDir, "tune_wflows", dataset),
@@ -66,6 +66,16 @@ overall_metrics <- test_preds %>%
   mset(truth = class, .pred_CCOC:.pred_MUC, estimate = .pred_class) %>%
   add_column(class_group = "Overall") %>%
   suppressWarnings()
+
+# Don't interpret F-measure if some levels had no predicted events
+overall_metrics <- tryCatch({
+  test_preds %>%
+    mset(truth = class, .pred_CCOC:.pred_MUC, estimate = .pred_class) %>%
+    add_column(class_group = "Overall")
+}, warning = function(w) {
+  overall_metrics %>%
+    mutate(.estimate = ifelse(.metric == "f_meas", NA_real_, .estimate))
+})
 
 # Calculate per-class metrics using one-vs-all predictions
 per_class_mset <- metric_set(accuracy, f_meas, kap, gmean)
