@@ -239,14 +239,16 @@ cs3_train <-
 
 # Training set, n=263+832+514-77-286=1246 (CS1 + CS2 + CS3 excluding TNCO and DOVE
 # - other histotypes - duplicates), common genes n=72
-train_ref <-
+train_ref_all <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   inner_join(transmute(cohorts, FileName = gsub("^X", "", col_name), cohort),
              by = "FileName") %>%
-  column_to_rownames("FileName") %>%
+  column_to_rownames("FileName")
+
+train_ref <- train_ref_all %>%
   mutate(
     CodeSet_Site = fct_cross(CodeSet, site, sep = "_") %>%
       fct_relevel(

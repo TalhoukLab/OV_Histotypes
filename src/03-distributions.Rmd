@@ -69,6 +69,22 @@ knitr::kable(preqc_hist_codeset,
              caption = "Pre-QC Training Set Histotype Distribution by CodeSet")
 ```
 
+```{r train-all-hist-codeset}
+train_all_hist_codeset <- train_ref_all %>% 
+  mutate(revHist = fct_infreq(revHist)) %>% 
+  describeBy(
+    var.names = "revHist",
+    var.labels = "Histotype",
+    by1 = "CodeSet",
+    test = FALSE,
+    total = "bottom",
+    bold_var = FALSE
+  )
+
+knitr::kable(train_all_hist_codeset,
+             caption = "Training Set (with duplicates) Histotype Distribution by CodeSet")
+```
+
 ```{r train-hist-codeset}
 train_hist_codeset <- train_ref %>% 
   mutate(revHist = fct_infreq(revHist)) %>% 
@@ -82,7 +98,7 @@ train_hist_codeset <- train_ref %>%
   )
 
 knitr::kable(train_hist_codeset,
-             caption = "Full Training Set Histotype Distribution by CodeSet")
+             caption = "Final Training Set Histotype Distribution by CodeSet")
 ```
 
 ```{r hist-conf-val}
@@ -172,7 +188,7 @@ print(p_gd_snr_zoomed)
 ## Pairwise Gene Expression
 
 ```{r genes-cs13-rand1, fig.height=10, fig.width=11, fig.cap='Random1-Normalized CS1 vs. CS3 Gene Expression'}
-genes_cs13_rand1 <- train_ref %>%
+genes_cs13_rand1 <- train_ref_all %>%
   rownames_to_column("FileName") %>%
   group_by(ottaID) %>%
   mutate(n_codeset = n_distinct(CodeSet)) %>%
@@ -224,7 +240,7 @@ print(p_genes_cs13_rand1)
 ```
 
 ```{r genes-cs23-rand1, fig.height=10, fig.width=11, fig.cap='Random1-Normalized CS2 vs. CS3 Gene Expression'}
-genes_cs23_rand1 <- train_ref %>%
+genes_cs23_rand1 <- train_ref_all %>%
   rownames_to_column("FileName") %>%
   group_by(ottaID) %>%
   mutate(n_codeset = n_distinct(CodeSet)) %>%
