@@ -237,8 +237,8 @@ cs3_train <-
   column_to_rownames("col_name") %>%
   select(all_of(common_genes123))
 
-# Training set, n=266+833+514-77=1536 (CS1 + CS2 + CS3 excluding TNCO and DOVE
-# - other histotypes), common genes n=72
+# Training set, n=263+832+514-77-286=1246 (CS1 + CS2 + CS3 excluding TNCO and DOVE
+# - other histotypes - duplicates), common genes n=72
 train_ref <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
   rownames_to_column("FileName") %>%
@@ -246,7 +246,22 @@ train_ref <-
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   inner_join(transmute(cohorts, FileName = gsub("^X", "", col_name), cohort),
              by = "FileName") %>%
-  column_to_rownames("FileName")
+  column_to_rownames("FileName") %>%
+  mutate(
+    CodeSet_Site = fct_cross(CodeSet, site, sep = "_") %>%
+      fct_relevel(
+        "CS3_Vancouver",
+        "CS3_AOC",
+        "CS3_USC",
+        "CS2_Vancouver",
+        "CS2_AOC",
+        "CS1_Vancouver"
+      )
+  ) %>%
+  arrange(CodeSet_Site) %>%
+  filter(!duplicated(ottaID)) %>%
+  select(-CodeSet_Site) %>%
+  arrange(CodeSet)
 
 train_data <- select(train_ref, where(is.double))
 train_class <- train_ref[["revHist"]]
