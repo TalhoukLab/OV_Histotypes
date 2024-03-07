@@ -162,6 +162,6 @@ vi_file <- file.path(
   outputDir,
   "merge_results",
   dataset,
-  paste0("wflow", wflow, "_vi_", dataset, ".rds")
+  paste0("wflow_", wflow, "_vi_", dataset, ".rds")
 )
 saveRDS(vi_rank_agg, vi_file)
