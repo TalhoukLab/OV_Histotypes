@@ -3,7 +3,7 @@
 # Supervised parameters
 dataSets=(train)
 #reps=50
-n_folds=10
+n_folds=5
 algs=(rf xgb svm mr)
 samps=(none up down smote hybrid)
 rank_metric="f_meas"
