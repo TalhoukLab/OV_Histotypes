@@ -20,6 +20,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'inputDir <- "'$inputDir'"' > $R_file
     echo 'outputDir <- "'$outputDir'"' >> $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
+    echo "n_folds <- $n_folds" >> $R_file
     echo 'source("pipeline/3-summarize_results.R")' >> $R_file
 
     # Content of sh file
