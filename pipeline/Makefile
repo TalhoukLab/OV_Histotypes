@@ -12,6 +12,9 @@ tune_wflows:
 merge_results:
 	./2-merge_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
+summarize_results:
+	./3-summarize_results.sh $(filter-out $@,$(MAKECMDGOALS))
+
 # Splendid pipeline
 # Train models and return evaluations
 train_eval:
