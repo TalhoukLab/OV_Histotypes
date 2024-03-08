@@ -6,6 +6,7 @@ library(batchAdj)
 library(forcats)
 library(scales)
 library(patchwork)
+library(kableExtra)
 library(here)
 source(here("validation/cs_classifier.R"))
 ```
@@ -144,16 +145,25 @@ knitr::kable(cohort_dist,
 
 ### Failed Samples
 
+We use an aggregated `QCFlag` that considers a sample to have failed QC if any of the following conditions are true:
+
+- `linFlag`: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown
+- `imagingFlag`: percent of field of view is less than 75%
+- `spcFlag`: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero
+- `normFlag`: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the [%GD vs. SNR] relationship below.
+
 ```{r qc-failed}
-qc_failed <- list(CS1 = cs1_qc_failed,
-                  CS2 = cs2_qc_failed,
-                  CS3 = cs1_qc_failed) %>% 
-  map_df(length)
+qc_failed <- bind_rows(cs1_qc, cs2_qc, cs3_qc) %>%
+  count(CodeSet, linFlag, imagingFlag, spcFlag, normFlag, QCFlag) %>%
+  filter(QCFlag == "Failed" ) %>%
+  add_count(CodeSet, wt = n, name = "CodeSet Total") %>% 
+  relocate(`CodeSet Total`, .after = CodeSet)
 
 qc_failed %>% 
-  kable(caption = "Number of failed sampled by CodeSet")
+  kable(caption = "Number of failed samples by CodeSet and fail condition") %>% 
+  kable_styling() %>% 
+  collapse_rows(columns = 1:2)
 ```
-
 
 ### %GD vs. SNR
 
