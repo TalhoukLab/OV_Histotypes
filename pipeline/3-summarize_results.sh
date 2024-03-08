@@ -17,7 +17,8 @@ for dataset in "${dataSets[@]}"; do
 
     # Content of R file
     R_file=$RSubDir/$dataset/summarize_results.R
-    echo 'outputDir <- "'$outputDir'"' > $R_file
+    echo 'inputDir <- "'$inputDir'"' > $R_file
+    echo 'outputDir <- "'$outputDir'"' >> $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo 'source("pipeline/3-summarize_results.R")' >> $R_file
 
