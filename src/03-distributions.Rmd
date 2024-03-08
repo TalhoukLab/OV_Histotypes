@@ -11,34 +11,6 @@ library(here)
 source(here("validation/cs_classifier.R"))
 ```
 
-## Cohort Counts
-
-```{r cohort-counts}
-n_raw <- map_int(list(cs1, cs2, cs3), ~ ncol(.) - 3)
-n_coh <- lengths(list(cs1_samples, cs2_samples, cs3_samples))
-n_ref_norm <- lengths(list(cs1_samples_X, cs2_samples_X, cs3_samples_X))
-n_train <- map_int(list(cs1_train, cs2_train, cs3_train), nrow)
-n_train_hist <- train_ref_all %>% count(CodeSet) %>% deframe()
-n_train_uniq <- train_ref %>% count(CodeSet) %>% deframe()
-
-cohort_counts <- list(
-  `Raw Data` = n_raw,
-  `QC & Selected Cohorts` = n_coh,
-  `Normalized to Reference` = n_ref_norm,
-  `CS3: remove test sets, add AOC/USC` = n_train,
-  `Major Histotypes` = n_train_hist,
-  `Removed Duplicates` = n_train_uniq
-) %>%
-  map(set_names, c("CS1", "CS2", "CS3")) %>%
-  bind_rows(.id = "Processing Stage") %>%
-  rowwise() %>%
-  mutate(Total = sum(c_across(CS1:CS3))) %>%
-  ungroup()
-
-cohort_counts %>% 
-  kbl(caption = "Training Set counts by CodeSet and Processing Stage")
-```
-
 ## Histotypes in Classifier Data
 
 ```{r preqc-hist-codeset}
@@ -59,6 +31,13 @@ cs2_samples_preqc <- cohorts %>%
 cs3_samples_preqc <- cohorts %>%
   filter(
     file_source == "cs3",
+    cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3")
+  ) %>%
+  pull(col_name)
+
+cs3_train_samples_precqc <- cohorts %>%
+  filter(
+    file_source == "cs3",
     cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3"),
     !cohort %in% c("TNCO", "DOVE4"),
     !grepl("pool", col_name, ignore.case = TRUE)
@@ -67,7 +46,7 @@ cs3_samples_preqc <- cohorts %>%
 
 preqc_df <-
   list(list(cs1, cs2, cs3),
-       list(cs1_samples_preqc, cs2_samples_preqc, cs3_samples_preqc)) %>%
+       list(cs1_samples_preqc, cs2_samples_preqc, cs3_train_samples_precqc)) %>%
   pmap( ~ {
     ..1 %>%
       dplyr::select(Name, all_of(..2)) %>%
@@ -148,6 +127,37 @@ hist_conf_val <- list(Confirmation = conf_ref,
 
 knitr::kable(hist_conf_val,
              caption = "Histotype Distribution in Confirmation and Validation Sets")
+```
+
+## Cohort Counts
+
+```{r cohort-counts}
+n_raw <- map_int(list(cs1, cs2, cs3), ~ ncol(.) - 3)
+n_coh <-
+  lengths(list(cs1_samples_preqc, cs2_samples_preqc, cs3_samples_preqc))
+n_qc <- lengths(list(cs1_samples, cs2_samples, cs3_samples))
+n_ref_norm <- lengths(list(cs1_samples_X, cs2_samples_X, cs3_samples_X))
+n_train <- map_int(list(cs1_train, cs2_train, cs3_train), nrow)
+n_train_hist <- train_ref_all %>% count(CodeSet) %>% deframe()
+n_train_uniq <- train_ref %>% count(CodeSet) %>% deframe()
+
+cohort_counts <- list(
+  `Raw Data` = n_raw,
+  `Selected Cohorts` = n_coh,
+  QC = n_qc,
+  `Normalized to Reference` = n_ref_norm,
+  `CS3: remove test sets, add AOC/USC` = n_train,
+  `Major Histotypes` = n_train_hist,
+  `Removed Duplicates` = n_train_uniq
+) %>%
+  map(set_names, c("CS1", "CS2", "CS3")) %>%
+  bind_rows(.id = "Processing Stage") %>%
+  rowwise() %>%
+  mutate(Total = sum(c_across(CS1:CS3))) %>%
+  ungroup()
+
+cohort_counts %>% 
+  kbl(caption = "Training Set counts by CodeSet and Processing Stage")
 ```
 
 ## Cohorts in Classifier Data
