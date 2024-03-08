@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-03-01}
+\date{2024-03-07}
 
 \begin{document}
 \maketitle
@@ -261,7 +261,7 @@ Total & N (\%) & 267 (16\%) & 819 (50\%) & 558 (34\%) & 1644 (100\%)\\
 
 \begin{table}
 
-\caption{\label{tab:train-hist-codeset}Full Training Set Histotype Distribution by CodeSet}
+\caption{\label{tab:train-all-hist-codeset}Training Set (with duplicates) Histotype Distribution by CodeSet}
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
@@ -278,6 +278,29 @@ Histotype & HGSC & 116 (48\%) & 623 (80\%) & 475 (94\%) & 1214 (79\%)\\
  & LGSC & 14 (6\%) & 19 (2\%) & 6 (1\%) & 39 (3\%)\\
 \hline
 Total & N (\%) & 244 (16\%) & 782 (51\%) & 506 (33\%) & 1532 (100\%)\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:train-hist-codeset}Final Training Set Histotype Distribution by CodeSet}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+Variable & Levels & CS1 & CS2 & CS3 & Total\\
+\hline
+Histotype & HGSC & 9 (12\%) & 553 (79\%) & 451 (96\%) & 1013 (81\%)\\
+\hline
+ & CCOC & 25 (32\%) & 52 (7\%) & 4 (1\%) & 81 (7\%)\\
+\hline
+ & ENOC & 37 (48\%) & 25 (4\%) & 4 (1\%) & 66 (5\%)\\
+\hline
+ & MUC & 3 (4\%) & 55 (8\%) & 5 (1\%) & 63 (5\%)\\
+\hline
+ & LGSC & 3 (4\%) & 16 (2\%) & 4 (1\%) & 23 (2\%)\\
+\hline
+Total & N (\%) & 77 (6\%) & 701 (56\%) & 468 (38\%) & 1246 (100\%)\\
 \hline
 \end{tabular}
 \end{table}
@@ -305,6 +328,34 @@ Total & N (\%) & 643 (42\%) & 906 (58\%)\\
 \end{tabular}
 \end{table}
 
+\hypertarget{cohort-counts}{%
+\section{Cohort Counts}\label{cohort-counts}}
+
+\begin{table}
+
+\caption{\label{tab:cohort-counts}Training Set counts by CodeSet and Processing Stage}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+Processing Stage & CS1 & CS2 & CS3 & Total\\
+\hline
+Raw Data & 412 & 1223 & 5424 & 7059\\
+\hline
+Selected Cohorts & 294 & 903 & 2477 & 3674\\
+\hline
+QC & 286 & 888 & 2285 & 3459\\
+\hline
+Normalized to Reference & 263 & 832 & 2107 & 3202\\
+\hline
+CS3: remove test sets, add AOC/USC & 263 & 832 & 514 & 1609\\
+\hline
+Major Histotypes & 244 & 782 & 506 & 1532\\
+\hline
+Removed Duplicates & 77 & 701 & 468 & 1246\\
+\hline
+\end{tabular}
+\end{table}
+
 \hypertarget{cohorts-in-classifier-data}{%
 \section{Cohorts in Classifier Data}\label{cohorts-in-classifier-data}}
 
@@ -316,15 +367,15 @@ Total & N (\%) & 643 (42\%) & 906 (58\%)\\
 \hline
 CodeSet & Cohort & Training & Confirmation & Validation\\
 \hline
-CS1 & MAYO & 5 & 0 & 0\\
+CS1 & MAYO & 2 & 0 & 0\\
 \hline
-CS1 & MTL & 3 & 0 & 0\\
+CS1 & MTL & 1 & 0 & 0\\
 \hline
-CS1 & OOU & 96 & 0 & 0\\
+CS1 & OOU & 53 & 0 & 0\\
 \hline
-CS1 & OOUE & 27 & 0 & 0\\
+CS1 & OOUE & 1 & 0 & 0\\
 \hline
-CS1 & VOA & 113 & 0 & 0\\
+CS1 & VOA & 20 & 0 & 0\\
 \hline
 CS2 & ICON7 & 365 & 0 & 0\\
 \hline
@@ -334,19 +385,19 @@ CS2 & MAYO & 42 & 0 & 0\\
 \hline
 CS2 & MTL & 59 & 0 & 0\\
 \hline
-CS2 & OOU & 41 & 0 & 0\\
+CS2 & OOU & 27 & 0 & 0\\
 \hline
-CS2 & OOUE & 29 & 0 & 0\\
+CS2 & OOUE & 18 & 0 & 0\\
 \hline
 CS2 & OVAR3 & 136 & 0 & 0\\
 \hline
-CS2 & VOA & 102 & 0 & 0\\
+CS2 & VOA & 46 & 0 & 0\\
 \hline
 CS3 & OOU & 18 & 0 & 0\\
 \hline
 CS3 & OOUE & 11 & 0 & 0\\
 \hline
-CS3 & VOA & 477 & 0 & 0\\
+CS3 & VOA & 439 & 0 & 0\\
 \hline
 CS3 & TNCO & 0 & 643 & 0\\
 \hline
@@ -361,15 +412,51 @@ CS3 & DOVE4 & 0 & 0 & 906\\
 \hypertarget{failed-samples}{%
 \subsection{Failed Samples}\label{failed-samples}}
 
+We use an aggregated \texttt{QCFlag} that considers a sample to have failed QC if any of the following conditions are true:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{linFlag}: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown
+\item
+  \texttt{imagingFlag}: percent of field of view is less than 75\%
+\item
+  \texttt{spcFlag}: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero
+\item
+  \texttt{normFlag}: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the \protect\hyperlink{gd-vs.-snr}{\%GD vs.~SNR} relationship below.
+\end{itemize}
+
 \begin{table}
 
-\caption{\label{tab:qc-failed}Number of failed sampled by CodeSet}
+\caption{\label{tab:qc-failed}Number of failed samples by CodeSet and fail condition}
 \centering
-\begin{tabular}[t]{r|r|r}
+\begin{tabular}[t]{l|r|l|l|l|l|l|r}
 \hline
-CS1 & CS2 & CS3\\
+CodeSet & CodeSet Total & linFlag & imagingFlag & spcFlag & normFlag & QCFlag & n\\
 \hline
-8 & 32 & 8\\
+ &  & Passed & Failed & Passed & Passed & Failed & 3\\
+\cline{3-8}
+\multirow{-2}{*}{\raggedright\arraybackslash CS1} & \multirow{-2}{*}{\raggedleft\arraybackslash 8} & Passed & Passed & Passed & Failed & Failed & 5\\
+\cline{1-8}
+ &  & Failed & Failed & Failed & Failed & Failed & 2\\
+\cline{3-8}
+ &  & Failed & Passed & Failed & Failed & Failed & 3\\
+\cline{3-8}
+ &  & Failed & Passed & Passed & Passed & Failed & 3\\
+\cline{3-8}
+ &  & Passed & Failed & Passed & Passed & Failed & 3\\
+\cline{3-8}
+\multirow{-5}{*}{\raggedright\arraybackslash CS2} & \multirow{-5}{*}{\raggedleft\arraybackslash 32} & Passed & Passed & Passed & Failed & Failed & 21\\
+\cline{1-8}
+ &  & Failed & Failed & Failed & Failed & Failed & 1\\
+\cline{3-8}
+ &  & Failed & Failed & Passed & Failed & Failed & 3\\
+\cline{3-8}
+ &  & Failed & Passed & Passed & Failed & Failed & 11\\
+\cline{3-8}
+ &  & Passed & Failed & Passed & Passed & Failed & 7\\
+\cline{3-8}
+\multirow{-5}{*}{\raggedright\arraybackslash CS3} & \multirow{-5}{*}{\raggedleft\arraybackslash 274} & Passed & Passed & Passed & Failed & Failed & 252\\
 \hline
 \end{tabular}
 \end{table}
