@@ -132,13 +132,13 @@ cs2_norm_t <- cs2_norm %>%
   spread(Name, value) %>%
   column_to_rownames("FileName")
 
-# CS2: 833 samples by 365 genes
+# CS2: 832 samples by 365 genes
 cs2_X <- cs2_norm_t[cs2_samples_X, ]
 
 # CS2 with duplicates: 884 samples by 365 genes
 cs2_all_X <- cs2_norm_t[cs2_samples_all_X, ]
 
-# CS3: 2111 samples by 513 genes
+# CS3: 2107 samples by 513 genes
 cs3_X <- cs3_norm %>%
   rename_all(~ gsub("^X", "", .)) %>%
   select_if(names(.) %in% c("Name", cs3_samples_X)) %>%
