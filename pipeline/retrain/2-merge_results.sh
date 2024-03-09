@@ -5,7 +5,7 @@
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=retrain_merge
+subDir=retrain/merge_results
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 
@@ -21,7 +21,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo 'inputDir <- "'$inputDir'"' >> $R_file
     echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file
-    echo 'source("pipeline/retrain/2-retrain_merge.R")' >> $R_file
+    echo 'source("pipeline/retrain/2-merge_results.R")' >> $R_file
 
     # Content of sh file
     job_file=$shSubDir/$dataset/retrain_merge.sh

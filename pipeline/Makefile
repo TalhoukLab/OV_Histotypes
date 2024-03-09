@@ -43,7 +43,7 @@ retrain_tune:
 	./retrain/1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
 
 retrain_merge:
-	./retrain/2-retrain_merge.sh $(filter-out $@,$(MAKECMDGOALS))
+	./retrain/2-merge_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
 retrain_summarize:
 	./retrain/3-retrain_summary.sh $(filter-out $@,$(MAKECMDGOALS))
