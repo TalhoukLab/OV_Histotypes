@@ -2,7 +2,7 @@ splendid: train_eval merge_eval iv_summary
 
 sequential: seq_train_eval seq_merge_eval seq_iv_summary
 
-retrain: retrain_eval retrain_merge retrain_summary
+retrain: retrain_tune retrain_merge retrain_summarize
 
 gene_opt: gene_train_eval gene_merge_eval gene_seq_train_eval gene_seq_merge_eval
 
@@ -39,13 +39,13 @@ seq_iv_summary:
 	./sequential/3-seq_iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Retrain for sequential and two-step classifiers
-retrain_eval:
-	./retrain/1-retrain_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+retrain_tune:
+	./retrain/1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
 
 retrain_merge:
 	./retrain/2-retrain_merge.sh $(filter-out $@,$(MAKECMDGOALS))
 
-retrain_summary:
+retrain_summarize:
 	./retrain/3-retrain_summary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Gene optimization
