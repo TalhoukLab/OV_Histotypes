@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Supervised parameters
-dataSets=(train)
+dataSets=(retrain_4)
 #reps=50
 n_folds=5
 algs=(rf xgb svm mr)
