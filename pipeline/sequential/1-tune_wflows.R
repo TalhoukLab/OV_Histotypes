@@ -145,7 +145,7 @@ results_file <- file.path(
   outputDir,
   "sequential",
   "tune_wflows",
-  dataset,
-  paste0(wflow, "_", fold_id, "_", dataset, ".rds")
+  sq,
+  paste0(wflow, "_s", nseq, "_", fold_id, "_", sq, ".rds")
 )
 saveRDS(tuned_set, results_file)
