@@ -1,0 +1,19 @@
+# Import sequential training data and class labels
+sq_data <- readRDS(file.path(inputDir, paste0(sq, "_data.rds")))
+sq_class <- readRDS(file.path(inputDir, paste0(sq, "_class.rds")))
+data <- sq_data[[nseq]]
+class <- sq_class[[nseq]]
+train_ref <- cbind(data, class = factor(class))
+
+# Nested resampling
+set.seed(2024)
+folds <- nested_cv(
+  train_ref,
+  outside = vfold_cv(v = n_folds, strata = class),
+  inside = vfold_cv(v = n_folds, repeats = 2, strata = class, pool = 0)
+) %>%
+  suppressWarnings()
+
+# Metrics
+gmean <- new_class_metric(gmean, direction = "maximize")
+mset <- metric_set(accuracy, roc_auc, f_meas, kap, gmean)
