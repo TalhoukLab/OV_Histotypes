@@ -23,7 +23,7 @@ for dataset in "${dataSets[@]}"; do
         echo 'alg <- "'$alg'"' >> $R_file
         echo 'rank_metric <- "'$rank_metric'"' >> $R_file
         echo 'inputDir <- "'$inputDir'"' >> $R_file
-        echo 'outputDir <- "'$outputDir'"' > $R_file
+        echo 'outputDir <- "'$outputDir'"' >> $R_file
         echo 'inputDir <- "'$inputDir'"' >> $R_file
         echo 'source("pipeline/retrain/2-merge_results.R")' >> $R_file
 
