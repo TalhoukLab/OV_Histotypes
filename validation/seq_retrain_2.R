@@ -3,36 +3,28 @@ library(dplyr)
 library(purrr)
 library(tibble)
 library(here)
-iv_summary_train <- readRDS(here("data/iv_summary_retrain_3.rds"))
+all_metrics_train <- readRDS(here("data/all_metrics_retrain_3.rds"))
 train_data <- readRDS(here("data/retrain_3_data.rds"))
 train_class <- readRDS(here("data/retrain_3_class.rds"))
-train_df <- cbind(train_data, class = train_class)
+train_ref <- cbind(train_data, class = train_class)
 
 # Number of classes used and number of classes to retrain after removing top class
 n_class <- n_distinct(train_class)
 n_retrain <- n_class - 1
 
-# Top median F1-score
-seq_summary <- iv_summary_train %>%
-  filter(grepl("f1\\.", measure)) %>%
-  transmute(
-    class = gsub("f1\\.", "", measure),
-    algorithm,
-    sampling = factor(sampling, levels = c("none", "up", "down", "smote")),
-    f1_median = percentile_50
-  ) %>%
-  slice_max(order_by = f1_median)
-
-# Algorithm and subsampling method used for top class out of n=n_class
-seq_top <- add_column(seq_summary, n_class = n_class)
+# Top workflow by per-class F1-score out of n_class
+seq_top <- all_metrics_train %>%
+  filter(.metric == rank_metric, class_group != "Overall") %>%
+  slice_max(order_by = .estimate) %>%
+  add_column(n_class = n_class)
 
 # Create retrain data and class lists
-retrain_data <- train_df %>%
-  filter(!class %in% seq_top[["class"]]) %>%
+retrain_data <- train_ref %>%
+  filter(!class %in% seq_top[["class_group"]]) %>%
   select(-class)
 
-retrain_class <- train_df %>%
-  filter(!class %in% seq_top[["class"]]) %>%
+retrain_class <- train_ref %>%
+  filter(!class %in% seq_top[["class_group"]]) %>%
   pull(class)
 
 # Save outputs
