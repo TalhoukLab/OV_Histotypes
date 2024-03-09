@@ -12,10 +12,10 @@ source(here("pipeline/0-setup_data.R"))
 
 # Best sampling method from classification of full training set
 seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
-samp_name <- gsub("(.*)_.*", "\\1", seq_top[["wflow"]])
+samp <- gsub("(.*)_.*", "\\1", seq_top[["wflow"]])
 
 # Combine tuned workflows across folds
-wflow <- paste(samp_name, alg, sep = "_")
+wflow <- paste(samp, alg, sep = "_")
 tune_wflows_files <- list.files(
   path = file.path(outputDir, "tune_wflows", dataset),
   pattern = wflow,

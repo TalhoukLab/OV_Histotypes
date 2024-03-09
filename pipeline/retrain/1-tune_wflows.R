@@ -21,9 +21,9 @@ rec <- recipe(class ~ ., train_ref)
 
 # Best sampling method from classification of full training set
 seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
-samp_name <- gsub("(.*)_.*", "\\1", seq_top[["wflow"]])
+samp <- gsub("(.*)_.*", "\\1", seq_top[["wflow"]])
 samp_rec <- switch(
-  samp_name,
+  samp,
   none = rec,
   down = step_downsample(rec, class, seed = 2024),
   up = step_upsample(rec, class, seed = 2024),
@@ -32,7 +32,7 @@ samp_rec <- switch(
     step_smote(class, over_ratio = 0.5, seed = 2024) %>%
     step_downsample(class, under_ratio = 1, seed = 2024)
 )
-preproc <- list2(!!sym(samp_name) := samp_rec)
+preproc <- list2(!!sym(samp) := samp_rec)
 
 # Models
 ## Random forest
@@ -145,6 +145,6 @@ results_file <- file.path(
   "retrain",
   "tune_wflows",
   dataset,
-  paste0(samp_name, "_", alg, "_", fold_id, "_", dataset, ".rds")
+  paste0(samp, "_", alg, "_", fold_id, "_", dataset, ".rds")
 )
 saveRDS(tuned_set, results_file)
