@@ -63,14 +63,18 @@ test_preds <- test_results %>%
 
 # Calculate overall metrics
 overall_metrics <- test_preds %>%
-  mset(truth = class, .pred_CCOC:.pred_MUC, estimate = .pred_class) %>%
+  mset(truth = class,
+       matches(".pred(?!_class)", perl = TRUE),
+       estimate = .pred_class) %>%
   add_column(class_group = "Overall") %>%
   suppressWarnings()
 
 # Don't interpret F-measure if some levels had no predicted events
 overall_metrics <- tryCatch({
   test_preds %>%
-    mset(truth = class, .pred_CCOC:.pred_MUC, estimate = .pred_class) %>%
+    mset(truth = class,
+         matches(".pred(?!_class)", perl = TRUE),
+         estimate = .pred_class) %>%
     add_column(class_group = "Overall")
 }, warning = function(w) {
   overall_metrics %>%
