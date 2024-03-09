@@ -46,7 +46,7 @@ retrain_merge:
 	./retrain/2-merge_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
 retrain_summarize:
-	./retrain/3-retrain_summary.sh $(filter-out $@,$(MAKECMDGOALS))
+	./retrain/3-summarize_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Gene optimization
 gene_train_eval:
