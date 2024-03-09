@@ -17,7 +17,7 @@ samp <- gsub("(.*)_.*", "\\1", seq_top[["wflow"]])
 # Combine tuned workflows across folds
 wflow <- paste(samp, alg, sep = "_")
 tune_wflows_files <- list.files(
-  path = file.path(outputDir, "tune_wflows", dataset),
+  path = file.path(outputDir, "retrain", "tune_wflows", dataset),
   pattern = wflow,
   full.names = TRUE
 )
