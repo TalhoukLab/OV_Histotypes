@@ -13,7 +13,7 @@ for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
     mkdir -p $RSubDir/$dataset
     mkdir -p $shSubDir/$dataset
-    mkdir -p $outputDir/$subDir
+    mkdir -p $outputDir/$subDir/$dataset
 
     for alg in "${algs[@]}"; do
         # Content of R file
