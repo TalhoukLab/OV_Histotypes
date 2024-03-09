@@ -1,10 +1,10 @@
-# sequence
+# workflows
 seq_top <- bind_rows(seq_top_c5,
                      seq_top_c4,
                      seq_top_c3,
                      seq_top_c2)
-seq_algs <- seq_top[["algorithm"]]
-saveRDS(seq_algs, here("data/seq_algs.rds"))
+seq_wflows <- seq_top[["wflow"]]
+saveRDS(seq_wflows, here("data/seq_wflows.rds"))
 
 # data
 seq_data <- list(train_data,
@@ -18,8 +18,8 @@ seq_class <- list(train_class,
                   retrain_4_class,
                   retrain_3_class,
                   retrain_2_class) %>%
-  map2(seq_top[["class"]], ~ {
-    if (.y != "MUC") {
+  map2(seq_top[["class_group"]], ~ {
+    if (n_distinct(.x) > 2) {
       ifelse(.x == .y, .x, "class_0")
     } else {
       .x
