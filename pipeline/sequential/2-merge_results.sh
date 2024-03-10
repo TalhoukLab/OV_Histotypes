@@ -21,6 +21,7 @@ for sq in "${seqData[@]}"; do
         echo 'sq <- "'$sq'"' > $R_file
         echo 'nseq <- '$nseq >> $R_file
         echo "n_folds <- $n_folds" >> $R_file
+        echo 'rank_metric <- "'$rank_metric'"' >> $R_file
         echo 'inputDir <- "'$inputDir'"' >> $R_file
         echo 'outputDir <- "'$outputDir'"' >> $R_file
         echo 'source("pipeline/sequential/2-merge_results.R")' >> $R_file
