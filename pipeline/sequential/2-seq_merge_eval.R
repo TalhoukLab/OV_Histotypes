@@ -1,102 +1,123 @@
-# All combinations
-`%>%` <- magrittr::`%>%`
-seqs <- seq_len(nseq) %>% rlang::set_names()
+# Load packages and data
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(purrr)
+  library(rlang)
+  library(themis)
+  library(tidymodels)
+  library(here)
+})
+source(here("src/funs.R"))
+source(here("pipeline/sequential/0-setup_data.R"))
 
-# All evaluation files
-eval_files <-
-  purrr::map(seqs, function(n) {
-    list.files(
-      path = file.path(outputDir, "sequential", "train_eval"),
-      pattern = paste0(seqData, n),
-      full.names = TRUE
-    )
-  })
-
-# Compute median + 95% CI of evaluations within subsampling, merge
-# across sequences and resamples
-metric_df <- eval_files %>%
-  purrr::map(~ purrr::map(., readRDS)) %>%
-  purrr::map(purrr::transpose) %>%
-  purrr::map_depth(2, ~ do.call(cbind, .x) %>%
-                     rlang::set_names(seq_len(ncol(.)))) %>%
-  purrr::list_flatten() %>%
-  purrr::imap(~ {
-    .x %>%
-      tibble::rownames_to_column("measure") %>%
-      rlang::set_names(c("measure", paste0("Seq", .y, "_B", names(.x))))
-  }) %>%
-  purrr::reduce(dplyr::full_join, by = "measure") %>%
-  dplyr::filter(!grepl("class_0|non-", measure)) %>%
-  tidyr::pivot_longer(
-    cols = where(is.numeric),
-    names_to = c("Sequence", "Algorithm", "Bootstrap"),
-    names_pattern = "(Seq.)_(.*)_(B.*)",
-    values_to = "value"
-  ) %>%
-  dplyr::mutate(per_class = grepl("\\.", measure))
-
-overall_metrics <- metric_df %>%
-  dplyr::filter(!per_class) %>%
-  dplyr::summarize(quants = list(quantile(
-    value, probs = c(0.5, 0.05, 0.95), na.rm = TRUE
-  )),
-  .by = c(measure)) %>%
-  tidyr::unnest_wider(col = quants)
-
-per_class_metrics <- metric_df %>%
-  dplyr::filter(per_class, !is.na(value)) %>%
-  dplyr::summarize(quants = list(quantile(
-    value, probs = c(0.5, 0.05, 0.95), na.rm = TRUE
-  )),
-  .by = c(measure)) %>%
-  tidyr::unnest_wider(col = quants)
-
-all_metrics <- dplyr::bind_rows(overall_metrics, per_class_metrics)
-
-# Write all evaluations merged
-saveRDS(
-  all_metrics,
-  file.path(outputDir, "sequential", "merge_eval", paste0(seqData, "_merge_eval.rds"))
+# Combined tuned sequential workflows across folds
+seq_wflows <- readRDS(file.path(inputDir, paste0(sq, "_wflows.rds")))
+seq_wflow <- paste0(seq_wflows[nseq], "_s", nseq)
+tune_wflows_files <- list.files(
+  path = file.path(outputDir, "sequential", "tune_wflows", sq),
+  pattern = wflow,
+  full.names = TRUE
 )
 
-# All variable importance files
-vi_files <- purrr::map(seq_len(nseq), function(n) {
-  list.files(
-    path = file.path(outputDir, "sequential", "vi", seqData),
-    pattern = paste0("vi_", seqData, n),
-    full.names = TRUE
-  )
+tuned_set <- tune_wflows_files %>%
+  map(readRDS) %>%
+  do.call(rbind, .)
+tuned_set$wflow_id <- paste0(tuned_set$wflow_id, seq_len(n_folds))
+
+ranking <- tuned_set %>%
+  rank_results(rank_metric = rank_metric, select_best = TRUE) %>%
+  filter(.metric == rank_metric)
+
+# Best workflow
+best_wflow <- ranking[["wflow_id"]][1]
+
+# Best tuning parameters of workflow with highest metric
+best_params <- tuned_set %>%
+  extract_workflow_set_result(best_wflow) %>%
+  select_best(metric = rank_metric)
+
+# Finalize model with best set of tuning parameters
+best_model <- tuned_set %>%
+  extract_workflow(best_wflow) %>%
+  finalize_workflow(best_params)
+
+# Train best model on outer training sets, evaluate on outer test sets
+outer_folds <- folds$splits
+test_results <- map(outer_folds, ~ {
+  suppressMessages(last_fit(best_model, split = .x, metrics = mset))
 })
 
-# Merge variable importance results
-vi_merged <- vi_files %>%
-  purrr::map(~ purrr::map(., readRDS)) %>%
-  purrr::modify_depth(2, ~ dplyr::bind_rows(.x, .id = "Algorithm")) %>%
-  purrr::modify_depth(1, ~ dplyr::bind_rows(.x, .id = "Bootstrap")) %>%
-  dplyr::bind_rows(.id = "Sequence")
+# Test set predictions
+test_preds <- test_results %>%
+  map(collect_predictions) %>%
+  list_rbind(names_to = "fold_id")
 
-# Rank variables using average importance scores per sampling method and algorithm
-vi_ranked <- vi_merged %>%
-  dplyr::group_by(Sequence, Algorithm, Variable) %>%
-  dplyr::summarise(Mean_Importance = mean(Importance), .groups = "drop_last") %>%
-  dplyr::arrange(Sequence, Algorithm, dplyr::desc(Mean_Importance)) %>%
-  dplyr::mutate(Rank = dplyr::dense_rank(dplyr::desc(Mean_Importance))) %>%
-  dplyr::ungroup()
+# Select predicted probability columns for multiclass/binary AUC
+prob_cols <- test_preds %>%
+  select(matches(".pred(?!_class)", perl = TRUE)) %>%
+  names()
+if (n_distinct(class) == 2) {
+  prob_cols <- prob_cols[1]
+}
 
-# Rank aggregation across sequence
-vi_rank_aggd <- vi_ranked %>%
-  tidyr::pivot_wider(id_cols = Sequence,
-                     names_from = "Rank",
-                     values_from = "Variable") %>%
-  tibble::column_to_rownames("Sequence") %>%
-  as.matrix() %>%
-  RankAggreg::RankAggreg(
-    x = .,
-    k = ncol(.),
-    method = "GA",
-    seed = 2024,
-    verbose = FALSE
-  )
+# Calculate overall metrics
+overall_metrics <- test_preds %>%
+  mset(truth = class, prob_cols, estimate = .pred_class) %>%
+  add_column(class_group = "Overall") %>%
+  suppressWarnings()
+
+# Don't interpret F-measure if some levels had no predicted events
+overall_metrics <- tryCatch({
+  test_preds %>%
+    mset(truth = class, prob_cols, estimate = .pred_class) %>%
+    add_column(class_group = "Overall")
+}, warning = function(w) {
+  overall_metrics %>%
+    mutate(.estimate = ifelse(.metric == "f_meas", NA_real_, .estimate))
+})
+
+# Combine all metrics
+all_metrics <- overall_metrics %>%
+  arrange(.metric)
+
+# Variable importance metrics
+## Use model-specific metrics if available, otherwise calculate
+## permutation-based variable importance
+if (grepl("_(rf|xgb|mr)", best_wflow)) {
+  vi_ranked <- test_results %>%
+    map(~ {
+      .x %>%
+        extract_fit_parsnip() %>%
+        vip::vi(rank = TRUE)
+    }) %>%
+    list_rbind(names_to = "fold_id") %>%
+    summarize(Mean_Importance = mean(Importance), .by = "Variable") %>%
+    mutate(Mean_Importance = dense_rank(Mean_Importance)) %>%
+    arrange(Mean_Importance)
+} else if (grepl("_svm", best_wflow)) {
+  svm_pfun <- function(object, newdata) {
+    kernlab::predict(object, new_data = newdata)[[".pred_class"]]
+  }
+  set.seed(2024)
+  vi_ranked <-
+    map2(test_results, outer_folds, ~ {
+      .x %>%
+        extract_fit_parsnip() %>%
+        vip::vi(
+          train = analysis(.y),
+          method = "permute",
+          target = "class",
+          metric = "accuracy",
+          nsim = 5,
+          pred_wrapper = svm_pfun,
+          rank = TRUE
+        )
+    }) %>%
+    list_rbind(names_to = "fold_id") %>%
+    summarize(Mean_Importance = mean(Importance), .by = "Variable") %>%
+    mutate(Mean_Importance = dense_rank(Mean_Importance)) %>%
+    arrange(Mean_Importance)
+}
 
 # Only consider candidate genes not already in PrOTYPE and SPOT
 candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
@@ -107,12 +128,25 @@ candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
                 "TP53", "SEMA6A", "SERPINA5", "ZBED1", "TSPAN8", "SCGB1D2", "LGALS4",
                 "MAP1LC3A")
 
-vi_ranked_candidates <- vi_rank_aggd %>%
-  purrr::pluck("top.list") %>%
-  purrr::keep(~ . %in% candidates)
+vi_ranked_candidates <- vi_ranked %>%
+  filter(Variable %in% candidates)
 
-# Write ranked variable importance
-saveRDS(
-  vi_ranked_candidates,
-  file.path(outputDir, "sequential", "ranked_vi", paste0("ranked_vi_", seqData, ".rds"))
+# Write all metrics to file
+metrics_file <- file.path(
+  outputDir,
+  "sequential",
+  "merge_results",
+  sq,
+  paste0(wflow, "_s", nseq, "_metrics_", sq, ".rds")
 )
+saveRDS(all_metrics, metrics_file)
+
+# Write variable importance to file
+vi_file <- file.path(
+  outputDir,
+  "sequential",
+  "merge_results",
+  sq,
+  paste0(wflow, "_s", nseq, "_vi_", sq, ".rds")
+)
+saveRDS(vi_ranked_candidates, vi_file)
