@@ -61,20 +61,24 @@ test_preds <- test_results %>%
   map(collect_predictions) %>%
   list_rbind(names_to = "fold_id")
 
+# Select predicted probability columns for multiclass/binary AUC
+prob_cols <- test_preds %>%
+  select(matches(".pred(?!_class)", perl = TRUE)) %>%
+  names()
+if (n_distinct(class) == 2) {
+  prob_cols <- prob_cols[1]
+}
+
 # Calculate overall metrics
 overall_metrics <- test_preds %>%
-  mset(truth = class,
-       matches(".pred(?!_class)", perl = TRUE),
-       estimate = .pred_class) %>%
+  mset(truth = class, prob_cols, estimate = .pred_class) %>%
   add_column(class_group = "Overall") %>%
   suppressWarnings()
 
 # Don't interpret F-measure if some levels had no predicted events
 overall_metrics <- tryCatch({
   test_preds %>%
-    mset(truth = class,
-         matches(".pred(?!_class)", perl = TRUE),
-         estimate = .pred_class) %>%
+    mset(truth = class, prob_cols, estimate = .pred_class) %>%
     add_column(class_group = "Overall")
 }, warning = function(w) {
   overall_metrics %>%
