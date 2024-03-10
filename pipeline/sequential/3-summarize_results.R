@@ -6,7 +6,6 @@ suppressPackageStartupMessages({
   library(here)
 })
 source(here("src/funs.R"))
-source(here("pipeline/sequential/0-setup_data.R"))
 
 # Summarize all workflow metrics and write to file
 metrics_files <- list.files(
