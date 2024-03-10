@@ -1,6 +1,6 @@
 splendid: train_eval merge_eval iv_summary
 
-sequential: seq_tune seq_merge_eval seq_iv_summary
+sequential: seq_tune seq_merge seq_iv_summary
 
 retrain: retrain_tune retrain_merge retrain_summarize
 
@@ -32,8 +32,8 @@ iv_summary:
 seq_tune:
 	./sequential/1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
 
-seq_merge_eval:
-	./sequential/2-seq_merge_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+seq_merge:
+	./sequential/2-merge_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
 seq_iv_summary:
 	./sequential/3-seq_iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
