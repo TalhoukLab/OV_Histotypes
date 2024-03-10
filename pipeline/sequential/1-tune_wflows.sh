@@ -9,17 +9,17 @@ subDir=sequential/tune_wflows
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 
-for sq in "${seqData[@]}"; do
+for dataset in "${seqData[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $RSubDir/$sq
-    mkdir -p $shSubDir/$sq
-    mkdir -p $outputDir/$subDir/$sq
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
+    mkdir -p $outputDir/$subDir/$dataset
 
     for nseq in $(seq 1 $nseq); do
         for v in $(seq -f "%0${#n_folds}g" 1 $n_folds); do
             # Content of R file
-            R_file=$RSubDir/$sq/$sq"_"$nseq"_"$v.R
-            echo 'sq <- "'$sq'"' > $R_file
+            R_file=$RSubDir/$dataset/$dataset"_"$nseq"_"$v.R
+            echo 'dataset <- "'$dataset'"' > $R_file
             echo 'nseq <- '$nseq >> $R_file
             echo "n_folds <- $n_folds" >> $R_file
             echo 'fold_id <- "'$v'"' >> $R_file
@@ -28,7 +28,7 @@ for sq in "${seqData[@]}"; do
             echo 'source("pipeline/sequential/1-tune_wflows.R")' >> $R_file
 
             # Content of sh file
-            job_file=$shSubDir/$sq/$sq"_"$nseq"_"$v.sh
+            job_file=$shSubDir/$dataset/$dataset"_"$nseq"_"$v.sh
             cat ./assets/sbatch_params.sh > $job_file
             echo "cd $projDir" >> $job_file
             echo "Rscript $R_file" >> $job_file

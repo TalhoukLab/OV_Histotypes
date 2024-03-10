@@ -1,6 +1,6 @@
 # Import sequential training data and class labels
-sq_data <- readRDS(file.path(inputDir, paste0(sq, "_data.rds")))
-sq_class <- readRDS(file.path(inputDir, paste0(sq, "_class.rds")))
+sq_data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))
+sq_class <- readRDS(file.path(inputDir, paste0(dataset, "_class.rds")))
 data <- sq_data[[nseq]]
 class <- sq_class[[nseq]]
 train_ref <- cbind(data, class = factor(class))

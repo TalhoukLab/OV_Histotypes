@@ -9,16 +9,16 @@ subDir=sequential/merge_results
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 
-for sq in "${seqData[@]}"; do
+for dataset in "${seqData[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $RSubDir/$sq
-    mkdir -p $shSubDir/$sq
-    mkdir -p $outputDir/$subDir/$sq
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
+    mkdir -p $outputDir/$subDir/$dataset
 
     for nseq in $(seq 1 $nseq); do
         # Content of R file
-        R_file=$RSubDir/$sq/"merge_"$sq"_"$nseq.R
-        echo 'sq <- "'$sq'"' > $R_file
+        R_file=$RSubDir/$dataset/"merge_"$dataset"_"$nseq.R
+        echo 'dataset <- "'$dataset'"' > $R_file
         echo 'nseq <- '$nseq >> $R_file
         echo "n_folds <- $n_folds" >> $R_file
         echo 'rank_metric <- "'$rank_metric'"' >> $R_file
@@ -27,7 +27,7 @@ for sq in "${seqData[@]}"; do
         echo 'source("pipeline/sequential/2-merge_results.R")' >> $R_file
 
         # Content of sh file
-        job_file=$shSubDir/$sq/"merge_"$sq"_"$nseq.sh
+        job_file=$shSubDir/$dataset/"merge_"$dataset"_"$nseq.sh
         cat ./assets/sbatch_params.sh > $job_file
         echo "cd $projDir" >> $job_file
         echo "Rscript $R_file" >> $job_file

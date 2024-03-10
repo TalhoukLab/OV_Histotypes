@@ -90,7 +90,7 @@ models <- list(rf = rf_model,
 wflow_sets <- workflow_set(preproc, models)
 
 # Select sequential workflow
-sq_wflows <- readRDS(file.path(inputDir, paste0(sq, "_wflows.rds")))
+sq_wflows <- readRDS(file.path(inputDir, paste0(dataset, "_wflows.rds")))
 wflow <- sq_wflows[[nseq]]
 wflow_set <- wflow_sets %>% filter(wflow_id == wflow)
 
@@ -145,7 +145,7 @@ results_file <- file.path(
   outputDir,
   "sequential",
   "tune_wflows",
-  sq,
-  paste0(wflow, "_s", nseq, "_", fold_id, "_", sq, ".rds")
+  dataset,
+  paste0(wflow, "_s", nseq, "_", fold_id, "_", dataset, ".rds")
 )
 saveRDS(tuned_set, results_file)
