@@ -34,7 +34,7 @@ seq_class <- map(
 ) %>%
   map2(seq_top[["class_group"]], ~ {
     if (n_distinct(.x) > 2) {
-      ifelse(.x == .y, .x, "class_0")
+      ifelse(.x == .y, .x, paste0("non_", .y))
     } else {
       .x
     }
