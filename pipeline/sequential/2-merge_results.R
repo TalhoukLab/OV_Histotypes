@@ -13,9 +13,10 @@ source(here("pipeline/sequential/0-setup_data.R"))
 # Combined tuned sequential workflows across folds
 seq_wflows <- readRDS(file.path(inputDir, paste0(sq, "_wflows.rds")))
 seq_wflow <- paste0(seq_wflows[nseq], "_s", nseq)
+
 tune_wflows_files <- list.files(
   path = file.path(outputDir, "sequential", "tune_wflows", sq),
-  pattern = wflow,
+  pattern = seq_wflow,
   full.names = TRUE
 )
 
@@ -137,7 +138,7 @@ metrics_file <- file.path(
   "sequential",
   "merge_results",
   sq,
-  paste0(wflow, "_s", nseq, "_metrics_", sq, ".rds")
+  paste0(seq_wflow, "_metrics_", sq, ".rds")
 )
 saveRDS(all_metrics, metrics_file)
 
@@ -147,6 +148,6 @@ vi_file <- file.path(
   "sequential",
   "merge_results",
   sq,
-  paste0(wflow, "_s", nseq, "_vi_", sq, ".rds")
+  paste0(seq_wflow, "_vi_", sq, ".rds")
 )
 saveRDS(vi_ranked_candidates, vi_file)
