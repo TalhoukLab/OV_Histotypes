@@ -1,27 +1,49 @@
-`%>%` <- magrittr::`%>%`
+# Load packages and data
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(purrr)
+  library(tidymodels)
+  library(here)
+})
+source(here("src/funs.R"))
+source(here("pipeline/sequential/0-setup_data.R"))
 
-stats <- readRDS(list.files(
-  path = file.path(outputDir, "sequential", "merge_eval"),
-  pattern = seqData,
+# Summarize all workflow metrics and write to file
+metrics_files <- list.files(
+  path = file.path(outputDir, "sequential", "merge_results", dataset),
+  pattern = "metrics",
   full.names = TRUE
-))
-
-# Best sampling method from classification of full training set
-seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
-samp <- as.character(seq_top[["sampling"]])
-
-df <- stats %>%
-  dplyr::rename_with(~ paste0("percentile_", gsub("%", "", .)), where(is.numeric)) %>%
-  tibble::add_column(
-    dataset = "train",
-    algorithm = seqData,
-    sampling = samp,
-    .before = 1
-  ) %>%
-  tibble::as_tibble()
-
-# write results to file
-saveRDS(
-  df,
-  file.path(outputDir, "sequential", "summary", paste0("iv_summary_", seqData, ".rds"))
 )
+all_wflow_metrics <- metrics_files %>%
+  set_names(gsub("wflow_(.*)_metrics.*", "\\1",  basename(.))) %>%
+  map(readRDS) %>%
+  list_rbind(names_to = "wflow")
+
+all_metrics_file <- file.path(
+  outputDir,
+  "sequential",
+  "summarize_results",
+  dataset,
+  paste0("all_metrics_", dataset, ".rds")
+)
+saveRDS(all_wflow_metrics, all_metrics_file)
+
+# Summarize all workflow variable importance ranks and write to file
+vi_files <- list.files(
+  path = file.path(outputDir, "sequential", "merge_results", dataset),
+  pattern = "vi",
+  full.names = TRUE
+)
+all_wflow_vi <- vi_files %>%
+  set_names(gsub("wflow_(.*)_vi.*", "\\1",  basename(.))) %>%
+  map(readRDS) %>%
+  list_rbind(names_to = "wflow")
+
+all_vi_file <- file.path(
+  outputDir,
+  "sequential",
+  "summarize_results",
+  dataset,
+  paste0("all_vi_", dataset, ".rds")
+)
+saveRDS(all_wflow_vi, all_vi_file)

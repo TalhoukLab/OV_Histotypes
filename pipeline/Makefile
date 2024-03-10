@@ -1,6 +1,6 @@
 splendid: train_eval merge_eval iv_summary
 
-sequential: seq_tune seq_merge seq_iv_summary
+sequential: seq_tune seq_merge seq_summarize
 
 retrain: retrain_tune retrain_merge retrain_summarize
 
@@ -35,8 +35,8 @@ seq_tune:
 seq_merge:
 	./sequential/2-merge_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
-seq_iv_summary:
-	./sequential/3-seq_iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
+seq_summarize:
+	./sequential/3-summarize_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Retrain for sequential and two-step classifiers
 retrain_tune:
