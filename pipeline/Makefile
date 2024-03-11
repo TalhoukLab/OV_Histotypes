@@ -1,3 +1,5 @@
+all: tune_wflows merge_results summarize_results
+
 splendid: train_eval merge_eval iv_summary
 
 sequential: seq_tune seq_merge seq_summarize
