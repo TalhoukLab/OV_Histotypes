@@ -86,10 +86,8 @@ models <- list(rf = rf_model,
                svm = svm_model,
                mr = mr_model)
 
-# Workflow sets
+# Generate workflow set and select specified workflow
 wflow_sets <- workflow_set(preproc, models)
-
-# Select sequential workflow
 sq_wflows <- readRDS(file.path(inputDir, paste0(dataset, "_wflows.rds")))
 wflow <- sq_wflows[[nseq]]
 wflow_set <- wflow_sets %>% filter(wflow_id == wflow)

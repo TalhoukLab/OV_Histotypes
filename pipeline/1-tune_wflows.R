@@ -86,15 +86,16 @@ models <- list(rf = rf_model,
                svm = svm_model,
                mr = mr_model)
 
-# Workflow sets
+# Generate workflow set and select specified workflow
 wflow_sets <- workflow_set(preproc, models)
+wflow <- paste(samp, alg, sep = "_")
 
 # Hyperparameter tuning
 
 ## Algorithm-specific tuning setup
 if (alg %in% c("rf", "xgb")) {
   wflow_set <- wflow_sets %>%
-    filter(wflow_id == paste(samp, alg, sep = "_"))
+    filter(wflow_id == wflow)
 
   tuning_grid <- 10
 
@@ -107,14 +108,14 @@ if (alg %in% c("rf", "xgb")) {
     )
 
   wflow_set <- wflow_sets %>%
-    filter(wflow_id == paste(samp, alg, sep = "_")) %>%
+    filter(wflow_id == wflow) %>%
     option_add(param_info = svm_params)
 
   tuning_grid <- 10
 
 } else if (alg %in% "mr") {
   wflow_set <- wflow_sets %>%
-    filter(wflow_id == paste(samp, alg, sep = "_"))
+    filter(wflow_id == wflow)
 
   set.seed(2024)
   tuning_grid <- crossing(
@@ -147,6 +148,6 @@ results_file <- file.path(
   outputDir,
   "tune_wflows",
   dataset,
-  paste0(samp, "_", alg, "_", fold_id, "_", dataset, ".rds")
+  paste0(wflow, "_", fold_id, "_", dataset, ".rds")
 )
 saveRDS(tuned_set, results_file)
