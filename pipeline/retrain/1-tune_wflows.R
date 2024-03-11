@@ -90,13 +90,13 @@ wflow <- paste(samp, alg, sep = "_")
 # Hyperparameter tuning
 
 ## Algorithm-specific tuning setup
-if (alg %in% c("rf", "xgb")) {
+if (grepl("rf|xgb", wflow)) {
   wflow_set <- wflow_sets %>%
     filter(wflow_id == wflow)
 
   tuning_grid <- 10
 
-} else if (alg %in% "svm") {
+} else if (grepl("svm", wflow)) {
   svm_params <-
     parameters(cost(), rbf_sigma()) %>%
     update(
@@ -110,7 +110,7 @@ if (alg %in% c("rf", "xgb")) {
 
   tuning_grid <- 10
 
-} else if (alg %in% "mr") {
+} else if (grepl("mr", wflow)) {
   wflow_set <- wflow_sets %>%
     filter(wflow_id == wflow)
 
