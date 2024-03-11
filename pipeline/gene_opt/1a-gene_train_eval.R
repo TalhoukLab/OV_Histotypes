@@ -1,105 +1,154 @@
-`%>%` <- magrittr::`%>%`
-normalize <- function(data, norm_by = c("none", "genes", "samples"),
-                      norm_type = "conventional", min_var = 0.5) {
-  norm_by <- match.arg(norm_by)
-  switch(
-    norm_by,
-    none = data %>%
-      diceR::prepare_data(scale = FALSE,
-                          min.var = min_var,
-                          type = norm_type) %>%
-      as.data.frame(),
-    genes = data %>%
-      diceR::prepare_data(scale = TRUE,
-                          min.var = min_var,
-                          type = norm_type) %>%
-      as.data.frame(),
-    samples = data %>%
-      t() %>%
-      diceR::prepare_data(scale = TRUE,
-                          min.var = min_var,
-                          type = norm_type) %>%
-      t() %>%
-      as.data.frame()
+# Load packages and data
+suppressPackageStartupMessages({
+  library(rlang)
+  library(parallel)
+  library(doParallel)
+  library(future)
+  library(themis)
+  library(tidymodels)
+  library(vip)
+  library(here)
+})
+source(here("src/funs.R"))
+source(here("pipeline/gene_opt/0-setup_data.R"))
+
+# Inner folds used for tuning
+id <- as.numeric(fold_id)
+inner_folds <- folds$inner_resamples[[id]]
+
+# Recipe
+rec <- recipe(class ~ ., train_ref)
+
+# Preprocessing
+## Class imbalance subsampling methods
+none_samp <- rec
+down_samp <- step_downsample(rec, class, seed = 2024)
+up_samp <- step_upsample(rec, class, seed = 2024)
+smote_samp <- step_smote(rec, class, seed = 2024)
+hybrid_samp <- rec %>%
+  step_smote(class, over_ratio = 0.5, seed = 2024) %>%
+  step_downsample(class, under_ratio = 1, seed = 2024)
+
+preproc <- list(
+  none = none_samp,
+  down = down_samp,
+  up = up_samp,
+  smote = smote_samp,
+  hybrid = hybrid_samp
+)
+
+# Models
+## Random forest
+rf_model <-
+  rand_forest(
+    mode = "classification",
+    engine = "ranger",
+    mtry = tune(),
+    min_n = tune(),
+    trees = 500
+  ) %>%
+  set_engine("ranger", importance = "impurity")
+
+## XGBoost
+xgb_model <-
+  boost_tree(
+    mode = "classification",
+    engine = "xgboost",
+    mtry = tune(),
+    trees = 500,
+    min_n = tune(),
+    tree_depth = tune(),
+    learn_rate = tune(),
+    loss_reduction = tune(),
+    sample_size = tune(),
+    stop_iter = tune()
+  )
+
+## Support vector machine
+svm_model <-
+  svm_rbf(
+    mode = "classification",
+    engine = "kernlab",
+    cost = tune(),
+    rbf_sigma = tune()
+  )
+
+## Multinomial regression
+mr_model <-
+  multinom_reg(
+    engine = "glmnet",
+    penalty = tune(),
+    mixture = tune()
+  )
+
+models <- list(rf = rf_model,
+               xgb = xgb_model,
+               svm = svm_model,
+               mr = mr_model)
+
+# Generate workflow set for top workflow
+wflow_sets <- workflow_set(preproc, models)
+wflow <- top_wflow
+
+# Hyperparameter tuning
+
+## Algorithm-specific tuning setup
+if (alg %in% c("rf", "xgb")) {
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == wflow)
+
+  tuning_grid <- 10
+
+} else if (alg %in% "svm") {
+  svm_params <-
+    parameters(cost(), rbf_sigma()) %>%
+    update(
+      cost = cost(c(0, 2)),
+      rbf_sigma = rbf_sigma(c(-3, 0))
+    )
+
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == wflow) %>%
+    option_add(param_info = svm_params)
+
+  tuning_grid <- 10
+
+} else if (alg %in% "mr") {
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == wflow)
+
+  set.seed(2024)
+  tuning_grid <- crossing(
+    grid_latin_hypercube(penalty(), size = 10),
+    grid_regular(mixture(), levels = 10)
   )
 }
 
-# Import training data and class labels
-data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))
-class <- readRDS(file.path(inputDir, paste0(dataset, "_class.rds")))
+## Register parallel multicore
+all_cores <- min(detectCores(logical = FALSE), 8L)
+plan(multicore, workers = all_cores)
 
-# Normalization
-data <- normalize(data, norm_by, norm_type, min_var)
-
-# Genes from PrOTYPE and SPOT to keep
-base_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
-                "THBS2", "TCF7L1", "HMGA2", "FN1", "POSTN", "COL1A2", "COL5A2",
-                "PDZK1IP1", "FBN1", "HIF1A", "CXCL10", "DUSP4", "SOX17", "MITF",
-                "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9")
-
-# Import variable importance for selected algorithms and subsampling method
-ranked_vi <- readRDS(file.path(outputDir, "ranked_vi", "ranked_vi_train.rds"))
-
-# Order of candidate genes
-candidate_genes <- ranked_vi %>%
-  dplyr::filter(
-    Sampling == bestSamp,
-    Algorithm == bestAlg
+## Tune workflow
+tuned_set <- wflow_set %>%
+  workflow_map(
+    seed = 2024,
+    resamples = inner_folds,
+    grid = tuning_grid,
+    metrics = mset,
+    control = control_grid(save_pred = TRUE, save_workflow = TRUE)
   ) %>%
-  dplyr::arrange(Rank) %>%
-  dplyr::slice_min(order_by = Rank, n = as.numeric(ngene)) %>%
-  dplyr::pull(Variable)
+  suppressMessages() %>%
+  suppressWarnings()
 
-# Select genes
-data <- data %>%
-  dplyr::select(all_of(c(base_genes, candidate_genes)))
+## Unregister parallel multicore
+plan(sequential)
 
-# Supervised learning model output
-suppressWarnings(
-  sm <- splendid::splendid_model(
-    data = data,
-    class = class,
-    algorithms = bestAlg,
-    n = 1,
-    seed_boot = as.integer(reps),
-    seed_samp = 2019,
-    seed_alg = 2019,
-    sampling = bestSamp,
-    stratify = TRUE,
-    tune = TRUE
-  )
+# Write tuned workflow to file
+results_file <- file.path(
+  outputDir,
+  "gene_opt",
+  "tune_wflows",
+  dataset,
+  paste0(top_wflow, "_", fold_id, "_", dataset, ".rds")
 )
-
-# # Extract variable importance results
-# vi_df <- sm[["models"]] %>%
-#   purrr::imap(~ {
-#     mod <- .x[[1]]
-#     alg <- .y
-#     if (alg %in% c("mlr_lasso", "mlr_ridge", "rf")) {
-#       vip::vi(mod)
-#     } else if (alg == "svm") {
-#       pfun <- function(object, newdata) {
-#         caret::predict.train(object, newdata = newdata, type = "prob")[, 1]
-#       }
-#       mod %>%
-#         vip::vi_shap(pred_wrapper = pfun) %>%
-#         dplyr::arrange(dplyr::desc(Importance))
-#     } else if (alg == "adaboost") {
-#       mod %>%
-#         maboost::varplot.maboost(plot.it = FALSE,
-#                                  type = "scores",
-#                                  max.var.show = Inf) %>%
-#         tibble::enframe(name = "Variable", value = "Importance")
-#     }
-#   })
-
-# Write evaluations to file
-outputFile <- file.path(
-  outputDir, "gene_opt", "train_eval", dataset,
-  paste0(bestAlg, "_", bestSamp, "_add", ngene, "_", reps, "_", dataset, ".rds"))
-saveRDS(sm[["evals"]], outputFile)
-
-# # Write variable importance to file
-# viFile <- file.path(outputDir, "vi", dataset,
-#                     paste0("vi_", alg, "_", samp, "_", reps, "_", dataset, ".rds"))
-# saveRDS(vi_df, viFile)
+saveRDS(tuned_set, results_file)
