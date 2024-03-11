@@ -25,7 +25,7 @@ for dataset in "${dataSets[@]}"; do
             echo "ngene <- '$ng'" >> $R_file
             echo 'inputDir <- "'$inputDir'"' >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file
-            echo 'source("pipeline/gene_opt/1a-gene_train_eval.R")' >> $R_file
+            echo 'source("pipeline/gene_opt/1a-tune_wflows.R")' >> $R_file
 
             # Content of sh file
             job_file=$shSubDir/$dataset/"top_wflow_add"$ng"_"$v.sh
