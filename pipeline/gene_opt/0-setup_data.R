@@ -26,7 +26,7 @@ base_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
 
 # Select genes
 data <- data %>%
-  dplyr::select(all_of(c(base_genes, candidate_genes)))
+  select(all_of(c(base_genes, candidate_genes)))
 train_ref <- cbind(data, class = factor(class))
 
 # Nested resampling
