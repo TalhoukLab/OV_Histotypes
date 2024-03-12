@@ -6,7 +6,7 @@ sequential: seq_tune seq_merge seq_summarize
 
 retrain: retrain_tune retrain_merge retrain_summarize
 
-gene_opt: gene_tune gene_seq_train_eval gene_seq_merge_eval
+gene_opt: gene_tune gene_seq_tune gene_seq_merge_eval
 
 tune_wflows:
 	./1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
@@ -57,8 +57,8 @@ gene_tune:
 gene_merge_eval:
 	./gene_opt/2a-gene_merge_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
-gene_seq_train_eval:
-	./gene_opt/1b-gene_seq_train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+gene_seq_tune:
+	./gene_opt/1b-seq_tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
 
 gene_seq_merge_eval:
 	./gene_opt/2b-gene_seq_merge_eval.sh $(filter-out $@,$(MAKECMDGOALS))
