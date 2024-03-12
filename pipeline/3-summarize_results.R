@@ -14,7 +14,7 @@ metrics_files <- list.files(
   full.names = TRUE
 )
 all_wflow_metrics <- metrics_files %>%
-  set_names(gsub("wflow_(.*)_metrics.*", "\\1",  basename(.))) %>%
+  set_names(gsub("wflow_(.*)_metrics.*", "\\1", basename(.))) %>%
   map(readRDS) %>%
   list_rbind(names_to = "wflow")
 
