@@ -1,20 +1,20 @@
 #!/bin/bash
 
-# Supervised parameters
-dataSets=(retrain_4)
-#reps=50
+# Training parameters
+dataSets=(train)
 n_folds=5
 algs=(rf xgb svm mr)
 samps=(none up down smote hybrid)
 rank_metric="f_meas"
-#norm_by="none"
-#norm_type="conventional"
-#min_var=0
 seqData=(seq)
 nseq=4
-bestAlg="adaboost"
-bestSamp="up"
 ngenes=44
+
+# Splendid parameters (DEPRECATED)
+# reps=50
+# norm_by="none"
+# norm_type="conventional"
+# min_var=0
 
 # Directory parameters
 user="$(whoami)"
