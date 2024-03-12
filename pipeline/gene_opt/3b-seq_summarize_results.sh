@@ -5,26 +5,26 @@
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=gene_opt/summarize_results
+subDir=gene_opt/sequential/summarize_results
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 
-for dataset in "${dataSets[@]}"; do
+for dataset in "${seqData[@]}"; do
     # Make job and output directories for dataset
     mkdir -p $RSubDir/$dataset
     mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
     # Content of R file
-    R_file=$RSubDir/$dataset/seq_summarize_results.R
+    R_file=$RSubDir/$dataset/summarize_results.R
     echo 'inputDir <- "'$inputDir'"' > $R_file
     echo 'outputDir <- "'$outputDir'"' >> $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo "n_folds <- $n_folds" >> $R_file
-    echo 'source("pipeline/gene_opt/3a-summarize_results.R")' >> $R_file
+    echo 'source("pipeline/gene_opt/3b-seq_summarize_results.R")' >> $R_file
 
     # Content of sh file
-    job_file=$shSubDir/$dataset/seq_summarize_results.sh
+    job_file=$shSubDir/$dataset/summarize_results.sh
     cat ./assets/sbatch_params.sh > $job_file
     echo "cd $projDir" >> $job_file
     echo "Rscript $R_file" >> $job_file
