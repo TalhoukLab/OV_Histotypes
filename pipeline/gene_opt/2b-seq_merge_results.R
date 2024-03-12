@@ -18,7 +18,7 @@ seq_wflow <- paste0(seq_wflows[nseq], "_s", nseq)
 
 tune_wflows_files <- list.files(
   path = file.path(outputDir, "gene_opt", "sequential", "tune_wflows", dataset),
-  pattern = paste0(seq_wflow, "_add", ngene),
+  pattern = paste0(seq_wflow, "_add", ngene, "_"),
   full.names = TRUE
 )
 
@@ -90,6 +90,6 @@ metrics_file <- file.path(
   "sequential",
   "merge_results",
   dataset,
-  paste0(seq_wflow,  "_add", ngene, "_metrics_", dataset, ".rds")
+  paste0(seq_wflow, "_add", ngene, "_metrics_", dataset, ".rds")
 )
 saveRDS(all_metrics, metrics_file)
