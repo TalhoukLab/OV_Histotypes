@@ -18,10 +18,8 @@ ngenes=44
 
 # Directory parameters
 user="$(whoami)"
-rootDir="/home"/$user
-projDir=$rootDir"/Projects/OV_Histotypes"
-inputDir=$projDir"/data"
-resultsDir=$rootDir"/results/OV_Histotypes"
+inputDir="/home"/$user"/Projects/OV_Histotypes/data"
+resultsDir="/projects/"$user"_prj/results/OV_Histotypes"
 scriptDir=$resultsDir"/scripts"
 RDir=$scriptDir"/R"
 shDir=$scriptDir"/sh"
