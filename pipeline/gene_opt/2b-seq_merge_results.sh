@@ -26,7 +26,7 @@ for dataset in "${seqData[@]}"; do
             echo 'rank_metric <- "'$rank_metric'"' >> $R_file
             echo 'inputDir <- "'$inputDir'"' >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file
-            echo 'source("pipeline/gene_opt/2a-seq_merge_results.R")' >> $R_file
+            echo 'source("pipeline/gene_opt/2b-seq_merge_results.R")' >> $R_file
 
             # Content of sh file
             job_file=$shSubDir/$dataset/"merge_results_"$dataset"_s"$nseq"_add"$ng.sh
