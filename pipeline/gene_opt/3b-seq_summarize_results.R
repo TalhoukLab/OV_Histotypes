@@ -12,11 +12,14 @@ metrics_files <- list.files(
   path = file.path(outputDir, "gene_opt", "sequential", "merge_results", dataset),
   full.names = TRUE
 )
+
 all_wflow_metrics <- metrics_files %>%
-  set_names(gsub(".*add(.*)_metrics.*", "\\1", basename(.))) %>%
+  set_names(gsub("_metrics.*", "\\1", basename(.))) %>%
   map(readRDS) %>%
-  list_rbind(names_to = "Genes") %>%
-  mutate(Genes = as.integer(Genes))
+  list_rbind(names_to = "wflow_genes") %>%
+  separate(wflow_genes, c("wflow", "Genes"), sep = "_add", convert = TRUE) %>%
+  separate(wflow, c("wflow", "Sequence"), sep = "_s(?=[^_]+$)", convert = TRUE) %>%
+  arrange(Sequence, Genes)
 
 all_metrics_file <- file.path(
   outputDir,
