@@ -1043,678 +1043,678 @@ kable(class_gmean_train,
 <!--   kable_styling() -->
 <!-- ``` -->
 
-## CS1 Set
-
-### Accuracy
-
-```{r cs1-accuracy, fig.cap='CS1 Set Accuracy'}
-ivs1_accuracy <- ivs1 %>%
-  filter(measure == "accuracy") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivs1_accuracy) +
-  labs(
-    y = "Accuracy",
-    color = "Subsampling",
-    title = "CS1 Set Accuracy by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs1-accuracy-table}
-ivs1_accuracy_table <- ivs1_accuracy %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs1_accuracy_table,
-      caption = "CS1 Set Accuracy by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r cs1-accuracy-class, fig.cap='CS1 Set Class-Specific Accuracy', fig.width=8}
-ivs1_accuracy_class <- ivs1 %>%
-  filter(grepl("accuracy\\.", measure)) %>%
-  mutate(
-    measure = gsub("accuracy\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivs1_accuracy_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "Accuracy",
-    color = "Subsampling",
-    title = "CS1 Set Class-Specific Accuracy by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs1-accuracy-class-table}
-ivs1_accuracy_class_table <- ivs1_accuracy_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs1_accuracy_class_table,
-      caption = "CS1 Set Class-Specific Accuracy by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-### F1-Score
-
-```{r cs1-f1, fig.cap='CS1 Set F1-Score'}
-ivs1_f1 <- ivs1 %>%
-  filter(measure == "macro_f1") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivs1_f1) +
-  labs(
-    y = "F1-Score",
-    color = "Subsampling",
-    title = "CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs1-f1-table}
-ivs1_f1_table <- ivs1_f1 %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs1_f1_table,
-      caption = "CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-```{r cs1-f1-class, fig.cap='CS1 Set Class-Specific F1-Score', fig.width=8}
-ivs1_f1_class <- ivs1 %>%
-  filter(grepl("f1\\.", measure)) %>%
-  mutate(
-    measure = gsub("f1\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivs1_f1_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "F1-Score",
-    color = "Subsampling",
-    title = "CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs1-f1-class-table}
-ivs1_f1_class_table <- ivs1_f1_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs1_f1_class_table,
-      caption = "CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-### Kappa
-
-```{r cs1-kappa, fig.cap='CS1 Set Kappa'}
-ivs1_kappa <- ivs1 %>%
-  filter(measure == "kappa") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivs1_kappa) +
-  labs(
-    y = "Kappa",
-    color = "Subsampling",
-    title = "CS1 Set Kappa by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs1-kappa-table}
-ivs1_kappa_table <- ivs1_kappa %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs1_kappa_table,
-      caption = "CS1 Set Kappa by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r cs1-kappa-class, fig.cap='CS1 Set Class-Specific Kappa', fig.width=8}
-ivs1_kappa_class <- ivs1 %>%
-  filter(grepl("kappa\\.", measure)) %>%
-  mutate(
-    measure = gsub("kappa\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivs1_kappa_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "Kappa",
-    color = "Subsampling",
-    title = "CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs1-kappa-class-table}
-ivs1_kappa_class_table <- ivs1_kappa_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs1_kappa_class_table,
-      caption = "CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-### G-mean
-
-```{r cs1-gmean, fig.cap='CS1 Set G-mean'}
-ivs1_gmean <- ivs1 %>%
-  filter(measure == "gmean") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivs1_gmean) +
-  labs(
-    y = "G-mean",
-    color = "Subsampling",
-    title = "CS1 Set G-mean by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs1-gmean-table}
-ivs1_gmean_table <- ivs1_gmean %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs1_gmean_table,
-      caption = "CS1 Set G-mean by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r cs1-gmean-class, fig.cap='CS1 Set Class-Specific G-mean', fig.width=8}
-ivs1_gmean_class <- ivs1 %>%
-  filter(grepl("gmean\\.", measure)) %>%
-  mutate(
-    measure = gsub("gmean\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivs1_gmean_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "G-mean",
-    color = "Subsampling",
-    title = "CS1 Set Class Specific G-mean by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs1-gmean-class-table}
-ivs1_gmean_class_table <- ivs1_gmean_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs1_gmean_class_table,
-      caption = "CS1 Set Class-Specific G-mean by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-## CS2 Set
-
-### Accuracy
-
-```{r cs2-accuracy, fig.cap='CS2 Set Accuracy'}
-ivs2_accuracy <- ivs2 %>%
-  filter(measure == "accuracy") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivs2_accuracy) +
-  labs(
-    y = "Accuracy",
-    color = "Subsampling",
-    title = "CS2 Set Accuracy by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs2-accuracy-table}
-ivs2_accuracy_table <- ivs2_accuracy %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs2_accuracy_table,
-      caption = "CS2 Set Accuracy by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r cs2-accuracy-class, fig.cap='CS2 Set Class-Specific Accuracy', fig.width=8}
-ivs2_accuracy_class <- ivs2 %>%
-  filter(grepl("accuracy\\.", measure)) %>%
-  mutate(
-    measure = gsub("accuracy\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivs2_accuracy_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "Accuracy",
-    color = "Subsampling",
-    title = "CS2 Set Class-Specific Accuracy by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs2-accuracy-class-table}
-ivs2_accuracy_class_table <- ivs2_accuracy_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs2_accuracy_class_table,
-      caption = "CS2 Set Class-Specific Accuracy by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-### F1-Score
-
-```{r cs2-f1, fig.cap='CS2 Set F1-Score'}
-ivs2_f1 <- ivs2 %>%
-  filter(measure == "macro_f1") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivs2_f1) +
-  labs(
-    y = "F1-Score",
-    color = "Subsampling",
-    title = "CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs2-f1-table}
-ivs2_f1_table <- ivs2_f1 %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs2_f1_table,
-      caption = "CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-```{r cs2-f1-class, fig.cap='CS2 Set Class-Specific F1-Score', fig.width=8}
-ivs2_f1_class <- ivs2 %>%
-  filter(grepl("f1\\.", measure)) %>%
-  mutate(
-    measure = gsub("f1\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivs2_f1_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "F1-Score",
-    color = "Subsampling",
-    title = "CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs2-f1-class-table}
-ivs2_f1_class_table <- ivs2_f1_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs2_f1_class_table,
-      caption = "CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-### Kappa
-
-```{r cs2-kappa, fig.cap='CS2 Set Kappa'}
-ivs2_kappa <- ivs2 %>%
-  filter(measure == "kappa") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivs2_kappa) +
-  labs(
-    y = "Kappa",
-    color = "Subsampling",
-    title = "CS2 Set Kappa by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs2-kappa-table}
-ivs2_kappa_table <- ivs2_kappa %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs2_kappa_table,
-      caption = "CS2 Set Kappa by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r cs2-kappa-class, fig.cap='CS2 Set Class-Specific Kappa', fig.width=8}
-ivs2_kappa_class <- ivs2 %>%
-  filter(grepl("kappa\\.", measure)) %>%
-  mutate(
-    measure = gsub("kappa\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivs2_kappa_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "Kappa",
-    color = "Subsampling",
-    title = "CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs2-kappa-class-table}
-ivs2_kappa_class_table <- ivs2_kappa_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs2_kappa_class_table,
-      caption = "CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-### G-mean
-
-```{r cs2-gmean, fig.cap='CS2 Set G-mean'}
-ivs2_gmean <- ivs2 %>%
-  filter(measure == "gmean") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <- plot_measure(ivs2_gmean) +
-  labs(
-    y = "G-mean",
-    color = "Subsampling",
-    title = "CS2 Set G-mean by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs2-gmean-table}
-ivs2_gmean_table <- ivs2_gmean %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = sampling,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs2_gmean_table,
-      caption = "CS2 Set G-mean by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r cs2-gmean-class, fig.cap='CS2 Set Class-Specific G-mean', fig.width=8}
-ivs2_gmean_class <- ivs2 %>%
-  filter(grepl("gmean\\.", measure)) %>%
-  mutate(
-    measure = gsub("gmean\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <- plot_measure(ivs2_gmean_class) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    y = "G-mean",
-    color = "Subsampling",
-    title = "CS2 Set Class Specific G-mean by Algorithm and Subsampling Method"
-  )
-print(p)
-```
-
-```{r cs2-gmean-class-table}
-ivs2_gmean_class_table <- ivs2_gmean_class %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  rename(histotype = measure) %>% 
-  pivot_wider(id_cols = sampling:histotype,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs2_gmean_class_table,
-      caption = "CS2 Set Class-Specific G-mean by Algorithm and Subsampling Method",
-      escape = FALSE) %>%
-  kable_styling()
-```
-
-## SMOTE Kappa Summary
-
-```{r smote-kappa, fig.cap='SMOTE Kappa by Algorithm and Dataset'}
-ivs_smote_kappa <- ivs %>%
-  filter(sampling == "smote", measure == "kappa") %>%
-  mutate(algorithm = factor(algorithm, levels = alg_levels))
-
-p <-
-  ggplot(ivs_smote_kappa, aes(x = algorithm, y = percentile_50, color = dataset)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
-  scale_color_brewer(palette = "Dark2") +
-  labs(
-    x = "Algorithm",
-    y = "Kappa",
-    color = "Dataset",
-    title = "SMOTE Kappa by Algorithm and Dataset"
-  )
-print(p)
-```
-
-```{r smote-kappa-table}
-ivs_smote_kappa_table <- ivs_smote_kappa %>%
-  arrange(algorithm) %>%
-  mutate(across(where(is.numeric), round, digits = 3)) %>%
-  mutate(percentile_50 = ifelse(
-    percentile_50 == max(percentile_50),
-    cell_spec(percentile_50, bold = TRUE),
-    percentile_50
-  )) %>%
-  pivot_wider(id_cols = dataset,
-              names_from = "algorithm",
-              values_from = "percentile_50") %>% 
-  rename_with(~ gsub("_", "\\\\_", .), matches("_"))
-
-kable(ivs_smote_kappa_table,
-      caption = "SMOTE Kappa by Algorithm and Dataset",
-      escape = FALSE) %>%
-  kable_styling()  
-```
-
-```{r smote-kappa-class, fig.cap='SMOTE Class-Specific Kappa by Algorithm and Dataset', fig.width=8}
-ivs_smote_kappa_class <- ivs %>%
-  filter(sampling == "smote", grepl("kappa\\.", measure)) %>%
-  mutate(
-    measure = gsub("kappa\\.", "", measure),
-    algorithm = factor(algorithm, levels = alg_levels)
-  )
-
-p <-
-  ggplot(ivs_smote_kappa_class, aes(x = algorithm, y = percentile_50, color = dataset)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4)) +
-  scale_color_brewer(palette = "Dark2") +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
-  facet_wrap(vars(measure), ncol = 2) +
-  labs(
-    x = "Algorithm",
-    y = "Kappa",
-    color = "Dataset",
-    title = "SMOTE Class-Specific Kappa by Algorithm and Dataset"
-  )
-print(p)
-```
+<!-- ## CS1 Set -->
+
+<!-- ### Accuracy -->
+
+<!-- ```{r cs1-accuracy, fig.cap='CS1 Set Accuracy'} -->
+<!-- ivs1_accuracy <- ivs1 %>% -->
+<!--   filter(measure == "accuracy") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivs1_accuracy) + -->
+<!--   labs( -->
+<!--     y = "Accuracy", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS1 Set Accuracy by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs1-accuracy-table} -->
+<!-- ivs1_accuracy_table <- ivs1_accuracy %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs1_accuracy_table, -->
+<!--       caption = "CS1 Set Accuracy by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r cs1-accuracy-class, fig.cap='CS1 Set Class-Specific Accuracy', fig.width=8} -->
+<!-- ivs1_accuracy_class <- ivs1 %>% -->
+<!--   filter(grepl("accuracy\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("accuracy\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivs1_accuracy_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "Accuracy", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS1 Set Class-Specific Accuracy by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs1-accuracy-class-table} -->
+<!-- ivs1_accuracy_class_table <- ivs1_accuracy_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs1_accuracy_class_table, -->
+<!--       caption = "CS1 Set Class-Specific Accuracy by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ### F1-Score -->
+
+<!-- ```{r cs1-f1, fig.cap='CS1 Set F1-Score'} -->
+<!-- ivs1_f1 <- ivs1 %>% -->
+<!--   filter(measure == "macro_f1") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivs1_f1) + -->
+<!--   labs( -->
+<!--     y = "F1-Score", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs1-f1-table} -->
+<!-- ivs1_f1_table <- ivs1_f1 %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs1_f1_table, -->
+<!--       caption = "CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ```{r cs1-f1-class, fig.cap='CS1 Set Class-Specific F1-Score', fig.width=8} -->
+<!-- ivs1_f1_class <- ivs1 %>% -->
+<!--   filter(grepl("f1\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("f1\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivs1_f1_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "F1-Score", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs1-f1-class-table} -->
+<!-- ivs1_f1_class_table <- ivs1_f1_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs1_f1_class_table, -->
+<!--       caption = "CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ### Kappa -->
+
+<!-- ```{r cs1-kappa, fig.cap='CS1 Set Kappa'} -->
+<!-- ivs1_kappa <- ivs1 %>% -->
+<!--   filter(measure == "kappa") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivs1_kappa) + -->
+<!--   labs( -->
+<!--     y = "Kappa", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS1 Set Kappa by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs1-kappa-table} -->
+<!-- ivs1_kappa_table <- ivs1_kappa %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs1_kappa_table, -->
+<!--       caption = "CS1 Set Kappa by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r cs1-kappa-class, fig.cap='CS1 Set Class-Specific Kappa', fig.width=8} -->
+<!-- ivs1_kappa_class <- ivs1 %>% -->
+<!--   filter(grepl("kappa\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("kappa\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivs1_kappa_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "Kappa", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs1-kappa-class-table} -->
+<!-- ivs1_kappa_class_table <- ivs1_kappa_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs1_kappa_class_table, -->
+<!--       caption = "CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ### G-mean -->
+
+<!-- ```{r cs1-gmean, fig.cap='CS1 Set G-mean'} -->
+<!-- ivs1_gmean <- ivs1 %>% -->
+<!--   filter(measure == "gmean") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivs1_gmean) + -->
+<!--   labs( -->
+<!--     y = "G-mean", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS1 Set G-mean by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs1-gmean-table} -->
+<!-- ivs1_gmean_table <- ivs1_gmean %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs1_gmean_table, -->
+<!--       caption = "CS1 Set G-mean by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r cs1-gmean-class, fig.cap='CS1 Set Class-Specific G-mean', fig.width=8} -->
+<!-- ivs1_gmean_class <- ivs1 %>% -->
+<!--   filter(grepl("gmean\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("gmean\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivs1_gmean_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "G-mean", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS1 Set Class Specific G-mean by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs1-gmean-class-table} -->
+<!-- ivs1_gmean_class_table <- ivs1_gmean_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs1_gmean_class_table, -->
+<!--       caption = "CS1 Set Class-Specific G-mean by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ## CS2 Set -->
+
+<!-- ### Accuracy -->
+
+<!-- ```{r cs2-accuracy, fig.cap='CS2 Set Accuracy'} -->
+<!-- ivs2_accuracy <- ivs2 %>% -->
+<!--   filter(measure == "accuracy") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivs2_accuracy) + -->
+<!--   labs( -->
+<!--     y = "Accuracy", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS2 Set Accuracy by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs2-accuracy-table} -->
+<!-- ivs2_accuracy_table <- ivs2_accuracy %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs2_accuracy_table, -->
+<!--       caption = "CS2 Set Accuracy by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r cs2-accuracy-class, fig.cap='CS2 Set Class-Specific Accuracy', fig.width=8} -->
+<!-- ivs2_accuracy_class <- ivs2 %>% -->
+<!--   filter(grepl("accuracy\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("accuracy\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivs2_accuracy_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "Accuracy", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS2 Set Class-Specific Accuracy by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs2-accuracy-class-table} -->
+<!-- ivs2_accuracy_class_table <- ivs2_accuracy_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs2_accuracy_class_table, -->
+<!--       caption = "CS2 Set Class-Specific Accuracy by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ### F1-Score -->
+
+<!-- ```{r cs2-f1, fig.cap='CS2 Set F1-Score'} -->
+<!-- ivs2_f1 <- ivs2 %>% -->
+<!--   filter(measure == "macro_f1") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivs2_f1) + -->
+<!--   labs( -->
+<!--     y = "F1-Score", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs2-f1-table} -->
+<!-- ivs2_f1_table <- ivs2_f1 %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs2_f1_table, -->
+<!--       caption = "CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ```{r cs2-f1-class, fig.cap='CS2 Set Class-Specific F1-Score', fig.width=8} -->
+<!-- ivs2_f1_class <- ivs2 %>% -->
+<!--   filter(grepl("f1\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("f1\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivs2_f1_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "F1-Score", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs2-f1-class-table} -->
+<!-- ivs2_f1_class_table <- ivs2_f1_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs2_f1_class_table, -->
+<!--       caption = "CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ### Kappa -->
+
+<!-- ```{r cs2-kappa, fig.cap='CS2 Set Kappa'} -->
+<!-- ivs2_kappa <- ivs2 %>% -->
+<!--   filter(measure == "kappa") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivs2_kappa) + -->
+<!--   labs( -->
+<!--     y = "Kappa", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS2 Set Kappa by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs2-kappa-table} -->
+<!-- ivs2_kappa_table <- ivs2_kappa %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs2_kappa_table, -->
+<!--       caption = "CS2 Set Kappa by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r cs2-kappa-class, fig.cap='CS2 Set Class-Specific Kappa', fig.width=8} -->
+<!-- ivs2_kappa_class <- ivs2 %>% -->
+<!--   filter(grepl("kappa\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("kappa\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivs2_kappa_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "Kappa", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs2-kappa-class-table} -->
+<!-- ivs2_kappa_class_table <- ivs2_kappa_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs2_kappa_class_table, -->
+<!--       caption = "CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ### G-mean -->
+
+<!-- ```{r cs2-gmean, fig.cap='CS2 Set G-mean'} -->
+<!-- ivs2_gmean <- ivs2 %>% -->
+<!--   filter(measure == "gmean") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- plot_measure(ivs2_gmean) + -->
+<!--   labs( -->
+<!--     y = "G-mean", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS2 Set G-mean by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs2-gmean-table} -->
+<!-- ivs2_gmean_table <- ivs2_gmean %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = sampling, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs2_gmean_table, -->
+<!--       caption = "CS2 Set G-mean by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r cs2-gmean-class, fig.cap='CS2 Set Class-Specific G-mean', fig.width=8} -->
+<!-- ivs2_gmean_class <- ivs2 %>% -->
+<!--   filter(grepl("gmean\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("gmean\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- plot_measure(ivs2_gmean_class) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     y = "G-mean", -->
+<!--     color = "Subsampling", -->
+<!--     title = "CS2 Set Class Specific G-mean by Algorithm and Subsampling Method" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r cs2-gmean-class-table} -->
+<!-- ivs2_gmean_class_table <- ivs2_gmean_class %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   rename(histotype = measure) %>%  -->
+<!--   pivot_wider(id_cols = sampling:histotype, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs2_gmean_class_table, -->
+<!--       caption = "CS2 Set Class-Specific G-mean by Algorithm and Subsampling Method", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling() -->
+<!-- ``` -->
+
+<!-- ## SMOTE Kappa Summary -->
+
+<!-- ```{r smote-kappa, fig.cap='SMOTE Kappa by Algorithm and Dataset'} -->
+<!-- ivs_smote_kappa <- ivs %>% -->
+<!--   filter(sampling == "smote", measure == "kappa") %>% -->
+<!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) -->
+
+<!-- p <- -->
+<!--   ggplot(ivs_smote_kappa, aes(x = algorithm, y = percentile_50, color = dataset)) + -->
+<!--   geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95), -->
+<!--                   position = position_dodge(width = 0.4)) + -->
+
+<!--   theme_bw() + -->
+<!--   theme(plot.title = element_text(face = "bold")) + -->
+<!--   scale_color_brewer(palette = "Dark2") + -->
+<!--   labs( -->
+<!--     x = "Algorithm", -->
+<!--     y = "Kappa", -->
+<!--     color = "Dataset", -->
+<!--     title = "SMOTE Kappa by Algorithm and Dataset" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
+
+<!-- ```{r smote-kappa-table} -->
+<!-- ivs_smote_kappa_table <- ivs_smote_kappa %>% -->
+<!--   arrange(algorithm) %>% -->
+<!--   mutate(across(where(is.numeric), round, digits = 3)) %>% -->
+<!--   mutate(percentile_50 = ifelse( -->
+<!--     percentile_50 == max(percentile_50), -->
+<!--     cell_spec(percentile_50, bold = TRUE), -->
+<!--     percentile_50 -->
+<!--   )) %>% -->
+<!--   pivot_wider(id_cols = dataset, -->
+<!--               names_from = "algorithm", -->
+<!--               values_from = "percentile_50") %>%  -->
+<!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) -->
+
+<!-- kable(ivs_smote_kappa_table, -->
+<!--       caption = "SMOTE Kappa by Algorithm and Dataset", -->
+<!--       escape = FALSE) %>% -->
+<!--   kable_styling()   -->
+<!-- ``` -->
+
+<!-- ```{r smote-kappa-class, fig.cap='SMOTE Class-Specific Kappa by Algorithm and Dataset', fig.width=8} -->
+<!-- ivs_smote_kappa_class <- ivs %>% -->
+<!--   filter(sampling == "smote", grepl("kappa\\.", measure)) %>% -->
+<!--   mutate( -->
+<!--     measure = gsub("kappa\\.", "", measure), -->
+<!--     algorithm = factor(algorithm, levels = alg_levels) -->
+<!--   ) -->
+
+<!-- p <- -->
+<!--   ggplot(ivs_smote_kappa_class, aes(x = algorithm, y = percentile_50, color = dataset)) + -->
+<!--   geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95), -->
+<!--                   position = position_dodge(width = 0.4)) + -->
+<!--   scale_color_brewer(palette = "Dark2") + -->
+<!--   theme_bw() + -->
+<!--   theme(plot.title = element_text(face = "bold")) + -->
+<!--   facet_wrap(vars(measure), ncol = 2) + -->
+<!--   labs( -->
+<!--     x = "Algorithm", -->
+<!--     y = "Kappa", -->
+<!--     color = "Dataset", -->
+<!--     title = "SMOTE Class-Specific Kappa by Algorithm and Dataset" -->
+<!--   ) -->
+<!-- print(p) -->
+<!-- ``` -->
 
 ## Gene Optimization
 
