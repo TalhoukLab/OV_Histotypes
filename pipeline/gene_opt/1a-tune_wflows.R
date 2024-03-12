@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
   library(here)
 })
 source(here("src/funs.R"))
-source(here("pipeline/gene_opt/0-setup_data.R"))
+source(here("pipeline/gene_opt/0a-setup_data.R"))
 
 # Inner folds used for tuning
 id <- as.numeric(fold_id)
