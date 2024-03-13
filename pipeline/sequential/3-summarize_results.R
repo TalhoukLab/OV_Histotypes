@@ -14,7 +14,7 @@ metrics_files <- list.files(
   full.names = TRUE
 )
 all_wflow_metrics <- metrics_files %>%
-  set_names(gsub("wflow_(.*)_metrics.*", "\\1",  basename(.))) %>%
+  set_names(gsub("_metrics.*", "", basename(.))) %>%
   map(readRDS) %>%
   list_rbind(names_to = "wflow")
 
@@ -34,7 +34,7 @@ vi_files <- list.files(
   full.names = TRUE
 )
 vi_ranked <- vi_files %>%
-  set_names(gsub("(.*)_vi.*", "\\1",  basename(.))) %>%
+  set_names(gsub("_vi.*", "",  basename(.))) %>%
   map(readRDS) %>%
   list_rbind(names_to = "wflow") %>%
   summarize(Aggregated_Rank = mean(Mean_Importance), .by = Variable) %>%
