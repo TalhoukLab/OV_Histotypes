@@ -29,13 +29,16 @@ train_data <- readRDS(here("data/train_data.rds"))
 coefmat <- readRDS(here("data/coefmat.rds"))
 geneseq <- readRDS(here("data/merge_eval_seq.rds"))
 gene2s <- readRDS(here("data/merge_eval_two_step.rds"))
-ranked_vi_seq <- readRDS(here("data/ranked_vi_seq.rds"))
-ranked_vi_2s <- readRDS(here("data/ranked_vi_two_step.rds"))
+# ranked_vi_seq <- readRDS(here("data/ranked_vi_seq.rds"))
+# ranked_vi_2s <- readRDS(here("data/ranked_vi_two_step.rds"))
 
 all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
 all_metrics_seq <- readRDS(here("data/all_metrics_seq.rds"))
 all_metrics_two_step <- readRDS(here("data/all_metrics_two_step.rds"))
 gene_opt_all_metrics_seq <- readRDS(here("data/gene_opt_all_metrics_seq.rds"))
+
+all_vi_seq <- readRDS(here("data/all_vi_seq.rds"))
+all_vi_two_step <- readRDS(here("data/all_vi_two_step.rds"))
 ```
 
 ```{r ivs-combine}
