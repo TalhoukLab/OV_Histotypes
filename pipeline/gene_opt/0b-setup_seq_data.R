@@ -15,8 +15,7 @@ ranked_vi <- readRDS(file.path(
 
 # Order of candidate genes for sequence
 candidate_genes <- ranked_vi %>%
-  filter(grepl(paste0("s", nseq), wflow)) %>%
-  slice_min(order_by = Mean_Importance, n = as.numeric(ngene)) %>%
+  slice_min(order_by = Aggregated_Rank, n = as.numeric(ngene)) %>%
   pull(Variable)
 
 # Genes from PrOTYPE and SPOT to keep
