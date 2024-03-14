@@ -35,7 +35,11 @@ gene2s <- readRDS(here("data/merge_eval_two_step.rds"))
 all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
 all_metrics_seq <- readRDS(here("data/all_metrics_seq.rds"))
 all_metrics_two_step <- readRDS(here("data/all_metrics_two_step.rds"))
-gene_opt_all_metrics_seq <- readRDS(here("data/gene_opt_all_metrics_seq.rds"))
+
+gene_opt_all_metrics_seq <-
+  readRDS(here("data/gene_opt_all_metrics_seq.rds"))
+gene_opt_all_metrics_two_step <- 
+  readRDS(here("data/gene_opt_all_metrics_two_step.rds"))
 
 all_vi_seq <- readRDS(here("data/all_vi_seq.rds"))
 all_vi_two_step <- readRDS(here("data/all_vi_two_step.rds"))
@@ -1747,40 +1751,37 @@ There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPO
 Variable importance is calculated using either a model-based approach if it is available, or a SHAP-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by aggregating the base classifier VI scores using rank aggregation.
 
 ```{r gene-seq, fig.height=8, fig.cap='Gene Optimization for Sequential Classifier'}
-geneseq_names <-
-  enframe(ranked_vi_seq, name = "Genes", value = "Name")
+gene_seq_names <- all_vi_seq %>% 
+  select(Name = Variable) %>% 
+  rowid_to_column("Genes")
 
-dat_geneseq <- geneseq %>% 
-  filter(
-    (measure == "f1.HGSC" & Sequence == 1) | 
-      (measure == "f1.CCOC" & Sequence == 2) |
-      (measure == "f1.ENOC" & Sequence == 3) | 
-      (measure %in% c("f1.MUC", "f1.LGSC") & Sequence == 4)
-  ) %>% 
+dat_gene_seq <- gene_opt_all_metrics_seq %>% 
+  filter(.metric == "f_meas") %>% 
   mutate(
-    Genes = as.numeric(Genes),
     label = paste0(
       "Sequence: ",
       Sequence,
-      ", Algorithm: ",
-      Algorithm,
+      ", Workflow: ",
+      wflow,
       ", Measure: ",
-      measure)
+      .metric)
   ) %>% 
-  inner_join(geneseq_names, by = "Genes")
+  inner_join(gene_seq_names, by = "Genes")
 
 p_gene_seq <-
-  ggplot(dat_geneseq, aes(x = Genes, y = `50%`, text = Name)) +
+  ggplot(dat_gene_seq, aes(x = Genes, y = .estimate, text = Name)) +
   facet_wrap(~ label, ncol = 1, scales = "free_y") +
   geom_point() +
   theme_bw() +
   labs(x = "Genes Added",
-       y = "Median",
+       y = "F1-Score",
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq)
 
-n_genes_seq <- 34
-genes_add_seq <- ranked_vi_seq[seq_len(n_genes_seq)]
+n_genes_seq <- 28
+genes_add_seq <- gene_seq_names %>%
+  slice_min(order_by = Genes, n = n_genes_seq) %>% 
+  pull(Name)
 opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
 
@@ -1789,38 +1790,37 @@ In the sequential classifier, we use the per-class median F1-scores pertaining t
 We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=28+34=62. The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
-gene2s_names <-
-  enframe(ranked_vi_2s, name = "Genes", value = "Name")
+gene_2s_names <- all_vi_two_step %>% 
+  select(Name = Variable) %>% 
+  rowid_to_column("Genes")
 
-dat_gene2s <- gene2s %>% 
-  filter(
-    (measure == "f1.HGSC" & Sequence == 1) |
-      (measure == "macro_f1" & Sequence == 2)
-  ) %>% 
+dat_gene_2s <- gene_opt_all_metrics_two_step %>% 
+  filter(.metric == "f_meas") %>% 
   mutate(
-    Genes = as.numeric(Genes),
     label = paste0(
       "Sequence: ",
       Sequence,
-      ", Algorithm: ",
-      Algorithm,
+      ", Workflow: ",
+      wflow,
       ", Measure: ",
-      measure)
+      .metric)
   ) %>% 
-  inner_join(gene2s_names, by = "Genes")
+  inner_join(gene_seq_names, by = "Genes")
 
 p_gene_2s <-
-  ggplot(dat_gene2s, aes(x = Genes, y = `50%`, text = Name)) +
+  ggplot(dat_gene_2s, aes(x = Genes, y = .estimate, text = Name)) +
   facet_wrap(~ label, ncol = 1, scales = "free_y") +
   geom_point() +
   theme_bw() +
   labs(x = "Genes Added",
-       y = "Median",
-       title = "Gene Optimization for Two-Step Classifier")
+       y = "F1-Score",
+       title = "Gene Optimziation for Two-Step Classifier")
 ggplotly(p_gene_2s)
 
-n_genes_2s <- 24
-genes_add_2s <- ranked_vi_2s[seq_len(n_genes_2s)]
+n_genes_2s <- 31
+genes_add_2s <- gene_2s_names %>%
+  slice_min(order_by = Genes, n = n_genes_2s) %>% 
+  pull(Name)
 opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
