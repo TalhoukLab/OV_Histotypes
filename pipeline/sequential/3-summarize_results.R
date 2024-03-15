@@ -13,7 +13,8 @@ model_files <- list.files(
   pattern = "model",
   full.names = TRUE
 )
-all_models <- model_files %>%
+model_order <- order(gsub(".*_s([0-9])_model.*", "\\1", model_files))
+all_models <- model_files[model_order] %>%
   set_names(gsub("_model.*", "", basename(.))) %>%
   map(readRDS)
 
