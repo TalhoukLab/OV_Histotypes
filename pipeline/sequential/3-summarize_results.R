@@ -7,6 +7,25 @@ suppressPackageStartupMessages({
 })
 source(here("src/funs.R"))
 
+# Combine all best models and write to file
+model_files <- list.files(
+  path = file.path(outputDir, "sequential", "merge_results", dataset),
+  pattern = "model",
+  full.names = TRUE
+)
+all_models <- model_files %>%
+  set_names(gsub("_model.*", "", basename(.))) %>%
+  map(readRDS)
+
+all_models_file <- file.path(
+  outputDir,
+  "sequential",
+  "summarize_results",
+  dataset,
+  paste0("all_models", dataset, ".rds")
+)
+saveRDS(all_models, all_models_file)
+
 # Summarize all workflow metrics and write to file
 metrics_files <- list.files(
   path = file.path(outputDir, "sequential", "merge_results", dataset),
