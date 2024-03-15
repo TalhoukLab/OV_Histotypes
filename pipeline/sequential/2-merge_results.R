@@ -120,6 +120,16 @@ if (grepl("_(rf|xgb|mr)", best_wflow)) {
     arrange(Mean_Importance)
 }
 
+# Write best models to file
+model_file <- file.path(
+  outputDir,
+  "sequential",
+  "merge_results",
+  dataset,
+  paste0(seq_wflow, "_model_", dataset, ".rds")
+)
+saveRDS(best_model, model_file)
+
 # Write all metrics to file
 metrics_file <- file.path(
   outputDir,
