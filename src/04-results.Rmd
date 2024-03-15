@@ -36,6 +36,9 @@ all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
 all_metrics_seq <- readRDS(here("data/all_metrics_seq.rds"))
 all_metrics_two_step <- readRDS(here("data/all_metrics_two_step.rds"))
 
+all_models_seq <- readRDS(here("data/all_models_seq.rds"))
+all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
+
 gene_opt_all_metrics_seq <-
   readRDS(here("data/gene_opt_all_metrics_seq.rds"))
 gene_opt_all_metrics_two_step <- 
@@ -2001,56 +2004,56 @@ two_step_class <- readRDS(here("data", "two_step_class.rds"))
 two_step_algs <- readRDS(here("data", "two_step_algs.rds"))
 
 # Two-step full model
-mod_two_step_full <-
-  pmap(list(two_step_data, two_step_class, two_step_algs), ~ {
-    classification(
-      data = ..1,
-      class = ..2,
-      algorithm = ..3,
-      sampling = "up",
-      seed_alg = 2024
-    )
+set.seed(2024)
+mod_two_step_full <- list(all_models_two_step,
+                          two_step_data,
+                          two_step_class) %>% 
+  pmap(~ {
+    data = cbind(..2, class = ..3)
+    ..1 %>% fit(data = data)
   })
 
 # Two-step optimal gene list model
-mod_two_step_opt <- 
-  pmap(list(two_step_data, two_step_class, two_step_algs), ~ {
-    classification(
-      data = ..1 %>% select(all_of(opt_genes_2s)),
-      class = ..2,
-      algorithm = ..3,
-      sampling = "up",
-      seed_alg = 2024
-    )
+set.seed(2024)
+mod_two_step_opt <- list(all_models_two_step,
+                         two_step_data,
+                         two_step_class) %>% 
+  pmap(~ {
+    data = cbind(..2, class = ..3)
+    ..1 %>%
+      update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
+                      step_select(c(all_of(!!opt_genes_2s), class),
+                                  skip = TRUE)) %>%
+      fit(data = data)
   })
 
 # sequential data
 seq_data <- readRDS(here("data", "seq_data.rds"))
 seq_class <- readRDS(here("data", "seq_class.rds"))
-seq_algs <- readRDS(here("data", "seq_algs.rds"))
+seq_wflows <- readRDS(here("data", "seq_wflows.rds"))
 
 # Sequential full model
-mod_seq_full <-
-  pmap(list(seq_data, seq_class, seq_algs), ~ {
-    classification(
-      data = ..1,
-      class = ..2,
-      algorithm = ..3,
-      sampling = "up",
-      seed_alg = 2024
-    )
+set.seed(2024)
+mod_seq_full <- list(all_models_seq,
+                     seq_data,
+                     seq_class) %>% 
+  pmap(~ {
+    data = cbind(..2, class = ..3)
+    ..1 %>% fit(data = data)
   })
 
 # Sequential optimal gene list model
-mod_seq_opt <-
-  pmap(list(seq_data, seq_class, seq_algs), ~ {
-    classification(
-      data = ..1 %>% select(all_of(opt_genes_seq)),
-      class = ..2,
-      algorithm = ..3,
-      sampling = "up",
-      seed_alg = 2024
-    )
+set.seed(2024)
+mod_seq_opt <- list(all_models_seq,
+                    seq_data,
+                    seq_class) %>% 
+  pmap(~ {
+    data = cbind(..2, class = ..3)
+    ..1 %>%
+      update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
+                      step_select(c(all_of(!!opt_genes_seq), class),
+                                  skip = TRUE)) %>%
+      fit(data = data)
   })
 ```
 
@@ -2060,236 +2063,41 @@ mod_seq_opt <-
 # Load data
 conf_class <- readRDS(here("data", "conf_class.rds"))
 conf_data <- readRDS(here("data", "conf_data.rds"))
-
-# Create step 1 and step 2 splits
-## Full
-conf_step1_data_full <- conf_data
-conf_step1_data_opt <- conf_step1_data_full %>% 
-  select(all_of(opt_genes_2s))
-conf_step1_class <- factor(ifelse(conf_class == "HGSC", "HGSC", "non-HGSC"))
-
-## Optimal
-conf_step2_data_full <- conf_data[conf_step1_class != "HGSC", ]
-conf_step2_data_opt <- conf_step2_data_full %>% 
-  select(all_of(opt_genes_2s))
-conf_step2_class <- factor(conf_class[conf_step1_class != "HGSC"])
-
-# Predict and evaluate
-## Full
-conf_step1_pred_full <-
-  prediction(mod_two_step_full[[1]],
-             conf_step1_data_full,
-             conf_step1_class)
-conf_step1_eval_full <-
-  evaluation(conf_step1_class, conf_step1_pred_full)
-
-conf_step2_pred_full <-
-  prediction(mod_two_step_full[[2]],
-             conf_step2_data_full,
-             conf_step2_class)
-conf_step2_eval_full <-
-  evaluation(conf_step2_class, conf_step2_pred_full)
-
-## Optimal
-conf_step1_pred_opt <-
-  prediction(mod_two_step_opt[[1]],
-             conf_step1_data_opt,
-             conf_step1_class)
-conf_step1_eval_opt <-
-  evaluation(conf_step1_class, conf_step1_pred_opt)
-
-conf_step2_pred_opt <-
-  prediction(mod_two_step_opt[[2]],
-             conf_step2_data_opt,
-             conf_step2_class)
-conf_step2_eval_opt <-
-  evaluation(conf_step2_class, conf_step2_pred_opt)
-
-# Combine evaluations from both steps
-## Full
-conf_2S_eval_full <-
-  list(conf_step1_eval_full, conf_step2_eval_full) %>%
-  map("cs") %>%
-  unlist() %>%
-  imap(~ .x[grepl("\\.(?!non)", .y, perl = TRUE)]) %>%
-  compact() %>%
-  bind_rows() %>%
-  pivot_longer(
-    cols = everything(),
-    names_to = c("measure", "class"),
-    names_sep = "\\.",
-    values_to = "value"
-  ) %>% 
-  filter(measure %in% c("accuracy", "f1", "kappa", "gmean")) %>% 
-  pivot_wider(
-    id_cols = measure,
-    names_from = "class",
-    values_from = "value"
-  ) %>% 
-  add_column(method = "two_step_full", .before = 1)
-
-## Optimal
-conf_2S_eval_opt <-
-  list(conf_step1_eval_opt, conf_step2_eval_opt) %>%
-  map("cs") %>%
-  unlist() %>%
-  imap(~ .x[grepl("\\.(?!non)", .y, perl = TRUE)]) %>%
-  compact() %>%
-  bind_rows() %>%
-  pivot_longer(
-    cols = everything(),
-    names_to = c("measure", "class"),
-    names_sep = "\\.",
-    values_to = "value"
-  ) %>% 
-  filter(measure %in% c("accuracy", "f1", "kappa", "gmean")) %>% 
-  pivot_wider(
-    id_cols = measure,
-    names_from = "class",
-    values_from = "value"
-  ) %>% 
-  add_column(method = "two_step_optimal", .before = 1)
-
-# Create sequential splits
-conf_df <- cbind(conf_data, class = conf_class)
-
-seq_conf_ranks <- seq_class %>%
-  map(unique) %>%
-  map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
-  unlist() %>%
-  accumulate(c) %>%
-  head(-1)
-
-seq_conf_class <- imap(seq_conf_ranks, ~ {
-  cl <- conf_df %>%
-    filter(!class %in% head(.x, -1)) %>%
-    pull(class)
-  if (.y != length(seq_conf_ranks)) {
-    factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
-  } else {
-    factor(cl)
-  }
-})
-
-## Full
-seq_conf_data_full <- map(seq_conf_ranks, ~ {
-  conf_df %>%
-    filter(!class %in% head(.x, -1)) %>%
-    select(-class)
-})
-
-## Optimal
-seq_conf_data_opt <- seq_conf_data_full %>% 
-  map(~ .x %>% select(all_of(opt_genes_seq)))
-
-# Predict and evaluate
-## Full
-conf_seq_eval_full <-
-  pmap(list(mod_seq_full, seq_conf_data_full, seq_conf_class), ~ {
-    pred <- prediction(..1, ..2, ..3)
-    eval <- evaluation(..3, pred)
-    eval
-  }) %>%
-  map("cs") %>%
-  unlist() %>%
-  imap( ~ .x[grepl("\\.(?!class_0)", .y, perl = TRUE)]) %>%
-  compact() %>%
-  bind_rows() %>%
-  pivot_longer(
-    cols = everything(),
-    names_to = c("measure", "class"),
-    names_sep = "\\.",
-    values_to = "value"
-  ) %>% 
-  filter(measure %in% c("accuracy", "f1", "kappa", "gmean")) %>% 
-  pivot_wider(
-    id_cols = measure,
-    names_from = "class",
-    values_from = "value"
-  ) %>% 
-  add_column(method = "sequential_full", .before = 1)
-
-conf_seq_eval_opt <-
-  pmap(list(mod_seq_opt, seq_conf_data_opt, seq_conf_class), ~ {
-    pred <- prediction(..1, ..2, ..3)
-    eval <- evaluation(..3, pred)
-    eval
-  }) %>%
-  map("cs") %>%
-  unlist() %>%
-  imap( ~ .x[grepl("\\.(?!class_0)", .y, perl = TRUE)]) %>%
-  compact() %>%
-  bind_rows() %>%
-  pivot_longer(
-    cols = everything(),
-    names_to = c("measure", "class"),
-    names_sep = "\\.",
-    values_to = "value"
-  ) %>% 
-  filter(measure %in% c("accuracy", "f1", "kappa", "gmean")) %>% 
-  pivot_wider(
-    id_cols = measure,
-    names_from = "class",
-    values_from = "value"
-  ) %>% 
-  add_column(method = "sequential_optimal", .before = 1)
 ```
-
-```{r conf-eval-per-class}
-conf_eval_per_class <- bind_rows(conf_2S_eval_full,
-                                 conf_2S_eval_opt,
-                                 conf_seq_eval_full,
-                                 conf_seq_eval_opt)
-
-kable(conf_eval_per_class,
-      caption = "Class-specific Evaluation Metrics on Confirmation Set Models",
-      digits = 3) %>% 
-  kable_styling() %>% 
-  collapse_rows(columns = 1)
-```
-
-In the confirmation set, **sequential_full** and **sequential_optimal** are very similar. Both sequential algorithms have moderate improvement in LGSC and MUC classification. We will select the **sequential_optimal** model to test in the validation set.
 
 ```{r conf-eval-overall}
 # Confirmation set overall predictions
 conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                                 Truth = conf_class) %>%
   mutate(
-    p_2s1_full = predict(mod_two_step_full[[1]], conf_data),
-    p_2s2_full = predict(mod_two_step_full[[2]], conf_data),
-    
-    p_2s1_opt = predict(mod_two_step_opt[[1]], conf_step1_data_opt),
-    p_2s2_opt = predict(mod_two_step_opt[[2]], conf_step1_data_opt),
-    
-    p_seq1_full = predict(mod_seq_full[[1]], conf_data),
-    p_seq2_full = predict(mod_seq_full[[2]], conf_data),
-    p_seq3_full = predict(mod_seq_full[[3]], as.matrix(conf_data), type = "class"),
-    p_seq4_full = predict(mod_seq_full[[4]], conf_data),
-    
-    p_seq1_opt = predict(mod_seq_opt[[1]], seq_conf_data_opt[[1]]),
-    p_seq2_opt = predict(mod_seq_opt[[2]], seq_conf_data_opt[[1]]),
-    p_seq3_opt = predict(mod_seq_opt[[3]], as.matrix(seq_conf_data_opt[[1]]), type = "class"),
-    p_seq4_opt = predict(mod_seq_opt[[4]], seq_conf_data_opt[[1]]),
-    
+    c(
+      p_2s_full = mod_two_step_full,
+      p_2s_opt = mod_two_step_opt,
+      p_seq_full = mod_seq_full,
+      p_seq_opt = mod_seq_opt
+    ) %>%
+      map(~ predict(., conf_data)[[".pred_class"]]) %>%
+      bind_cols()
+  ) %>% 
+  rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) %>% 
+  mutate(
     across(matches("p"), as.character),
-    Prediction_two_step_full = ifelse(Truth == "HGSC" & p_2s1_full == "HGSC",
-                                      "HGSC",
-                                      p_2s2_full),
-    Prediction_two_step_optimal = ifelse(Truth == "HGSC" & p_2s1_opt == "HGSC",
-                                         "HGSC",
-                                         p_2s2_opt),
+    Prediction_two_step_full = ifelse(!grepl("non", p_2s_full_s1),
+                                      p_2s_full_s1, p_2s_full_s2),
+    Prediction_two_step_optimal = ifelse(!grepl("non", p_2s_opt_s1),
+                                         p_2s_opt_s1, p_2s_opt_s2), 
     Prediction_sequential_full = case_when(
-      Truth == "HGSC" & p_seq1_full == "HGSC" ~ "HGSC",
-      Truth == "CCOC" & p_seq2_full == "CCOC" ~ "CCOC",
-      Truth == "ENOC" & p_seq3_full == "ENOC" ~ "ENOC",
-      .default = p_seq4_full
+      !grepl("non", p_seq_full_s1) ~ p_seq_full_s1,
+      !grepl("non", p_seq_full_s2) ~ p_seq_full_s2,
+      !grepl("non", p_seq_full_s3) ~ p_seq_full_s3,
+      .default = p_seq_full_s4
     ),
     Prediction_sequential_optimal = case_when(
-      Truth == "HGSC" & p_seq1_opt == "HGSC" ~ "HGSC",
-      Truth == "CCOC" & p_seq2_opt == "CCOC" ~ "CCOC",
-      Truth == "ENOC" & p_seq3_opt == "ENOC" ~ "ENOC",
-      .default = p_seq4_opt
-    ), 
+      !grepl("non", p_seq_opt_s1) ~ p_seq_opt_s1,
+      !grepl("non", p_seq_opt_s2) ~ p_seq_opt_s2,
+      !grepl("non", p_seq_opt_s3) ~ p_seq_opt_s3,
+      .default = p_seq_opt_s4
+    ),
     across(c("Truth", matches("Prediction")), factor)
   ) %>%
   select(-starts_with("p", ignore.case = FALSE)) %>%
@@ -2316,98 +2124,77 @@ kable(conf_eval_overall,
   kable_styling()
 ```
 
+```{r conf-eval-per-class}
+conf_eval_per_class <- conf_pred_overall %>% 
+  mutate(
+    pred_class_ova = map(Prediction, ~ {
+      ifelse(levels(Prediction) %in% .x, as.character(.x), "class_0") %>%
+        set_names(paste0(".pred_class_", levels(Prediction)))
+    }),
+    class_ova = map(Truth, ~ {
+      ifelse(levels(Truth) %in% .x, as.character(.x), "class_0") %>%
+        set_names(paste0("class_", levels(Truth)))
+    })
+  ) %>% 
+  unnest_wider(col = c(pred_class_ova, class_ova)) %>%
+  pivot_longer(
+    matches("^.pred_class_.*"),
+    names_to = ".pred_class_group",
+    names_prefix = ".pred_class_",
+    values_to = ".pred_class_value"
+  ) %>%
+  pivot_longer(
+    matches("^class_.*"),
+    names_to = "class_group",
+    names_prefix = "class_",
+    values_to = "class_value"
+  ) %>%
+  filter(class_group == .pred_class_group) %>%
+  nest(.by = c(method, class_group)) %>% 
+  mutate(
+    data = data %>%
+      map(~ mutate(.x, across(
+        matches("class_value"),
+        ~ factor(.x, levels = unique(c(
+          .pred_class_group, "class_0"
+        )))
+      ))) %>%
+      map(per_class_mset, truth = class_value, estimate = .pred_class_value) %>%
+      suppressWarnings()
+  ) %>% 
+  unnest(cols = data) %>% 
+  select(-.estimator) %>% 
+  pivot_wider(names_from = "class_group", values_from = ".estimate")
+
+kable(conf_eval_per_class,
+      caption = "Per-Class Eevaluation Metrics on Confirmation Set Model",
+      digits = 3) %>% 
+  kable_styling()
+```
+
 ### Validation Set
 
 ```{r validation-set}
 # Load data
 val_class <- readRDS(here("data", "val_class.rds"))
 val_data <- readRDS(here("data", "val_data.rds"))
-
-# Create sequential splits
-val_df <- cbind(val_data, class = val_class)
-
-seq_val_ranks <- seq_class %>%
-  map(unique) %>%
-  map(~ purrr::discard(., .p = ~ . == "class_0")) %>%
-  unlist() %>%
-  accumulate(c) %>%
-  head(-1)
-
-seq_val_class <- imap(seq_val_ranks, ~ {
-  cl <- val_df %>%
-    filter(!class %in% head(.x, -1)) %>%
-    pull(class)
-  if (.y != length(seq_val_ranks)) {
-    factor(ifelse(cl == tail(.x, 1), tail(.x, 1), "class_0"))
-  } else {
-    factor(cl)
-  }
-})
-
-## Full
-seq_val_data_full <- map(seq_val_ranks, ~ {
-  val_df %>%
-    filter(!class %in% head(.x, -1)) %>%
-    select(-class)
-})
-
-## Optimal
-seq_val_data_opt <- seq_val_data_full %>% 
-  map(~ .x %>% select(all_of(opt_genes_seq)))
 ```
-
-```{r val-eval-per-class}
-val_eval_per_class <-
-  pmap(list(mod_seq_opt, seq_val_data_opt, seq_val_class), ~ {
-    pred <- prediction(..1, ..2, ..3)
-    eval <- evaluation(..3, pred)
-    eval
-  }) %>%
-  map("cs") %>%
-  unlist() %>%
-  imap(~ .x[grepl("\\.(?!class_0)", .y, perl = TRUE)]) %>%
-  compact() %>%
-  bind_rows() %>%
-   pivot_longer(
-    cols = everything(),
-    names_to = c("measure", "class"),
-    names_sep = "\\.",
-    values_to = "value"
-  ) %>% 
-  filter(measure %in% c("accuracy", "f1", "kappa", "gmean")) %>% 
-  pivot_wider(
-    id_cols = measure,
-    names_from = "class",
-    values_from = "value"
-  ) %>% 
-  add_column(method = "sequential_opt", .before = 1)
-
-kable(val_eval_per_class,
-      caption = "Class-specific Evaluation Metrics on Validation Set Model",
-      digits = 3) %>% 
-  kable_styling() %>% 
-  collapse_rows(columns = 1)
-```
-
-Per-class F1-scores in the validation set are all above 0.9.
 
 ```{r val-eval-overall}
 # Validation set overall predictions
-val_pred_overall <- data.frame(FileName = rownames(conf_data),
-                               Truth = conf_class) %>%
+val_pred_overall <- data.frame(FileName = rownames(val_data),
+                               Truth = val_class) %>%
   mutate(
-    p_seq1_opt = predict(mod_seq_opt[[1]], seq_conf_data_opt[[1]]),
-    p_seq2_opt = predict(mod_seq_opt[[2]], seq_conf_data_opt[[1]]),
-    p_seq3_opt = predict(mod_seq_opt[[3]], as.matrix(seq_conf_data_opt[[1]]), type = "class"),
-    p_seq4_opt = predict(mod_seq_opt[[4]], seq_conf_data_opt[[1]]),
-    
+    c(p_2s_opt = mod_two_step_opt) %>%
+      map(~ predict(., val_data)[[".pred_class"]]) %>%
+      bind_cols()
+  ) %>% 
+  rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) %>% 
+  
+  mutate(
     across(matches("p"), as.character),
-    Prediction_sequential_optimal = case_when(
-      Truth == "HGSC" & p_seq1_opt == "HGSC" ~ "HGSC",
-      Truth == "CCOC" & p_seq2_opt == "CCOC" ~ "CCOC",
-      Truth == "ENOC" & p_seq3_opt == "ENOC" ~ "ENOC",
-      .default = p_seq4_opt
-    ), 
+    Prediction_two_step_optimal = ifelse(!grepl("non", p_2s_opt_s1),
+                                         p_2s_opt_s1, p_2s_opt_s2),
     across(c("Truth", matches("Prediction")), factor)
   ) %>%
   select(-starts_with("p", ignore.case = FALSE)) %>%
@@ -2429,7 +2216,55 @@ val_eval_overall <- val_pred_overall %>%
   )
 
 kable(val_eval_overall,
-      caption = "Overall valuation Metrics on Validation Set Model",
+      caption = "Overall Evaluation Metrics on Validation Set Model",
+      digits = 3) %>% 
+  kable_styling()
+```
+
+```{r val-eval-per-class}
+val_eval_per_class <- val_pred_overall %>% 
+  mutate(
+    pred_class_ova = map(Prediction, ~ {
+      ifelse(levels(Prediction) %in% .x, as.character(.x), "class_0") %>%
+        set_names(paste0(".pred_class_", levels(Prediction)))
+    }),
+    class_ova = map(Truth, ~ {
+      ifelse(levels(Truth) %in% .x, as.character(.x), "class_0") %>%
+        set_names(paste0("class_", levels(Truth)))
+    })
+  ) %>% 
+  unnest_wider(col = c(pred_class_ova, class_ova)) %>%
+  pivot_longer(
+    matches("^.pred_class_.*"),
+    names_to = ".pred_class_group",
+    names_prefix = ".pred_class_",
+    values_to = ".pred_class_value"
+  ) %>%
+  pivot_longer(
+    matches("^class_.*"),
+    names_to = "class_group",
+    names_prefix = "class_",
+    values_to = "class_value"
+  ) %>%
+  filter(class_group == .pred_class_group) %>%
+  nest(.by = c(method, class_group)) %>% 
+  mutate(
+    data = data %>%
+      map(~ mutate(.x, across(
+        matches("class_value"),
+        ~ factor(.x, levels = unique(c(
+          .pred_class_group, "class_0"
+        )))
+      ))) %>%
+      map(per_class_mset, truth = class_value, estimate = .pred_class_value) %>%
+      suppressWarnings()
+  ) %>% 
+  unnest(cols = data) %>% 
+  select(-.estimator) %>% 
+  pivot_wider(names_from = "class_group", values_from = ".estimate")
+
+kable(val_eval_per_class,
+      caption = "Per-Class Eevaluation Metrics on Validation Set Model",
       digits = 3) %>% 
   kable_styling()
 ```
