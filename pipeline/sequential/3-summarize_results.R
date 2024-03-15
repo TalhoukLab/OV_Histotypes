@@ -22,7 +22,7 @@ all_models_file <- file.path(
   "sequential",
   "summarize_results",
   dataset,
-  paste0("all_models", dataset, ".rds")
+  paste0("all_models_", dataset, ".rds")
 )
 saveRDS(all_models, all_models_file)
 
