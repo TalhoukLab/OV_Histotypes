@@ -53,33 +53,44 @@ test_preds <- test_results %>%
   map(collect_predictions) %>%
   list_rbind(names_to = "fold_id")
 
-# Select predicted probability columns for multiclass/binary AUC
-prob_cols <- test_preds %>%
-  select(matches(".pred(?!_class)", perl = TRUE)) %>%
-  names()
-if (n_distinct(class) == 2) {
-  prob_cols <- prob_cols[1]
-}
-
-# Calculate overall metrics
-overall_metrics <- test_preds %>%
-  mset(truth = class, prob_cols, estimate = .pred_class) %>%
-  add_column(class_group = "Overall") %>%
-  suppressWarnings()
-
-# Don't interpret F-measure if some levels had no predicted events
-overall_metrics <- tryCatch({
-  test_preds %>%
-    mset(truth = class, prob_cols, estimate = .pred_class) %>%
-    add_column(class_group = "Overall")
-}, warning = function(w) {
-  overall_metrics %>%
-    mutate(.estimate = ifelse(.metric == "f_meas", NA_real_, .estimate))
-})
-
-# Combine all metrics
-all_metrics <- overall_metrics %>%
-  arrange(.metric)
+# Calculate per-class metrics using one-vs-all predictions
+per_class_mset <- metric_set(accuracy, f_meas, kap, gmean)
+per_class_metrics <- test_preds %>%
+  mutate(
+    pred_class_ova = map(.pred_class, ~ {
+      ifelse(levels(.pred_class) %in% .x, as.character(.x), "class_0") %>%
+        set_names(paste0(".pred_class_", levels(.pred_class)))
+    }),
+    class_ova = map(class, ~ {
+      ifelse(levels(class) %in% .x, as.character(.x), "class_0") %>%
+        set_names(paste0("class_", levels(class)))
+    })
+  ) %>%
+  unnest_wider(col = c(pred_class_ova, class_ova)) %>%
+  pivot_longer(
+    matches("^.pred_class_.*"),
+    names_to = ".pred_class_group",
+    names_prefix = ".pred_class_",
+    values_to = ".pred_class_value"
+  ) %>%
+  pivot_longer(
+    matches("^class_.*"),
+    names_to = "class_group",
+    names_prefix = "class_",
+    values_to = "class_value"
+  ) %>%
+  filter(class_group == .pred_class_group) %>%
+  nest(.by = class_group) %>%
+  mutate(
+    data = data %>%
+      map(~ mutate(.x, across(matches("class_value"),
+                              ~ factor(.x, levels = unique(c(.pred_class_group, "class_0")))))) %>%
+      map(per_class_mset, truth = class_value, estimate = .pred_class_value) %>%
+      suppressWarnings()
+  ) %>%
+  unnest(cols = data) %>%
+  filter(!grepl("non", class_group)) %>%
+  relocate(class_group, .after = .estimate)
 
 # Variable importance metrics
 ## Use model-specific metrics if available, otherwise calculate
@@ -130,15 +141,25 @@ model_file <- file.path(
 )
 saveRDS(best_model, model_file)
 
-# Write all metrics to file
+# Write test set predictions to file
+preds_file <- file.path(
+  outputDir,
+  "sequential",
+  "merge_results",
+  dataset,
+  paste0(seq_wflow, "_preds_", dataset, ".rds")
+)
+saveRDS(test_preds, preds_file)
+
+# Write per-class metrics to file
 metrics_file <- file.path(
   outputDir,
   "sequential",
   "merge_results",
   dataset,
-  paste0(seq_wflow, "_metrics_", dataset, ".rds")
+  paste0(seq_wflow, "_per_class_metrics_", dataset, ".rds")
 )
-saveRDS(all_metrics, metrics_file)
+saveRDS(per_class_metrics, metrics_file)
 
 # Write variable importance to file
 vi_file <- file.path(
