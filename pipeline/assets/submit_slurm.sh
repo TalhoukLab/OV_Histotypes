@@ -19,7 +19,7 @@ function squ() {
 
 # Current number of pending/running jobs in queue for user
 function njobs() {
-  squ $1 | wc -l
+  echo $(( count=$(squ | wc -l) - 1 ))
 }
 
 # Elapsed time since first job submitted for user.
