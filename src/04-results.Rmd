@@ -29,12 +29,14 @@ train_data <- readRDS(here("data/train_data.rds"))
 coefmat <- readRDS(here("data/coefmat.rds"))
 geneseq <- readRDS(here("data/merge_eval_seq.rds"))
 gene2s <- readRDS(here("data/merge_eval_two_step.rds"))
-# ranked_vi_seq <- readRDS(here("data/ranked_vi_seq.rds"))
-# ranked_vi_2s <- readRDS(here("data/ranked_vi_two_step.rds"))
 
 all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
-all_metrics_seq <- readRDS(here("data/all_metrics_seq.rds"))
-all_metrics_two_step <- readRDS(here("data/all_metrics_two_step.rds"))
+
+per_class_metrics_seq <-
+  readRDS(here("data/per_class_metrics_seq.rds"))
+per_class_metrics_two_step <-
+  readRDS(here("data/per_class_metrics_two_step.rds"))
+
 
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
@@ -1831,46 +1833,57 @@ Since the second step of the classifier fits a multinomial model, we use the mac
 
 ## Rank Aggregation
 
-```{r summary}
-# IV summary from multinomial, 2-stage, and sequential algorithm
-ivs_comb <- bind_rows(ivst, ivs2s, ivsseq)
-ivs_comb_f1 <- ivs_comb %>% 
-  filter(grepl("f1\\.", measure)) %>%
-  transmute(
-    model = ifelse(algorithm %in% c("seq", "two_step"),
-                   algorithm,
-                   paste(algorithm, sampling, sep = "-")),
-    class = gsub("f1\\.", "", measure),
-    median_f1 = percentile_50
-  )
+```{r per-class-metrics}
+# Combine per-class metrics
+per_class_metrics <- bind_rows(
+  all_metrics_train,
+  per_class_metrics_seq %>%
+    add_column(wflow = "sequential", .before = 1),
+  per_class_metrics_two_step %>%
+    add_column(wflow = "two_step", .before = 1)
+) %>% 
+  filter(class_group != "Overall")
 
-# Rank aggregation
-f1_ranks <- ivs_comb_f1 %>% 
-  group_by(class) %>% 
-  mutate(rank = factor(row_number(-median_f1))) %>% 
-  ungroup() %>% 
-  select(-median_f1) %>% 
-  arrange(rank) %>% 
-  pivot_wider(names_from = "rank", values_from = "model") %>% 
-  column_to_rownames("class") %>% 
+# Keep only workflows that predicted at least one case in each class
+per_class_f1 <- per_class_metrics %>%
+  filter(.metric == "f_meas") %>%
+  select(wflow, class_group, .estimate) %>%
+  pivot_wider(names_from = "class_group", values_from = ".estimate") %>%
+  drop_na() %>%
+  pivot_longer(-wflow, names_to = "class_group", values_to = ".estimate")
+
+# Rank F1-measures
+wflow_ranks <- per_class_f1 %>%
+  group_by(class_group) %>%
+  mutate(rank = factor(row_number(-.estimate))) %>%
+  ungroup() %>%
+  arrange(rank) %>%
+  pivot_wider(id_cols = class_group,
+              names_from = "rank",
+              values_from = "wflow") %>%
+  column_to_rownames("class_group") %>%
   as.matrix()
 
-f1_top <- splendid:::sink_output(RankAggreg(
-  x = f1_ranks,
-  k = ncol(f1_ranks),
+# Rank aggregation using genetic algorithm
+wflow_top <- splendid:::sink_output(RankAggreg(
+  x = wflow_ranks,
+  k = ncol(wflow_ranks),
   method = "GA",
   seed = 2022,
   verbose = FALSE
-))
+)) %>% 
+  pluck("top.list") %>% 
+  enframe(name = "rank", value = "wflow")
 
 # F1-score summary
-ivs_f1_summary <- ivs_comb_f1 %>% 
-  pivot_wider(names_from = "class", values_from = "median_f1") %>% 
-  mutate(across(where(is.numeric), round, digits = 3)) %>% 
-  magrittr::extract(match(f1_top[["top.list"]], .$model), )
+f1_summary <- per_class_f1 %>% 
+  pivot_wider(names_from = class_group, values_from = .estimate) %>% 
+  mutate(across(where(is.numeric), ~ round(.x, digits = 3))) %>% 
+  inner_join(wflow_top, by = "wflow") %>% 
+  arrange(rank)
 
 datatable(
-  ivs_f1_summary,
+  f1_summary,
   options = list(
     scrollX = TRUE,
     fixedColumns = TRUE,
@@ -1884,98 +1897,57 @@ datatable(
     pageLength = 50
   ), 
   rownames = FALSE,
-  caption = "F1-Score Summary by Model and Class",
+  caption = "F1-Score Summary by Workflow and Class",
   filter = "top",
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
 )
 ```
 
-The `r ncol(f1_ranks)` methods (algorithm-sampling combinations) are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the 2-stage and sequential algorithms.
+The `r ncol(wflow_ranks)` workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
 
-## Top 4 Model Summary
+### Top Workflows
 
-### Overall Metrics
+We look at the per-class evaluation metrics of the top 4 workflows.
 
-```{r ivs-top4-overall, fig.cap='Top 4 Model Evaluation Metrics'}
-models_top4 <- f1_top[["top.list"]][seq_len(4)]
-ivs_comb_top4 <- ivs_comb %>% 
-  mutate(model = ifelse(
-    algorithm %in% c("seq", "two_step"),
-    algorithm,
-    paste(algorithm, sampling, sep = "-")
-  ),
-  .after = sampling) %>% 
-  filter(
-    algorithm %in% c("seq", "two_step") |
-      model %in% c("adaboost-up", "rf-smote")
-  )
+```{r metrics-top4, fig.cap='Top 4 Workflow Per-Class Evaluation Metrics'}
+wflow_top4 <- wflow_top %>% 
+  head(4)
 
-ivs_top4_overall <- ivs_comb_top4 %>% 
-  filter(measure %in% c("auc", "accuracy", "kappa", "macro_f1", "gmean")) %>% 
-  mutate(model = fct_reorder(model, percentile_50, .desc = TRUE))
+metrics_top4 <- per_class_metrics %>% 
+  inner_join(wflow_top4, by = "wflow") %>% 
+  mutate(wflow = fct_reorder(wflow, rank)) %>% 
+  arrange(rank)
 
 p <- 
-  ggplot(ivs_top4_overall, aes(x = model, y = percentile_50, color = measure)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4),
-                  fatten = 1) +
+  ggplot(metrics_top4, aes(x = wflow, y = .estimate, color = .metric)) +
+  geom_point(position = position_jitter(width = 0.1)) +
+  facet_wrap(vars(class_group), ncol = 2) +
   theme_bw() +
   theme(plot.title = element_text(face = "bold")) +
   labs(
-    x = "Model",
-    y = "Measure",
-    color = "Measure",
-    title = "Top 4 Model Overall Evaluation Metrics"
+    x = "Workflow",
+    y = "Metric",
+    color = "Metric",
+    title = "Top 4 Workflow Per-Class Evaluation Metrics"
   )
 print(p)
 ```
 
-### Per-Class Metrics
-
-```{r ivs-top4-per-class, fig.cap='Top 4 Model Per-Class Evaluation Metrics'}
-ivs_top4_per_class <- ivs_comb_top4 %>% 
-  filter(grepl("\\.", measure)) %>%
-  separate(measure, c("measure", "class")) %>% 
-  filter(measure %in% c("accuracy", "kappa", "f1", "gmean")) %>% 
-  mutate(model = fct_reorder(model, percentile_50, .desc = TRUE))
+```{r metrics-f1-top4, fig.cap='Top 4 Workflow Per-Class F1-Scores'}
+metrics_f1_top4 <- metrics_top4 %>% 
+  filter(.metric == "f_meas")
 
 p <- 
-  ggplot(ivs_top4_per_class, aes(x = model, y = percentile_50, color = measure)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4),
-                  fatten = 1) +
-  facet_wrap(vars(class), ncol = 2) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
-  labs(
-    x = "Model",
-    y = "Measure",
-    color = "Measure",
-    title = "Top 4 Model Per-Class Evaluation Metrics"
-  )
-print(p)
-```
-
-```{r ivs-top4-per-class-f1, fig.cap='Top 4 Model Per-Class F1-Scores'}
-ivs_top4_per_class_f1 <- ivs_comb_top4 %>% 
-  filter(grepl("\\.", measure)) %>%
-  separate(measure, c("measure", "class")) %>% 
-  filter(measure %in% "f1") %>% 
-  mutate(model = fct_reorder(model, percentile_50, .desc = TRUE))
-
-p <- 
-  ggplot(ivs_top4_per_class_f1, aes(x = class, y = percentile_50, color = model)) +
-  geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                  position = position_dodge(width = 0.4),
-                  fatten = 1) +
+  ggplot(metrics_f1_top4, aes(x = class_group, y = .estimate, color = wflow)) +
+  geom_point(position = position_jitter(width = 0.1)) +
   theme_bw() +
   theme(plot.title = element_text(face = "bold")) +
   labs(
     x = "Class",
-    y = "Measure",
-    color = "Model",
-    title = "Top 4 Model Per-Class F1-Score"
+    y = "Metric",
+    color = "Workflow",
+    title = "Top 4 Workflow Per-Class F1-Scores"
   )
 print(p)
 ```
