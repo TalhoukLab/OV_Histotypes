@@ -1952,6 +1952,8 @@ p <-
 print(p)
 ```
 
+Misclassified cases from a previous step of the sequence of classifiers are not included in subsequent steps of the training set CV folds. Thus, we cannot piece together the test set predictions from the sequential and two-step algorithms to obtain overall metrics.
+
 ## Test Set Performance
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
