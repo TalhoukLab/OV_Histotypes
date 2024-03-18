@@ -41,6 +41,6 @@ folds <- nested_cv(
 # Metrics
 gmean <- new_class_metric(gmean, direction = "maximize")
 mset <-
-  metric_set(accuracy, f_meas, precision, recall, kap, gmean, roc_auc)
+  metric_set(accuracy, f_meas, kap, gmean, roc_auc)
 per_class_mset <-
-  metric_set(accuracy, f_meas, precision, recall, kap, gmean)
+  metric_set(accuracy, f_meas, kap, gmean)
