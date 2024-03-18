@@ -141,16 +141,6 @@ model_file <- file.path(
 )
 saveRDS(best_model, model_file)
 
-# Write test set predictions to file
-preds_file <- file.path(
-  outputDir,
-  "sequential",
-  "merge_results",
-  dataset,
-  paste0(seq_wflow, "_preds_", dataset, ".rds")
-)
-saveRDS(test_preds, preds_file)
-
 # Write per-class metrics to file
 metrics_file <- file.path(
   outputDir,
