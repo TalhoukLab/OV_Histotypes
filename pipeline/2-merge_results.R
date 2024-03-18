@@ -23,16 +23,6 @@ tuned_set <- tune_wflows_files %>%
   do.call(rbind, .)
 tuned_set$wflow_id <- paste0(tuned_set$wflow_id, seq_len(n_folds))
 
-# training_metrics <- tuned_set %>%
-#   collect_metrics() %>%
-#   summarize(
-#     mean_estimate = mean(mean),
-#     sd = sd(mean),
-#     lower = mean_estimate - qnorm(0.975) * sd,
-#     upper = mean_estimate + qnorm(0.975) * sd,
-#     .by = .metric
-#   )
-
 ranking <- tuned_set %>%
   rank_results(rank_metric = rank_metric, select_best = TRUE) %>%
   filter(.metric == rank_metric)
