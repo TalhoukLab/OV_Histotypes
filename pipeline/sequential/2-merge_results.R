@@ -54,7 +54,6 @@ test_preds <- test_results %>%
   list_rbind(names_to = "fold_id")
 
 # Calculate per-class metrics using one-vs-all predictions
-per_class_mset <- metric_set(accuracy, f_meas, kap, gmean)
 per_class_metrics <- test_preds %>%
   mutate(
     pred_class_ova = map(.pred_class, ~ {

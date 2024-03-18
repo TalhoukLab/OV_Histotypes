@@ -69,18 +69,7 @@ overall_metrics <- test_preds %>%
   add_column(class_group = "Overall") %>%
   suppressWarnings()
 
-# Don't interpret F-measure if some levels had no predicted events
-overall_metrics <- tryCatch({
-  test_preds %>%
-    mset(truth = class, prob_cols, estimate = .pred_class) %>%
-    add_column(class_group = "Overall")
-}, warning = function(w) {
-  overall_metrics %>%
-    mutate(.estimate = ifelse(.metric == "f_meas", NA_real_, .estimate))
-})
-
 # Calculate per-class metrics using one-vs-all predictions
-per_class_mset <- metric_set(accuracy, f_meas, kap, gmean)
 per_class_metrics <- test_preds %>%
   mutate(
     pred_class_ova = map(.pred_class, ~ {

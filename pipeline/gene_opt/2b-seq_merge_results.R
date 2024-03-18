@@ -69,16 +69,6 @@ overall_metrics <- test_preds %>%
   add_column(class_group = "Overall") %>%
   suppressWarnings()
 
-# Don't interpret F-measure if some levels had no predicted events
-overall_metrics <- tryCatch({
-  test_preds %>%
-    mset(truth = class, prob_cols, estimate = .pred_class) %>%
-    add_column(class_group = "Overall")
-}, warning = function(w) {
-  overall_metrics %>%
-    mutate(.estimate = ifelse(.metric == "f_meas", NA_real_, .estimate))
-})
-
 # Combine all metrics
 all_metrics <- overall_metrics %>%
   arrange(.metric)
