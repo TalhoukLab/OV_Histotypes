@@ -84,39 +84,44 @@
 <p>Duplicate cases (two samples with the same ottaID) were removed from the training set before fitting the classification models. CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver were preferred over CS3-AOC and CS3-USC.</p>
 <p>The training, confirmation, and validation sets all used a different set of cohorts.</p>
 </div>
-<div id="classification" class="section level2" number="2.3">
+<div id="classifiers" class="section level2" number="2.3">
 <h2>
-<span class="header-section-number">2.3</span> Classification<a class="anchor" aria-label="anchor" href="#classification"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.3</span> Classifiers<a class="anchor" aria-label="anchor" href="#classifiers"><i class="fas fa-link"></i></a>
 </h2>
-<p>We use 5 classification algorithms and 4 subsampling methods across 500 repetitions in the supervised learning framework for the Training Set, CS1 and CS2. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. Implementations of the techniques below were called from the <a href="https://alinetalhouk.github.io/splendid/">splendid</a> package.</p>
+<p>We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the <code>tidymodels</code> suite of packages. The classifiers we used are:</p>
+<ul>
+<li>Random Forest (<code>rf</code>)</li>
+<li>Support Vector Machine (<code>svm</code>)</li>
+<li>XGBoost (<code>xgb</code>)</li>
+<li>Regularized Multinomial Regression (<code>mr</code>)</li>
+</ul>
+<div id="resampling-of-training-set" class="section level3" number="2.3.1">
+<h3>
+<span class="header-section-number">2.3.1</span> Resampling of Training Set<a class="anchor" aria-label="anchor" href="#resampling-of-training-set"><i class="fas fa-link"></i></a>
+</h3>
+<p>We used a nested cross-validation design to assess each classifier while also performing hyperparameter tuning. An outer 5-fold CV stratified by histotype was used together with an inner 5-fold CV with 2 repeats stratified by histotype. This design was chosen such that the test sets of the inner resamples would still have a reasonable number of samples belonging to the smallest minority class.</p>
+</div>
+<div id="hyperparameter-tuning" class="section level3" number="2.3.2">
+<h3>
+<span class="header-section-number">2.3.2</span> Hyperparameter Tuning<a class="anchor" aria-label="anchor" href="#hyperparameter-tuning"><i class="fas fa-link"></i></a>
+</h3>
+<p>The following specifications for each classifier were used for tuning hyperparameters:</p>
 <ul>
 <li>
-<p>Classifiers:</p>
-<ul>
-<li>Random Forest</li>
-<li>Support Vector Machine</li>
-<li>XGBoost</li>
-<li>Regularized Multinomial Regression Model</li>
-</ul>
-</li>
+<code>rf</code> and <code>xgb</code>: The number of trees were fixed at 500. Other hyperparameters were tuned across 10 randomly selected points in a latin hypercube design.</li>
 <li>
-<p>Subsampling:</p>
-<ul>
-<li>None</li>
-<li>Down-sampling</li>
-<li>Up-sampling</li>
-<li>SMOTE</li>
-<li>Hybrid (using SMOTE and Down-sampling)</li>
-</ul>
-</li>
+<code>svm</code>: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design within ranges (transformed scale) [0, 2] and [-3, 0], respectively.</li>
+<li>
+<code>mr</code>: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in [0, 1] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.</li>
 </ul>
 </div>
-<div id="subsampling" class="section level2" number="2.4">
-<h2>
-<span class="header-section-number">2.4</span> Subsampling<a class="anchor" aria-label="anchor" href="#subsampling"><i class="fas fa-link"></i></a>
-</h2>
+<div id="subsampling" class="section level3" number="2.3.3">
+<h3>
+<span class="header-section-number">2.3.3</span> Subsampling<a class="anchor" aria-label="anchor" href="#subsampling"><i class="fas fa-link"></i></a>
+</h3>
 <p>Here are the specifications of the subsampling methods used to handle class imbalance:</p>
 <ul>
+<li>None: No subsampling is performed</li>
 <li>Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class</li>
 <li>Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class</li>
 <li>SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class</li>
@@ -129,7 +134,31 @@
 Figure 2.1: Visualization of Subsampling Techniques
 </p>
 </div>
-
+</div>
+</div>
+<div id="sequential-algorithm" class="section level2" number="2.4">
+<h2>
+<span class="header-section-number">2.4</span> Sequential Algorithm<a class="anchor" aria-label="anchor" href="#sequential-algorithm"><i class="fas fa-link"></i></a>
+</h2>
+<p>Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the “other” class are those not equal to the current “one” class and excluding all “one” classes from previous steps. For example, if the “one” class in step 1 was HGSC, the “other” classes would include CCOC, ENOC, LGSC, and MUC. If the “one” class in step 2 was CCOC, the “other” classes include ENOC, LGSC, and MUC.</p>
+<p>The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).</p>
+<p>The following flowchart illustrates how the sequential algorithm works for k=5, using ovarian histotypes as an example for the classes.</p>
+<div id="subsampling-1" class="section level3" number="2.4.1">
+<h3>
+<span class="header-section-number">2.4.1</span> Subsampling<a class="anchor" aria-label="anchor" href="#subsampling-1"><i class="fas fa-link"></i></a>
+</h3>
+<p>The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.</p>
+</div>
+</div>
+<div id="two-step-algorithm" class="section level2" number="2.5">
+<h2>
+<span class="header-section-number">2.5</span> Two-Step Algorithm<a class="anchor" aria-label="anchor" href="#two-step-algorithm"><i class="fas fa-link"></i></a>
+</h2>
+<p>The two-step algorithm can be thought of as a special case of the sequential algorithm, that is specific to classifying ovarian histotypes. The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. Thus, we can implement a two-step algorithm as such:</p>
+<ul>
+<li>Step 1: use binary classification for HGSC vs. non-HGSC (this step is the same as step 1 in the sequential algorithm above)</li>
+<li>Step 2: use multinomial classification for remaining non-HGSC classes</li>
+</ul>
 </div>
 </div>
   <div class="chapter-nav">
@@ -141,8 +170,17 @@ Figure 2.1: Visualization of Subsampling Techniques
 <li><a class="nav-link" href="#methods"><span class="header-section-number">2</span> Methods</a></li>
 <li><a class="nav-link" href="#normalization"><span class="header-section-number">2.1</span> Normalization</a></li>
 <li><a class="nav-link" href="#case-selection"><span class="header-section-number">2.2</span> Case Selection</a></li>
-<li><a class="nav-link" href="#classification"><span class="header-section-number">2.3</span> Classification</a></li>
-<li><a class="nav-link" href="#subsampling"><span class="header-section-number">2.4</span> Subsampling</a></li>
+<li>
+<a class="nav-link" href="#classifiers"><span class="header-section-number">2.3</span> Classifiers</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#resampling-of-training-set"><span class="header-section-number">2.3.1</span> Resampling of Training Set</a></li>
+<li><a class="nav-link" href="#hyperparameter-tuning"><span class="header-section-number">2.3.2</span> Hyperparameter Tuning</a></li>
+<li><a class="nav-link" href="#subsampling"><span class="header-section-number">2.3.3</span> Subsampling</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#sequential-algorithm"><span class="header-section-number">2.4</span> Sequential Algorithm</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#subsampling-1"><span class="header-section-number">2.4.1</span> Subsampling</a></li></ul>
+</li>
+<li><a class="nav-link" href="#two-step-algorithm"><span class="header-section-number">2.5</span> Two-Step Algorithm</a></li>
 </ul>
 
       <div class="book-extra">
@@ -160,7 +198,7 @@ Figure 2.1: Visualization of Subsampling Techniques
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-03-07.</p>
+    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-03-18.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
