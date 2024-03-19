@@ -1962,14 +1962,14 @@ Now we'd like to see how our best methods perform in the confirmation and valida
 
 The top 2 methods are:
 
-- **sequential**: sequential algorithm with upsampling at every step. The sequence of algorithms used are:
-  - HGSC vs. non-HGSC using adaboost
-  - CCOC vs. non-CCOC using random forest
-  - ENOC vs. non-ENOC using ridge regression
-  - MUC vs. LGSC using adaboost
-- **two_step**: two-step algorithm with upsampling at both steps. The sequence of algorithms used are:
-  - HGSC vs. non-HGSC using adaboost
-  - CCOC vs. ENOC vs. MUC vs. LGSC using random forest
+- **sequential**: sequential algorithm with hybrid subsampling at every step. The sequence of algorithms used are:
+  - HGSC vs. non-HGSC using random forest
+  - CCOC vs. non-CCOC using support vector machine
+  - LGSC vs. non-LGSC using support vector machine
+  - ENOC vs. MUC using regularized multinomial regression
+- **two_step**: two-step algorithm with hybrid subsampling at both steps. The sequence of algorithms used are:
+  - HGSC vs. non-HGSC using random forest
+  - CCOC vs. ENOC vs. MUC vs. LGSC support vector machine
   
 We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these methods.
 
