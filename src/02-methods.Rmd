@@ -110,11 +110,11 @@ The order of classes and workflows to use at each step in the sequential algorit
 Let
 
 $$
-\begin{align}
+\begin{aligned}
 & X_k = \text{Training data with k classes}  \\
 & C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
 & W_k = \text{Workflow associated with}\;C_k
-\end{align}
+\end{aligned}
 (\#eq:sequential)
 $$
 
