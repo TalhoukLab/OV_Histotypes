@@ -112,9 +112,10 @@ Let
 $$
 \begin{align}
 & X_k = \text{Training data with k classes}  \\
-& W_k = \text{Best workflow from training}\;X_k\;\text{based on}\;F_1\;\text{score} \\
-& C_k = \text{Best class from training}\;X_k\;\text{based on}\;F_1\;\text{score}
+& C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
+& W_k = \text{Workflow associated with}\;C_k
 \end{align}
+(\#eq:sequential)
 $$
 
 Figure \@ref(fig:sequential-flowchart) illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
@@ -182,3 +183,42 @@ The two-step algorithm can be thought of as a special case of the sequential alg
 
 -   Step 1: use binary classification for HGSC vs. non-HGSC (this step is the same as step 1 in the sequential algorithm above)
 -   Step 2: use multinomial classification for remaining non-HGSC classes
+
+Using some of the notation from Equation \@ref(eq:sequential), a flowchart similar to Figure \@ref(fig:sequential-flowchart) can show how the two-step algorithm works:
+
+```{r two-step-flowchart, fig.cap='Two-Step Algorithm'}
+grViz(
+  paste0(
+    "digraph sequential_algorithm {
+
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    a [label = 'X@_{5}']
+    b1 [label = 'Store HGSC predictions']
+    b2 [label = 'Select W@_{5} for HGSC']
+    c [label = 'X@_{4}']
+    d1 [label = 'Store remaining predictions']
+    d2 [label = 'Select best workflow with highest overall metric']
+
+    # edge definitions
+    a -> b1 [xlabel = '  Train HGSC vs. all using W@_{5}']
+    a -> b2 [label = 'Train multinomial classes']
+
+    b1 -> c [xlabel = '  Remove HGSC cases from X@_{5}']
+    c -> d1 [xlabel = 'Train multinomial classes with best workflow']
+    c -> d2 [label = 'Retrain multinomial classes']
+
+    j [label = 'Aggregate all predictions']
+
+    {b1 d1} -> j
+
+    # subgraph definitions
+    subgraph {rank = same; b1; b2}
+    subgraph {rank = same; d1; d2}
+    }"
+  )
+)
+```
