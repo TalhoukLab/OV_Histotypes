@@ -8,6 +8,7 @@ library(dplyr)
 library(rlang)
 library(purrr)
 library(forcats)
+library(DiagrammeR)
 library(here)
 train_data <- readRDS(here("data/train_data.rds"))
 train_class <- readRDS(here("data/train_class.rds"))
@@ -33,10 +34,10 @@ The training, confirmation, and validation sets all used a different set of coho
 
 We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the `tidymodels` suite of packages. The classifiers we used are:
 
-- Random Forest (`rf`)
-- Support Vector Machine (`svm`)
-- XGBoost (`xgb`)
-- Regularized Multinomial Regression (`mr`)
+-   Random Forest (`rf`)
+-   Support Vector Machine (`svm`)
+-   XGBoost (`xgb`)
+-   Regularized Multinomial Regression (`mr`)
 
 ### Resampling of Training Set
 
@@ -46,19 +47,19 @@ We used a nested cross-validation design to assess each classifier while also pe
 
 The following specifications for each classifier were used for tuning hyperparameters:
 
-- `rf` and `xgb`: The number of trees were fixed at 500. Other hyperparameters were tuned across 10 randomly selected points in a latin hypercube design.
-- `svm`: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design within ranges (transformed scale) [0, 2] and [-3, 0], respectively.
-- `mr`: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in [0, 1] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.
+-   `rf` and `xgb`: The number of trees were fixed at 500. Other hyperparameters were tuned across 10 randomly selected points in a latin hypercube design.
+-   `svm`: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design within ranges (transformed scale) [0, 2] and [-3, 0], respectively.
+-   `mr`: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in [0, 1] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.
 
 ### Subsampling
 
 Here are the specifications of the subsampling methods used to handle class imbalance:
 
-- None: No subsampling is performed
-- Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class
-- Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class
-- SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class
-- Hybrid: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.
+-   None: No subsampling is performed
+-   Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class
+-   Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class
+-   SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class
+-   Hybrid: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.
 
 The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
 
@@ -106,22 +107,78 @@ Instead of training on k classes simultaneously using multinomial classifiers, w
 
 The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).
 
-The following flowchart illustrates how the sequential algorithm works for k=5, using ovarian histotypes as an example for the classes.
+Let
 
-```{r sequential-flowchart, include=FALSE}
+$$
+\begin{align}
+& X_k = \text{Training data with k classes}  \\
+& W_k = \text{Best workflow from training}\;X_k\;\text{based on}\;F_1\;\text{score} \\
+& C_k = \text{Best class from training}\;X_k\;\text{based on}\;F_1\;\text{score}
+\end{align}
+$$
 
+Figure \@ref(fig:sequential-flowchart) illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
+
+```{r sequential-flowchart, fig.cap='Sequential Algorithm'}
+grViz(
+  paste0(
+    "digraph sequential_algorithm {
+
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    a [label = 'X@_{5}']
+    b1 [label = 'Store X@_{5}  predictions']
+    b2 [label = 'Select W@_{5}  and C@_{5}']
+    c [label = 'X@_{4}']
+    d1 [label = 'Store X@_{4}  predictions']
+    d2 [label = 'Select W@_{4}  and C@_{4}']
+    f [label = 'X@_{3}']
+    g1 [label = 'Store X@_{3}  predictions']
+    g2 [label = 'Select W@_{3}  and C@_{3}']
+    h [label = 'X@_{2}']
+    i1 [label = 'Store X@_{2}  predictions']
+    i2 [label = 'Select W@_{2}  and C@_{2}']
+    j [label = 'Aggregate all predictions']
+
+    # edge definitions
+    a -> b1 [xlabel = '  Train C@_{5}  vs. all using W@_{5}']
+    a -> b2 [label = 'Train multinomial classes']
+    #b2 -> b1
+    b1 -> c [label = '  Remove C@_{5}  cases from X@_{5}']
+    c -> d1 [xlabel = '  Train C@_{4}  vs. all using W@_{4}']
+    c -> d2 [label = 'Retrain multinomial classes']
+    #d2 -> d1
+    d1 -> f [label = '  Remove C@_{4}  cases from X@_{4}']
+    f -> g1 [xlabel = '  Train C@_{3}  vs. all using W@_{3}']
+    f -> g2 [label = 'Retrain multinomial classes']
+    #g2 -> g1
+    g1 -> h [label = '  Remove C@_{3}  cases from X@_{3}']
+    h -> i1 [xlabel = '  Train C@_{2}  vs. all using W@_{2}']
+    h -> i2 [label = 'Retrain multinomial classes']
+
+    {b1 d1 g1 i1} -> j
+
+    # subgraph definitions
+    subgraph {rank = same; b1; b2}
+    subgraph {rank = same; d1; d2}
+    subgraph {rank = same; g1; g2}
+    subgraph {rank = same; i1; i2}
+    subgraph {rank = same; }
+    }"
+  )
+)
 ```
 
 ### Subsampling
 
 The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.
-  
-  
+
 ## Two-Step Algorithm
 
 The two-step algorithm can be thought of as a special case of the sequential algorithm, that is specific to classifying ovarian histotypes. The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. Thus, we can implement a two-step algorithm as such:
 
-- Step 1: use binary classification for HGSC vs. non-HGSC (this step is the same as step 1 in the sequential algorithm above)
-- Step 2: use multinomial classification for remaining non-HGSC classes
-
-
+-   Step 1: use binary classification for HGSC vs. non-HGSC (this step is the same as step 1 in the sequential algorithm above)
+-   Step 2: use multinomial classification for remaining non-HGSC classes
