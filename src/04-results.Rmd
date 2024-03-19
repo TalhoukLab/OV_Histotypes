@@ -16,6 +16,7 @@ library(magrittr)
 library(DT)
 library(plotly)
 library(generics)
+library(workflows)
 library(here)
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
@@ -2030,6 +2031,11 @@ mod_seq_opt <- list(all_models_seq,
                                   skip = TRUE)) %>%
       fit(data = data)
   })
+
+# Per-class metric set
+gmean <- new_class_metric(gmean, direction = "maximize")
+per_class_mset <-
+  metric_set(accuracy, f_meas, kap, gmean)
 ```
 
 ### Confirmation Set
