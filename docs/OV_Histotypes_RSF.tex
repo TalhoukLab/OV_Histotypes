@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-03-18}
+\date{2024-03-19}
 
 \begin{document}
 \maketitle
@@ -238,7 +238,27 @@ Instead of training on k classes simultaneously using multinomial classifiers, w
 
 The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g.~F1-score).
 
-The following flowchart illustrates how the sequential algorithm works for k=5, using ovarian histotypes as an example for the classes.
+Let
+
+\[
+\begin{aligned}
+& X_k = \text{Training data with k classes}  \\
+& C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
+& W_k = \text{Workflow associated with}\;C_k
+\end{aligned}
+\label{eq:sequential}
+\]
+
+Figure \ref{fig:sequential-flowchart} illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/sequential-flowchart-1} 
+
+}
+
+\caption{Sequential Algorithm}\label{fig:sequential-flowchart}
+\end{figure}
 
 \hypertarget{subsampling-1}{%
 \subsection{Subsampling}\label{subsampling-1}}
@@ -257,6 +277,17 @@ The two-step algorithm can be thought of as a special case of the sequential alg
 \item
   Step 2: use multinomial classification for remaining non-HGSC classes
 \end{itemize}
+
+Using some of the notation from Equation \eqref{eq:sequential}, a flowchart similar to Figure \ref{fig:sequential-flowchart} can show how the two-step algorithm works:
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/two-step-flowchart-1} 
+
+}
+
+\caption{Two-Step Algorithm}\label{fig:two-step-flowchart}
+\end{figure}
 
 \hypertarget{distributions}{%
 \chapter{Distributions}\label{distributions}}

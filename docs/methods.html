@@ -17,8 +17,9 @@
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="assets/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="assets/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="assets/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="assets/bs3compat-0.4.2/transition.js"></script><script src="assets/bs3compat-0.4.2/tabs.js"></script><script src="assets/bs3compat-0.4.2/bs3compat.js"></script><link href="assets/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
-<script src="assets/bs4_book-1.0.0/bs4_book.js"></script><script src="assets/kePrint-0.0.1/kePrint.js"></script><link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet">
-<script src="assets/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="assets/plotly-binding-4.10.4/plotly.js"></script><script src="assets/typedarray-0.1/typedarray.min.js"></script><link href="assets/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
+<script src="assets/bs4_book-1.0.0/bs4_book.js"></script><script src="assets/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="assets/viz-1.8.2/viz.js"></script><link href="assets/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="assets/grViz-binding-1.0.11/grViz.js"></script><script src="assets/kePrint-0.0.1/kePrint.js"></script><link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet">
+<script src="assets/plotly-binding-4.10.4/plotly.js"></script><script src="assets/typedarray-0.1/typedarray.min.js"></script><link href="assets/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
 <script src="assets/crosstalk-1.2.0/js/crosstalk.min.js"></script><link href="assets/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
 <script src="assets/plotly-main-2.11.1/plotly-latest.min.js"></script><link href="assets/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
 <script src="assets/datatables-binding-0.20/datatables.js"></script><link href="assets/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -142,7 +143,23 @@ Figure 2.1: Visualization of Subsampling Techniques
 </h2>
 <p>Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the “other” class are those not equal to the current “one” class and excluding all “one” classes from previous steps. For example, if the “one” class in step 1 was HGSC, the “other” classes would include CCOC, ENOC, LGSC, and MUC. If the “one” class in step 2 was CCOC, the “other” classes include ENOC, LGSC, and MUC.</p>
 <p>The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).</p>
-<p>The following flowchart illustrates how the sequential algorithm works for k=5, using ovarian histotypes as an example for the classes.</p>
+<p>Let</p>
+<p><span class="math display" id="eq:sequential">\[
+\begin{aligned}
+&amp; X_k = \text{Training data with k classes}  \\
+&amp; C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
+&amp; W_k = \text{Workflow associated with}\;C_k
+\end{aligned}
+\tag{2.1}
+\]</span></p>
+<p>Figure <a href="methods.html#fig:sequential-flowchart">2.2</a> illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sequential-flowchart"></span>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-85287a63e14d49912cc2" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-85287a63e14d49912cc2">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  predictions>]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  predictions>]\n    d2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f [label = <X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    g1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  predictions>]\n    g2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h [label = <X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    i1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  predictions>]\n    i2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    j [label = \"Aggregate all predictions\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n    #b2 -> b1\n    b1 -> c [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n    #d2 -> d1\n    d1 -> f [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f -> g1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    f -> g2 [label = \"Retrain multinomial classes\"]\n    #g2 -> g1\n    g1 -> h [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h -> i1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    h -> i2 [label = \"Retrain multinomial classes\"]\n\n    {b1 d1 g1 i1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    subgraph {rank = same; g1; g2}\n    subgraph {rank = same; i1; i2}\n    subgraph {rank = same; }\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+Figure 2.2: Sequential Algorithm
+</p>
+</div>
 <div id="subsampling-1" class="section level3" number="2.4.1">
 <h3>
 <span class="header-section-number">2.4.1</span> Subsampling<a class="anchor" aria-label="anchor" href="#subsampling-1"><i class="fas fa-link"></i></a>
@@ -159,6 +176,15 @@ Figure 2.1: Visualization of Subsampling Techniques
 <li>Step 1: use binary classification for HGSC vs. non-HGSC (this step is the same as step 1 in the sequential algorithm above)</li>
 <li>Step 2: use multinomial classification for remaining non-HGSC classes</li>
 </ul>
+<p>Using some of the notation from Equation <a href="methods.html#eq:sequential">(2.1)</a>, a flowchart similar to Figure <a href="methods.html#fig:sequential-flowchart">2.2</a> can show how the two-step algorithm works:</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:two-step-flowchart"></span>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-31b49e2f089fdc80cfc0" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-31b49e2f089fdc80cfc0">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = \"Store HGSC predictions\"]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT> for HGSC>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = \"Store remaining predictions\"]\n    d2 [label = \"Select best workflow with highest overall metric\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train HGSC vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n\n    b1 -> c [xlabel = <  Remove HGSC cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = \"Train multinomial classes with best workflow\"]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n\n    j [label = \"Aggregate all predictions\"]\n\n    {b1 d1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+Figure 2.3: Two-Step Algorithm
+</p>
+</div>
+
 </div>
 </div>
   <div class="chapter-nav">
@@ -198,7 +224,7 @@ Figure 2.1: Visualization of Subsampling Techniques
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-03-18.</p>
+    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-03-19.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
@@ -206,6 +232,34 @@ Figure 2.1: Visualization of Subsampling Techniques
   </div>
 
 </div></div>
-</footer>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
 </body>
 </html>
