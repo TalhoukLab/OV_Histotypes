@@ -2150,7 +2150,8 @@ conf_eval_per_class <- conf_pred_overall %>%
 kable(conf_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Confirmation Set Model",
       digits = 3) %>% 
-  kable_styling()
+  kable_styling() %>% 
+  collapse_rows(columns = 1)
 ```
 
 ### Validation Set
@@ -2247,5 +2248,6 @@ val_eval_per_class <- val_pred_overall %>%
 kable(val_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Validation Set Model",
       digits = 3) %>% 
-  kable_styling()
+  kable_styling() %>% 
+  collapse_rows(columns = 1)
 ```
