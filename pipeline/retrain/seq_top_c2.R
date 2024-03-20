@@ -14,7 +14,7 @@ n_class <- n_distinct(train_class)
 # Top workflow by per-class F1-score out of n_class
 seq_top <- all_metrics_train %>%
   filter(.metric == rank_metric, class_group != "Overall") %>%
-  slice_max(order_by = .estimate) %>%
+  slice_max(order_by = mean_estimate) %>%
   add_column(n_class = n_class)
 
 # Save outputs
