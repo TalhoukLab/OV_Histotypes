@@ -63,14 +63,21 @@ if (n_distinct(class) == 2) {
   prob_cols <- prob_cols[1]
 }
 
-# Calculate overall metrics
+# Calculate average of overall metrics across folds
 overall_metrics <- test_preds %>%
-  mset(truth = class, prob_cols, estimate = .pred_class) %>%
+  nest(.by = "fold_id") %>%
+  mutate(
+    metrics = data %>%
+      map(~ {
+        .x %>%
+          mset(truth = class, prob_cols, estimate = .pred_class) %>%
+          suppressWarnings()
+      })
+  ) %>%
+  unnest(cols = metrics) %>%
+  summarise(mean_estimate = mean(.estimate),
+            .by = c(.metric, .estimator)) %>%
   add_column(class_group = "Overall") %>%
-  suppressWarnings()
-
-# Combine all metrics
-all_metrics <- overall_metrics %>%
   arrange(.metric)
 
 # Write all metrics to file
@@ -82,4 +89,4 @@ metrics_file <- file.path(
   dataset,
   paste0(seq_wflow, "_add", ngene, "_metrics_", dataset, ".rds")
 )
-saveRDS(all_metrics, metrics_file)
+saveRDS(overall_metrics, metrics_file)
