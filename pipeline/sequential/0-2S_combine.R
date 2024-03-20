@@ -8,7 +8,7 @@ all_metrics_retrain_4 <- readRDS(here("data/all_metrics_retrain_4.rds"))
 rank_metric <- "f_meas"
 step2_wflow <-  all_metrics_retrain_4 %>%
   filter(.metric == rank_metric, class_group == "Overall") %>%
-  slice_max(order_by = .estimate) %>%
+  slice_max(order_by = mean_estimate) %>%
   pull(wflow)
 
 two_step_wflows <- c(seq_top_c5[["wflow"]], step2_wflow)
