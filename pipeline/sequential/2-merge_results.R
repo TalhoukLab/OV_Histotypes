@@ -111,12 +111,12 @@ if (grepl("_(rf|xgb|mr)", best_wflow)) {
     map(~ {
       .x %>%
         extract_fit_parsnip() %>%
-        vip::vi(rank = TRUE)
+        vip::vi()
     }) %>%
     list_rbind(names_to = "fold_id") %>%
     summarize(Mean_Importance = mean(Importance), .by = "Variable") %>%
-    mutate(Mean_Importance = dense_rank(Mean_Importance)) %>%
-    arrange(Mean_Importance)
+    mutate(Rank = dense_rank(-Mean_Importance)) %>%
+    arrange(Rank)
 } else if (grepl("_svm", best_wflow)) {
   svm_pfun <- function(object, newdata) {
     kernlab::predict(object, new_data = newdata)[[".pred_class"]]
@@ -132,14 +132,13 @@ if (grepl("_(rf|xgb|mr)", best_wflow)) {
           target = "class",
           metric = "accuracy",
           nsim = 5,
-          pred_wrapper = svm_pfun,
-          rank = TRUE
+          pred_wrapper = svm_pfun
         )
     }) %>%
     list_rbind(names_to = "fold_id") %>%
     summarize(Mean_Importance = mean(Importance), .by = "Variable") %>%
-    mutate(Mean_Importance = dense_rank(Mean_Importance)) %>%
-    arrange(Mean_Importance)
+    mutate(Rank = dense_rank(-Mean_Importance)) %>%
+    arrange(Rank)
 }
 
 # Write best models to file
