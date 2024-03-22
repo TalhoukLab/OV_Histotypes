@@ -12,14 +12,14 @@ function err_msg() {
 }
 
 # Queue status for user without the column headers
-function squ() {
+function squ_pr() {
   squeue -u $1 -h -t pending,running -r --start
 }
 
 
 # Current number of pending/running jobs in queue for user
 function njobs() {
-  squ $1 | wc -l
+  squ_pr $1 | wc -l
 }
 
 # Elapsed time since first job submitted for user.
@@ -27,7 +27,7 @@ function njobs() {
 # Reference: https://www.linuxquestions.org/questions/linux-newbie-8/time-difference-calculation-4175459414/
 function elapsed() {
   if [[ `njobs $1` > 0 ]]; then
-    first=`squ $1 | awk '{print $6}' | head -n 1 | sed 's/^.*T//'`
+    first=`squ_pr $1 | awk '{print $6}' | head -n 1 | sed 's/^.*T//'`
   else
     first=$2
   fi
