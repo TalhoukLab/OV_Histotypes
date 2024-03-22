@@ -66,7 +66,6 @@ vi_ranked <- vi_files %>%
   select(Gene_Order) %>%
   unnest(Gene_Order)
 
-
 # Only consider candidate genes not already in PrOTYPE and SPOT
 candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
                 "LIN28B", "TFF3", "MUC5B", "FUT3", "STC1", "BCL2", "PAX8", "GCNT3",
@@ -77,7 +76,7 @@ candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
                 "MAP1LC3A")
 
 vi_ranked_candidates <- vi_ranked %>%
-  filter(Variable %in% candidates)
+  filter(Gene_Order %in% candidates)
 
 all_vi_file <- file.path(
   outputDir,
