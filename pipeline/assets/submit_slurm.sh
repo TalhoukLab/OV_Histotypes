@@ -19,7 +19,7 @@ function squ() {
 
 # Current number of pending/running jobs in queue for user
 function njobs() {
-  squ $1 | tail -n +2 | wc -l
+  squ $1 | wc -l
 }
 
 # Elapsed time since first job submitted for user.
