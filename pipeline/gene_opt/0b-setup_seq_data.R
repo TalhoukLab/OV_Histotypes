@@ -15,8 +15,8 @@ ranked_vi <- readRDS(file.path(
 
 # Order of candidate genes for sequence
 candidate_genes <- ranked_vi %>%
-  slice_min(order_by = Aggregated_Rank, n = as.numeric(ngene)) %>%
-  pull(Variable)
+  slice_head(n = as.numeric(ngene)) %>%
+  pull(Gene_Order)
 
 # Genes from PrOTYPE and SPOT to keep
 base_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
