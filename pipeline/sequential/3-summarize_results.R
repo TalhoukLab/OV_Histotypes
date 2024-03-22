@@ -57,8 +57,15 @@ vi_ranked <- vi_files %>%
   set_names(gsub("_vi.*", "",  basename(.))) %>%
   map(readRDS) %>%
   list_rbind(names_to = "wflow") %>%
-  summarize(Aggregated_Rank = mean(Mean_Importance), .by = Variable) %>%
-  arrange(Aggregated_Rank)
+  separate(wflow, c("wflow", "Sequence"), sep = "_s(?=[^_]+$)", convert = TRUE) %>%
+  arrange(Sequence) %>%
+  nest(.by = Rank) %>%
+  mutate(Gene_Lists = map(data, "Variable"),
+         Gene_Order = accumulate(Gene_Lists, union)) %>%
+  tail(1) %>%
+  select(Gene_Order) %>%
+  unnest(Gene_Order)
+
 
 # Only consider candidate genes not already in PrOTYPE and SPOT
 candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
