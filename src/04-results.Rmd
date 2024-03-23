@@ -68,17 +68,17 @@ ivs <- bind_rows(ivst, ivs1, ivs2) %>%
   sampling = fct_inorder(sampling))
 ```
 
-We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overallaccuracy of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.
+We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, kappa, and G-mean are the metrics of interest. Workflows are ordered by their mean estimates across the outer folds of the nested CV for each metric.
 
 ## Training Set
 
 ### Accuracy
 
-```{r train-accuracy, fig.cap='Training Set Accuracy'}
+```{r train-accuracy, fig.cap='Training Set Mean Accuracy'}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group == "Overall", .metric == "accuracy"),
-  aes(x = fct_reorder(wflow, .estimate, .desc = TRUE), y = .estimate)
+  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE), y = mean_estimate)
 ) +
   geom_point() +
   theme_bw() +
@@ -86,7 +86,7 @@ p <- ggplot(
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Workflow",
        y = "Accuracy",
-       title = "Cross-Validated Training Set Overall Accuracy")
+       title = "Training Set Mean Accuracy")
 print(p)
 ```
 
@@ -97,29 +97,29 @@ overall_accuracy_train <-
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
-    .estimate = round(.estimate, digits = 3),
-    .estimate = ifelse(
-      .estimate == max(.estimate, na.rm = TRUE),
-      cell_spec(.estimate, bold = TRUE),
-      .estimate
+    mean_estimate = round(mean_estimate, digits = 3),
+    mean_estimate = ifelse(
+      mean_estimate == max(mean_estimate, na.rm = TRUE),
+      cell_spec(mean_estimate, bold = TRUE),
+      mean_estimate
     )
   ) %>% 
   arrange(samp) %>% 
   pivot_wider(id_cols = samp,
               names_from = "alg",
-              values_from = ".estimate")
+              values_from = "mean_estimate")
 
 kable(overall_accuracy_train,
-      caption = "Cross-Validated Training Set Overall Accuracy",
+      caption = "Training Set Mean Accuracy",
       escape = FALSE) %>%
   kable_styling()
 ```
 
-```{r train-accuracy-class, fig.cap='Training Set Class-Specific Accuracy', fig.width=8, fig.height=8}
+```{r train-accuracy-class, fig.cap='Training Set Class-Specific Mean Accuracy', fig.width=8, fig.height=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "accuracy"),
-  aes(x = fct_reorder(wflow, .estimate, .desc = TRUE), y = .estimate)
+  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE), y = mean_estimate)
 ) +
   geom_point() +
   facet_wrap(~ class_group, ncol = 1) +
@@ -128,7 +128,7 @@ p <- ggplot(
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Workflow",
        y = "Accuracy",
-       title = "Cross-Validated Training Set Class-Specific Accuracy")
+       title = "Training Set Class-Specific Mean Accuracy")
 print(p)
 ```
 
@@ -140,31 +140,34 @@ class_accuracy_train <-
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
-    .estimate = round(.estimate, digits = 3),
-    .estimate = ifelse(
-      .estimate == max(.estimate, na.rm = TRUE),
-      cell_spec(.estimate, bold = TRUE),
-      .estimate
+    mean_estimate = round(mean_estimate, digits = 3),
+    mean_estimate = ifelse(
+      mean_estimate == max(mean_estimate, na.rm = TRUE),
+      cell_spec(mean_estimate, bold = TRUE),
+      mean_estimate
     )
   ) %>% 
   arrange(samp) %>% 
   pivot_wider(id_cols = c(samp, histotype),
               names_from = "alg",
-              values_from = ".estimate")
+              values_from = "mean_estimate")
 
 kable(class_accuracy_train,
-      caption = "Cross-Validated Training Set Class-Specific Accuracy",
+      caption = "Training Set Class-Specific Mean Accuracy",
       escape = FALSE) %>%
   kable_styling()
 ```
 
 ### F1-Score
 
-```{r train-f1, fig.cap='Training Set F1-Score'}
+```{r train-f1, fig.cap='Training Set Mean F1-Score'}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group == "Overall", .metric == "f_meas"),
-  aes(x = fct_reorder(wflow, .estimate, .desc = TRUE, .na_rm = FALSE), y = .estimate)
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate
+  )
 ) +
   geom_point() +
   theme_bw() +
@@ -172,7 +175,7 @@ p <- ggplot(
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Workflow",
        y = "F1-Score",
-       title = "Cross-Validated Training Set Overall F1-Score")
+       title = "Training Set Mean F1-Score")
 print(p)
 ```
 
@@ -183,29 +186,29 @@ overall_f1_train <-
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
-    .estimate = round(.estimate, digits = 3),
-    .estimate = ifelse(
-      .estimate == max(.estimate, na.rm = TRUE),
-      cell_spec(.estimate, bold = TRUE),
-      .estimate
+    mean_estimate = round(mean_estimate, digits = 3),
+    mean_estimate = ifelse(
+      mean_estimate == max(mean_estimate, na.rm = TRUE),
+      cell_spec(mean_estimate, bold = TRUE),
+      mean_estimate
     )
   ) %>% 
   arrange(samp) %>% 
   pivot_wider(id_cols = samp,
               names_from = "alg",
-              values_from = ".estimate")
+              values_from = "mean_estimate")
 
 kable(overall_f1_train,
-      caption = "Cross-Validated Training Set Overall F1-Score",
+      caption = "Training Set Mean F1-Score",
       escape = FALSE) %>%
   kable_styling()
 ```
 
-```{r train-f1-class, fig.cap='Training Set Class-Specific F1-Score', fig.width=8}
+```{r train-f1-class, fig.cap='Training Set Class-Specific Mean F1-Score', fig.width=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "f_meas"),
-  aes(x = fct_reorder(wflow, .estimate, .desc = TRUE, .na_rm = FALSE), y = .estimate)
+  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE), y = mean_estimate)
 ) +
   geom_point() +
   facet_wrap(~ class_group, ncol = 1) +
@@ -214,7 +217,7 @@ p <- ggplot(
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Workflow",
        y = "F1-Score",
-       title = "Cross-Validated Training Set Class-Specific F1-Score")
+       title = "Training Set Class-Specific Mean F1-Score")
 print(p)
 ```
 
@@ -226,31 +229,31 @@ class_f1_train <-
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
-    .estimate = round(.estimate, digits = 3),
-    .estimate = ifelse(
-      .estimate == max(.estimate, na.rm = TRUE),
-      cell_spec(.estimate, bold = TRUE),
-      .estimate
+    mean_estimate = round(mean_estimate, digits = 3),
+    mean_estimate = ifelse(
+      mean_estimate == max(mean_estimate, na.rm = TRUE),
+      cell_spec(mean_estimate, bold = TRUE),
+      mean_estimate
     )
   ) %>% 
   arrange(samp) %>% 
   pivot_wider(id_cols = c(samp, histotype),
               names_from = "alg",
-              values_from = ".estimate")
+              values_from = "mean_estimate")
 
 kable(class_f1_train,
-      caption = "Cross-Validated Training Set Class-Specific F1-Score",
+      caption = "Cross-Validated Training Set Class-Specific Mean F1-Score",
       escape = FALSE) %>%
   kable_styling()
 ```
 
 ### Kappa
 
-```{r train-kappa, fig.cap='Training Set Kappa'}
+```{r train-kappa, fig.cap='Training Set Mean Kappa'}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group == "Overall", .metric == "kap"),
-  aes(x = fct_reorder(wflow, .estimate, .desc = TRUE), y = .estimate)
+  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE), y = mean_estimate)
 ) +
   geom_point() +
   theme_bw() +
@@ -258,7 +261,7 @@ p <- ggplot(
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Workflow",
        y = "Kappa",
-       title = "Cross-Validated Training Set Overall Kappa")
+       title = "Training Set Mean Kappa")
 print(p)
 ```
 
@@ -269,29 +272,29 @@ overall_kappa_train <-
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
-    .estimate = round(.estimate, digits = 3),
-    .estimate = ifelse(
-      .estimate == max(.estimate, na.rm = TRUE),
-      cell_spec(.estimate, bold = TRUE),
-      .estimate
+    mean_estimate = round(mean_estimate, digits = 3),
+    mean_estimate = ifelse(
+      mean_estimate == max(mean_estimate, na.rm = TRUE),
+      cell_spec(mean_estimate, bold = TRUE),
+      mean_estimate
     )
   ) %>% 
   arrange(samp) %>% 
   pivot_wider(id_cols = samp,
               names_from = "alg",
-              values_from = ".estimate")
+              values_from = "mean_estimate")
 
 kable(overall_kappa_train,
-      caption = "Cross-Validated Training Set Overall Kappa",
+      caption = "Training Set Mean Kappa",
       escape = FALSE) %>%
   kable_styling()
 ```
 
-```{r train-kappa-class, fig.cap='Training Set Class-Specific Kappa', fig.width=8}
+```{r train-kappa-class, fig.cap='Training Set Class-Specific Mean Kappa', fig.width=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "kap"),
-  aes(x = fct_reorder(wflow, .estimate, .desc = TRUE, .na_rm = FALSE), y = .estimate)
+  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE), y = mean_estimate)
 ) +
   geom_point() +
   facet_wrap(~ class_group, ncol = 1) +
@@ -300,7 +303,7 @@ p <- ggplot(
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Workflow",
        y = "Kappa",
-       title = "Cross-Validated Training Set Class-Specific Kappa")
+       title = "Training Set Class-Specific Mean Kappa")
 print(p)
 ```
 
@@ -312,31 +315,31 @@ class_kappa_train <-
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
-    .estimate = round(.estimate, digits = 3),
-    .estimate = ifelse(
-      .estimate == max(.estimate, na.rm = TRUE),
-      cell_spec(.estimate, bold = TRUE),
-      .estimate
+    mean_estimate = round(mean_estimate, digits = 3),
+    mean_estimate = ifelse(
+      mean_estimate == max(mean_estimate, na.rm = TRUE),
+      cell_spec(mean_estimate, bold = TRUE),
+      mean_estimate
     )
   ) %>% 
   arrange(samp) %>% 
   pivot_wider(id_cols = c(samp, histotype),
               names_from = "alg",
-              values_from = ".estimate")
+              values_from = "mean_estimate")
 
 kable(class_kappa_train,
-      caption = "Cross-Validated Training Set Class-Specific Kappa",
+      caption = "Training Set Class-Specific Mean Kappa",
       escape = FALSE) %>%
   kable_styling()
 ```
 
 ### G-mean
 
-```{r train-gmean, fig.cap='Training Set G-mean'}
+```{r train-gmean, fig.cap='Training Set Mean G-mean'}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group == "Overall", .metric == "gmean"),
-  aes(x = fct_reorder(wflow, .estimate, .desc = TRUE), y = .estimate)
+  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE), y = mean_estimate)
 ) +
   geom_point() +
   theme_bw() +
@@ -344,7 +347,7 @@ p <- ggplot(
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Workflow",
        y = "G-mean",
-       title = "Cross-Validated Training Set Overall G-mean")
+       title = "Training Set Mean G-mean")
 print(p)
 ```
 
@@ -355,29 +358,29 @@ overall_gmean_train <-
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
-    .estimate = round(.estimate, digits = 3),
-    .estimate = ifelse(
-      .estimate == max(.estimate, na.rm = TRUE),
-      cell_spec(.estimate, bold = TRUE),
-      .estimate
+    mean_estimate = round(mean_estimate, digits = 3),
+    mean_estimate = ifelse(
+      mean_estimate == max(mean_estimate, na.rm = TRUE),
+      cell_spec(mean_estimate, bold = TRUE),
+      mean_estimate
     )
   ) %>% 
   arrange(samp) %>% 
   pivot_wider(id_cols = samp,
               names_from = "alg",
-              values_from = ".estimate")
+              values_from = "mean_estimate")
 
 kable(overall_gmean_train,
-      caption = "Cross-Validated Training Set Overall G-mean",
+      caption = "Training Set Mean G-mean",
       escape = FALSE) %>%
   kable_styling()
 ```
 
-```{r train-gmean-class, fig.cap='Training Set Class-Specific G-mean', fig.width=8}
+```{r train-gmean-class, fig.cap='Training Set Class-Specific Mean G-mean', fig.width=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "gmean"),
-  aes(x = fct_reorder(wflow, .estimate, .desc = TRUE, .na_rm = FALSE), y = .estimate)
+  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE), y = mean_estimate)
 ) +
   geom_point() +
   facet_wrap(~ class_group, ncol = 1) +
@@ -386,7 +389,7 @@ p <- ggplot(
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(x = "Workflow",
        y = "Kappa",
-       title = "Cross-Validated Training Set Class-Specific G-mean")
+       title = "Training Set Class-Specific Mean G-mean")
 print(p)
 ```
 
@@ -398,20 +401,20 @@ class_gmean_train <-
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
-    .estimate = round(.estimate, digits = 3),
-    .estimate = ifelse(
-      .estimate == max(.estimate, na.rm = TRUE),
-      cell_spec(.estimate, bold = TRUE),
-      .estimate
+    mean_estimate = round(mean_estimate, digits = 3),
+    mean_estimate = ifelse(
+      mean_estimate == max(mean_estimate, na.rm = TRUE),
+      cell_spec(mean_estimate, bold = TRUE),
+      mean_estimate
     )
   ) %>% 
   arrange(samp) %>% 
   pivot_wider(id_cols = c(samp, histotype),
               names_from = "alg",
-              values_from = ".estimate")
+              values_from = "mean_estimate")
 
 kable(class_gmean_train,
-      caption = "Cross-Validated Training Set Class-Specific G-mean",
+      caption = "raining Set Class-Specific Mean G-mean",
       escape = FALSE) %>%
   kable_styling()
 ```
@@ -2144,7 +2147,7 @@ conf_eval_per_class <- conf_pred_overall %>%
   ) %>% 
   unnest(cols = data) %>% 
   select(-.estimator) %>% 
-  pivot_wider(names_from = "class_group", values_from = ".estimate")
+  pivot_wider(names_from = "class_group", values_from = "mean_estimate")
 
 kable(conf_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Confirmation Set Model",
@@ -2242,7 +2245,7 @@ val_eval_per_class <- val_pred_overall %>%
   ) %>% 
   unnest(cols = data) %>% 
   select(-.estimator) %>% 
-  pivot_wider(names_from = "class_group", values_from = ".estimate")
+  pivot_wider(names_from = "class_group", values_from = "mean_estimate")
 
 kable(val_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Validation Set Model",
