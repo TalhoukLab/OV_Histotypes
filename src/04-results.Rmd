@@ -16,6 +16,7 @@ library(magrittr)
 library(DT)
 library(plotly)
 library(tidymodels)
+library(themis)
 library(here)
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
@@ -1755,11 +1756,11 @@ candidates <- setdiff(names(train_data), overlap_all)
 
 There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining `r length(candidates)` candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry forward for a particular model.
 
-Variable importance is calculated using either a model-based approach if it is available, or a SHAP-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by aggregating the base classifier VI scores using rank aggregation.
+Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by taking the cumulative union of variable importance ranks across all sequences until all variables have been included.
 
 ```{r gene-seq, fig.height=8, fig.cap='Gene Optimization for Sequential Classifier'}
 gene_seq_names <- all_vi_seq %>% 
-  select(Name = Variable) %>% 
+  select(Name = Gene_Order) %>% 
   rowid_to_column("Genes")
 
 dat_gene_seq <- gene_opt_all_metrics_seq %>% 
@@ -1776,8 +1777,8 @@ dat_gene_seq <- gene_opt_all_metrics_seq %>%
   inner_join(gene_seq_names, by = "Genes")
 
 p_gene_seq <-
-  ggplot(dat_gene_seq, aes(x = Genes, y = .estimate, text = Name)) +
-  facet_wrap(~ label, ncol = 1, scales = "free_y") +
+  ggplot(dat_gene_seq, aes(x = Genes, y = mean_estimate, text = Name)) +
+  facet_wrap(~ label, ncol = 1) +
   geom_point() +
   theme_bw() +
   labs(x = "Genes Added",
@@ -1785,20 +1786,18 @@ p_gene_seq <-
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq)
 
-n_genes_seq <- 28
+n_genes_seq <- 27
 genes_add_seq <- gene_seq_names %>%
   slice_min(order_by = Genes, n = n_genes_seq) %>% 
   pull(Name)
 opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
 
-In the sequential classifier, we use the per-class median F1-scores pertaining to the histotype that had the best performance from each retraining, and sort them on number of genes added. For instance, in sequence 2, we look at the CCOC F1-scores because CCOC had the best performance from retraining after HGSC was removed.
-
-We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=28+34=62. The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
+In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.9 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
 gene_2s_names <- all_vi_two_step %>% 
-  select(Name = Variable) %>% 
+  select(Name = Gene_Order) %>% 
   rowid_to_column("Genes")
 
 dat_gene_2s <- gene_opt_all_metrics_two_step %>% 
@@ -1815,8 +1814,8 @@ dat_gene_2s <- gene_opt_all_metrics_two_step %>%
   inner_join(gene_seq_names, by = "Genes")
 
 p_gene_2s <-
-  ggplot(dat_gene_2s, aes(x = Genes, y = .estimate, text = Name)) +
-  facet_wrap(~ label, ncol = 1, scales = "free_y") +
+  ggplot(dat_gene_2s, aes(x = Genes, y = mean_estimate, text = Name)) +
+  facet_wrap(~ label, ncol = 1) +
   geom_point() +
   theme_bw() +
   labs(x = "Genes Added",
@@ -1824,14 +1823,14 @@ p_gene_2s <-
        title = "Gene Optimziation for Two-Step Classifier")
 ggplotly(p_gene_2s)
 
-n_genes_2s <- 31
+n_genes_2s <- 12
 genes_add_2s <- gene_2s_names %>%
   slice_min(order_by = Genes, n = n_genes_2s) %>% 
   pull(Name)
 opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
-Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.88 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=28+`r n_genes_2s`=52. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
+Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.85 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
 
 ## Rank Aggregation
 
@@ -1849,15 +1848,15 @@ per_class_metrics <- bind_rows(
 # Keep only workflows that predicted at least one case in each class
 per_class_f1 <- per_class_metrics %>%
   filter(.metric == "f_meas") %>%
-  select(wflow, class_group, .estimate) %>%
-  pivot_wider(names_from = "class_group", values_from = ".estimate") %>%
+  select(wflow, class_group, mean_estimate) %>%
+  pivot_wider(names_from = "class_group", values_from = "mean_estimate") %>%
   drop_na() %>%
-  pivot_longer(-wflow, names_to = "class_group", values_to = ".estimate")
+  pivot_longer(-wflow, names_to = "class_group", values_to = "mean_estimate")
 
 # Rank F1-measures
 wflow_ranks <- per_class_f1 %>%
   group_by(class_group) %>%
-  mutate(rank = factor(row_number(-.estimate))) %>%
+  mutate(rank = factor(row_number(-mean_estimate))) %>%
   ungroup() %>%
   arrange(rank) %>%
   pivot_wider(id_cols = class_group,
@@ -1879,7 +1878,7 @@ wflow_top <- splendid:::sink_output(RankAggreg(
 
 # F1-score summary
 f1_summary <- per_class_f1 %>% 
-  pivot_wider(names_from = class_group, values_from = .estimate) %>% 
+  pivot_wider(names_from = class_group, values_from = mean_estimate) %>% 
   mutate(across(where(is.numeric), ~ round(.x, digits = 3))) %>% 
   inner_join(wflow_top, by = "wflow") %>% 
   arrange(rank)
@@ -1922,7 +1921,7 @@ metrics_top4 <- per_class_metrics %>%
   arrange(rank)
 
 p <- 
-  ggplot(metrics_top4, aes(x = wflow, y = .estimate, color = .metric)) +
+  ggplot(metrics_top4, aes(x = wflow, y = mean_estimate, color = .metric)) +
   geom_point(position = position_jitter(width = 0.1)) +
   facet_wrap(vars(class_group), ncol = 2) +
   theme_bw() +
@@ -1941,7 +1940,8 @@ metrics_f1_top4 <- metrics_top4 %>%
   filter(.metric == "f_meas")
 
 p <- 
-  ggplot(metrics_f1_top4, aes(x = class_group, y = .estimate, color = wflow)) +
+  ggplot(metrics_f1_top4,
+         aes(x = class_group, y = mean_estimate, color = wflow)) +
   geom_point(position = position_jitter(width = 0.1)) +
   theme_bw() +
   theme(plot.title = element_text(face = "bold")) +
@@ -1977,7 +1977,6 @@ We can test 2 additional methods by using either the full set of genes or the op
 # Two-step data
 two_step_data <- readRDS(here("data", "two_step_data.rds"))
 two_step_class <- readRDS(here("data", "two_step_class.rds"))
-two_step_algs <- readRDS(here("data", "two_step_algs.rds"))
 
 # Two-step full model
 set.seed(2024)
