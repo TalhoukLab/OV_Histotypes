@@ -86,12 +86,14 @@ overall_accuracy_train <-
   arrange(samp) %>% 
   pivot_wider(id_cols = samp,
               names_from = "alg",
-              values_from = "mean_estimate")
+              values_from = "mean_estimate") %>% 
+  rename(Subsampling = samp)
 
 kable(overall_accuracy_train,
       caption = "Training Set Mean Accuracy",
       escape = FALSE) %>%
-  kable_styling()
+  kable_styling() %>% 
+  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r train-accuracy-class, fig.cap='Training Set Class-Specific Mean Accuracy', fig.width=8, fig.height=8}
@@ -115,7 +117,7 @@ print(p)
 class_accuracy_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "accuracy") %>% 
-  rename(histotype = class_group) %>% 
+  rename(Histotype = class_group) %>% 
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
@@ -127,14 +129,17 @@ class_accuracy_train <-
     )
   ) %>% 
   arrange(samp) %>% 
-  pivot_wider(id_cols = c(samp, histotype),
+  pivot_wider(id_cols = c(samp, Histotype),
               names_from = "alg",
-              values_from = "mean_estimate")
+              values_from = "mean_estimate") %>% 
+  rename(Subsampling = samp)
 
 kable(class_accuracy_train,
       caption = "Training Set Class-Specific Mean Accuracy",
       escape = FALSE) %>%
-  kable_styling()
+  kable_styling() %>% 
+  collapse_rows(columns = 1) %>% 
+  add_header_above(c(" " = 2, "Algorithms" = 4))
 ```
 
 ### F1-Score
@@ -175,12 +180,14 @@ overall_f1_train <-
   arrange(samp) %>% 
   pivot_wider(id_cols = samp,
               names_from = "alg",
-              values_from = "mean_estimate")
+              values_from = "mean_estimate") %>% 
+  rename(Subsampling = samp)
 
 kable(overall_f1_train,
       caption = "Training Set Mean F1-Score",
       escape = FALSE) %>%
-  kable_styling()
+  kable_styling() %>% 
+  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r train-f1-class, fig.cap='Training Set Class-Specific Mean F1-Score', fig.width=8}
@@ -204,7 +211,7 @@ print(p)
 class_f1_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "f_meas") %>% 
-  rename(histotype = class_group) %>% 
+  rename(Histotype = class_group) %>% 
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
@@ -216,14 +223,17 @@ class_f1_train <-
     )
   ) %>% 
   arrange(samp) %>% 
-  pivot_wider(id_cols = c(samp, histotype),
+  pivot_wider(id_cols = c(samp, Histotype),
               names_from = "alg",
-              values_from = "mean_estimate")
+              values_from = "mean_estimate") %>% 
+  rename(Subsampling = samp)
 
 kable(class_f1_train,
       caption = "Cross-Validated Training Set Class-Specific Mean F1-Score",
       escape = FALSE) %>%
-  kable_styling()
+  kable_styling() %>% 
+  collapse_rows(columns = 1) %>% 
+  add_header_above(c(" " = 2, "Algorithms" = 4))
 ```
 
 ### Kappa
@@ -261,12 +271,14 @@ overall_kappa_train <-
   arrange(samp) %>% 
   pivot_wider(id_cols = samp,
               names_from = "alg",
-              values_from = "mean_estimate")
+              values_from = "mean_estimate") %>% 
+  rename(Subsampling = samp)
 
 kable(overall_kappa_train,
       caption = "Training Set Mean Kappa",
       escape = FALSE) %>%
-  kable_styling()
+  kable_styling() %>% 
+  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r train-kappa-class, fig.cap='Training Set Class-Specific Mean Kappa', fig.width=8}
@@ -290,7 +302,7 @@ print(p)
 class_kappa_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "kap") %>% 
-  rename(histotype = class_group) %>% 
+  rename(Histotype = class_group) %>% 
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
@@ -302,14 +314,17 @@ class_kappa_train <-
     )
   ) %>% 
   arrange(samp) %>% 
-  pivot_wider(id_cols = c(samp, histotype),
+  pivot_wider(id_cols = c(samp, Histotype),
               names_from = "alg",
-              values_from = "mean_estimate")
+              values_from = "mean_estimate") %>% 
+  rename(Subsampling = samp)
 
 kable(class_kappa_train,
       caption = "Training Set Class-Specific Mean Kappa",
       escape = FALSE) %>%
-  kable_styling()
+  kable_styling() %>% 
+  collapse_rows(columns = 1) %>% 
+  add_header_above(c(" " = 2, "Algorithms" = 4))
 ```
 
 ### G-mean
@@ -347,12 +362,14 @@ overall_gmean_train <-
   arrange(samp) %>% 
   pivot_wider(id_cols = samp,
               names_from = "alg",
-              values_from = "mean_estimate")
+              values_from = "mean_estimate") %>% 
+  rename(Subsampling = samp)
 
 kable(overall_gmean_train,
       caption = "Training Set Mean G-mean",
       escape = FALSE) %>%
-  kable_styling()
+  kable_styling() %>% 
+  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r train-gmean-class, fig.cap='Training Set Class-Specific Mean G-mean', fig.width=8}
@@ -376,7 +393,7 @@ print(p)
 class_gmean_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "gmean") %>% 
-  rename(histotype = class_group) %>% 
+  rename(Histotype = class_group) %>% 
   separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
     samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
@@ -388,14 +405,17 @@ class_gmean_train <-
     )
   ) %>% 
   arrange(samp) %>% 
-  pivot_wider(id_cols = c(samp, histotype),
+  pivot_wider(id_cols = c(samp, Histotype),
               names_from = "alg",
-              values_from = "mean_estimate")
+              values_from = "mean_estimate") %>% 
+  rename(Subsampling = samp)
 
 kable(class_gmean_train,
-      caption = "raining Set Class-Specific Mean G-mean",
+      caption = "Training Set Class-Specific Mean G-mean",
       escape = FALSE) %>%
-  kable_styling()
+  kable_styling() %>% 
+  collapse_rows(columns = 1) %>% 
+  add_header_above(c(" " = 2, "Algorithms" = 4))
 ```
 
 ## Gene Optimization
