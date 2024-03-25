@@ -97,11 +97,14 @@ if (grepl("rf|xgb", wflow)) {
   tuning_grid <- 10
 
 } else if (grepl("svm", wflow)) {
+  set.seed(2024)
+  sigma_range <- as.vector(kernlab::sigest(as.matrix(data))[-2])
+
   svm_params <-
     parameters(cost(), rbf_sigma()) %>%
     update(
-      cost = cost(c(0, 2)),
-      rbf_sigma = rbf_sigma(c(-3, 0))
+      cost = cost(c(0, 3)),
+      rbf_sigma = rbf_sigma(sigma_range, trans = NULL)
     )
 
   wflow_set <- wflow_sets %>%
