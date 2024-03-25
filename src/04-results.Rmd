@@ -21,30 +21,26 @@ library(here)
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
 
-train_data <- readRDS(here("data/train_data.rds"))
-coefmat <- readRDS(here("data/coefmat.rds"))
-
-geneseq <- readRDS(here("data/merge_eval_seq.rds"))
-gene2s <- readRDS(here("data/merge_eval_two_step.rds"))
-
+# Metrics
 all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
-
 per_class_metrics_seq <-
   readRDS(here("data/per_class_metrics_seq.rds"))
 per_class_metrics_two_step <-
   readRDS(here("data/per_class_metrics_two_step.rds"))
 
-
+# Models
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
 
+# Overall Variable Importance
+all_vi_seq <- readRDS(here("data/all_vi_seq.rds"))
+all_vi_two_step <- readRDS(here("data/all_vi_two_step.rds"))
+
+# Gene Optimization
 gene_opt_all_metrics_seq <-
   readRDS(here("data/gene_opt_all_metrics_seq.rds"))
 gene_opt_all_metrics_two_step <- 
   readRDS(here("data/gene_opt_all_metrics_two_step.rds"))
-
-all_vi_seq <- readRDS(here("data/all_vi_seq.rds"))
-all_vi_two_step <- readRDS(here("data/all_vi_two_step.rds"))
 ```
 
 We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, kappa, and G-mean are the metrics of interest. Workflows are ordered by their mean estimates across the outer folds of the nested CV for each metric.

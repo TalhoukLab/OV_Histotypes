@@ -13,6 +13,7 @@ library(here)
 source(here("validation/cs_process_cohorts.R"))
 train_data <- readRDS(here("data/train_data.rds"))
 train_class <- readRDS(here("data/train_class.rds"))
+coefmat <- readRDS(here("data/coefmat.rds"))
 ```
 
 ## Normalization
