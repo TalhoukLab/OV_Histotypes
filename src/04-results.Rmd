@@ -754,10 +754,10 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
 conf_eval_overall <- conf_pred_overall %>%
   group_by(method) %>%
   summarize(
-    accuracy = yardstick::accuracy_vec(Truth, Prediction),
-    kappa = yardstick::kap_vec(Truth, Prediction),
-    f1 = yardstick::f_meas_vec(Truth, Prediction),
-    gmean = splendid:::gmean(table(Prediction, Truth))
+    accuracy = accuracy_vec(Truth, Prediction),
+    kappa = kap_vec(Truth, Prediction),
+    f1 = f_meas_vec(Truth, Prediction),
+    gmean = gmean_vec(Truth, Prediction)
   )
 
 kable(conf_eval_overall,
@@ -852,10 +852,10 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
 val_eval_overall <- val_pred_overall %>%
   group_by(method) %>%
   summarize(
-    accuracy = yardstick::accuracy_vec(Truth, Prediction),
-    kappa = yardstick::kap_vec(Truth, Prediction),
-    f1 = yardstick::f_meas_vec(Truth, Prediction),
-    gmean = splendid:::gmean(table(Prediction, Truth))
+    accuracy = accuracy_vec(Truth, Prediction),
+    kappa = kap_vec(Truth, Prediction),
+    f1 = f_meas_vec(Truth, Prediction),
+    gmean = gmean_vec(Truth, Prediction)
   )
 
 kable(val_eval_overall,

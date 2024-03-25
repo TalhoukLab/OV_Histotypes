@@ -71,21 +71,61 @@ var_imp <- function(sm, alg) {
 }
 
 # Geometric mean, implemented in yardstick format
-gmean <- function(data, truth, estimate, ...) {
-  nlvls <- nlevels(data[[rlang::as_name(rlang::enquo(truth))]])
-  if (nlvls > 2) {
-    .estimator <- "multiclass"
-  } else {
-    .estimator <- "binary"
-  }
+gmean_vec <- function(truth,
+                      estimate,
+                      estimator = NULL,
+                      na_rm = TRUE,
+                      case_weights = NULL,
+                      event_level = "first",
+                      ...) {
+  estimator <-
+    yardstick::finalize_estimator(truth, estimator, metric_class = "gmean")
+  yardstick::check_class_metric(truth, estimate, case_weights, estimator)
 
-  data %>%
-    dplyr::add_count({{truth}}, name = "P") %>%
-    dplyr::add_count({{estimate}}, P, name = "TP") %>%
-    dplyr::filter({{truth}} == {{estimate}}) %>%
-    dplyr::distinct({{truth}}, sens = TP / P) %>%
-    dplyr::summarize(.estimate = purrr::reduce(sens, `*`) ^ (1 / length(sens))) %>%
-    tibble::add_column(.metric = "gmean",
-                       .estimator = .estimator,
-                       .before = 1)
+  if (na_rm) {
+    result <-
+      yardstick::yardstick_remove_missing(truth, estimate, case_weights)
+
+    truth <- result$truth
+    estimate <- result$estimate
+    case_weights <- result$case_weights
+  } else if (yardstick::yardstick_any_missing(truth, estimate, case_weights)) {
+    return(NA_real_)
+  }
+  gmean_impl(truth, estimate, estimator, event_level)
+}
+
+gmean_impl <- function(truth, estimate, estimator, event_level) {
+  xtab <- table(estimate, truth)
+  p <- colSums(xtab)
+  tp <- diag(xtab)
+  sens <- tp / p
+  purrr::reduce(sens, `*`) ^ (1 / length(sens))
+}
+
+gmean <- function(data, ...) {
+  UseMethod("gmean")
+}
+
+gmean <- yardstick::new_class_metric(gmean, direction = "maximize")
+
+gmean.data.frame <- function(data,
+                             truth,
+                             estimate,
+                             estimator = NULL,
+                             na_rm = TRUE,
+                             case_weights = NULL,
+                             event_level = "first",
+                             ...) {
+  yardstick::class_metric_summarizer(
+    name = "gmean",
+    fn = gmean_vec,
+    data = data,
+    truth = !!rlang::enquo(truth),
+    estimate = !!rlang::enquo(estimate),
+    estimator = estimator,
+    na_rm = na_rm,
+    case_weights = !!rlang::enquo(case_weights),
+    event_level = event_level
+  )
 }
