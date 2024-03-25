@@ -72,13 +72,20 @@ var_imp <- function(sm, alg) {
 
 # Geometric mean, implemented in yardstick format
 gmean <- function(data, truth, estimate, ...) {
+  nlvls <- nlevels(data[[rlang::as_name(rlang::enquo(truth))]])
+  if (nlvls > 2) {
+    .estimator <- "multiclass"
+  } else {
+    .estimator <- "binary"
+  }
+
   data %>%
     dplyr::add_count({{truth}}, name = "P") %>%
     dplyr::add_count({{estimate}}, P, name = "TP") %>%
     dplyr::filter({{truth}} == {{estimate}}) %>%
-    dplyr::distinct(sens = TP / P) %>%
+    dplyr::distinct({{truth}}, sens = TP / P) %>%
     dplyr::summarize(.estimate = purrr::reduce(sens, `*`) ^ (1 / length(sens))) %>%
     tibble::add_column(.metric = "gmean",
-                       .estimator = "multiclass",
+                       .estimator = .estimator,
                        .before = 1)
 }
