@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>4 Results | Ovarian Cancer Histotypes: Report of Statistical Findings</title>
 <meta name="author" content="Derek Chiu">
-<meta name="description" content="We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of...">
+<meta name="description" content="We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, kappa, and G-mean are the metrics of interest. Workflows are ordered by their mean...">
 <meta name="generator" content="bookdown 0.33 with bs4_book()">
 <meta property="og:title" content="4 Results | Ovarian Cancer Histotypes: Report of Statistical Findings">
 <meta property="og:type" content="book">
-<meta property="og:description" content="We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of...">
+<meta property="og:description" content="We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, kappa, and G-mean are the metrics of interest. Workflows are ordered by their mean...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="4 Results | Ovarian Cancer Histotypes: Report of Statistical Findings">
-<meta name="twitter:description" content="We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of...">
+<meta name="twitter:description" content="We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, kappa, and G-mean are the metrics of interest. Workflows are ordered by their mean...">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="assets/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="assets/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="assets/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="assets/bs3compat-0.4.2/transition.js"></script><script src="assets/bs3compat-0.4.2/tabs.js"></script><script src="assets/bs3compat-0.4.2/bs3compat.js"></script><link href="assets/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
@@ -69,7 +69,7 @@
 <h1>
 <span class="header-section-number">4</span> Results<a class="anchor" aria-label="anchor" href="#results"><i class="fas fa-link"></i></a>
 </h1>
-<p>We show internal validation summaries for the combined classifier training set, as well as the CS1 and CS2 sets with duplicates included. The F1-scores, kappa, and G-mean are the measures of interest. Algorithms are sorted by descending value based on the overallaccuracy of the training set. The point ranges show the median, 5th and 95th percentiles, coloured by subsampling methods.</p>
+<p>We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, kappa, and G-mean are the metrics of interest. Workflows are ordered by their mean estimates across the outer folds of the nested CV for each metric.</p>
 <div id="training-set" class="section level2" number="4.1">
 <h2>
 <span class="header-section-number">4.1</span> Training Set<a class="anchor" aria-label="anchor" href="#training-set"><i class="fas fa-link"></i></a>
@@ -80,17 +80,27 @@
 </h3>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:train-accuracy"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-accuracy-1.png" alt="Training Set Accuracy" width="672"><p class="caption">
-Figure 4.1: Training Set Accuracy
+<img src="OV_Histotypes_RSF_files/figure-html/train-accuracy-1.png" alt="Training Set Mean Accuracy" width="672"><p class="caption">
+Figure 4.1: Training Set Mean Accuracy
 </p>
 </div>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-accuracy-table">Table 4.1: </span>Cross-Validated Training Set Overall Accuracy
+<span id="tab:train-accuracy-table">Table 4.1: </span>Training Set Mean Accuracy
 </caption>
-<thead><tr>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Algorithms
+</div>
+</th>
+</tr>
+<tr>
 <th style="text-align:left;">
-samp
+Subsampling
 </th>
 <th style="text-align:left;">
 mr
@@ -104,7 +114,8 @@ svm
 <th style="text-align:left;">
 xgb
 </th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
 <td style="text-align:left;">
@@ -195,20 +206,30 @@ hybrid
 </table></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:train-accuracy-class"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-accuracy-class-1.png" alt="Training Set Class-Specific Accuracy" width="768"><p class="caption">
-Figure 4.2: Training Set Class-Specific Accuracy
+<img src="OV_Histotypes_RSF_files/figure-html/train-accuracy-class-1.png" alt="Training Set Class-Specific Mean Accuracy" width="768"><p class="caption">
+Figure 4.2: Training Set Class-Specific Mean Accuracy
 </p>
 </div>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-accuracy-class-table">Table 4.2: </span>Cross-Validated Training Set Class-Specific Accuracy
+<span id="tab:train-accuracy-class-table">Table 4.2: </span>Training Set Class-Specific Mean Accuracy
 </caption>
-<thead><tr>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Algorithms
+</div>
+</th>
+</tr>
+<tr>
 <th style="text-align:left;">
-samp
+Subsampling
 </th>
 <th style="text-align:left;">
-histotype
+Histotype
 </th>
 <th style="text-align:left;">
 mr
@@ -222,10 +243,11 @@ svm
 <th style="text-align:left;">
 xgb
 </th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 none
 </td>
 <td style="text-align:left;">
@@ -246,9 +268,6 @@ CCOC
 </tr>
 <tr>
 <td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
@@ -265,9 +284,6 @@ ENOC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-none
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -286,9 +302,6 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
@@ -306,9 +319,6 @@ LGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
@@ -325,7 +335,7 @@ MUC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 down
 </td>
 <td style="text-align:left;">
@@ -346,9 +356,6 @@ CCOC
 </tr>
 <tr>
 <td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
@@ -366,9 +373,6 @@ ENOC
 </tr>
 <tr>
 <td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
 HGSC
 </td>
 <td style="text-align:left;">
@@ -381,13 +385,10 @@ HGSC
 0.835
 </td>
 <td style="text-align:left;">
-0.311
+0.31
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-down
-</td>
 <td style="text-align:left;">
 LGSC
 </td>
@@ -406,9 +407,6 @@ LGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
@@ -425,7 +423,7 @@ MUC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 up
 </td>
 <td style="text-align:left;">
@@ -445,9 +443,6 @@ CCOC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
@@ -466,9 +461,6 @@ ENOC
 </tr>
 <tr>
 <td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
 HGSC
 </td>
 <td style="text-align:left;">
@@ -485,9 +477,6 @@ HGSC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 LGSC
 </td>
@@ -506,9 +495,6 @@ LGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
@@ -525,7 +511,7 @@ MUC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 smote
 </td>
 <td style="text-align:left;">
@@ -546,9 +532,6 @@ CCOC
 </tr>
 <tr>
 <td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
@@ -565,9 +548,6 @@ ENOC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-smote
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -586,9 +566,6 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
@@ -606,9 +583,6 @@ LGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
@@ -625,7 +599,7 @@ MUC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 hybrid
 </td>
 <td style="text-align:left;">
@@ -646,9 +620,6 @@ CCOC
 </tr>
 <tr>
 <td style="text-align:left;">
-hybrid
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
@@ -665,9 +636,6 @@ ENOC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-hybrid
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -686,9 +654,6 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-hybrid
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
@@ -705,9 +670,6 @@ LGSC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-hybrid
-</td>
 <td style="text-align:left;">
 MUC
 </td>
@@ -733,17 +695,27 @@ MUC
 </h3>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:train-f1"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-f1-1.png" alt="Training Set F1-Score" width="672"><p class="caption">
-Figure 4.3: Training Set F1-Score
+<img src="OV_Histotypes_RSF_files/figure-html/train-f1-1.png" alt="Training Set Mean F1-Score" width="672"><p class="caption">
+Figure 4.3: Training Set Mean F1-Score
 </p>
 </div>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-f1-table">Table 4.3: </span>Cross-Validated Training Set Overall F1-Score
+<span id="tab:train-f1-table">Table 4.3: </span>Training Set Mean F1-Score
 </caption>
-<thead><tr>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Algorithms
+</div>
+</th>
+</tr>
+<tr>
 <th style="text-align:left;">
-samp
+Subsampling
 </th>
 <th style="text-align:left;">
 mr
@@ -757,17 +729,18 @@ svm
 <th style="text-align:left;">
 xgb
 </th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
 <td style="text-align:left;">
 none
 </td>
 <td style="text-align:left;">
-0.461
+0.822
 </td>
 <td style="text-align:left;">
-0.795
+0.787
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">0.897</span>
@@ -781,16 +754,16 @@ none
 down
 </td>
 <td style="text-align:left;">
-0.672
+0.664
 </td>
 <td style="text-align:left;">
-0.665
+0.657
 </td>
 <td style="text-align:left;">
-0.648
+0.645
 </td>
 <td style="text-align:left;">
-0.148
+0.231
 </td>
 </tr>
 <tr>
@@ -798,16 +771,16 @@ down
 up
 </td>
 <td style="text-align:left;">
-0.717
+0.709
 </td>
 <td style="text-align:left;">
-0.735
+0.755
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">0.897</span>
 </td>
 <td style="text-align:left;">
-0.756
+0.776
 </td>
 </tr>
 <tr>
@@ -815,16 +788,16 @@ up
 smote
 </td>
 <td style="text-align:left;">
-0.74
+0.724
 </td>
 <td style="text-align:left;">
-0.737
+0.748
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">0.897</span>
 </td>
 <td style="text-align:left;">
-0.752
+0.747
 </td>
 </tr>
 <tr>
@@ -832,36 +805,46 @@ smote
 hybrid
 </td>
 <td style="text-align:left;">
-0.73
+0.72
 </td>
 <td style="text-align:left;">
-0.773
+0.77
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">0.897</span>
 </td>
 <td style="text-align:left;">
-0.748
+0.728
 </td>
 </tr>
 </tbody>
 </table></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:train-f1-class"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-f1-class-1.png" alt="Training Set Class-Specific F1-Score" width="768"><p class="caption">
-Figure 4.4: Training Set Class-Specific F1-Score
+<img src="OV_Histotypes_RSF_files/figure-html/train-f1-class-1.png" alt="Training Set Class-Specific Mean F1-Score" width="768"><p class="caption">
+Figure 4.4: Training Set Class-Specific Mean F1-Score
 </p>
 </div>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-f1-class-table">Table 4.4: </span>Cross-Validated Training Set Class-Specific F1-Score
+<span id="tab:train-f1-class-table">Table 4.4: </span>Cross-Validated Training Set Class-Specific Mean F1-Score
 </caption>
-<thead><tr>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Algorithms
+</div>
+</th>
+</tr>
+<tr>
 <th style="text-align:left;">
-samp
+Subsampling
 </th>
 <th style="text-align:left;">
-histotype
+Histotype
 </th>
 <th style="text-align:left;">
 mr
@@ -875,20 +858,21 @@ svm
 <th style="text-align:left;">
 xgb
 </th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 none
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.024
+0.154
 </td>
 <td style="text-align:left;">
-0.853
+0.852
 </td>
 <td style="text-align:left;">
 NA
@@ -898,9 +882,6 @@ NA
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-none
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
@@ -908,7 +889,7 @@ ENOC
 NA
 </td>
 <td style="text-align:left;">
-0.538
+0.497
 </td>
 <td style="text-align:left;">
 NA
@@ -918,9 +899,6 @@ NA
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-none
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -939,9 +917,6 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
@@ -959,16 +934,13 @@ NA
 </tr>
 <tr>
 <td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.826
+0.839
 </td>
 <td style="text-align:left;">
 NA
@@ -978,7 +950,7 @@ NA
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 down
 </td>
 <td style="text-align:left;">
@@ -988,7 +960,7 @@ CCOC
 0.8
 </td>
 <td style="text-align:left;">
-0.8
+0.808
 </td>
 <td style="text-align:left;">
 0.781
@@ -999,28 +971,22 @@ NA
 </tr>
 <tr>
 <td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.577
+0.559
 </td>
 <td style="text-align:left;">
-0.627
+0.59
 </td>
 <td style="text-align:left;">
-0.561
+0.56
 </td>
 <td style="text-align:left;">
 NA
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-down
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -1034,24 +1000,21 @@ HGSC
 0.888
 </td>
 <td style="text-align:left;">
-0.32
+0.894
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.324
+0.308
 </td>
 <td style="text-align:left;">
-0.305
+0.301
 </td>
 <td style="text-align:left;">
-0.263
+0.256
 </td>
 <td style="text-align:left;">
 0.035
@@ -1059,68 +1022,59 @@ LGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.743
+0.732
 </td>
 <td style="text-align:left;">
-0.667
+0.66
 </td>
 <td style="text-align:left;">
-0.748
+0.741
 </td>
 <td style="text-align:left;">
-0.089
+0.096
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 up
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.805
+0.8
+</td>
+<td style="text-align:left;">
+0.869
+</td>
+<td style="text-align:left;">
+NA
 </td>
 <td style="text-align:left;">
 0.87
 </td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-0.872
-</td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.642
+0.63
 </td>
 <td style="text-align:left;">
-0.748
+0.734
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.737
+0.728
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -1139,68 +1093,59 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.424
+0.409
 </td>
 <td style="text-align:left;">
-0.25
+0.236
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.378
+0.394
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.765
+0.756
 </td>
 <td style="text-align:left;">
-0.832
+0.835
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.818
+0.814
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 smote
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.823
+0.817
 </td>
 <td style="text-align:left;">
-0.837
+0.833
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.85
+0.846
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-smote
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
@@ -1208,19 +1153,16 @@ ENOC
 0.662
 </td>
 <td style="text-align:left;">
-0.713
+0.701
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.687
+0.674
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-smote
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -1239,88 +1181,76 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.462
+0.4
 </td>
 <td style="text-align:left;">
-0.333
+0.285
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.435
+0.433
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-smote
-</td>
 <td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.794
+0.784
 </td>
 <td style="text-align:left;">
-0.825
+0.827
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.812
+0.805
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 hybrid
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.808
+0.799
 </td>
 <td style="text-align:left;">
-0.873
+0.868
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.847
+0.843
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-hybrid
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.645
+0.638
 </td>
 <td style="text-align:left;">
-0.754
+0.742
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.687
+0.661
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-hybrid
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -1339,42 +1269,36 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-hybrid
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.466
+0.436
 </td>
 <td style="text-align:left;">
-0.45
+0.456
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.449
+0.384
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-hybrid
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.77
+0.764
 </td>
 <td style="text-align:left;">
-0.809
+0.808
 </td>
 <td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
-0.788
+0.782
 </td>
 </tr>
 </tbody>
@@ -1386,17 +1310,27 @@ NA
 </h3>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:train-kappa"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-kappa-1.png" alt="Training Set Kappa" width="672"><p class="caption">
-Figure 4.5: Training Set Kappa
+<img src="OV_Histotypes_RSF_files/figure-html/train-kappa-1.png" alt="Training Set Mean Kappa" width="672"><p class="caption">
+Figure 4.5: Training Set Mean Kappa
 </p>
 </div>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-kappa-table">Table 4.5: </span>Cross-Validated Training Set Overall Kappa
+<span id="tab:train-kappa-table">Table 4.5: </span>Training Set Mean Kappa
 </caption>
-<thead><tr>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Algorithms
+</div>
+</th>
+</tr>
+<tr>
 <th style="text-align:left;">
-samp
+Subsampling
 </th>
 <th style="text-align:left;">
 mr
@@ -1410,17 +1344,18 @@ svm
 <th style="text-align:left;">
 xgb
 </th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
 <td style="text-align:left;">
 none
 </td>
 <td style="text-align:left;">
-0.007
+0.008
 </td>
 <td style="text-align:left;">
-0.729
+0.727
 </td>
 <td style="text-align:left;">
 0
@@ -1434,16 +1369,16 @@ none
 down
 </td>
 <td style="text-align:left;">
-0.629
+0.63
 </td>
 <td style="text-align:left;">
-0.638
+0.639
 </td>
 <td style="text-align:left;">
-0.569
+0.568
 </td>
 <td style="text-align:left;">
--0.002
+0
 </td>
 </tr>
 <tr>
@@ -1454,7 +1389,7 @@ up
 0.717
 </td>
 <td style="text-align:left;">
-0.811
+0.81
 </td>
 <td style="text-align:left;">
 0
@@ -1471,7 +1406,7 @@ smote
 0.743
 </td>
 <td style="text-align:left;">
-0.797
+0.796
 </td>
 <td style="text-align:left;">
 0
@@ -1488,7 +1423,7 @@ hybrid
 0.744
 </td>
 <td style="text-align:left;">
-<span style=" font-weight: bold;    ">0.82</span>
+<span style=" font-weight: bold;    ">0.819</span>
 </td>
 <td style="text-align:left;">
 0
@@ -1501,20 +1436,30 @@ hybrid
 </table></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:train-kappa-class"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-kappa-class-1.png" alt="Training Set Class-Specific Kappa" width="768"><p class="caption">
-Figure 4.6: Training Set Class-Specific Kappa
+<img src="OV_Histotypes_RSF_files/figure-html/train-kappa-class-1.png" alt="Training Set Class-Specific Mean Kappa" width="768"><p class="caption">
+Figure 4.6: Training Set Class-Specific Mean Kappa
 </p>
 </div>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-kappa-class-table">Table 4.6: </span>Cross-Validated Training Set Class-Specific Kappa
+<span id="tab:train-kappa-class-table">Table 4.6: </span>Training Set Class-Specific Mean Kappa
 </caption>
-<thead><tr>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Algorithms
+</div>
+</th>
+</tr>
+<tr>
 <th style="text-align:left;">
-samp
+Subsampling
 </th>
 <th style="text-align:left;">
-histotype
+Histotype
 </th>
 <th style="text-align:left;">
 mr
@@ -1528,20 +1473,21 @@ svm
 <th style="text-align:left;">
 xgb
 </th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 none
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.023
+0.03
 </td>
 <td style="text-align:left;">
-0.844
+0.843
 </td>
 <td style="text-align:left;">
 0
@@ -1551,9 +1497,6 @@ CCOC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-none
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
@@ -1561,7 +1504,7 @@ ENOC
 0
 </td>
 <td style="text-align:left;">
-0.52
+0.479
 </td>
 <td style="text-align:left;">
 0
@@ -1571,17 +1514,14 @@ ENOC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-none
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
 <td style="text-align:left;">
-0.007
+0.008
 </td>
 <td style="text-align:left;">
-0.762
+0.761
 </td>
 <td style="text-align:left;">
 0
@@ -1591,9 +1531,6 @@ HGSC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-none
-</td>
 <td style="text-align:left;">
 LGSC
 </td>
@@ -1612,16 +1549,13 @@ LGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-0.818
+0.83
 </td>
 <td style="text-align:left;">
 0
@@ -1631,7 +1565,7 @@ MUC
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 down
 </td>
 <td style="text-align:left;">
@@ -1641,7 +1575,7 @@ CCOC
 0.786
 </td>
 <td style="text-align:left;">
-0.785
+0.793
 </td>
 <td style="text-align:left;">
 0.765
@@ -1652,16 +1586,13 @@ CCOC
 </tr>
 <tr>
 <td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.548
+0.531
 </td>
 <td style="text-align:left;">
-0.606
+0.57
 </td>
 <td style="text-align:left;">
 0.528
@@ -1672,108 +1603,93 @@ ENOC
 </tr>
 <tr>
 <td style="text-align:left;">
-down
-</td>
-<td style="text-align:left;">
 HGSC
 </td>
 <td style="text-align:left;">
-0.669
+0.671
 </td>
 <td style="text-align:left;">
-0.692
+0.695
 </td>
 <td style="text-align:left;">
-0.586
+0.587
 </td>
 <td style="text-align:left;">
--0.003
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-down
-</td>
 <td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.302
+0.288
 </td>
 <td style="text-align:left;">
-0.284
+0.281
 </td>
 <td style="text-align:left;">
-0.239
+0.232
 </td>
 <td style="text-align:left;">
--0.001
+0
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-down
+MUC
 </td>
 <td style="text-align:left;">
-MUC
+0.718
+</td>
+<td style="text-align:left;">
+0.64
 </td>
 <td style="text-align:left;">
 0.728
 </td>
 <td style="text-align:left;">
-0.646
-</td>
-<td style="text-align:left;">
-0.734
-</td>
-<td style="text-align:left;">
--0.001
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 up
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.792
+0.787
 </td>
 <td style="text-align:left;">
-0.862
+0.86
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-0.863
+0.861
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.618
+0.607
 </td>
 <td style="text-align:left;">
-0.735
+0.721
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-0.722
+0.713
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -1781,7 +1697,7 @@ HGSC
 0.776
 </td>
 <td style="text-align:left;">
-0.861
+0.86
 </td>
 <td style="text-align:left;">
 0
@@ -1792,53 +1708,27 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.408
+0.394
 </td>
 <td style="text-align:left;">
-0.242
+0.181
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-0.37
+0.307
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.751
-</td>
-<td style="text-align:left;">
-0.823
-</td>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:left;">
-0.808
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-CCOC
-</td>
-<td style="text-align:left;">
-0.811
+0.743
 </td>
 <td style="text-align:left;">
 0.826
@@ -1847,101 +1737,21 @@ CCOC
 0
 </td>
 <td style="text-align:left;">
-0.84
+0.804
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 smote
-</td>
-<td style="text-align:left;">
-ENOC
-</td>
-<td style="text-align:left;">
-0.641
-</td>
-<td style="text-align:left;">
-0.698
-</td>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:left;">
-0.67
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-HGSC
-</td>
-<td style="text-align:left;">
-0.795
-</td>
-<td style="text-align:left;">
-0.857
-</td>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:left;">
-0.869
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-LGSC
-</td>
-<td style="text-align:left;">
-0.447
-</td>
-<td style="text-align:left;">
-0.324
-</td>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:left;">
-0.424
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
-MUC
-</td>
-<td style="text-align:left;">
-0.782
-</td>
-<td style="text-align:left;">
-0.816
-</td>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:left;">
-0.801
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-hybrid
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.795
+0.805
 </td>
 <td style="text-align:left;">
-0.865
+0.822
 </td>
 <td style="text-align:left;">
 0
@@ -1952,28 +1762,110 @@ CCOC
 </tr>
 <tr>
 <td style="text-align:left;">
-hybrid
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.622
+0.64
 </td>
 <td style="text-align:left;">
-0.739
+0.685
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-0.669
+0.657
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
+HGSC
+</td>
+<td style="text-align:left;">
+0.795
+</td>
+<td style="text-align:left;">
+0.856
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0.869
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LGSC
+</td>
+<td style="text-align:left;">
+0.386
+</td>
+<td style="text-align:left;">
+0.22
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0.422
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MUC
+</td>
+<td style="text-align:left;">
+0.772
+</td>
+<td style="text-align:left;">
+0.818
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0.795
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 hybrid
 </td>
+<td style="text-align:left;">
+CCOC
+</td>
+<td style="text-align:left;">
+0.786
+</td>
+<td style="text-align:left;">
+0.86
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0.832
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENOC
+</td>
+<td style="text-align:left;">
+0.615
+</td>
+<td style="text-align:left;">
+0.728
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0.644
+</td>
+</tr>
+<tr>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -1987,47 +1879,41 @@ HGSC
 0
 </td>
 <td style="text-align:left;">
-0.845
+0.844
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-hybrid
-</td>
 <td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.452
+0.423
 </td>
 <td style="text-align:left;">
-0.441
+0.448
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-0.438
+0.373
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-hybrid
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.757
+0.751
 </td>
 <td style="text-align:left;">
-0.799
+0.798
 </td>
 <td style="text-align:left;">
 0
 </td>
 <td style="text-align:left;">
-0.776
+0.771
 </td>
 </tr>
 </tbody>
@@ -2039,17 +1925,27 @@ MUC
 </h3>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:train-gmean"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-gmean-1.png" alt="Training Set G-mean" width="672"><p class="caption">
-Figure 4.7: Training Set G-mean
+<img src="OV_Histotypes_RSF_files/figure-html/train-gmean-1.png" alt="Training Set Mean G-mean" width="672"><p class="caption">
+Figure 4.7: Training Set Mean G-mean
 </p>
 </div>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-gmean-table">Table 4.7: </span>Cross-Validated Training Set Overall G-mean
+<span id="tab:train-gmean-table">Table 4.7: </span>Training Set Mean G-mean
 </caption>
-<thead><tr>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Algorithms
+</div>
+</th>
+</tr>
+<tr>
 <th style="text-align:left;">
-samp
+Subsampling
 </th>
 <th style="text-align:left;">
 mr
@@ -2063,17 +1959,18 @@ svm
 <th style="text-align:left;">
 xgb
 </th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
 <td style="text-align:left;">
 none
 </td>
 <td style="text-align:left;">
-0.111
+0.858
 </td>
 <td style="text-align:left;">
-0.717
+0.688
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
@@ -2087,16 +1984,16 @@ none
 down
 </td>
 <td style="text-align:left;">
-0.829
+0.813
 </td>
 <td style="text-align:left;">
-0.8
+0.786
 </td>
 <td style="text-align:left;">
-0.829
+0.83
 </td>
 <td style="text-align:left;">
-0.314
+<span style=" font-weight: bold;    ">1</span>
 </td>
 </tr>
 <tr>
@@ -2104,16 +2001,16 @@ down
 up
 </td>
 <td style="text-align:left;">
-0.816
+0.811
 </td>
 <td style="text-align:left;">
-0.606
+0.717
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.693
+0.735
 </td>
 </tr>
 <tr>
@@ -2121,16 +2018,16 @@ up
 smote
 </td>
 <td style="text-align:left;">
-0.824
+0.847
 </td>
 <td style="text-align:left;">
-0.656
+0.734
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.73
+0.738
 </td>
 </tr>
 <tr>
@@ -2138,36 +2035,46 @@ smote
 hybrid
 </td>
 <td style="text-align:left;">
-0.801
+0.806
 </td>
 <td style="text-align:left;">
-0.736
+0.729
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.743
+0.769
 </td>
 </tr>
 </tbody>
 </table></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:train-gmean-class"></span>
-<img src="OV_Histotypes_RSF_files/figure-html/train-gmean-class-1.png" alt="Training Set Class-Specific G-mean" width="768"><p class="caption">
-Figure 4.8: Training Set Class-Specific G-mean
+<img src="OV_Histotypes_RSF_files/figure-html/train-gmean-class-1.png" alt="Training Set Class-Specific Mean G-mean" width="768"><p class="caption">
+Figure 4.8: Training Set Class-Specific Mean G-mean
 </p>
 </div>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:train-gmean-class-table">Table 4.8: </span>Cross-Validated Training Set Class-Specific G-mean
+<span id="tab:train-gmean-class-table">Table 4.8: </span>Training Set Class-Specific Mean G-mean
 </caption>
-<thead><tr>
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="2">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Algorithms
+</div>
+</th>
+</tr>
+<tr>
 <th style="text-align:left;">
-samp
+Subsampling
 </th>
 <th style="text-align:left;">
-histotype
+Histotype
 </th>
 <th style="text-align:left;">
 mr
@@ -2181,97 +2088,18 @@ svm
 <th style="text-align:left;">
 xgb
 </th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 none
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.111
-</td>
-<td style="text-align:left;">
-0.887
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-ENOC
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-<td style="text-align:left;">
-0.649
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-HGSC
-</td>
-<td style="text-align:left;">
-0.066
-</td>
-<td style="text-align:left;">
-0.824
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-LGSC
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-none
-</td>
-<td style="text-align:left;">
-MUC
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">1</span>
+0.858
 </td>
 <td style="text-align:left;">
 0.888
@@ -2285,48 +2113,110 @@ MUC
 </tr>
 <tr>
 <td style="text-align:left;">
+ENOC
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+<td style="text-align:left;">
+0.615
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HGSC
+</td>
+<td style="text-align:left;">
+0.83
+</td>
+<td style="text-align:left;">
+0.823
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LGSC
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MUC
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+<td style="text-align:left;">
+0.901
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">1</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 down
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.896
+0.897
 </td>
 <td style="text-align:left;">
-0.908
+0.911
 </td>
 <td style="text-align:left;">
-0.894
+0.899
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-down
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.826
+0.803
 </td>
 <td style="text-align:left;">
-0.789
+0.758
 </td>
 <td style="text-align:left;">
-0.869
+0.859
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-down
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -2340,61 +2230,55 @@ HGSC
 0.881
 </td>
 <td style="text-align:left;">
-0.398
+<span style=" font-weight: bold;    ">1</span>
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-down
-</td>
 <td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.941
+0.926
 </td>
 <td style="text-align:left;">
-0.898
+0.892
 </td>
 <td style="text-align:left;">
-0.928
+0.932
 </td>
 <td style="text-align:left;">
-0.485
+<span style=" font-weight: bold;    ">1</span>
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-down
-</td>
 <td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.899
+0.909
 </td>
 <td style="text-align:left;">
-0.885
+0.897
 </td>
 <td style="text-align:left;">
-0.875
+0.887
 </td>
 <td style="text-align:left;">
-0.488
+<span style=" font-weight: bold;    ">1</span>
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 up
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.884
+0.881
 </td>
 <td style="text-align:left;">
-0.907
+0.908
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
@@ -2405,28 +2289,22 @@ CCOC
 </tr>
 <tr>
 <td style="text-align:left;">
-up
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.863
+0.844
 </td>
 <td style="text-align:left;">
-0.831
+0.82
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.855
+0.843
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -2440,61 +2318,55 @@ HGSC
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.929
+0.928
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.869
+0.876
 </td>
 <td style="text-align:left;">
-0.416
+0.677
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.55
+0.653
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-up
-</td>
 <td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.9
+0.906
 </td>
 <td style="text-align:left;">
-0.905
+0.915
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.92
+0.927
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 smote
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.891
+0.887
 </td>
 <td style="text-align:left;">
-0.905
+0.906
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
@@ -2505,33 +2377,27 @@ CCOC
 </tr>
 <tr>
 <td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.857
+0.844
 </td>
 <td style="text-align:left;">
-0.829
+0.814
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.819
+0.805
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
 HGSC
 </td>
 <td style="text-align:left;">
-0.935
+0.934
 </td>
 <td style="text-align:left;">
 0.915
@@ -2545,88 +2411,76 @@ HGSC
 </tr>
 <tr>
 <td style="text-align:left;">
-smote
-</td>
-<td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.871
+0.912
 </td>
 <td style="text-align:left;">
-0.509
+0.724
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.656
+0.673
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-smote
-</td>
 <td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.918
+0.925
 </td>
 <td style="text-align:left;">
-0.904
+0.914
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.92
+0.926
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;vertical-align: middle !important;" rowspan="5">
 hybrid
 </td>
 <td style="text-align:left;">
 CCOC
 </td>
 <td style="text-align:left;">
-0.877
+0.871
 </td>
 <td style="text-align:left;">
-0.92
+0.919
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.918
+0.917
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-hybrid
-</td>
 <td style="text-align:left;">
 ENOC
 </td>
 <td style="text-align:left;">
-0.848
+0.837
 </td>
 <td style="text-align:left;">
-0.88
+0.864
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.827
+0.802
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-hybrid
-</td>
 <td style="text-align:left;">
 HGSC
 </td>
@@ -2640,52 +2494,45 @@ HGSC
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.93
+0.929
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-hybrid
-</td>
 <td style="text-align:left;">
 LGSC
 </td>
 <td style="text-align:left;">
-0.848
+0.822
 </td>
 <td style="text-align:left;">
-0.623
+0.615
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.687
+0.779
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-hybrid
-</td>
-<td style="text-align:left;">
 MUC
 </td>
 <td style="text-align:left;">
-0.901
+0.908
 </td>
 <td style="text-align:left;">
-0.911
+0.919
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    ">1</span>
 </td>
 <td style="text-align:left;">
-0.902
+0.911
 </td>
 </tr>
 </tbody>
 </table></div>
-<!-- ## Two-Step Training Set --><!-- ### Accuracy --><!-- ```{r train-step1-accuracy, fig.cap='Training Set Step 1 Accuracy'} --><!-- ivsts1_accuracy <- ivsts1 %>%  --><!--   filter(measure == "accuracy") %>%  --><!--   mutate(algorithm = fct_reorder2(algorithm, sampling, percentile_50)) --><!-- alg_levels <- levels(ivsts1_accuracy[["algorithm"]]) --><!-- p <- plot_measure(ivsts1_accuracy) + --><!--   labs( --><!--     y = "Accuracy", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 1 Accuracy by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step2-accuracy, fig.cap='Training Set Step 2 Accuracy'} --><!-- ivsts2_accuracy <- ivsts2 %>%  --><!--   filter(measure == "accuracy") %>%  --><!--   mutate(algorithm = fct_reorder2(algorithm, sampling, percentile_50)) --><!-- alg_levels <- levels(ivsts2_accuracy[["algorithm"]]) --><!-- p <- plot_measure(ivsts2_accuracy) + --><!--   labs( --><!--     y = "Accuracy", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 2 Accuracy by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step1-accuracy-table} --><!-- ivsts1_accuracy_table <- ivsts1_accuracy %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts1_accuracy_table, --><!--       caption = "Training Set Step 1 Accuracy by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r train-step2-accuracy-table} --><!-- ivsts2_accuracy_table <- ivsts2_accuracy %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts2_accuracy_table, --><!--       caption = "Training Set Step 2 Accuracy by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r train-step1-accuracy-class, fig.cap='Training Set Step 1 Class-Specific Accuracy', fig.width=8} --><!-- ivsts1_accuracy_class <- ivsts1 %>% --><!--   filter(grepl("accuracy\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("accuracy\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts1_accuracy_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "Accuracy", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 1 Class-Specific Accuracy by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step2-accuracy-class, fig.cap='Training Set Step 2 Class-Specific Accuracy', fig.width=8} --><!-- ivsts2_accuracy_class <- ivsts2 %>% --><!--   filter(grepl("accuracy\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("accuracy\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts2_accuracy_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "Accuracy", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 2 Class-Specific Accuracy by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step1-accuracy-class-table} --><!-- ivsts1_accuracy_class_table <- ivsts1_accuracy_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts1_accuracy_class_table, --><!--       caption = "Training Set Step 1 Class-Specific Accuracy by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ```{r train-step2-accuracy-class-table} --><!-- ivsts2_accuracy_class_table <- ivsts2_accuracy_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts2_accuracy_class_table, --><!--       caption = "Training Set Step 2 Class-Specific Accuracy by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ### F1-Score --><!-- ```{r train-step1-f1, fig.cap='Training Set Step 1 F1-Score'} --><!-- ivsts1_f1 <- ivsts1 %>% --><!--   filter(measure == "macro_f1") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivsts1_f1) + --><!--   labs( --><!--     y = "F1-Score", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 1 Macro-Averaged F1-Score by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step2-f1, fig.cap='Training Set Step 2 F1-Score'} --><!-- ivsts2_f1 <- ivsts2 %>% --><!--   filter(measure == "macro_f1") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivsts2_f1) + --><!--   labs( --><!--     y = "F1-Score", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 2 Macro-Averaged F1-Score by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step1-f1-table} --><!-- ivsts1_f1_table <- ivsts1_f1 %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts1_f1_table, --><!--       caption = "Training Set Step 1 Macro-Averaged F1-Score by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ```{r train-step2-f1-table} --><!-- ivsts2_f1_table <- ivsts2_f1 %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts2_f1_table, --><!--       caption = "Training Set Step 2 Macro-Averaged F1-Score by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ```{r train-step1-f1-class, fig.cap='Training Set Step 1 Class-Specific F1-Score', fig.width=8} --><!-- ivsts1_f1_class <- ivsts1 %>% --><!--   filter(grepl("f1\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("f1\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts1_f1_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "F1-Score", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step2-f1-class, fig.cap='Training Set Step 2 Class-Specific F1-Score', fig.width=8} --><!-- ivsts2_f1_class <- ivsts2 %>% --><!--   filter(grepl("f1\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("f1\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts2_f1_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "F1-Score", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step1-f1-class-table} --><!-- ivsts1_f1_class_table <- ivsts1_f1_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- datatable( --><!--   ivsts1_f1_class_table, --><!--   options = list( --><!--     scrollX = TRUE, --><!--     fixedColumns = TRUE, --><!--     columnDefs = list( --><!--       list( --><!--         targets = 1, --><!--         render = JS("$.fn.dataTable.render.ellipsis( 10 )") --><!--       ), --><!--       list(type = "natural", targets = 0) --><!--     ), --><!--     pageLength = 50 --><!--   ), --><!--   escape = FALSE, --><!--   rownames = FALSE, --><!--   caption = "Training Set Step 1 Class-Specific F1-Score by Algorithm and Subsampling Method", --><!--   filter = "top", --><!--   extensions = "FixedColumns", --><!--   plugins = c("ellipsis", "natural") --><!-- ) --><!-- ``` --><!-- ```{r train-step2-f1-class-table} --><!-- ivsts2_f1_class_table <- ivsts2_f1_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- datatable( --><!--   ivsts2_f1_class_table, --><!--   options = list( --><!--     scrollX = TRUE, --><!--     fixedColumns = TRUE, --><!--     columnDefs = list( --><!--       list( --><!--         targets = 1, --><!--         render = JS("$.fn.dataTable.render.ellipsis( 10 )") --><!--       ), --><!--       list(type = "natural", targets = 0) --><!--     ), --><!--     pageLength = 50 --><!--   ), --><!--   escape = FALSE, --><!--   rownames = FALSE, --><!--   caption = "Training Set Step 2 Class-Specific F1-Score by Algorithm and Subsampling Method", --><!--   filter = "top", --><!--   extensions = "FixedColumns", --><!--   plugins = c("ellipsis", "natural") --><!-- ) --><!-- ``` --><!-- ### Kappa --><!-- ```{r train-step1-kappa, fig.cap='Training Set Step 1 Kappa'} --><!-- ivsts1_kappa <- ivsts1 %>% --><!--   filter(measure == "kappa") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivsts1_kappa) + --><!--   labs( --><!--     y = "Kappa", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 1 Kappa by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step2-kappa, fig.cap='Training Set Step 2 Kappa'} --><!-- ivsts2_kappa <- ivsts2 %>% --><!--   filter(measure == "kappa") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivsts2_kappa) + --><!--   labs( --><!--     y = "Kappa", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 2 Kappa by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step1-kappa-table} --><!-- ivsts1_kappa_table <- ivsts1_kappa %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts1_kappa_table, --><!--       caption = "Training Set Step 1 Kappa by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r train-step2-kappa-table} --><!-- ivsts2_kappa_table <- ivsts2_kappa %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts2_kappa_table, --><!--       caption = "Training Set Step 2 Kappa by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r train-step1-kappa-class, fig.cap='Training Set Step 1 Class-Specific Kappa', fig.width=8} --><!-- ivsts1_kappa_class <- ivsts1 %>% --><!--   filter(grepl("kappa\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("kappa\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts1_kappa_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "Kappa", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step2-kappa-class, fig.cap='Training Set Step 2 Class-Specific Kappa', fig.width=8} --><!-- ivsts2_kappa_class <- ivsts2 %>% --><!--   filter(grepl("kappa\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("kappa\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts2_kappa_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "Kappa", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step1-kappa-class-table} --><!-- ivsts1_kappa_class_table <- ivsts1_kappa_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts1_kappa_class_table, --><!--       caption = "Training Set Step 1 Class-Specific Kappa by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ```{r train-step2-kappa-class-table} --><!-- ivsts2_kappa_class_table <- ivsts2_kappa_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts2_kappa_class_table, --><!--       caption = "Training Set Step 2 Class-Specific Kappa by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ### G-mean --><!-- ```{r train-step1-gmean, fig.cap='Training Set Step 1 G-mean'} --><!-- ivsts1_gmean <- ivsts1 %>% --><!--   filter(measure == "gmean") %>% --><!--   mutate( --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts1_gmean) + --><!--   labs( --><!--     y = "G-mean", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 1 G-mean by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step2-gmean, fig.cap='Training Set Step 2 G-mean'} --><!-- ivsts2_gmean <- ivsts2 %>% --><!--   filter(measure == "gmean") %>% --><!--   mutate( --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts2_gmean) + --><!--   labs( --><!--     y = "G-mean", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 2 G-mean by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step1-gmean-table} --><!-- ivsts1_gmean_table <- ivsts1_gmean %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts1_gmean_table, --><!--       caption = "Training Set Step 1 G-mean by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r train-step2-gmean-table} --><!-- ivsts2_gmean_table <- ivsts2_gmean %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts2_gmean_table, --><!--       caption = "Training Set Step 2 G-mean by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r train-step1-gmean-class, fig.cap='Training Set Step 1 Class-Specific G-mean', fig.width=8} --><!-- ivsts1_gmean_class <- ivsts1 %>% --><!--   filter(grepl("gmean\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("gmean\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts1_gmean_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "G-mean", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 1 Class Specific G-mean by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step2-gmean-class, fig.cap='Training Set Step 2 Class-Specific G-mean', fig.width=8} --><!-- ivsts2_gmean_class <- ivsts2 %>% --><!--   filter(grepl("gmean\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("gmean\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivsts2_gmean_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "G-mean", --><!--     color = "Subsampling", --><!--     title = "Training Set Step 2 Class Specific G-mean by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r train-step1-gmean-class-table} --><!-- ivsts1_gmean_class_table <- ivsts1_gmean_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts1_gmean_class_table, --><!--       caption = "Training Set Step 1 Class-Specific G-mean by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ```{r train-step2-gmean-class-table} --><!-- ivsts2_gmean_class_table <- ivsts2_gmean_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivsts2_gmean_class_table, --><!--       caption = "Training Set Step 2 Class-Specific G-mean by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ## CS1 Set --><!-- ### Accuracy --><!-- ```{r cs1-accuracy, fig.cap='CS1 Set Accuracy'} --><!-- ivs1_accuracy <- ivs1 %>% --><!--   filter(measure == "accuracy") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivs1_accuracy) + --><!--   labs( --><!--     y = "Accuracy", --><!--     color = "Subsampling", --><!--     title = "CS1 Set Accuracy by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs1-accuracy-table} --><!-- ivs1_accuracy_table <- ivs1_accuracy %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs1_accuracy_table, --><!--       caption = "CS1 Set Accuracy by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r cs1-accuracy-class, fig.cap='CS1 Set Class-Specific Accuracy', fig.width=8} --><!-- ivs1_accuracy_class <- ivs1 %>% --><!--   filter(grepl("accuracy\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("accuracy\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivs1_accuracy_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "Accuracy", --><!--     color = "Subsampling", --><!--     title = "CS1 Set Class-Specific Accuracy by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs1-accuracy-class-table} --><!-- ivs1_accuracy_class_table <- ivs1_accuracy_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs1_accuracy_class_table, --><!--       caption = "CS1 Set Class-Specific Accuracy by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ### F1-Score --><!-- ```{r cs1-f1, fig.cap='CS1 Set F1-Score'} --><!-- ivs1_f1 <- ivs1 %>% --><!--   filter(measure == "macro_f1") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivs1_f1) + --><!--   labs( --><!--     y = "F1-Score", --><!--     color = "Subsampling", --><!--     title = "CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs1-f1-table} --><!-- ivs1_f1_table <- ivs1_f1 %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs1_f1_table, --><!--       caption = "CS1 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ```{r cs1-f1-class, fig.cap='CS1 Set Class-Specific F1-Score', fig.width=8} --><!-- ivs1_f1_class <- ivs1 %>% --><!--   filter(grepl("f1\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("f1\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivs1_f1_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "F1-Score", --><!--     color = "Subsampling", --><!--     title = "CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs1-f1-class-table} --><!-- ivs1_f1_class_table <- ivs1_f1_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs1_f1_class_table, --><!--       caption = "CS1 Set Class-Specific F1-Score by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ### Kappa --><!-- ```{r cs1-kappa, fig.cap='CS1 Set Kappa'} --><!-- ivs1_kappa <- ivs1 %>% --><!--   filter(measure == "kappa") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivs1_kappa) + --><!--   labs( --><!--     y = "Kappa", --><!--     color = "Subsampling", --><!--     title = "CS1 Set Kappa by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs1-kappa-table} --><!-- ivs1_kappa_table <- ivs1_kappa %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs1_kappa_table, --><!--       caption = "CS1 Set Kappa by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r cs1-kappa-class, fig.cap='CS1 Set Class-Specific Kappa', fig.width=8} --><!-- ivs1_kappa_class <- ivs1 %>% --><!--   filter(grepl("kappa\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("kappa\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivs1_kappa_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "Kappa", --><!--     color = "Subsampling", --><!--     title = "CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs1-kappa-class-table} --><!-- ivs1_kappa_class_table <- ivs1_kappa_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs1_kappa_class_table, --><!--       caption = "CS1 Set Class-Specific Kappa by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ### G-mean --><!-- ```{r cs1-gmean, fig.cap='CS1 Set G-mean'} --><!-- ivs1_gmean <- ivs1 %>% --><!--   filter(measure == "gmean") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivs1_gmean) + --><!--   labs( --><!--     y = "G-mean", --><!--     color = "Subsampling", --><!--     title = "CS1 Set G-mean by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs1-gmean-table} --><!-- ivs1_gmean_table <- ivs1_gmean %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs1_gmean_table, --><!--       caption = "CS1 Set G-mean by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r cs1-gmean-class, fig.cap='CS1 Set Class-Specific G-mean', fig.width=8} --><!-- ivs1_gmean_class <- ivs1 %>% --><!--   filter(grepl("gmean\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("gmean\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivs1_gmean_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "G-mean", --><!--     color = "Subsampling", --><!--     title = "CS1 Set Class Specific G-mean by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs1-gmean-class-table} --><!-- ivs1_gmean_class_table <- ivs1_gmean_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs1_gmean_class_table, --><!--       caption = "CS1 Set Class-Specific G-mean by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ## CS2 Set --><!-- ### Accuracy --><!-- ```{r cs2-accuracy, fig.cap='CS2 Set Accuracy'} --><!-- ivs2_accuracy <- ivs2 %>% --><!--   filter(measure == "accuracy") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivs2_accuracy) + --><!--   labs( --><!--     y = "Accuracy", --><!--     color = "Subsampling", --><!--     title = "CS2 Set Accuracy by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs2-accuracy-table} --><!-- ivs2_accuracy_table <- ivs2_accuracy %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs2_accuracy_table, --><!--       caption = "CS2 Set Accuracy by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r cs2-accuracy-class, fig.cap='CS2 Set Class-Specific Accuracy', fig.width=8} --><!-- ivs2_accuracy_class <- ivs2 %>% --><!--   filter(grepl("accuracy\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("accuracy\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivs2_accuracy_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "Accuracy", --><!--     color = "Subsampling", --><!--     title = "CS2 Set Class-Specific Accuracy by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs2-accuracy-class-table} --><!-- ivs2_accuracy_class_table <- ivs2_accuracy_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs2_accuracy_class_table, --><!--       caption = "CS2 Set Class-Specific Accuracy by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ### F1-Score --><!-- ```{r cs2-f1, fig.cap='CS2 Set F1-Score'} --><!-- ivs2_f1 <- ivs2 %>% --><!--   filter(measure == "macro_f1") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivs2_f1) + --><!--   labs( --><!--     y = "F1-Score", --><!--     color = "Subsampling", --><!--     title = "CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs2-f1-table} --><!-- ivs2_f1_table <- ivs2_f1 %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs2_f1_table, --><!--       caption = "CS2 Set Macro-Averaged F1-Score by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ```{r cs2-f1-class, fig.cap='CS2 Set Class-Specific F1-Score', fig.width=8} --><!-- ivs2_f1_class <- ivs2 %>% --><!--   filter(grepl("f1\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("f1\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivs2_f1_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "F1-Score", --><!--     color = "Subsampling", --><!--     title = "CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs2-f1-class-table} --><!-- ivs2_f1_class_table <- ivs2_f1_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs2_f1_class_table, --><!--       caption = "CS2 Set Class-Specific F1-Score by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ### Kappa --><!-- ```{r cs2-kappa, fig.cap='CS2 Set Kappa'} --><!-- ivs2_kappa <- ivs2 %>% --><!--   filter(measure == "kappa") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivs2_kappa) + --><!--   labs( --><!--     y = "Kappa", --><!--     color = "Subsampling", --><!--     title = "CS2 Set Kappa by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs2-kappa-table} --><!-- ivs2_kappa_table <- ivs2_kappa %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs2_kappa_table, --><!--       caption = "CS2 Set Kappa by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r cs2-kappa-class, fig.cap='CS2 Set Class-Specific Kappa', fig.width=8} --><!-- ivs2_kappa_class <- ivs2 %>% --><!--   filter(grepl("kappa\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("kappa\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivs2_kappa_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "Kappa", --><!--     color = "Subsampling", --><!--     title = "CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs2-kappa-class-table} --><!-- ivs2_kappa_class_table <- ivs2_kappa_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs2_kappa_class_table, --><!--       caption = "CS2 Set Class-Specific Kappa by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ### G-mean --><!-- ```{r cs2-gmean, fig.cap='CS2 Set G-mean'} --><!-- ivs2_gmean <- ivs2 %>% --><!--   filter(measure == "gmean") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- plot_measure(ivs2_gmean) + --><!--   labs( --><!--     y = "G-mean", --><!--     color = "Subsampling", --><!--     title = "CS2 Set G-mean by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs2-gmean-table} --><!-- ivs2_gmean_table <- ivs2_gmean %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = sampling, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs2_gmean_table, --><!--       caption = "CS2 Set G-mean by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r cs2-gmean-class, fig.cap='CS2 Set Class-Specific G-mean', fig.width=8} --><!-- ivs2_gmean_class <- ivs2 %>% --><!--   filter(grepl("gmean\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("gmean\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- plot_measure(ivs2_gmean_class) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     y = "G-mean", --><!--     color = "Subsampling", --><!--     title = "CS2 Set Class Specific G-mean by Algorithm and Subsampling Method" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r cs2-gmean-class-table} --><!-- ivs2_gmean_class_table <- ivs2_gmean_class %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   rename(histotype = measure) %>%  --><!--   pivot_wider(id_cols = sampling:histotype, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs2_gmean_class_table, --><!--       caption = "CS2 Set Class-Specific G-mean by Algorithm and Subsampling Method", --><!--       escape = FALSE) %>% --><!--   kable_styling() --><!-- ``` --><!-- ## SMOTE Kappa Summary --><!-- ```{r smote-kappa, fig.cap='SMOTE Kappa by Algorithm and Dataset'} --><!-- ivs_smote_kappa <- ivs %>% --><!--   filter(sampling == "smote", measure == "kappa") %>% --><!--   mutate(algorithm = factor(algorithm, levels = alg_levels)) --><!-- p <- --><!--   ggplot(ivs_smote_kappa, aes(x = algorithm, y = percentile_50, color = dataset)) + --><!--   geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95), --><!--                   position = position_dodge(width = 0.4)) + --><!--   theme_bw() + --><!--   theme(plot.title = element_text(face = "bold")) + --><!--   scale_color_brewer(palette = "Dark2") + --><!--   labs( --><!--     x = "Algorithm", --><!--     y = "Kappa", --><!--     color = "Dataset", --><!--     title = "SMOTE Kappa by Algorithm and Dataset" --><!--   ) --><!-- print(p) --><!-- ``` --><!-- ```{r smote-kappa-table} --><!-- ivs_smote_kappa_table <- ivs_smote_kappa %>% --><!--   arrange(algorithm) %>% --><!--   mutate(across(where(is.numeric), round, digits = 3)) %>% --><!--   mutate(percentile_50 = ifelse( --><!--     percentile_50 == max(percentile_50), --><!--     cell_spec(percentile_50, bold = TRUE), --><!--     percentile_50 --><!--   )) %>% --><!--   pivot_wider(id_cols = dataset, --><!--               names_from = "algorithm", --><!--               values_from = "percentile_50") %>%  --><!--   rename_with(~ gsub("_", "\\\\_", .), matches("_")) --><!-- kable(ivs_smote_kappa_table, --><!--       caption = "SMOTE Kappa by Algorithm and Dataset", --><!--       escape = FALSE) %>% --><!--   kable_styling()   --><!-- ``` --><!-- ```{r smote-kappa-class, fig.cap='SMOTE Class-Specific Kappa by Algorithm and Dataset', fig.width=8} --><!-- ivs_smote_kappa_class <- ivs %>% --><!--   filter(sampling == "smote", grepl("kappa\\.", measure)) %>% --><!--   mutate( --><!--     measure = gsub("kappa\\.", "", measure), --><!--     algorithm = factor(algorithm, levels = alg_levels) --><!--   ) --><!-- p <- --><!--   ggplot(ivs_smote_kappa_class, aes(x = algorithm, y = percentile_50, color = dataset)) + --><!--   geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95), --><!--                   position = position_dodge(width = 0.4)) + --><!--   scale_color_brewer(palette = "Dark2") + --><!--   theme_bw() + --><!--   theme(plot.title = element_text(face = "bold")) + --><!--   facet_wrap(vars(measure), ncol = 2) + --><!--   labs( --><!--     x = "Algorithm", --><!--     y = "Kappa", --><!--     color = "Dataset", --><!--     title = "SMOTE Class-Specific Kappa by Algorithm and Dataset" --><!--   ) --><!-- print(p) --><!-- ``` -->
 </div>
 </div>
 <div id="gene-optimization" class="section level2" number="4.2">
@@ -2704,32 +2551,31 @@ MUC
 <span class="header-section-number">4.2.2</span> Optimal Gene Set<a class="anchor" aria-label="anchor" href="#optimal-gene-set"><i class="fas fa-link"></i></a>
 </h3>
 <p>There are 28 unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining 44 candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry forward for a particular model.</p>
-<p>Variable importance is calculated using either a model-based approach if it is available, or a SHAP-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by aggregating the base classifier VI scores using rank aggregation.</p>
+<p>Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by taking the cumulative union of variable importance ranks across all sequences until all variables have been included.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:gene-seq"></span>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-234d5362c08fdef7024d" style="width:672px;height:768px;"></div>
-<script type="application/json" data-for="htmlwidget-234d5362c08fdef7024d">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.960559161258113,0.96048024012006,0.96048024012006,0.961038961038961,0.961961961961962,0.959357752132464,0.957873620862588,0.960401002506266,0.960401002506266,0.959439158738107,0.959839357429719,0.95952023988006,0.96274217585693,0.96274217585693,0.965139442231076,0.95995995995996,0.964107676969093,0.965069860279441,0.965069860279441,0.96248124062031,0.963036963036963,0.963554667998003,0.963554667998003,0.965034965034965,0.962518740629685,0.960960960960961,0.960960960960961,0.963110667996012,0.963110667996012,0.961,0.963073852295409,0.962556165751373,0.963073852295409,0.963627304434479,0.96359102244389,0.962593516209476,0.965586034912718,0.963110667996012,0.965620328849028,0.962593516209476,0.962593516209476,0.961038961038961,0.964143426294821,0.962593516209476],"text":["Genes:  1<br />.estimate: 0.9605592<br />STC1","Genes:  2<br />.estimate: 0.9604802<br />TPX2","Genes:  3<br />.estimate: 0.9604802<br />KGFLP2","Genes:  4<br />.estimate: 0.9610390<br />MUC5B","Genes:  5<br />.estimate: 0.9619620<br />CPNE8","Genes:  6<br />.estimate: 0.9593578<br />HNF1B","Genes:  7<br />.estimate: 0.9578736<br />BCL2","Genes:  8<br />.estimate: 0.9604010<br />SLC3A1","Genes:  9<br />.estimate: 0.9604010<br />ATP5G3","Genes: 10<br />.estimate: 0.9594392<br />EGFL6","Genes: 11<br />.estimate: 0.9598394<br />C1orf173","Genes: 12<br />.estimate: 0.9595202<br />IGFBP1","Genes: 13<br />.estimate: 0.9627422<br />CYP2C18","Genes: 14<br />.estimate: 0.9627422<br />FUT3","Genes: 15<br />.estimate: 0.9651394<br />WT1","Genes: 16<br />.estimate: 0.9599600<br />KLK7","Genes: 17<br />.estimate: 0.9641077<br />C10orf116","Genes: 18<br />.estimate: 0.9650699<br />PBX1","Genes: 19<br />.estimate: 0.9650699<br />IGJ","Genes: 20<br />.estimate: 0.9624812<br />DKK4","Genes: 21<br />.estimate: 0.9630370<br />ZBED1","Genes: 22<br />.estimate: 0.9635547<br />TP53","Genes: 23<br />.estimate: 0.9635547<br />LIN28B","Genes: 24<br />.estimate: 0.9650350<br />GCNT3","Genes: 25<br />.estimate: 0.9625187<br />MAP1LC3A","Genes: 26<br />.estimate: 0.9609610<br />MET","Genes: 27<br />.estimate: 0.9609610<br />GPR64","Genes: 28<br />.estimate: 0.9631107<br />SENP8","Genes: 29<br />.estimate: 0.9631107<br />GAD1","Genes: 30<br />.estimate: 0.9610000<br />SCGB1D2","Genes: 31<br />.estimate: 0.9630739<br />CYP4B1","Genes: 32<br />.estimate: 0.9625562<br />CAPN2","Genes: 33<br />.estimate: 0.9630739<br />IGKC","Genes: 34<br />.estimate: 0.9636273<br />BRCA1","Genes: 35<br />.estimate: 0.9635910<br />PAX8","Genes: 36<br />.estimate: 0.9625935<br />TFF3","Genes: 37<br />.estimate: 0.9655860<br />SERPINA5","Genes: 38<br />.estimate: 0.9631107<br />TFF1","Genes: 39<br />.estimate: 0.9656203<br />TSPAN8","Genes: 40<br />.estimate: 0.9625935<br />IL6","Genes: 41<br />.estimate: 0.9625935<br />SEMA6A","Genes: 42<br />.estimate: 0.9610390<br />EPAS1","Genes: 43<br />.estimate: 0.9641434<br />ADCYAP1R1","Genes: 44<br />.estimate: 0.9625935<br />LGALS4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.832298136645963,0.823529411764706,0.823529411764706,0.858974358974359,0.866242038216561,0.883116883116883,0.87741935483871,0.867924528301887,0.867924528301887,0.888888888888889,0.868421052631579,0.878980891719745,0.873417721518987,0.868421052631579,0.868421052631579,0.868421052631579,0.880503144654088,0.878980891719745,0.878980891719745,0.866242038216561,0.866242038216561,0.873417721518987,0.873417721518987,0.875816993464052,0.8625,0.860927152317881,0.860927152317881,0.860927152317881,0.860927152317881,0.867924528301887,0.855345911949686,0.853503184713376,0.851612903225807,0.851612903225807,0.858974358974359,0.862745098039216,0.878980891719745,0.883116883116883,0.890322580645161,0.875,0.875,0.867924528301887,0.867924528301887,0.884615384615385],"text":["Genes:  1<br />.estimate: 0.8322981<br />STC1","Genes:  2<br />.estimate: 0.8235294<br />TPX2","Genes:  3<br />.estimate: 0.8235294<br />KGFLP2","Genes:  4<br />.estimate: 0.8589744<br />MUC5B","Genes:  5<br />.estimate: 0.8662420<br />CPNE8","Genes:  6<br />.estimate: 0.8831169<br />HNF1B","Genes:  7<br />.estimate: 0.8774194<br />BCL2","Genes:  8<br />.estimate: 0.8679245<br />SLC3A1","Genes:  9<br />.estimate: 0.8679245<br />ATP5G3","Genes: 10<br />.estimate: 0.8888889<br />EGFL6","Genes: 11<br />.estimate: 0.8684211<br />C1orf173","Genes: 12<br />.estimate: 0.8789809<br />IGFBP1","Genes: 13<br />.estimate: 0.8734177<br />CYP2C18","Genes: 14<br />.estimate: 0.8684211<br />FUT3","Genes: 15<br />.estimate: 0.8684211<br />WT1","Genes: 16<br />.estimate: 0.8684211<br />KLK7","Genes: 17<br />.estimate: 0.8805031<br />C10orf116","Genes: 18<br />.estimate: 0.8789809<br />PBX1","Genes: 19<br />.estimate: 0.8789809<br />IGJ","Genes: 20<br />.estimate: 0.8662420<br />DKK4","Genes: 21<br />.estimate: 0.8662420<br />ZBED1","Genes: 22<br />.estimate: 0.8734177<br />TP53","Genes: 23<br />.estimate: 0.8734177<br />LIN28B","Genes: 24<br />.estimate: 0.8758170<br />GCNT3","Genes: 25<br />.estimate: 0.8625000<br />MAP1LC3A","Genes: 26<br />.estimate: 0.8609272<br />MET","Genes: 27<br />.estimate: 0.8609272<br />GPR64","Genes: 28<br />.estimate: 0.8609272<br />SENP8","Genes: 29<br />.estimate: 0.8609272<br />GAD1","Genes: 30<br />.estimate: 0.8679245<br />SCGB1D2","Genes: 31<br />.estimate: 0.8553459<br />CYP4B1","Genes: 32<br />.estimate: 0.8535032<br />CAPN2","Genes: 33<br />.estimate: 0.8516129<br />IGKC","Genes: 34<br />.estimate: 0.8516129<br />BRCA1","Genes: 35<br />.estimate: 0.8589744<br />PAX8","Genes: 36<br />.estimate: 0.8627451<br />TFF3","Genes: 37<br />.estimate: 0.8789809<br />SERPINA5","Genes: 38<br />.estimate: 0.8831169<br />TFF1","Genes: 39<br />.estimate: 0.8903226<br />TSPAN8","Genes: 40<br />.estimate: 0.8750000<br />IL6","Genes: 41<br />.estimate: 0.8750000<br />SEMA6A","Genes: 42<br />.estimate: 0.8679245<br />EPAS1","Genes: 43<br />.estimate: 0.8679245<br />ADCYAP1R1","Genes: 44<br />.estimate: 0.8846154<br />LGALS4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.724137931034483,0.666666666666667,0.666666666666667,0.818181818181818,0.818181818181818,0.772727272727273,0.790697674418605,0.761904761904762,0.761904761904762,0.761904761904762,0.736842105263158,0.754716981132075,0.736842105263158,0.736842105263158,0.736842105263158,0.826086956521739,0.777777777777778,0.826086956521739,0.826086956521739,0.826086956521739,0.826086956521739,0.8,0.8,0.8,0.8,0.8,0.8,0.862745098039216,0.862745098039216,0.851063829787234,0.808510638297872,0.782608695652174,0.782608695652174,0.782608695652174,0.808510638297872,0.808510638297872,0.808510638297872,0.808510638297872,0.833333333333333,0.816326530612245,0.816326530612245,0.816326530612245,0.816326530612245,0.816326530612245],"text":["Genes:  1<br />.estimate: 0.7241379<br />STC1","Genes:  2<br />.estimate: 0.6666667<br />TPX2","Genes:  3<br />.estimate: 0.6666667<br />KGFLP2","Genes:  4<br />.estimate: 0.8181818<br />MUC5B","Genes:  5<br />.estimate: 0.8181818<br />CPNE8","Genes:  6<br />.estimate: 0.7727273<br />HNF1B","Genes:  7<br />.estimate: 0.7906977<br />BCL2","Genes:  8<br />.estimate: 0.7619048<br />SLC3A1","Genes:  9<br />.estimate: 0.7619048<br />ATP5G3","Genes: 10<br />.estimate: 0.7619048<br />EGFL6","Genes: 11<br />.estimate: 0.7368421<br />C1orf173","Genes: 12<br />.estimate: 0.7547170<br />IGFBP1","Genes: 13<br />.estimate: 0.7368421<br />CYP2C18","Genes: 14<br />.estimate: 0.7368421<br />FUT3","Genes: 15<br />.estimate: 0.7368421<br />WT1","Genes: 16<br />.estimate: 0.8260870<br />KLK7","Genes: 17<br />.estimate: 0.7777778<br />C10orf116","Genes: 18<br />.estimate: 0.8260870<br />PBX1","Genes: 19<br />.estimate: 0.8260870<br />IGJ","Genes: 20<br />.estimate: 0.8260870<br />DKK4","Genes: 21<br />.estimate: 0.8260870<br />ZBED1","Genes: 22<br />.estimate: 0.8000000<br />TP53","Genes: 23<br />.estimate: 0.8000000<br />LIN28B","Genes: 24<br />.estimate: 0.8000000<br />GCNT3","Genes: 25<br />.estimate: 0.8000000<br />MAP1LC3A","Genes: 26<br />.estimate: 0.8000000<br />MET","Genes: 27<br />.estimate: 0.8000000<br />GPR64","Genes: 28<br />.estimate: 0.8627451<br />SENP8","Genes: 29<br />.estimate: 0.8627451<br />GAD1","Genes: 30<br />.estimate: 0.8510638<br />SCGB1D2","Genes: 31<br />.estimate: 0.8085106<br />CYP4B1","Genes: 32<br />.estimate: 0.7826087<br />CAPN2","Genes: 33<br />.estimate: 0.7826087<br />IGKC","Genes: 34<br />.estimate: 0.7826087<br />BRCA1","Genes: 35<br />.estimate: 0.8085106<br />PAX8","Genes: 36<br />.estimate: 0.8085106<br />TFF3","Genes: 37<br />.estimate: 0.8085106<br />SERPINA5","Genes: 38<br />.estimate: 0.8085106<br />TFF1","Genes: 39<br />.estimate: 0.8333333<br />TSPAN8","Genes: 40<br />.estimate: 0.8163265<br />IL6","Genes: 41<br />.estimate: 0.8163265<br />SEMA6A","Genes: 42<br />.estimate: 0.8163265<br />EPAS1","Genes: 43<br />.estimate: 0.8163265<br />ADCYAP1R1","Genes: 44<br />.estimate: 0.8163265<br />LGALS4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y3","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.896,0.914728682170543,0.914728682170543,0.923076923076923,0.955223880597015,0.938461538461538,0.930232558139535,0.909090909090909,0.909090909090909,0.907692307692308,0.916030534351145,0.892307692307692,0.900763358778626,0.924242424242424,0.947368421052632,0.940298507462687,0.940298507462687,0.940298507462687,0.940298507462687,0.947368421052632,0.947368421052632,0.948148148148148,0.948148148148148,0.955223880597015,0.91044776119403,0.955223880597015,0.955223880597015,0.955223880597015,0.955223880597015,0.948148148148148,0.948148148148148,0.940298507462687,0.941176470588235,0.941176470588235,0.941176470588235,0.924242424242424,0.941176470588235,0.941176470588235,0.934306569343066,0.934306569343066,0.934306569343066,0.934306569343066,0.934306569343066,0.927536231884058],"text":["Genes:  1<br />.estimate: 0.8960000<br />STC1","Genes:  2<br />.estimate: 0.9147287<br />TPX2","Genes:  3<br />.estimate: 0.9147287<br />KGFLP2","Genes:  4<br />.estimate: 0.9230769<br />MUC5B","Genes:  5<br />.estimate: 0.9552239<br />CPNE8","Genes:  6<br />.estimate: 0.9384615<br />HNF1B","Genes:  7<br />.estimate: 0.9302326<br />BCL2","Genes:  8<br />.estimate: 0.9090909<br />SLC3A1","Genes:  9<br />.estimate: 0.9090909<br />ATP5G3","Genes: 10<br />.estimate: 0.9076923<br />EGFL6","Genes: 11<br />.estimate: 0.9160305<br />C1orf173","Genes: 12<br />.estimate: 0.8923077<br />IGFBP1","Genes: 13<br />.estimate: 0.9007634<br />CYP2C18","Genes: 14<br />.estimate: 0.9242424<br />FUT3","Genes: 15<br />.estimate: 0.9473684<br />WT1","Genes: 16<br />.estimate: 0.9402985<br />KLK7","Genes: 17<br />.estimate: 0.9402985<br />C10orf116","Genes: 18<br />.estimate: 0.9402985<br />PBX1","Genes: 19<br />.estimate: 0.9402985<br />IGJ","Genes: 20<br />.estimate: 0.9473684<br />DKK4","Genes: 21<br />.estimate: 0.9473684<br />ZBED1","Genes: 22<br />.estimate: 0.9481481<br />TP53","Genes: 23<br />.estimate: 0.9481481<br />LIN28B","Genes: 24<br />.estimate: 0.9552239<br />GCNT3","Genes: 25<br />.estimate: 0.9104478<br />MAP1LC3A","Genes: 26<br />.estimate: 0.9552239<br />MET","Genes: 27<br />.estimate: 0.9552239<br />GPR64","Genes: 28<br />.estimate: 0.9552239<br />SENP8","Genes: 29<br />.estimate: 0.9552239<br />GAD1","Genes: 30<br />.estimate: 0.9481481<br />SCGB1D2","Genes: 31<br />.estimate: 0.9481481<br />CYP4B1","Genes: 32<br />.estimate: 0.9402985<br />CAPN2","Genes: 33<br />.estimate: 0.9411765<br />IGKC","Genes: 34<br />.estimate: 0.9411765<br />BRCA1","Genes: 35<br />.estimate: 0.9411765<br />PAX8","Genes: 36<br />.estimate: 0.9242424<br />TFF3","Genes: 37<br />.estimate: 0.9411765<br />SERPINA5","Genes: 38<br />.estimate: 0.9411765<br />TFF1","Genes: 39<br />.estimate: 0.9343066<br />TSPAN8","Genes: 40<br />.estimate: 0.9343066<br />IL6","Genes: 41<br />.estimate: 0.9343066<br />SEMA6A","Genes: 42<br />.estimate: 0.9343066<br />EPAS1","Genes: 43<br />.estimate: 0.9343066<br />ADCYAP1R1","Genes: 44<br />.estimate: 0.9275362<br />LGALS4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y4","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":51.6164383561644,"r":7.30593607305936,"b":36.3470319634703,"l":54.7945205479452},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Gene Optimziation for Sequential Classifier","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-1.15,46.15],"tickmode":"array","ticktext":["0","10","20","30","40"],"tickvals":[0,10,20,30,40],"categoryorder":"array","categoryarray":["0","10","20","30","40"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y4","title":"","hoverformat":".2f"},"annotations":[{"text":"Genes Added","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-21.9178082191781},{"text":"F1-Score","x":0,"y":0.5,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-90,"xanchor":"right","yanchor":"center","annotationType":"axis","xshift":-39.4520547945205},{"text":"Sequence: 1, Workflow: hybrid_rf, Measure: f_meas","x":0.5,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Sequence: 2, Workflow: hybrid_svm, Measure: f_meas","x":0.5,"y":0.725266362252664,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Sequence: 3, Workflow: hybrid_svm, Measure: f_meas","x":0.5,"y":0.475266362252664,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Sequence: 4, Workflow: hybrid_mr, Measure: f_meas","x":0.5,"y":0.225266362252664,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"}],"yaxis":{"domain":[0.774733637747336,1],"automargin":true,"type":"linear","autorange":false,"range":[0.957486285463266,0.96600766424835],"tickmode":"array","ticktext":["0.958","0.960","0.962","0.964","0.966"],"tickvals":[0.958,0.96,0.962,0.964,0.966],"categoryorder":"array","categoryarray":["0.958","0.960","0.962","0.964","0.966"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.774733637747336,"y1":1},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.524733637747336,"y1":0.725266362252664},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":0.725266362252664,"ysizemode":"pixel"},{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.274733637747336,"y1":0.475266362252664},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":0.475266362252664,"ysizemode":"pixel"},{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":0.225266362252664},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":0.225266362252664,"ysizemode":"pixel"}],"yaxis2":{"type":"linear","autorange":false,"range":[0.820189753320683,0.893662239089184],"tickmode":"array","ticktext":["0.84","0.86","0.88"],"tickvals":[0.84,0.86,0.88],"categoryorder":"array","categoryarray":["0.84","0.86","0.88"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.524733637747336,0.725266362252664],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis3":{"type":"linear","autorange":false,"range":[0.656862745098039,0.872549019607843],"tickmode":"array","ticktext":["0.70","0.75","0.80","0.85"],"tickvals":[0.7,0.75,0.8,0.85],"categoryorder":"array","categoryarray":["0.70","0.75","0.80","0.85"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.274733637747336,0.475266362252664],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis4":{"type":"linear","autorange":false,"range":[0.889161882893226,0.958369690011481],"tickmode":"array","ticktext":["0.90","0.92","0.94"],"tickvals":[0.9,0.92,0.94],"categoryorder":"array","categoryarray":["0.90","0.92","0.94"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0,0.225266362252664],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"ec56985c771":{"x":{},"y":{},"text":{},"type":"scatter"}},"cur_data":"ec56985c771","visdat":{"ec56985c771":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p class="caption">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-e920d89e4f432c0baa78" style="width:672px;height:768px;"></div>
+<script type="application/json" data-for="htmlwidget-e920d89e4f432c0baa78">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.960875890887065,0.957209894707332,0.957705020925472,0.956725969273643,0.957702046857404,0.957757518815585,0.953905127297323,0.964105709385593,0.961086479964302,0.960505996765645,0.962481161827065,0.963020483968562,0.961529776441092,0.960399092359249,0.963012686111573,0.960481697390324,0.959858159688557,0.961970337613221,0.961890083185382,0.962578368893612,0.966653283692313,0.962527481243588,0.961475648861301,0.961943794709898,0.964755629652569,0.963011863793715,0.962491009814074,0.960457083034982,0.961497425529127,0.961532752675926,0.961540381178151,0.965592019509927,0.96507593461882,0.962032422136465,0.963558224000902,0.963086953112443,0.962478599535039,0.964063697929743,0.963007194313296,0.962409091604912,0.964526601025955,0.962984137204043,0.964966889087789,0.965126301130837],"text":["Genes:  1<br />mean_estimate: 0.9608759<br />CYP2C18","Genes:  2<br />mean_estimate: 0.9572099<br />HNF1B","Genes:  3<br />mean_estimate: 0.9577050<br />ATP5G3","Genes:  4<br />mean_estimate: 0.9567260<br />TP53","Genes:  5<br />mean_estimate: 0.9577020<br />SLC3A1","Genes:  6<br />mean_estimate: 0.9577575<br />CPNE8","Genes:  7<br />mean_estimate: 0.9539051<br />C1orf173","Genes:  8<br />mean_estimate: 0.9641057<br />WT1","Genes:  9<br />mean_estimate: 0.9610865<br />MUC5B","Genes: 10<br />mean_estimate: 0.9605060<br />MAP1LC3A","Genes: 11<br />mean_estimate: 0.9624812<br />EGFL6","Genes: 12<br />mean_estimate: 0.9630205<br />ZBED1","Genes: 13<br />mean_estimate: 0.9615298<br />GPR64","Genes: 14<br />mean_estimate: 0.9603991<br />STC1","Genes: 15<br />mean_estimate: 0.9630127<br />MET","Genes: 16<br />mean_estimate: 0.9604817<br />IGJ","Genes: 17<br />mean_estimate: 0.9598582<br />SERPINA5","Genes: 18<br />mean_estimate: 0.9619703<br />KLK7","Genes: 19<br />mean_estimate: 0.9618901<br />DKK4","Genes: 20<br />mean_estimate: 0.9625784<br />BCL2","Genes: 21<br />mean_estimate: 0.9666533<br />SENP8","Genes: 22<br />mean_estimate: 0.9625275<br />GCNT3","Genes: 23<br />mean_estimate: 0.9614756<br />IGKC","Genes: 24<br />mean_estimate: 0.9619438<br />IGFBP1","Genes: 25<br />mean_estimate: 0.9647556<br />CAPN2","Genes: 26<br />mean_estimate: 0.9630119<br />GAD1","Genes: 27<br />mean_estimate: 0.9624910<br />SCGB1D2","Genes: 28<br />mean_estimate: 0.9604571<br />FUT3","Genes: 29<br />mean_estimate: 0.9614974<br />TPX2","Genes: 30<br />mean_estimate: 0.9615328<br />KGFLP2","Genes: 31<br />mean_estimate: 0.9615404<br />TFF3","Genes: 32<br />mean_estimate: 0.9655920<br />SEMA6A","Genes: 33<br />mean_estimate: 0.9650759<br />PBX1","Genes: 34<br />mean_estimate: 0.9620324<br />CYP4B1","Genes: 35<br />mean_estimate: 0.9635582<br />C10orf116","Genes: 36<br />mean_estimate: 0.9630870<br />LIN28B","Genes: 37<br />mean_estimate: 0.9624786<br />ADCYAP1R1","Genes: 38<br />mean_estimate: 0.9640637<br />IL6","Genes: 39<br />mean_estimate: 0.9630072<br />TFF1","Genes: 40<br />mean_estimate: 0.9624091<br />TSPAN8","Genes: 41<br />mean_estimate: 0.9645266<br />LGALS4","Genes: 42<br />mean_estimate: 0.9629841<br />EPAS1","Genes: 43<br />mean_estimate: 0.9649669<br />BRCA1","Genes: 44<br />mean_estimate: 0.9651263<br />PAX8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.847209227451163,0.840049680869415,0.840049680869415,0.83930630564881,0.84394088675398,0.839336668391697,0.847162620217649,0.847162620217649,0.865397126592573,0.873771510829026,0.875630149420472,0.859609650311738,0.859884792626728,0.845748202102158,0.842563025210084,0.876075268817204,0.855592691622103,0.855592691622103,0.861641078718878,0.861641078718878,0.855592691622103,0.860227272727273,0.863334627105974,0.867111683383031,0.8717462644882,0.867111683383031,0.867111683383031,0.870218894009217,0.864307563959956,0.858625745778137,0.871094244149273,0.85965651135006,0.883737922310192,0.875800126502214,0.875800126502214,0.864035420619861,0.864035420619861,0.86867000172503,0.869879679144385,0.881905077735412,0.878100667408231,0.881905077735412,0.879994606802171,0.884918849226413],"text":["Genes:  1<br />mean_estimate: 0.8472092<br />CYP2C18","Genes:  2<br />mean_estimate: 0.8400497<br />HNF1B","Genes:  3<br />mean_estimate: 0.8400497<br />ATP5G3","Genes:  4<br />mean_estimate: 0.8393063<br />TP53","Genes:  5<br />mean_estimate: 0.8439409<br />SLC3A1","Genes:  6<br />mean_estimate: 0.8393367<br />CPNE8","Genes:  7<br />mean_estimate: 0.8471626<br />C1orf173","Genes:  8<br />mean_estimate: 0.8471626<br />WT1","Genes:  9<br />mean_estimate: 0.8653971<br />MUC5B","Genes: 10<br />mean_estimate: 0.8737715<br />MAP1LC3A","Genes: 11<br />mean_estimate: 0.8756301<br />EGFL6","Genes: 12<br />mean_estimate: 0.8596097<br />ZBED1","Genes: 13<br />mean_estimate: 0.8598848<br />GPR64","Genes: 14<br />mean_estimate: 0.8457482<br />STC1","Genes: 15<br />mean_estimate: 0.8425630<br />MET","Genes: 16<br />mean_estimate: 0.8760753<br />IGJ","Genes: 17<br />mean_estimate: 0.8555927<br />SERPINA5","Genes: 18<br />mean_estimate: 0.8555927<br />KLK7","Genes: 19<br />mean_estimate: 0.8616411<br />DKK4","Genes: 20<br />mean_estimate: 0.8616411<br />BCL2","Genes: 21<br />mean_estimate: 0.8555927<br />SENP8","Genes: 22<br />mean_estimate: 0.8602273<br />GCNT3","Genes: 23<br />mean_estimate: 0.8633346<br />IGKC","Genes: 24<br />mean_estimate: 0.8671117<br />IGFBP1","Genes: 25<br />mean_estimate: 0.8717463<br />CAPN2","Genes: 26<br />mean_estimate: 0.8671117<br />GAD1","Genes: 27<br />mean_estimate: 0.8671117<br />SCGB1D2","Genes: 28<br />mean_estimate: 0.8702189<br />FUT3","Genes: 29<br />mean_estimate: 0.8643076<br />TPX2","Genes: 30<br />mean_estimate: 0.8586257<br />KGFLP2","Genes: 31<br />mean_estimate: 0.8710942<br />TFF3","Genes: 32<br />mean_estimate: 0.8596565<br />SEMA6A","Genes: 33<br />mean_estimate: 0.8837379<br />PBX1","Genes: 34<br />mean_estimate: 0.8758001<br />CYP4B1","Genes: 35<br />mean_estimate: 0.8758001<br />C10orf116","Genes: 36<br />mean_estimate: 0.8640354<br />LIN28B","Genes: 37<br />mean_estimate: 0.8640354<br />ADCYAP1R1","Genes: 38<br />mean_estimate: 0.8686700<br />IL6","Genes: 39<br />mean_estimate: 0.8698797<br />TFF1","Genes: 40<br />mean_estimate: 0.8819051<br />TSPAN8","Genes: 41<br />mean_estimate: 0.8781007<br />LGALS4","Genes: 42<br />mean_estimate: 0.8819051<br />EPAS1","Genes: 43<br />mean_estimate: 0.8799946<br />BRCA1","Genes: 44<br />mean_estimate: 0.8849188<br />PAX8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.718333333333333,0.685454545454545,0.697575757575758,0.712121212121212,0.7,0.728531468531469,0.71974025974026,0.77952380952381,0.77952380952381,0.764978354978355,0.721904761904762,0.692063492063492,0.692063492063492,0.823232323232323,0.844660894660895,0.826479076479076,0.826479076479076,0.826479076479076,0.826479076479076,0.826479076479076,0.78989898989899,0.78989898989899,0.805050505050505,0.826479076479076,0.826479076479076,0.826479076479076,0.886262626262626,0.826479076479076,0.826479076479076,0.826479076479076,0.826479076479076,0.841818181818182,0.828484848484848,0.826479076479076,0.793333333333333,0.82991341991342,0.772770562770563,0.772770562770563,0.772770562770563,0.791818181818182,0.808484848484848,0.808484848484848,0.808484848484848,0.808484848484848],"text":["Genes:  1<br />mean_estimate: 0.7183333<br />CYP2C18","Genes:  2<br />mean_estimate: 0.6854545<br />HNF1B","Genes:  3<br />mean_estimate: 0.6975758<br />ATP5G3","Genes:  4<br />mean_estimate: 0.7121212<br />TP53","Genes:  5<br />mean_estimate: 0.7000000<br />SLC3A1","Genes:  6<br />mean_estimate: 0.7285315<br />CPNE8","Genes:  7<br />mean_estimate: 0.7197403<br />C1orf173","Genes:  8<br />mean_estimate: 0.7795238<br />WT1","Genes:  9<br />mean_estimate: 0.7795238<br />MUC5B","Genes: 10<br />mean_estimate: 0.7649784<br />MAP1LC3A","Genes: 11<br />mean_estimate: 0.7219048<br />EGFL6","Genes: 12<br />mean_estimate: 0.6920635<br />ZBED1","Genes: 13<br />mean_estimate: 0.6920635<br />GPR64","Genes: 14<br />mean_estimate: 0.8232323<br />STC1","Genes: 15<br />mean_estimate: 0.8446609<br />MET","Genes: 16<br />mean_estimate: 0.8264791<br />IGJ","Genes: 17<br />mean_estimate: 0.8264791<br />SERPINA5","Genes: 18<br />mean_estimate: 0.8264791<br />KLK7","Genes: 19<br />mean_estimate: 0.8264791<br />DKK4","Genes: 20<br />mean_estimate: 0.8264791<br />BCL2","Genes: 21<br />mean_estimate: 0.7898990<br />SENP8","Genes: 22<br />mean_estimate: 0.7898990<br />GCNT3","Genes: 23<br />mean_estimate: 0.8050505<br />IGKC","Genes: 24<br />mean_estimate: 0.8264791<br />IGFBP1","Genes: 25<br />mean_estimate: 0.8264791<br />CAPN2","Genes: 26<br />mean_estimate: 0.8264791<br />GAD1","Genes: 27<br />mean_estimate: 0.8862626<br />SCGB1D2","Genes: 28<br />mean_estimate: 0.8264791<br />FUT3","Genes: 29<br />mean_estimate: 0.8264791<br />TPX2","Genes: 30<br />mean_estimate: 0.8264791<br />KGFLP2","Genes: 31<br />mean_estimate: 0.8264791<br />TFF3","Genes: 32<br />mean_estimate: 0.8418182<br />SEMA6A","Genes: 33<br />mean_estimate: 0.8284848<br />PBX1","Genes: 34<br />mean_estimate: 0.8264791<br />CYP4B1","Genes: 35<br />mean_estimate: 0.7933333<br />C10orf116","Genes: 36<br />mean_estimate: 0.8299134<br />LIN28B","Genes: 37<br />mean_estimate: 0.7727706<br />ADCYAP1R1","Genes: 38<br />mean_estimate: 0.7727706<br />IL6","Genes: 39<br />mean_estimate: 0.7727706<br />TFF1","Genes: 40<br />mean_estimate: 0.7918182<br />TSPAN8","Genes: 41<br />mean_estimate: 0.8084848<br />LGALS4","Genes: 42<br />mean_estimate: 0.8084848<br />EPAS1","Genes: 43<br />mean_estimate: 0.8084848<br />BRCA1","Genes: 44<br />mean_estimate: 0.8084848<br />PAX8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y3","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.90170695970696,0.90170695970696,0.90170695970696,0.89957264957265,0.901925925925926,0.924603174603175,0.892809116809117,0.918728334245576,0.925798941798942,0.925798941798942,0.933680715197957,0.92501404853129,0.92501404853129,0.933680715197957,0.933680715197957,0.933680715197957,0.925703507220749,0.925703507220749,0.939555555555556,0.947555555555556,0.947555555555556,0.940148148148148,0.924786324786325,0.910541310541311,0.910541310541311,0.910541310541311,0.934273307790549,0.942273307790549,0.942273307790549,0.942273307790549,0.942273307790549,0.942273307790549,0.942273307790549,0.917948717948718,0.934350834350834,0.942273307790549,0.942273307790549,0.930012771392082,0.942273307790549,0.935924101441343,0.929045794563036,0.929045794563036,0.929045794563036,0.929045794563036],"text":["Genes:  1<br />mean_estimate: 0.9017070<br />CYP2C18","Genes:  2<br />mean_estimate: 0.9017070<br />HNF1B","Genes:  3<br />mean_estimate: 0.9017070<br />ATP5G3","Genes:  4<br />mean_estimate: 0.8995726<br />TP53","Genes:  5<br />mean_estimate: 0.9019259<br />SLC3A1","Genes:  6<br />mean_estimate: 0.9246032<br />CPNE8","Genes:  7<br />mean_estimate: 0.8928091<br />C1orf173","Genes:  8<br />mean_estimate: 0.9187283<br />WT1","Genes:  9<br />mean_estimate: 0.9257989<br />MUC5B","Genes: 10<br />mean_estimate: 0.9257989<br />MAP1LC3A","Genes: 11<br />mean_estimate: 0.9336807<br />EGFL6","Genes: 12<br />mean_estimate: 0.9250140<br />ZBED1","Genes: 13<br />mean_estimate: 0.9250140<br />GPR64","Genes: 14<br />mean_estimate: 0.9336807<br />STC1","Genes: 15<br />mean_estimate: 0.9336807<br />MET","Genes: 16<br />mean_estimate: 0.9336807<br />IGJ","Genes: 17<br />mean_estimate: 0.9257035<br />SERPINA5","Genes: 18<br />mean_estimate: 0.9257035<br />KLK7","Genes: 19<br />mean_estimate: 0.9395556<br />DKK4","Genes: 20<br />mean_estimate: 0.9475556<br />BCL2","Genes: 21<br />mean_estimate: 0.9475556<br />SENP8","Genes: 22<br />mean_estimate: 0.9401481<br />GCNT3","Genes: 23<br />mean_estimate: 0.9247863<br />IGKC","Genes: 24<br />mean_estimate: 0.9105413<br />IGFBP1","Genes: 25<br />mean_estimate: 0.9105413<br />CAPN2","Genes: 26<br />mean_estimate: 0.9105413<br />GAD1","Genes: 27<br />mean_estimate: 0.9342733<br />SCGB1D2","Genes: 28<br />mean_estimate: 0.9422733<br />FUT3","Genes: 29<br />mean_estimate: 0.9422733<br />TPX2","Genes: 30<br />mean_estimate: 0.9422733<br />KGFLP2","Genes: 31<br />mean_estimate: 0.9422733<br />TFF3","Genes: 32<br />mean_estimate: 0.9422733<br />SEMA6A","Genes: 33<br />mean_estimate: 0.9422733<br />PBX1","Genes: 34<br />mean_estimate: 0.9179487<br />CYP4B1","Genes: 35<br />mean_estimate: 0.9343508<br />C10orf116","Genes: 36<br />mean_estimate: 0.9422733<br />LIN28B","Genes: 37<br />mean_estimate: 0.9422733<br />ADCYAP1R1","Genes: 38<br />mean_estimate: 0.9300128<br />IL6","Genes: 39<br />mean_estimate: 0.9422733<br />TFF1","Genes: 40<br />mean_estimate: 0.9359241<br />TSPAN8","Genes: 41<br />mean_estimate: 0.9290458<br />LGALS4","Genes: 42<br />mean_estimate: 0.9290458<br />EPAS1","Genes: 43<br />mean_estimate: 0.9290458<br />BRCA1","Genes: 44<br />mean_estimate: 0.9290458<br />PAX8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y4","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":51.6164383561644,"r":7.30593607305936,"b":36.3470319634703,"l":43.1050228310502},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Gene Optimziation for Sequential Classifier","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-1.15,46.15],"tickmode":"array","ticktext":["0","10","20","30","40"],"tickvals":[0,10,20,30,40],"categoryorder":"array","categoryarray":["0","10","20","30","40"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y4","title":"","hoverformat":".2f"},"annotations":[{"text":"Genes Added","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-21.9178082191781},{"text":"F1-Score","x":0,"y":0.5,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-90,"xanchor":"right","yanchor":"center","annotationType":"axis","xshift":-27.7625570776256},{"text":"Sequence: 1, Workflow: hybrid_rf, Measure: f_meas","x":0.5,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Sequence: 2, Workflow: hybrid_svm, Measure: f_meas","x":0.5,"y":0.725266362252664,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Sequence: 3, Workflow: hybrid_svm, Measure: f_meas","x":0.5,"y":0.475266362252664,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Sequence: 4, Workflow: hybrid_mr, Measure: f_meas","x":0.5,"y":0.225266362252664,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"}],"yaxis":{"domain":[0.774733637747336,1],"automargin":true,"type":"linear","autorange":false,"range":[0.671394608542657,0.980713220604201],"tickmode":"array","ticktext":["0.7","0.8","0.9"],"tickvals":[0.7,0.8,0.9],"categoryorder":"array","categoryarray":["0.7","0.8","0.9"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.774733637747336,"y1":1},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.524733637747336,"y1":0.725266362252664},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":0.725266362252664,"ysizemode":"pixel"},{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.274733637747336,"y1":0.475266362252664},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":0.475266362252664,"ysizemode":"pixel"},{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":0.225266362252664},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":0.225266362252664,"ysizemode":"pixel"}],"yaxis2":{"type":"linear","autorange":false,"range":[0.671394608542657,0.980713220604201],"tickmode":"array","ticktext":["0.7","0.8","0.9"],"tickvals":[0.7,0.8,0.9],"categoryorder":"array","categoryarray":["0.7","0.8","0.9"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.524733637747336,0.725266362252664],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis3":{"type":"linear","autorange":false,"range":[0.671394608542657,0.980713220604201],"tickmode":"array","ticktext":["0.7","0.8","0.9"],"tickvals":[0.7,0.8,0.9],"categoryorder":"array","categoryarray":["0.7","0.8","0.9"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.274733637747336,0.475266362252664],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis4":{"type":"linear","autorange":false,"range":[0.671394608542657,0.980713220604201],"tickmode":"array","ticktext":["0.7","0.8","0.9"],"tickvals":[0.7,0.8,0.9],"categoryorder":"array","categoryarray":["0.7","0.8","0.9"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0,0.225266362252664],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"cccf7c3973e3":{"x":{},"y":{},"text":{},"type":"scatter"}},"cur_data":"cccf7c3973e3","visdat":{"cccf7c3973e3":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p class="caption">
 Figure 4.9: Gene Optimization for Sequential Classifier
 </p>
 </div>
-<p>In the sequential classifier, we use the per-class median F1-scores pertaining to the histotype that had the best performance from each retraining, and sort them on number of genes added. For instance, in sequence 2, we look at the CCOC F1-scores because CCOC had the best performance from retraining after HGSC was removed.</p>
-<p>We can observe that in sequence 3, the F1-score stabilizes at around 0.93 when we reach 28 genes added, hence the optimal number of genes used will be n=28+34=62. The added genes are: STC1, TPX2, KGFLP2, MUC5B, CPNE8, HNF1B, BCL2, SLC3A1, ATP5G3, EGFL6, C1orf173, IGFBP1, CYP2C18, FUT3, WT1, KLK7, C10orf116, PBX1, IGJ, DKK4, ZBED1, TP53, LIN28B, GCNT3, MAP1LC3A, MET, GPR64 and SENP8.</p>
+<p>In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.9 when we reach 27 genes added, hence the optimal number of genes used will be n=28+27=55 The added genes are: CYP2C18, HNF1B, ATP5G3, TP53, SLC3A1, CPNE8, C1orf173, WT1, MUC5B, MAP1LC3A, EGFL6, ZBED1, GPR64, STC1, MET, IGJ, SERPINA5, KLK7, DKK4, BCL2, SENP8, GCNT3, IGKC, IGFBP1, CAPN2, GAD1 and SCGB1D2.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:gene-2s"></span>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-53ae532b3db2eec6f22d" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-53ae532b3db2eec6f22d">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.956347215253387,0.956347215253387,0.957873620862588,0.956913827655311,0.958395989974937,0.960401002506266,0.963036963036963,0.96,0.96,0.961,0.961961961961962,0.961961961961962,0.96140350877193,0.961442163244867,0.962962962962963,0.962443665498247,0.962962962962963,0.963481740870435,0.963408521303258,0.964446670005008,0.962925851703407,0.965551672491263,0.965551672491263,0.965551672491263,0.965034965034965,0.962075848303393,0.962075848303393,0.963036963036963,0.964553170244633,0.964553170244633,0.966101694915254,0.964143426294821,0.964143426294821,0.962037962037962,0.962037962037962,0.963036963036963,0.963,0.963,0.963110667996012,0.96351824087956,0.965069860279441,0.96359102244389,0.964071856287425,0.965620328849028],"text":["Genes:  1<br />.estimate: 0.9563472<br />STC1","Genes:  2<br />.estimate: 0.9563472<br />TPX2","Genes:  3<br />.estimate: 0.9578736<br />KGFLP2","Genes:  4<br />.estimate: 0.9569138<br />MUC5B","Genes:  5<br />.estimate: 0.9583960<br />CPNE8","Genes:  6<br />.estimate: 0.9604010<br />HNF1B","Genes:  7<br />.estimate: 0.9630370<br />BCL2","Genes:  8<br />.estimate: 0.9600000<br />SLC3A1","Genes:  9<br />.estimate: 0.9600000<br />ATP5G3","Genes: 10<br />.estimate: 0.9610000<br />EGFL6","Genes: 11<br />.estimate: 0.9619620<br />C1orf173","Genes: 12<br />.estimate: 0.9619620<br />IGFBP1","Genes: 13<br />.estimate: 0.9614035<br />CYP2C18","Genes: 14<br />.estimate: 0.9614422<br />FUT3","Genes: 15<br />.estimate: 0.9629630<br />WT1","Genes: 16<br />.estimate: 0.9624437<br />KLK7","Genes: 17<br />.estimate: 0.9629630<br />C10orf116","Genes: 18<br />.estimate: 0.9634817<br />PBX1","Genes: 19<br />.estimate: 0.9634085<br />IGJ","Genes: 20<br />.estimate: 0.9644467<br />DKK4","Genes: 21<br />.estimate: 0.9629259<br />ZBED1","Genes: 22<br />.estimate: 0.9655517<br />TP53","Genes: 23<br />.estimate: 0.9655517<br />LIN28B","Genes: 24<br />.estimate: 0.9655517<br />GCNT3","Genes: 25<br />.estimate: 0.9650350<br />MAP1LC3A","Genes: 26<br />.estimate: 0.9620758<br />MET","Genes: 27<br />.estimate: 0.9620758<br />GPR64","Genes: 28<br />.estimate: 0.9630370<br />SENP8","Genes: 29<br />.estimate: 0.9645532<br />GAD1","Genes: 30<br />.estimate: 0.9645532<br />SCGB1D2","Genes: 31<br />.estimate: 0.9661017<br />CYP4B1","Genes: 32<br />.estimate: 0.9641434<br />CAPN2","Genes: 33<br />.estimate: 0.9641434<br />IGKC","Genes: 34<br />.estimate: 0.9620380<br />BRCA1","Genes: 35<br />.estimate: 0.9620380<br />PAX8","Genes: 36<br />.estimate: 0.9630370<br />TFF3","Genes: 37<br />.estimate: 0.9630000<br />SERPINA5","Genes: 38<br />.estimate: 0.9630000<br />TFF1","Genes: 39<br />.estimate: 0.9631107<br />TSPAN8","Genes: 40<br />.estimate: 0.9635182<br />IL6","Genes: 41<br />.estimate: 0.9650699<br />SEMA6A","Genes: 42<br />.estimate: 0.9635910<br />EPAS1","Genes: 43<br />.estimate: 0.9640719<br />ADCYAP1R1","Genes: 44<br />.estimate: 0.9656203<br />LGALS4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.815061868732074,0.815061868732074,0.828602569530816,0.817909964536416,0.828910581968016,0.833695713921965,0.850643035372312,0.844737981353799,0.844737981353799,0.852703078312834,0.84126254180602,0.84126254180602,0.844586940168922,0.832768361581921,0.825168029348234,0.852335959286869,0.84102612659575,0.834898226860312,0.830131368522474,0.826872833910957,0.843002645691795,0.827133706160791,0.827133706160791,0.827133706160791,0.820075598887916,0.829536026847706,0.829536026847706,0.82977177174428,0.833913733944522,0.833913733944522,0.833690982796068,0.833690982796068,0.833690982796068,0.837047900696071,0.837047900696071,0.854800559245636,0.846782384282384,0.822173211518777,0.825099539181046,0.829349511829479,0.844821907533772,0.840571480916537,0.840571480916537,0.848198108180123],"text":["Genes:  1<br />.estimate: 0.8150619<br />STC1","Genes:  2<br />.estimate: 0.8150619<br />TPX2","Genes:  3<br />.estimate: 0.8286026<br />KGFLP2","Genes:  4<br />.estimate: 0.8179100<br />MUC5B","Genes:  5<br />.estimate: 0.8289106<br />CPNE8","Genes:  6<br />.estimate: 0.8336957<br />HNF1B","Genes:  7<br />.estimate: 0.8506430<br />BCL2","Genes:  8<br />.estimate: 0.8447380<br />SLC3A1","Genes:  9<br />.estimate: 0.8447380<br />ATP5G3","Genes: 10<br />.estimate: 0.8527031<br />EGFL6","Genes: 11<br />.estimate: 0.8412625<br />C1orf173","Genes: 12<br />.estimate: 0.8412625<br />IGFBP1","Genes: 13<br />.estimate: 0.8445869<br />CYP2C18","Genes: 14<br />.estimate: 0.8327684<br />FUT3","Genes: 15<br />.estimate: 0.8251680<br />WT1","Genes: 16<br />.estimate: 0.8523360<br />KLK7","Genes: 17<br />.estimate: 0.8410261<br />C10orf116","Genes: 18<br />.estimate: 0.8348982<br />PBX1","Genes: 19<br />.estimate: 0.8301314<br />IGJ","Genes: 20<br />.estimate: 0.8268728<br />DKK4","Genes: 21<br />.estimate: 0.8430026<br />ZBED1","Genes: 22<br />.estimate: 0.8271337<br />TP53","Genes: 23<br />.estimate: 0.8271337<br />LIN28B","Genes: 24<br />.estimate: 0.8271337<br />GCNT3","Genes: 25<br />.estimate: 0.8200756<br />MAP1LC3A","Genes: 26<br />.estimate: 0.8295360<br />MET","Genes: 27<br />.estimate: 0.8295360<br />GPR64","Genes: 28<br />.estimate: 0.8297718<br />SENP8","Genes: 29<br />.estimate: 0.8339137<br />GAD1","Genes: 30<br />.estimate: 0.8339137<br />SCGB1D2","Genes: 31<br />.estimate: 0.8336910<br />CYP4B1","Genes: 32<br />.estimate: 0.8336910<br />CAPN2","Genes: 33<br />.estimate: 0.8336910<br />IGKC","Genes: 34<br />.estimate: 0.8370479<br />BRCA1","Genes: 35<br />.estimate: 0.8370479<br />PAX8","Genes: 36<br />.estimate: 0.8548006<br />TFF3","Genes: 37<br />.estimate: 0.8467824<br />SERPINA5","Genes: 38<br />.estimate: 0.8221732<br />TFF1","Genes: 39<br />.estimate: 0.8250995<br />TSPAN8","Genes: 40<br />.estimate: 0.8293495<br />IL6","Genes: 41<br />.estimate: 0.8448219<br />SEMA6A","Genes: 42<br />.estimate: 0.8405715<br />EPAS1","Genes: 43<br />.estimate: 0.8405715<br />ADCYAP1R1","Genes: 44<br />.estimate: 0.8481981<br />LGALS4"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":55.4520547945205,"r":7.30593607305936,"b":40.1826484018265,"l":54.7945205479452},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Gene Optimziation for Two-Step Classifier","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-1.15,46.15],"tickmode":"array","ticktext":["0","10","20","30","40"],"tickvals":[0,10,20,30,40],"categoryorder":"array","categoryarray":["0","10","20","30","40"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y2","title":"","hoverformat":".2f"},"annotations":[{"text":"Genes Added","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-21.9178082191781},{"text":"F1-Score","x":0,"y":0.5,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-90,"xanchor":"right","yanchor":"center","annotationType":"axis","xshift":-39.4520547945205},{"text":"Sequence: 1, Workflow: hybrid_rf, Measure: f_meas","x":0.5,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Sequence: 2, Workflow: hybrid_svm, Measure: f_meas","x":0.5,"y":0.460426179604262,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"}],"yaxis":{"domain":[0.539573820395738,1],"automargin":true,"type":"linear","autorange":false,"range":[0.955859491270293,0.966589418898348],"tickmode":"array","ticktext":["0.956","0.958","0.960","0.962","0.964","0.966"],"tickvals":[0.956,0.958,0.96,0.962,0.964,0.966],"categoryorder":"array","categoryarray":["0.956","0.958","0.960","0.962","0.964","0.966"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.539573820395738,"y1":1},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":0.460426179604262},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":0.460426179604262,"ysizemode":"pixel"}],"yaxis2":{"type":"linear","autorange":false,"range":[0.813074934206396,0.856787493771314],"tickmode":"array","ticktext":["0.82","0.83","0.84","0.85"],"tickvals":[0.82,0.83,0.84,0.85],"categoryorder":"array","categoryarray":["0.82","0.83","0.84","0.85"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0,0.460426179604262],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"ec56296e41c":{"x":{},"y":{},"text":{},"type":"scatter"}},"cur_data":"ec56296e41c","visdat":{"ec56296e41c":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p class="caption">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-dc66098955267e2017b1" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-dc66098955267e2017b1">{"x":{"data":[{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.960875890887065,0.96265411773129,0.960753398124758,0.959180607908716,0.963600475539306,0.9641853873674,0.962682352709061,0.96274261023442,0.961578446367728,0.962572092921511,0.964093138855768,0.962492801408298,0.962545216885506,0.961581498597117,0.963011680600882,0.961577669313498,0.962955290731321,0.96469587198297,0.961561310416957,0.961552557926854,0.962413881557156,0.960423763990637,0.962623088783989,0.963988992080446,0.964434161420238,0.966964947821307,0.964485333703966,0.964041552695611,0.961908343401913,0.96300074340404,0.964090196220409,0.964015204144355,0.963038910777947,0.963988015561709,0.964476756488549,0.964006328568475,0.964010218608005,0.962459211867738,0.965052459735275,0.961918853717414,0.962456212365023,0.963973015377559,0.962978770271731,0.963485896219902],"text":["Genes:  1<br />mean_estimate: 0.9608759<br />CYP2C18","Genes:  2<br />mean_estimate: 0.9626541<br />HNF1B","Genes:  3<br />mean_estimate: 0.9607534<br />ATP5G3","Genes:  4<br />mean_estimate: 0.9591806<br />TP53","Genes:  5<br />mean_estimate: 0.9636005<br />SLC3A1","Genes:  6<br />mean_estimate: 0.9641854<br />CPNE8","Genes:  7<br />mean_estimate: 0.9626824<br />C1orf173","Genes:  8<br />mean_estimate: 0.9627426<br />WT1","Genes:  9<br />mean_estimate: 0.9615784<br />MUC5B","Genes: 10<br />mean_estimate: 0.9625721<br />MAP1LC3A","Genes: 11<br />mean_estimate: 0.9640931<br />EGFL6","Genes: 12<br />mean_estimate: 0.9624928<br />ZBED1","Genes: 13<br />mean_estimate: 0.9625452<br />GPR64","Genes: 14<br />mean_estimate: 0.9615815<br />STC1","Genes: 15<br />mean_estimate: 0.9630117<br />MET","Genes: 16<br />mean_estimate: 0.9615777<br />IGJ","Genes: 17<br />mean_estimate: 0.9629553<br />SERPINA5","Genes: 18<br />mean_estimate: 0.9646959<br />KLK7","Genes: 19<br />mean_estimate: 0.9615613<br />DKK4","Genes: 20<br />mean_estimate: 0.9615526<br />BCL2","Genes: 21<br />mean_estimate: 0.9624139<br />SENP8","Genes: 22<br />mean_estimate: 0.9604238<br />GCNT3","Genes: 23<br />mean_estimate: 0.9626231<br />IGKC","Genes: 24<br />mean_estimate: 0.9639890<br />IGFBP1","Genes: 25<br />mean_estimate: 0.9644342<br />CAPN2","Genes: 26<br />mean_estimate: 0.9669649<br />GAD1","Genes: 27<br />mean_estimate: 0.9644853<br />SCGB1D2","Genes: 28<br />mean_estimate: 0.9640416<br />FUT3","Genes: 29<br />mean_estimate: 0.9619083<br />TPX2","Genes: 30<br />mean_estimate: 0.9630007<br />KGFLP2","Genes: 31<br />mean_estimate: 0.9640902<br />TFF3","Genes: 32<br />mean_estimate: 0.9640152<br />SEMA6A","Genes: 33<br />mean_estimate: 0.9630389<br />PBX1","Genes: 34<br />mean_estimate: 0.9639880<br />CYP4B1","Genes: 35<br />mean_estimate: 0.9644768<br />C10orf116","Genes: 36<br />mean_estimate: 0.9640063<br />LIN28B","Genes: 37<br />mean_estimate: 0.9640102<br />ADCYAP1R1","Genes: 38<br />mean_estimate: 0.9624592<br />IL6","Genes: 39<br />mean_estimate: 0.9650525<br />TFF1","Genes: 40<br />mean_estimate: 0.9619189<br />TSPAN8","Genes: 41<br />mean_estimate: 0.9624562<br />LGALS4","Genes: 42<br />mean_estimate: 0.9639730<br />EPAS1","Genes: 43<br />mean_estimate: 0.9629788<br />BRCA1","Genes: 44<br />mean_estimate: 0.9634859<br />PAX8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44],"y":[0.811413297862686,0.806348565135814,0.824343029385438,0.819202181891976,0.836819828722003,0.828621058513251,0.823091077638442,0.785115573019715,0.833884138900019,0.831673952708581,0.842922032585693,0.849752133091345,0.825594699868284,0.836818444514692,0.834188615760501,0.82826176351388,0.828702341084072,0.841585839911818,0.832113798934215,0.822015158589885,0.834216535398223,0.84219035206132,0.830469457324357,0.837312405799614,0.837981311606451,0.83707999723364,0.829343401837063,0.837519337463303,0.843572952230071,0.833457712813443,0.83090159521194,0.827898171620281,0.830654650608684,0.828321798275832,0.844690390383522,0.845555972253553,0.83025830621234,0.838365901044073,0.842069604747777,0.838508417426998,0.832859584327861,0.848815131723412,0.848815131723412,0.848815131723412],"text":["Genes:  1<br />mean_estimate: 0.8114133<br />CYP2C18","Genes:  2<br />mean_estimate: 0.8063486<br />HNF1B","Genes:  3<br />mean_estimate: 0.8243430<br />ATP5G3","Genes:  4<br />mean_estimate: 0.8192022<br />TP53","Genes:  5<br />mean_estimate: 0.8368198<br />SLC3A1","Genes:  6<br />mean_estimate: 0.8286211<br />CPNE8","Genes:  7<br />mean_estimate: 0.8230911<br />C1orf173","Genes:  8<br />mean_estimate: 0.7851156<br />WT1","Genes:  9<br />mean_estimate: 0.8338841<br />MUC5B","Genes: 10<br />mean_estimate: 0.8316740<br />MAP1LC3A","Genes: 11<br />mean_estimate: 0.8429220<br />EGFL6","Genes: 12<br />mean_estimate: 0.8497521<br />ZBED1","Genes: 13<br />mean_estimate: 0.8255947<br />GPR64","Genes: 14<br />mean_estimate: 0.8368184<br />STC1","Genes: 15<br />mean_estimate: 0.8341886<br />MET","Genes: 16<br />mean_estimate: 0.8282618<br />IGJ","Genes: 17<br />mean_estimate: 0.8287023<br />SERPINA5","Genes: 18<br />mean_estimate: 0.8415858<br />KLK7","Genes: 19<br />mean_estimate: 0.8321138<br />DKK4","Genes: 20<br />mean_estimate: 0.8220152<br />BCL2","Genes: 21<br />mean_estimate: 0.8342165<br />SENP8","Genes: 22<br />mean_estimate: 0.8421904<br />GCNT3","Genes: 23<br />mean_estimate: 0.8304695<br />IGKC","Genes: 24<br />mean_estimate: 0.8373124<br />IGFBP1","Genes: 25<br />mean_estimate: 0.8379813<br />CAPN2","Genes: 26<br />mean_estimate: 0.8370800<br />GAD1","Genes: 27<br />mean_estimate: 0.8293434<br />SCGB1D2","Genes: 28<br />mean_estimate: 0.8375193<br />FUT3","Genes: 29<br />mean_estimate: 0.8435730<br />TPX2","Genes: 30<br />mean_estimate: 0.8334577<br />KGFLP2","Genes: 31<br />mean_estimate: 0.8309016<br />TFF3","Genes: 32<br />mean_estimate: 0.8278982<br />SEMA6A","Genes: 33<br />mean_estimate: 0.8306547<br />PBX1","Genes: 34<br />mean_estimate: 0.8283218<br />CYP4B1","Genes: 35<br />mean_estimate: 0.8446904<br />C10orf116","Genes: 36<br />mean_estimate: 0.8455560<br />LIN28B","Genes: 37<br />mean_estimate: 0.8302583<br />ADCYAP1R1","Genes: 38<br />mean_estimate: 0.8383659<br />IL6","Genes: 39<br />mean_estimate: 0.8420696<br />TFF1","Genes: 40<br />mean_estimate: 0.8385084<br />TSPAN8","Genes: 41<br />mean_estimate: 0.8328596<br />LGALS4","Genes: 42<br />mean_estimate: 0.8488151<br />EPAS1","Genes: 43<br />mean_estimate: 0.8488151<br />BRCA1","Genes: 44<br />mean_estimate: 0.8488151<br />PAX8"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":55.4520547945205,"r":7.30593607305936,"b":40.1826484018265,"l":48.9497716894977},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Gene Optimziation for Two-Step Classifier","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-1.15,46.15],"tickmode":"array","ticktext":["0","10","20","30","40"],"tickvals":[0,10,20,30,40],"categoryorder":"array","categoryarray":["0","10","20","30","40"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y2","title":"","hoverformat":".2f"},"annotations":[{"text":"Genes Added","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-21.9178082191781},{"text":"F1-Score","x":0,"y":0.5,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"xref":"paper","yref":"paper","textangle":-90,"xanchor":"right","yanchor":"center","annotationType":"axis","xshift":-33.6073059360731},{"text":"Sequence: 1, Workflow: hybrid_rf, Measure: f_meas","x":0.5,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"Sequence: 2, Workflow: hybrid_svm, Measure: f_meas","x":0.5,"y":0.460426179604262,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.689497716895},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"}],"yaxis":{"domain":[0.539573820395738,1],"automargin":true,"type":"linear","autorange":false,"range":[0.776023104279635,0.976057416561387],"tickmode":"array","ticktext":["0.80","0.85","0.90","0.95"],"tickvals":[0.8,0.85,0.9,0.95],"categoryorder":"array","categoryarray":["0.80","0.85","0.90","0.95"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.539573820395738,"y1":1},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":0.460426179604262},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"rgba(51,51,51,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":23.37899543379,"yanchor":0.460426179604262,"ysizemode":"pixel"}],"yaxis2":{"type":"linear","autorange":false,"range":[0.776023104279635,0.976057416561387],"tickmode":"array","ticktext":["0.80","0.85","0.90","0.95"],"tickvals":[0.8,0.85,0.9,0.95],"categoryorder":"array","categoryarray":["0.80","0.85","0.90","0.95"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0,0.460426179604262],"gridcolor":"rgba(235,235,235,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"cccf295464cd":{"x":{},"y":{},"text":{},"type":"scatter"}},"cur_data":"cccf295464cd","visdat":{"cccf295464cd":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p class="caption">
 Figure 4.10: Gene Optimization for Two-Step Classifier
 </p>
 </div>
-<p>Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.88 when we reach 31 added. The optimal number of genes used will be n=28+31=52. The added genes are: WT1, KLK7, MUC5B, TFF3, GAD1, TSPAN8, HNF1B, C1orf173, FUT3, STC1, TPX2, TFF1, DKK4, CAPN2, CYP4B1, CPNE8, SLC3A1, KGFLP2, EGFL6, SERPINA5, TP53, CYP2C18, GCNT3, GPR64, ATP5G3, MET, IL6, SEMA6A, LGALS4, ADCYAP1R1 and C10orf116.</p>
+<p>Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.85 when we reach 12 added. The optimal number of genes used will be n=28+12=40. The added genes are: CYP2C18, MUC5B, HNF1B, SLC3A1, WT1, TSPAN8, EGFL6, TFF1, TFF3, MET, CAPN2 and KLK7.</p>
 </div>
 </div>
 <div id="rank-aggregation" class="section level2" number="4.3">
 <h2>
 <span class="header-section-number">4.3</span> Rank Aggregation<a class="anchor" aria-label="anchor" href="#rank-aggregation"><i class="fas fa-link"></i></a>
 </h2>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-bbe2b05d379fa3036f8c" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-bbe2b05d379fa3036f8c">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.781\" data-max=\"0.889\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.561\" data-max=\"0.928\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.888\" data-max=\"0.977\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.25\" data-max=\"0.816\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.667\" data-max=\"0.917\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1\" data-max=\"14\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["FixedColumns"],"caption":"<caption>F1-Score Summary by Workflow and Class<\/caption>","data":[["sequential","two_step","hybrid_rf","up_xgb","up_rf","smote_rf","smote_xgb","hybrid_xgb","smote_mr","hybrid_mr","up_mr","down_rf","down_mr","down_svm"],[0.885,0.889,0.873,0.872,0.87,0.837,0.85,0.847,0.823,0.808,0.805,0.8,0.8,0.781],[0.928,0.806,0.754,0.737,0.748,0.713,0.687,0.687,0.662,0.645,0.642,0.627,0.577,0.561],[0.962,0.962,0.977,0.976,0.976,0.974,0.975,0.97,0.957,0.962,0.951,0.926,0.918,0.888],[0.816,0.815,0.45,0.378,0.25,0.333,0.435,0.449,0.462,0.466,0.424,0.305,0.324,0.263],[0.917,0.883,0.809,0.818,0.832,0.825,0.812,0.788,0.794,0.77,0.765,0.667,0.743,0.748],[1,2,3,4,5,6,7,8,9,10,11,12,13,14]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>wflow<\/th>\n      <th>CCOC<\/th>\n      <th>ENOC<\/th>\n      <th>HGSC<\/th>\n      <th>LGSC<\/th>\n      <th>MUC<\/th>\n      <th>rank<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"fixedColumns":true,"columnDefs":[{"targets":1,"render":"$.fn.dataTable.render.ellipsis( 10 )"},{"type":"natural","targets":0},{"className":"dt-right","targets":[1,2,3,4,5,6]}],"pageLength":50,"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script><p>The 14 workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.</p>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bcaab4a64e168376ea62" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bcaab4a64e168376ea62">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.781\" data-max=\"0.888\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.559\" data-max=\"0.929\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.888\" data-max=\"0.977\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.236\" data-max=\"0.828\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.66\" data-max=\"0.914\" data-scale=\"3\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1\" data-max=\"14\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["FixedColumns"],"caption":"<caption>F1-Score Summary by Workflow and Class<\/caption>","data":[["sequential","two_step","hybrid_rf","up_rf","up_xgb","smote_xgb","smote_rf","smote_mr","hybrid_xgb","hybrid_mr","up_mr","down_rf","down_mr","down_svm"],[0.885,0.888,0.868,0.869,0.87,0.846,0.833,0.817,0.843,0.799,0.8,0.808,0.8,0.781],[0.929,0.804,0.742,0.734,0.728,0.674,0.701,0.662,0.661,0.638,0.63,0.59,0.559,0.56],[0.962,0.962,0.977,0.976,0.976,0.975,0.974,0.957,0.97,0.962,0.951,0.926,0.918,0.888],[0.808,0.828,0.456,0.236,0.394,0.433,0.285,0.4,0.384,0.436,0.409,0.301,0.308,0.256],[0.914,0.875,0.808,0.835,0.814,0.805,0.827,0.784,0.782,0.764,0.756,0.66,0.732,0.741],[1,2,3,4,5,6,7,8,9,10,11,12,13,14]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>wflow<\/th>\n      <th>CCOC<\/th>\n      <th>ENOC<\/th>\n      <th>HGSC<\/th>\n      <th>LGSC<\/th>\n      <th>MUC<\/th>\n      <th>rank<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"fixedColumns":true,"columnDefs":[{"targets":1,"render":"$.fn.dataTable.render.ellipsis( 10 )"},{"type":"natural","targets":0},{"className":"dt-right","targets":[1,2,3,4,5,6]}],"pageLength":50,"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script><p>The 14 workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.</p>
 <div id="top-workflows" class="section level3" number="4.3.1">
 <h3>
 <span class="header-section-number">4.3.1</span> Top Workflows<a class="anchor" aria-label="anchor" href="#top-workflows"><i class="fas fa-link"></i></a>
@@ -2823,16 +2669,16 @@ sequential_full
 sequential_optimal
 </td>
 <td style="text-align:right;">
-0.830
+0.827
 </td>
 <td style="text-align:right;">
-0.666
+0.660
 </td>
 <td style="text-align:right;">
-0.655
+0.642
 </td>
 <td style="text-align:right;">
-0.605
+0.574
 </td>
 </tr>
 <tr>
@@ -2857,16 +2703,16 @@ two_step_full
 two_step_optimal
 </td>
 <td style="text-align:right;">
-0.844
+0.834
 </td>
 <td style="text-align:right;">
-0.692
+0.668
 </td>
 <td style="text-align:right;">
-0.703
+0.679
 </td>
 <td style="text-align:right;">
-0.657
+0.639
 </td>
 </tr>
 </tbody>
@@ -2990,19 +2836,19 @@ two_step_optimal
 accuracy
 </td>
 <td style="text-align:right;">
-0.963
+0.969
 </td>
 <td style="text-align:right;">
-0.899
+0.890
 </td>
 <td style="text-align:right;">
-0.874
+0.866
 </td>
 <td style="text-align:right;">
-0.972
+0.964
 </td>
 <td style="text-align:right;">
-0.981
+0.978
 </td>
 </tr>
 <tr>
@@ -3010,19 +2856,19 @@ accuracy
 f_meas
 </td>
 <td style="text-align:right;">
-0.844
+0.865
 </td>
 <td style="text-align:right;">
-0.645
+0.594
 </td>
 <td style="text-align:right;">
-0.907
+0.902
 </td>
 <td style="text-align:right;">
-0.357
+0.303
 </td>
 <td style="text-align:right;">
-0.760
+0.731
 </td>
 </tr>
 <tr>
@@ -3030,19 +2876,19 @@ f_meas
 kap
 </td>
 <td style="text-align:right;">
-0.823
+0.847
 </td>
 <td style="text-align:right;">
-0.588
+0.534
 </td>
 <td style="text-align:right;">
-0.712
+0.692
 </td>
 <td style="text-align:right;">
-0.343
+0.286
 </td>
 <td style="text-align:right;">
-0.750
+0.719
 </td>
 </tr>
 <tr>
@@ -3050,19 +2896,19 @@ kap
 gmean
 </td>
 <td style="text-align:right;">
-0.919
+0.916
 </td>
 <td style="text-align:right;">
-0.733
+0.689
 </td>
 <td style="text-align:right;">
-0.841
+0.827
 </td>
 <td style="text-align:right;">
-0.615
+0.613
 </td>
 <td style="text-align:right;">
-0.836
+0.835
 </td>
 </tr>
 <tr>
@@ -3156,13 +3002,13 @@ sequential_optimal
 accuracy
 </td>
 <td style="text-align:right;">
-0.956
+0.950
 </td>
 <td style="text-align:right;">
-0.894
+0.896
 </td>
 <td style="text-align:right;">
-0.871
+0.869
 </td>
 <td style="text-align:right;">
 0.967
@@ -3176,19 +3022,19 @@ accuracy
 f_meas
 </td>
 <td style="text-align:right;">
-0.821
+0.800
 </td>
 <td style="text-align:right;">
-0.622
+0.617
 </td>
 <td style="text-align:right;">
-0.904
+0.903
 </td>
 <td style="text-align:right;">
-0.276
+0.222
 </td>
 <td style="text-align:right;">
-0.654
+0.667
 </td>
 </tr>
 <tr>
@@ -3196,19 +3042,19 @@ f_meas
 kap
 </td>
 <td style="text-align:right;">
-0.796
+0.772
 </td>
 <td style="text-align:right;">
-0.563
+0.560
 </td>
 <td style="text-align:right;">
-0.706
+0.702
 </td>
 <td style="text-align:right;">
-0.259
+0.206
 </td>
 <td style="text-align:right;">
-0.639
+0.652
 </td>
 </tr>
 <tr>
@@ -3216,19 +3062,19 @@ kap
 gmean
 </td>
 <td style="text-align:right;">
-0.910
+0.907
 </td>
 <td style="text-align:right;">
-0.715
+0.704
 </td>
 <td style="text-align:right;">
-0.839
+0.836
 </td>
 <td style="text-align:right;">
-0.549
+0.476
 </td>
 <td style="text-align:right;">
-0.788
+0.811
 </td>
 </tr>
 </tbody>
@@ -3264,16 +3110,16 @@ gmean
 two_step_optimal
 </td>
 <td style="text-align:right;">
-0.875
+0.847
 </td>
 <td style="text-align:right;">
-0.726
+0.653
 </td>
 <td style="text-align:right;">
-0.714
+0.65
 </td>
 <td style="text-align:right;">
-0.776
+0.701
 </td>
 </tr></tbody>
 </table></div>
@@ -3313,19 +3159,19 @@ two_step_optimal
 accuracy
 </td>
 <td style="text-align:right;">
-0.975
+0.972
 </td>
 <td style="text-align:right;">
-0.943
+0.922
 </td>
 <td style="text-align:right;">
-0.896
+0.879
 </td>
 <td style="text-align:right;">
-0.976
+0.964
 </td>
 <td style="text-align:right;">
-0.961
+0.957
 </td>
 </tr>
 <tr>
@@ -3333,19 +3179,19 @@ accuracy
 f_meas
 </td>
 <td style="text-align:right;">
-0.869
+0.854
 </td>
 <td style="text-align:right;">
-0.752
+0.608
 </td>
 <td style="text-align:right;">
-0.928
+0.917
 </td>
 <td style="text-align:right;">
-0.476
+0.353
 </td>
 <td style="text-align:right;">
-0.545
+0.519
 </td>
 </tr>
 <tr>
@@ -3353,19 +3199,19 @@ f_meas
 kap
 </td>
 <td style="text-align:right;">
-0.855
+0.839
 </td>
 <td style="text-align:right;">
-0.720
+0.566
 </td>
 <td style="text-align:right;">
-0.742
+0.690
 </td>
 <td style="text-align:right;">
-0.464
+0.336
 </td>
 <td style="text-align:right;">
-0.527
+0.499
 </td>
 </tr>
 <tr>
@@ -3373,19 +3219,19 @@ kap
 gmean
 </td>
 <td style="text-align:right;">
-0.963
+0.945
 </td>
 <td style="text-align:right;">
-0.843
+0.706
 </td>
 <td style="text-align:right;">
-0.892
+0.853
 </td>
 <td style="text-align:right;">
-0.739
+0.697
 </td>
 <td style="text-align:right;">
-0.883
+0.881
 </td>
 </tr>
 </tbody>
@@ -3440,7 +3286,7 @@ gmean
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-03-19.</p>
+    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-03-25.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
