@@ -831,7 +831,7 @@ conf_eval_per_class <- conf_pred_overall %>%
   ) %>% 
   unnest(cols = data) %>% 
   select(-.estimator) %>% 
-  pivot_wider(names_from = "class_group", values_from = "mean_estimate")
+  pivot_wider(names_from = "class_group", values_from = ".estimate")
 
 kable(conf_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Confirmation Set Model",
@@ -929,7 +929,7 @@ val_eval_per_class <- val_pred_overall %>%
   ) %>% 
   unnest(cols = data) %>% 
   select(-.estimator) %>% 
-  pivot_wider(names_from = "class_group", values_from = "mean_estimate")
+  pivot_wider(names_from = "class_group", values_from = ".estimate")
 
 kable(val_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Validation Set Model",
