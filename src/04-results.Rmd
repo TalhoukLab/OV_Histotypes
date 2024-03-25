@@ -418,32 +418,9 @@ kable(class_gmean_train,
   add_header_above(c(" " = 2, "Algorithms" = 4))
 ```
 
-## Gene Optimization
+## Optimal Gene Sets
 
-### Overlap with Other Sets
-
-```{r overlap-protype}
-overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
-```
-
-There are `r length(overlap_PrOTYPE)` genes out of the `r ncol(train_data)` common classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`
-
-```{r overlap-SPOT}
-overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
-```
-
-There are `r length(overlap_SPOT)` genes out of the `r ncol(train_data)` classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
-
-### Optimal Gene Set
-
-```{r overlap-all}
-overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
-candidates <- setdiff(names(train_data), overlap_all)
-```
-
-There are `r length(overlap_all)` unique genes from the combined PrOTYPE and SPOT lists that we want to use for the final classifier. We then incrementally add genes from the remaining `r length(candidates)` candidates based on variable importance scores to this list and recalculate performance metrics. The number of genes at which the performance starts to plateau may indicate an optimal gene set for us to carry forward for a particular model.
-
-Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g. for SVM). For the sequential and two-step classifiers, we calculate overall VI scores by taking the cumulative union of variable importance ranks across all sequences until all variables have been included.
+### Sequential Algorithm
 
 ```{r gene-seq, fig.height=8, fig.cap='Gene Optimization for Sequential Classifier'}
 gene_seq_names <- all_vi_seq %>% 
@@ -481,6 +458,8 @@ opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
 
 In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.9 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
+
+### Two-Step Algorithm
 
 ```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
 gene_2s_names <- all_vi_two_step %>% 

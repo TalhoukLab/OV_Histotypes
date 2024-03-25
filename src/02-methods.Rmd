@@ -10,6 +10,7 @@ library(purrr)
 library(forcats)
 library(DiagrammeR)
 library(here)
+source(here("validation/cs_process_cohorts.R"))
 train_data <- readRDS(here("data/train_data.rds"))
 train_class <- readRDS(here("data/train_class.rds"))
 ```
@@ -179,12 +180,12 @@ The subsampling method used in the first step of the sequential algorithm is use
 
 ## Two-Step Algorithm
 
-The two-step algorithm can be thought of as a special case of the sequential algorithm, that is specific to classifying ovarian histotypes. The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. Thus, we can implement a two-step algorithm as such:
+The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. We can implement a two-step algorithm as such:
 
--   Step 1: use binary classification for HGSC vs. non-HGSC (this step is the same as step 1 in the sequential algorithm above)
--   Step 2: use multinomial classification for remaining non-HGSC classes
+-   Step 1: use binary classification for HGSC vs. non-HGSC
+-   Step 2: use multinomial classification for the remaining non-HGSC classes
 
-Using some of the notation from Equation \@ref(eq:sequential), a flowchart similar to Figure \@ref(fig:sequential-flowchart) can show how the two-step algorithm works:
+Figure \@ref(fig:two-step-flowchart) shows how the two-step algorithm works:
 
 ```{r two-step-flowchart, fig.cap='Two-Step Algorithm'}
 grViz(
@@ -222,3 +223,36 @@ grViz(
   )
 )
 ```
+
+### Subsampling
+
+Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.
+
+## Gene Optimization
+
+We want to discover an optimal set of genes for the classifiers while including specific genes from other studies. A total of `r ncol(train_data)` genes are used in the classifier training set.
+
+```{r overlap-protype}
+overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
+```
+
+There are `r length(overlap_PrOTYPE)` genes in the classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`
+
+```{r overlap-SPOT}
+overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
+```
+
+There are also `r length(overlap_SPOT)` genes in the classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
+
+```{r overlap-all}
+overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+candidates <- setdiff(names(train_data), overlap_all)
+```
+
+Taking the union of PrOTYPE and SPOT genes we obtain a total of `r length(overlap_all)` unique genes that we want to use for the final classifier, regardless of model performance. We then incrementally add genes from the remaining `r length(candidates)` candidate genes based on an overall variable importance rank to this list and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
+
+### Variable Importance
+
+Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g. for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
+
+For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included. 
