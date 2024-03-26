@@ -780,18 +780,18 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   select(-starts_with("p", ignore.case = FALSE)) %>%
   pivot_longer(
     cols = matches("Prediction"),
-    names_to = "method",
+    names_to = "Method",
     names_prefix = "Prediction_",
     values_to = "Prediction"
   )
 
 # Confirmation set overall metrics
 conf_eval_overall <- conf_pred_overall %>%
-  group_by(method) %>%
+  group_by(Method) %>%
   summarize(
     accuracy = accuracy_vec(Truth, Prediction),
-    kappa = kap_vec(Truth, Prediction),
     f1 = f_meas_vec(Truth, Prediction),
+    kappa = kap_vec(Truth, Prediction),
     gmean = gmean_vec(Truth, Prediction)
   )
 
@@ -827,7 +827,7 @@ conf_eval_per_class <- conf_pred_overall %>%
     values_to = "class_value"
   ) %>%
   filter(class_group == .pred_class_group) %>%
-  nest(.by = c(method, class_group)) %>% 
+  nest(.by = c(Method, class_group)) %>% 
   mutate(
     data = data %>%
       map(~ mutate(.x, across(
@@ -841,13 +841,20 @@ conf_eval_per_class <- conf_pred_overall %>%
   ) %>% 
   unnest(cols = data) %>% 
   select(-.estimator) %>% 
+  mutate(
+    .metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
+    class_group = factor(class_group, levels = c("HGSC", "CCOC", "LGSC", "ENOC", "MUC"))
+  ) %>% 
+  rename(Metric = .metric) %>% 
+  arrange(class_group) %>%
   pivot_wider(names_from = "class_group", values_from = ".estimate")
 
 kable(conf_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Confirmation Set Model",
       digits = 3) %>% 
   kable_styling() %>% 
-  collapse_rows(columns = 1)
+  collapse_rows(columns = 1) %>% 
+  add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
 
 ### Validation Set
@@ -878,18 +885,18 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
   select(-starts_with("p", ignore.case = FALSE)) %>%
   pivot_longer(
     cols = matches("Prediction"),
-    names_to = "method",
+    names_to = "Method",
     names_prefix = "Prediction_",
     values_to = "Prediction"
   )
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall %>%
-  group_by(method) %>%
+  group_by(Method) %>%
   summarize(
     accuracy = accuracy_vec(Truth, Prediction),
-    kappa = kap_vec(Truth, Prediction),
     f1 = f_meas_vec(Truth, Prediction),
+    kappa = kap_vec(Truth, Prediction),
     gmean = gmean_vec(Truth, Prediction)
   )
 
@@ -925,7 +932,7 @@ val_eval_per_class <- val_pred_overall %>%
     values_to = "class_value"
   ) %>%
   filter(class_group == .pred_class_group) %>%
-  nest(.by = c(method, class_group)) %>% 
+  nest(.by = c(Method, class_group)) %>% 
   mutate(
     data = data %>%
       map(~ mutate(.x, across(
@@ -939,11 +946,18 @@ val_eval_per_class <- val_pred_overall %>%
   ) %>% 
   unnest(cols = data) %>% 
   select(-.estimator) %>% 
+  mutate(
+    .metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
+    class_group = factor(class_group, levels = c("HGSC", "CCOC", "LGSC", "ENOC", "MUC"))
+  ) %>% 
+  rename(Metric = .metric) %>% 
+  arrange(class_group) %>%
   pivot_wider(names_from = "class_group", values_from = ".estimate")
 
 kable(val_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Validation Set Model",
       digits = 3) %>% 
   kable_styling() %>% 
-  collapse_rows(columns = 1)
+  collapse_rows(columns = 1) %>% 
+  add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
