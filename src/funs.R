@@ -95,6 +95,21 @@ gmean_vec <- function(truth,
   gmean_impl(truth, estimate, estimator, event_level)
 }
 
+finalize_estimator_internal.gmean <- function(metric_dispatcher, x, estimator, call) {
+
+  validate_estimator(estimator, estimator_override = c("binary", "multiclass"))
+  if (!is.null(estimator)) {
+    return(estimator)
+  }
+
+  lvls <- levels(x)
+  if (length(lvls) > 2) {
+    "multiclass"
+  } else {
+    "binary"
+  }
+}
+
 gmean_impl <- function(truth, estimate, estimator, event_level) {
   xtab <- table(estimate, truth)
   p <- colSums(xtab)
