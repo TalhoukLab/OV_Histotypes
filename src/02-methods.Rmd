@@ -104,6 +104,10 @@ p_sampling <-
 print(p_sampling)
 ```
 
+### Workflows
+
+The 4 **algorithms** and 5 **subsampling** methods are crossed to create 20 different classification **workflows**. For example, the `hybrid_xgb` workflow is a classifier that first pre-processes a training set by applying a hybrid subsampling method, and then proceeds to use the XGBoost algorithm to classify ovarian histotypes.
+
 ## Two-Step Algorithm
 
 The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. We can implement a two-step algorithm as such:
@@ -302,3 +306,60 @@ Taking the union of PrOTYPE and SPOT genes we obtain a total of `r length(overla
 Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g. for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
 
 For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
+
+## Evaluation Metrics
+
+We use the accuracy, kappa, F1-score, area under the ROC (AUC), and geometric mean as evaluation metrics to compare training performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class, except for AUC because it is potentially misleading to combine predicted probabilities in a one-vs-all fashion.
+
+### Accuracy
+
+The accuracy is defined as the proportion of correct predictions out of all cases:
+
+$$
+\text{accuracy} = \frac{TP}{TP + FP + FN + TN}
+(\#eq:accuracy)
+$$
+
+### Kappa
+
+Kappa is the defined as:
+
+$$
+\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
+(\#eq:kappa)
+$$
+
+where $p_0$ is the observed agreement among raters and $p_e$ is the hypothetical probability of agreement due to random chance.
+
+### AUC
+
+The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs. 1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.
+
+### F1-Score
+
+The F-measure can be thought of as a harmonic mean between precision and recall:
+
+$$
+F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times precision) + recall}
+(\#eq:f1)
+$$
+
+The $\beta$ value can be adjusted to place more weight upon precision or recall. The most common value is $\beta$ is 1, which is also commonly known as the F1-score. A multiclass extension doesn't exist for the F1-score, so we use macro-averaging to calculate this metric when there are more than two classes. For example, with $k$ classes, the macro-averaged F1-score is equal to:
+
+$$
+{F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}
+(\#eq:f1-macro)
+$$
+where each ${F_1}_{i}$ is the F1-score computed frrom recoding classes into $k=i$ vs. $k \neq i$.
+
+In situations where there is not at least one predicted case for each of the classes (e.g. for a poor classifier), ${F_1}_{i}$ is undefined because the per-class precision of class $i$ is undefined. Those ${F_1}_{i}$ terms are removed from the ${F_1}_{macro}$ equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.
+
+### Geometric Mean
+
+The geometric mean (G-mean) is the $k^{th}$ root of the product of class-specific sensitivities for $k$ classes:
+
+$$
+\text{G-mean} = \sqrt[k]{\prod_{i=1}^{k}{\text{Sensitivity}_k}}
+(\#eq:gmean)
+$$
+The G-mean generalizes easily for the multiclass scenario.
