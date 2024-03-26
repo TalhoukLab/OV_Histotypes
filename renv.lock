@@ -865,6 +865,13 @@
       "Repository": "CRAN",
       "Hash": "f0acb9dcb71a9cd9d5ae233c5035b1c5"
     },
+    "commonmark": {
+      "Package": "commonmark",
+      "Version": "1.9.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5d8225445acb167abf7797de48b2ee3c"
+    },
     "conflicted": {
       "Package": "conflicted",
       "Version": "1.2.0",
@@ -1259,15 +1266,14 @@
     },
     "fs": {
       "Package": "fs",
-      "Version": "1.3.1",
+      "Version": "1.6.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
-        "Rcpp",
         "methods"
       ],
-      "Hash": "0e26be4558dbbc713d7cfe4a4c361f38"
+      "Hash": "47b5f30c720c23999b913a1a635cf0bb"
     },
     "furrr": {
       "Package": "furrr",
@@ -1930,16 +1936,16 @@
     },
     "markdown": {
       "Package": "markdown",
-      "Version": "1.1",
+      "Version": "1.12",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
-        "mime",
+        "commonmark",
         "utils",
         "xfun"
       ],
-      "Hash": "61e4a10781dd00d7d81dd06ca9b94e95"
+      "Hash": "765cf53992401b3b6c297b69e1edb8bd"
     },
     "mclust": {
       "Package": "mclust",
@@ -3533,14 +3539,15 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.37",
+      "Version": "0.43",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
+        "grDevices",
         "stats",
         "tools"
       ],
-      "Hash": "a6860e1400a8fd1ddb6d9b4230cc34ab"
+      "Hash": "ab6371d8653ce5f2f9290f4ec7b42a8e"
     },
     "xgboost": {
       "Package": "xgboost",
