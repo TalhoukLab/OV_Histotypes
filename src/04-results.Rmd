@@ -536,12 +536,15 @@ per_class_metrics <- bind_rows(
   per_class_metrics_two_step %>%
     add_column(wflow = "two_step", .before = 1)
 ) %>% 
-  filter(class_group != "Overall")
+  filter(class_group != "Overall") %>% 
+  mutate(class_group = factor(class_group,
+                              levels = c("HGSC", "CCOC", "LGSC", "ENOC", "MUC")))
 
 # Keep only workflows that predicted at least one case in each class
 per_class_f1 <- per_class_metrics %>%
   filter(.metric == "f_meas") %>%
   select(wflow, class_group, mean_estimate) %>%
+  arrange(class_group) %>% 
   pivot_wider(names_from = "class_group", values_from = "mean_estimate") %>%
   drop_na() %>%
   pivot_longer(-wflow, names_to = "class_group", values_to = "mean_estimate")
@@ -574,7 +577,8 @@ f1_summary <- per_class_f1 %>%
   pivot_wider(names_from = class_group, values_from = mean_estimate) %>% 
   mutate(across(where(is.numeric), ~ round(.x, digits = 3))) %>% 
   inner_join(wflow_top, by = "wflow") %>% 
-  arrange(rank)
+  arrange(rank) %>% 
+  rename(Workflow = wflow, Rank = rank)
 
 datatable(
   f1_summary,
