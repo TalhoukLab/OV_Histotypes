@@ -102,7 +102,7 @@ kable(overall_accuracy_train,
   add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
-```{r train-accuracy-class, fig.cap='Training Set Class-Specific Mean Accuracy', fig.width=8, fig.height=8}
+```{r train-accuracy-class, fig.cap='Training Set Class-Specific Mean Accuracy', fig.height=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "accuracy"),
@@ -190,7 +190,7 @@ kable(overall_f1_train,
   add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
-```{r train-f1-class, fig.cap='Training Set Class-Specific Mean F1-Score', fig.width=8}
+```{r train-f1-class, fig.cap='Training Set Class-Specific Mean F1-Score', fig.height=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "f_meas"),
@@ -275,7 +275,7 @@ kable(overall_kappa_train,
   add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
-```{r train-kappa-class, fig.cap='Training Set Class-Specific Mean Kappa', fig.width=8}
+```{r train-kappa-class, fig.cap='Training Set Class-Specific Mean Kappa', fig.height=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "kap"),
@@ -360,7 +360,7 @@ kable(overall_gmean_train,
   add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
-```{r train-gmean-class, fig.cap='Training Set Class-Specific Mean G-mean', fig.width=8}
+```{r train-gmean-class, fig.cap='Training Set Class-Specific Mean G-mean', fig.height=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "gmean"),
