@@ -41,6 +41,11 @@ gene_opt_all_metrics_seq <-
   readRDS(here("data/gene_opt_all_metrics_seq.rds"))
 gene_opt_all_metrics_two_step <- 
   readRDS(here("data/gene_opt_all_metrics_two_step.rds"))
+
+# PrOTYPE and SPOT genes
+overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
+overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
+overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
 ```
 
 We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, kappa, and G-mean are the metrics of interest. Workflows are ordered by their mean estimates across the outer folds of the nested CV for each metric.
@@ -776,7 +781,7 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
     values_to = "Prediction"
   )
 
-# Confimation set overall metrics
+# Confirmation set overall metrics
 conf_eval_overall <- conf_pred_overall %>%
   group_by(method) %>%
   summarize(
@@ -874,7 +879,7 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     values_to = "Prediction"
   )
 
-# Valiation set overall metrics
+# Validation set overall metrics
 val_eval_overall <- val_pred_overall %>%
   group_by(method) %>%
   summarize(
