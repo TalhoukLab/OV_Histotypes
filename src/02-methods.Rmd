@@ -104,11 +104,12 @@ p_sampling <-
 print(p_sampling)
 ```
 
-## Sequential Algorithm
+## Two-Step Algorithm
 
-Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the "other" class are those not equal to the current "one" class and excluding all "one" classes from previous steps. For example, if the "one" class in step 1 was HGSC, the "other" classes would include CCOC, ENOC, LGSC, and MUC. If the "one" class in step 2 was CCOC, the "other" classes include ENOC, LGSC, and MUC.
+The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. We can implement a two-step algorithm as such:
 
-The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).
+-   Step 1: use binary classification for HGSC vs. non-HGSC
+-   Step 2: use multinomial classification for the remaining non-HGSC classes
 
 Let
 
@@ -120,6 +121,53 @@ $$
 \end{aligned}
 (\#eq:sequential)
 $$
+
+Figure \@ref(fig:two-step-flowchart) shows how the two-step algorithm works:
+
+```{r two-step-flowchart, fig.cap='Two-Step Algorithm'}
+grViz(
+  paste0(
+    "digraph sequential_algorithm {
+
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    a [label = 'X@_{5}']
+    b1 [label = 'Store HGSC predictions']
+    b2 [label = 'Select W@_{5} for HGSC']
+    c [label = 'X@_{4}']
+    d1 [label = 'Store remaining predictions']
+    d2 [label = 'Select best workflow with highest overall F1-score']
+
+    # edge definitions
+    a -> b1 [xlabel = '  Train HGSC vs. all using W@_{5}']
+    a -> b2 [label = 'Train multinomial classes']
+
+    b1 -> c [xlabel = '  Remove HGSC cases from X@_{5}']
+    c -> d1 [xlabel = 'Train multinomial classes with best workflow']
+    c -> d2 [label = 'Retrain multinomial classes']
+
+    j [label = 'Aggregate all predictions']
+
+    {b1 d1} -> j
+
+    # subgraph definitions
+    subgraph {rank = same; b1; b2}
+    subgraph {rank = same; d1; d2}
+    }"
+  )
+)
+```
+
+Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.
+
+## Sequential Algorithm
+
+Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the "other" class are those not equal to the current "one" class and excluding all "one" classes from previous steps. For example, if the "one" class in step 1 was HGSC, the "other" classes would include CCOC, ENOC, LGSC, and MUC. If the "one" class in step 2 was CCOC, the "other" classes include ENOC, LGSC, and MUC.
+
+The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).
 
 Figure \@ref(fig:sequential-flowchart) illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
 
@@ -224,53 +272,7 @@ grViz(
 )
 ```
 
-## Two-Step Algorithm
 
-The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. We can implement a two-step algorithm as such:
-
--   Step 1: use binary classification for HGSC vs. non-HGSC
--   Step 2: use multinomial classification for the remaining non-HGSC classes
-
-Figure \@ref(fig:two-step-flowchart) shows how the two-step algorithm works:
-
-```{r two-step-flowchart, fig.cap='Two-Step Algorithm'}
-grViz(
-  paste0(
-    "digraph sequential_algorithm {
-
-    # layout
-    graph [layout = dot overlap = TRUE]
-
-    # node definitions
-    node [fontname = Helvetica, shape = box]
-    a [label = 'X@_{5}']
-    b1 [label = 'Store HGSC predictions']
-    b2 [label = 'Select W@_{5} for HGSC']
-    c [label = 'X@_{4}']
-    d1 [label = 'Store remaining predictions']
-    d2 [label = 'Select best workflow with highest overall metric']
-
-    # edge definitions
-    a -> b1 [xlabel = '  Train HGSC vs. all using W@_{5}']
-    a -> b2 [label = 'Train multinomial classes']
-
-    b1 -> c [xlabel = '  Remove HGSC cases from X@_{5}']
-    c -> d1 [xlabel = 'Train multinomial classes with best workflow']
-    c -> d2 [label = 'Retrain multinomial classes']
-
-    j [label = 'Aggregate all predictions']
-
-    {b1 d1} -> j
-
-    # subgraph definitions
-    subgraph {rank = same; b1; b2}
-    subgraph {rank = same; d1; d2}
-    }"
-  )
-)
-```
-
-Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.
 
 ## Gene Optimization
 
