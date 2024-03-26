@@ -176,9 +176,53 @@ grViz(
 )
 ```
 
-### Subsampling
-
 The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.
+
+### Aggregating Predictions
+
+We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the "all" class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSC vs. non-HGSC, CCOC vs. non-CCOC, LGSC vs. non-LGSC, and then MUC vs. ENOC. Figure \@ref(fig:sequential-predictions) illustrates how the final predictions are assigned:
+
+```{r sequential-predictions, fig.cap='Aggregating Predictions for Sequential Algorithm'}
+grViz(
+  paste0(
+    "digraph sequential_predictions {
+    
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    
+    a [label = 'Predict HGSC vs. non-HGSC']
+    b1 [label = 'HGSC']
+    b2 [label = 'non-HGSC']
+    c [label = 'Predict CCOC vs. non-CCOC']
+    d1 [label = 'CCOC']
+    d2 [label = 'non-CCOC']
+    e [label = 'Predict LGSC vs. non-LGSC']
+    f1 [label = 'LGSC']
+    f2 [label = 'non-LGSC']
+    g [label = 'Predict MUC vs. ENOC']
+    h1 [label = 'MUC']
+    h2 [label = 'ENOC']
+    
+    # edge definitions
+    a -> {b1 b2}
+    b2 -> c
+    c -> {d1 d2}
+    d2 -> e
+    e -> {f1 f2}
+    f2 -> g
+    g -> {h1 h2}
+    
+     # subgraph definitions
+    subgraph {rank = same; b2; c}
+    subgraph {rank = same; d2; e}
+    subgraph {rank = same; f2; g}
+    }"
+  )
+)
+```
 
 ## Two-Step Algorithm
 
@@ -226,8 +270,6 @@ grViz(
 )
 ```
 
-### Subsampling
-
 Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.
 
 ## Gene Optimization
@@ -257,4 +299,4 @@ Taking the union of PrOTYPE and SPOT genes we obtain a total of `r length(overla
 
 Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g. for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
 
-For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included. 
+For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
