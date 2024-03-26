@@ -47,6 +47,19 @@ We summarize cross-validated training performance of class metrics in the traini
 
 ## Training Set
 
+```{r train-metrics}
+all_metrics_train <- all_metrics_train %>%
+  separate(wflow, c("Subsampling", "Algorithms"), remove = FALSE) %>%
+  mutate(
+    Subsampling = factor(Subsampling, levels = c("none", "down", "up", "smote", "hybrid")),
+    Algorithms = factor(Algorithms, levels = c("rf", "svm", "xgb", "mr")),
+    class_group = factor(
+      class_group,
+      levels = c("Overall", "HGSC", "CCOC", "LGSC", "ENOC", "MUC")
+    )
+  )
+```
+
 ### Accuracy
 
 ```{r train-accuracy, fig.cap='Training Set Mean Accuracy'}
@@ -69,9 +82,7 @@ print(p)
 overall_accuracy_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "accuracy") %>% 
-  separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
-    samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
@@ -79,11 +90,10 @@ overall_accuracy_train <-
       mean_estimate
     )
   ) %>% 
-  arrange(samp) %>% 
-  pivot_wider(id_cols = samp,
-              names_from = "alg",
-              values_from = "mean_estimate") %>% 
-  rename(Subsampling = samp)
+  arrange(Subsampling, Algorithms) %>% 
+  pivot_wider(id_cols = Subsampling,
+              names_from = Algorithms,
+              values_from = mean_estimate)
 
 kable(overall_accuracy_train,
       caption = "Training Set Mean Accuracy",
@@ -114,9 +124,7 @@ class_accuracy_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "accuracy") %>% 
   rename(Histotype = class_group) %>% 
-  separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
-    samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
@@ -124,11 +132,10 @@ class_accuracy_train <-
       mean_estimate
     )
   ) %>% 
-  arrange(samp) %>% 
-  pivot_wider(id_cols = c(samp, Histotype),
-              names_from = "alg",
-              values_from = "mean_estimate") %>% 
-  rename(Subsampling = samp)
+  arrange(Subsampling, Histotype, Algorithms) %>% 
+  pivot_wider(id_cols = c(Subsampling, Histotype),
+              names_from = Algorithms,
+              values_from = mean_estimate)
 
 kable(class_accuracy_train,
       caption = "Training Set Class-Specific Mean Accuracy",
@@ -163,9 +170,7 @@ print(p)
 overall_f1_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "f_meas") %>% 
-  separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
-    samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
@@ -173,11 +178,10 @@ overall_f1_train <-
       mean_estimate
     )
   ) %>% 
-  arrange(samp) %>% 
-  pivot_wider(id_cols = samp,
-              names_from = "alg",
-              values_from = "mean_estimate") %>% 
-  rename(Subsampling = samp)
+  arrange(Subsampling, Algorithms) %>% 
+  pivot_wider(id_cols = Subsampling,
+              names_from = Algorithms,
+              values_from = mean_estimate)
 
 kable(overall_f1_train,
       caption = "Training Set Mean F1-Score",
@@ -208,9 +212,7 @@ class_f1_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "f_meas") %>% 
   rename(Histotype = class_group) %>% 
-  separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
-    samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
@@ -218,11 +220,10 @@ class_f1_train <-
       mean_estimate
     )
   ) %>% 
-  arrange(samp) %>% 
-  pivot_wider(id_cols = c(samp, Histotype),
-              names_from = "alg",
-              values_from = "mean_estimate") %>% 
-  rename(Subsampling = samp)
+  arrange(Subsampling, Histotype, Algorithms) %>% 
+  pivot_wider(id_cols = c(Subsampling, Histotype),
+              names_from = Algorithms,
+              values_from = mean_estimate)
 
 kable(class_f1_train,
       caption = "Cross-Validated Training Set Class-Specific Mean F1-Score",
@@ -254,9 +255,7 @@ print(p)
 overall_kappa_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "kap") %>% 
-  separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
-    samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
@@ -264,11 +263,10 @@ overall_kappa_train <-
       mean_estimate
     )
   ) %>% 
-  arrange(samp) %>% 
-  pivot_wider(id_cols = samp,
-              names_from = "alg",
-              values_from = "mean_estimate") %>% 
-  rename(Subsampling = samp)
+  arrange(Subsampling, Algorithms) %>% 
+  pivot_wider(id_cols = Subsampling,
+              names_from = Algorithms,
+              values_from = mean_estimate)
 
 kable(overall_kappa_train,
       caption = "Training Set Mean Kappa",
@@ -299,9 +297,7 @@ class_kappa_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "kap") %>% 
   rename(Histotype = class_group) %>% 
-  separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
-    samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
@@ -309,11 +305,10 @@ class_kappa_train <-
       mean_estimate
     )
   ) %>% 
-  arrange(samp) %>% 
-  pivot_wider(id_cols = c(samp, Histotype),
-              names_from = "alg",
-              values_from = "mean_estimate") %>% 
-  rename(Subsampling = samp)
+  arrange(Subsampling, Histotype, Algorithms) %>% 
+  pivot_wider(id_cols = c(Subsampling, Histotype),
+              names_from = Algorithms,
+              values_from = mean_estimate)
 
 kable(class_kappa_train,
       caption = "Training Set Class-Specific Mean Kappa",
@@ -345,9 +340,7 @@ print(p)
 overall_gmean_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "gmean") %>% 
-  separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
-    samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
@@ -355,11 +348,10 @@ overall_gmean_train <-
       mean_estimate
     )
   ) %>% 
-  arrange(samp) %>% 
-  pivot_wider(id_cols = samp,
-              names_from = "alg",
-              values_from = "mean_estimate") %>% 
-  rename(Subsampling = samp)
+  arrange(Subsampling, Algorithms) %>% 
+  pivot_wider(id_cols = Subsampling,
+              names_from = Algorithms,
+              values_from = mean_estimate)
 
 kable(overall_gmean_train,
       caption = "Training Set Mean G-mean",
@@ -390,9 +382,7 @@ class_gmean_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "gmean") %>% 
   rename(Histotype = class_group) %>% 
-  separate(wflow, into = c("samp", "alg"), remove = FALSE) %>%
   mutate(
-    samp = factor(samp, levels = c("none", "down", "up", "smote", "hybrid")),
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
@@ -400,11 +390,10 @@ class_gmean_train <-
       mean_estimate
     )
   ) %>% 
-  arrange(samp) %>% 
-  pivot_wider(id_cols = c(samp, Histotype),
-              names_from = "alg",
-              values_from = "mean_estimate") %>% 
-  rename(Subsampling = samp)
+  arrange(Subsampling, Histotype, Algorithms) %>% 
+  pivot_wider(id_cols = c(Subsampling, Histotype),
+              names_from = Algorithms,
+              values_from = mean_estimate)
 
 kable(class_gmean_train,
       caption = "Training Set Class-Specific Mean G-mean",
