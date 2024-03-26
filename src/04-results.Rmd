@@ -96,7 +96,7 @@ overall_accuracy_train <-
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "lightgreen"),
+      cell_spec(mean_estimate, background = "#90ee90"),
       mean_estimate
     )
   ) %>% 
@@ -143,7 +143,7 @@ class_accuracy_train <-
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "lightgreen"),
+      cell_spec(mean_estimate, background = "#90ee90"),
       mean_estimate
     )
   ) %>% 
@@ -191,7 +191,7 @@ overall_f1_train <-
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "lightgreen"),
+      cell_spec(mean_estimate, background = "#90ee90"),
       mean_estimate
     )
   ) %>% 
@@ -238,7 +238,7 @@ class_f1_train <-
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "lightgreen"),
+      cell_spec(mean_estimate, background = "#90ee90"),
       mean_estimate
     )
   ) %>% 
@@ -286,7 +286,7 @@ overall_kappa_train <-
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "lightgreen"),
+      cell_spec(mean_estimate, background = "#90ee90"),
       mean_estimate
     )
   ) %>% 
@@ -333,7 +333,7 @@ class_kappa_train <-
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "lightgreen"),
+      cell_spec(mean_estimate, background = "#90ee90"),
       mean_estimate
     )
   ) %>% 
@@ -381,7 +381,7 @@ overall_gmean_train <-
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "lightgreen"),
+      cell_spec(mean_estimate, background = "#90ee90"),
       mean_estimate
     )
   ) %>% 
@@ -428,7 +428,7 @@ class_gmean_train <-
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
       mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "lightgreen"),
+      cell_spec(mean_estimate, background = "#90ee90"),
       mean_estimate
     )
   ) %>% 
