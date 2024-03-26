@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-03-25}
+\date{2024-03-26}
 
 \begin{document}
 \maketitle
@@ -196,7 +196,7 @@ The following specifications for each classifier were used for tuning hyperparam
 \item
   \texttt{rf} and \texttt{xgb}: The number of trees were fixed at 500. Other hyperparameters were tuned across 10 randomly selected points in a latin hypercube design.
 \item
-  \texttt{svm}: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design within ranges (transformed scale) {[}0, 2{]} and {[}-3, 0{]}, respectively.
+  \texttt{svm}: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design. We tuned the cost parameter in the range {[}1, 8{]}. The range for tuning the sigma parameter was obtained from the 10\% and 90\% quantiles of the estimation using the \texttt{kernlab::sigest()} function.
 \item
   \texttt{mr}: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in {[}0, 1{]} for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.
 \end{itemize}
@@ -231,39 +231,10 @@ The figure below helps visualize how the distribution of classes changes when we
 \caption{Visualization of Subsampling Techniques}\label{fig:sampling}
 \end{figure}
 
-\hypertarget{sequential-algorithm}{%
-\section{Sequential Algorithm}\label{sequential-algorithm}}
+\hypertarget{workflows}{%
+\subsection{Workflows}\label{workflows}}
 
-Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs.~all other classes, where the classes that make up the ``other'' class are those not equal to the current ``one'' class and excluding all ``one'' classes from previous steps. For example, if the ``one'' class in step 1 was HGSC, the ``other'' classes would include CCOC, ENOC, LGSC, and MUC. If the ``one'' class in step 2 was CCOC, the ``other'' classes include ENOC, LGSC, and MUC.
-
-The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g.~F1-score).
-
-Let
-
-\[
-\begin{aligned}
-& X_k = \text{Training data with k classes}  \\
-& C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
-& W_k = \text{Workflow associated with}\;C_k
-\end{aligned}
-\label{eq:sequential}
-\]
-
-Figure \ref{fig:sequential-flowchart} illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/sequential-flowchart-1} 
-
-}
-
-\caption{Sequential Algorithm}\label{fig:sequential-flowchart}
-\end{figure}
-
-\hypertarget{subsampling-1}{%
-\subsection{Subsampling}\label{subsampling-1}}
-
-The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.
+The 4 \textbf{algorithms} and 5 \textbf{subsampling} methods are crossed to create 20 different classification \textbf{workflows}. For example, the \texttt{hybrid\_xgb} workflow is a classifier that first pre-processes a training set by applying a hybrid subsampling method, and then proceeds to use the XGBoost algorithm to classify ovarian histotypes.
 
 \hypertarget{two-step-algorithm}{%
 \section{Two-Step Algorithm}\label{two-step-algorithm}}
@@ -278,6 +249,17 @@ The HGSC histotype comprises of approximately 80\% of cases among ovarian carcin
   Step 2: use multinomial classification for the remaining non-HGSC classes
 \end{itemize}
 
+Let
+
+\[
+\begin{aligned}
+& X_k = \text{Training data with k classes}  \\
+& C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
+& W_k = \text{Workflow associated with}\;C_k
+\end{aligned}
+\label{eq:sequential}
+\]
+
 Figure \ref{fig:two-step-flowchart} shows how the two-step algorithm works:
 
 \begin{figure}[H]
@@ -289,10 +271,41 @@ Figure \ref{fig:two-step-flowchart} shows how the two-step algorithm works:
 \caption{Two-Step Algorithm}\label{fig:two-step-flowchart}
 \end{figure}
 
-\hypertarget{subsampling-2}{%
-\subsection{Subsampling}\label{subsampling-2}}
-
 Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.
+
+\hypertarget{sequential-algorithm}{%
+\section{Sequential Algorithm}\label{sequential-algorithm}}
+
+Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs.~all other classes, where the classes that make up the ``other'' class are those not equal to the current ``one'' class and excluding all ``one'' classes from previous steps. For example, if the ``one'' class in step 1 was HGSC, the ``other'' classes would include CCOC, ENOC, LGSC, and MUC. If the ``one'' class in step 2 was CCOC, the ``other'' classes include ENOC, LGSC, and MUC.
+
+The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g.~F1-score).
+
+Figure \ref{fig:sequential-flowchart} illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/sequential-flowchart-1} 
+
+}
+
+\caption{Sequential Algorithm}\label{fig:sequential-flowchart}
+\end{figure}
+
+The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.
+
+\hypertarget{aggregating-predictions}{%
+\subsection{Aggregating Predictions}\label{aggregating-predictions}}
+
+We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the ``all'' class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSC vs.~non-HGSC, CCOC vs.~non-CCOC, LGSC vs.~non-LGSC, and then MUC vs.~ENOC. Figure \ref{fig:sequential-predictions} illustrates how the final predictions are assigned:
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/sequential-predictions-1} 
+
+}
+
+\caption{Aggregating Predictions for Sequential Algorithm}\label{fig:sequential-predictions}
+\end{figure}
 
 \hypertarget{gene-optimization}{%
 \section{Gene Optimization}\label{gene-optimization}}
@@ -311,6 +324,69 @@ Taking the union of PrOTYPE and SPOT genes we obtain a total of 28 unique genes 
 Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g.~for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
 
 For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
+
+\hypertarget{evaluation-metrics}{%
+\section{Evaluation Metrics}\label{evaluation-metrics}}
+
+We use the accuracy, kappa, F1-score, area under the ROC (AUC), and geometric mean as evaluation metrics to compare training performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class, except for AUC because it is potentially misleading to combine predicted probabilities in a one-vs-all fashion.
+
+\hypertarget{accuracy}{%
+\subsection{Accuracy}\label{accuracy}}
+
+The accuracy is defined as the proportion of correct predictions out of all cases:
+
+\[
+\text{accuracy} = \frac{TP}{TP + FP + FN + TN}
+\label{eq:accuracy}
+\]
+
+\hypertarget{kappa}{%
+\subsection{Kappa}\label{kappa}}
+
+Kappa is the defined as:
+
+\[
+\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
+\label{eq:kappa}
+\]
+
+where \(p_0\) is the observed agreement among raters and \(p_e\) is the hypothetical probability of agreement due to random chance.
+
+\hypertarget{auc}{%
+\subsection{AUC}\label{auc}}
+
+The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs.~1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.
+
+\hypertarget{f1-score}{%
+\subsection{F1-Score}\label{f1-score}}
+
+The F-measure can be thought of as a harmonic mean between precision and recall:
+
+\[
+F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times precision) + recall}
+\label{eq:f1}
+\]
+
+The \(\beta\) value can be adjusted to place more weight upon precision or recall. The most common value is \(\beta\) is 1, which is also commonly known as the F1-score. A multiclass extension doesn't exist for the F1-score, so we use macro-averaging to calculate this metric when there are more than two classes. For example, with \(k\) classes, the macro-averaged F1-score is equal to:
+
+\[
+{F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}
+\label{eq:f1-macro}
+\]
+where each \({F_1}_{i}\) is the F1-score computed frrom recoding classes into \(k=i\) vs.~\(k \neq i\).
+
+In situations where there is not at least one predicted case for each of the classes (e.g.~for a poor classifier), \({F_1}_{i}\) is undefined because the per-class precision of class \(i\) is undefined. Those \({F_1}_{i}\) terms are removed from the \({F_1}_{macro}\) equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.
+
+\hypertarget{geometric-mean}{%
+\subsection{Geometric Mean}\label{geometric-mean}}
+
+The geometric mean (G-mean) is the \(k^{th}\) root of the product of class-specific sensitivities for \(k\) classes:
+
+\[
+\text{G-mean} = \sqrt[k]{\prod_{i=1}^{k}{\text{Sensitivity}_k}}
+\label{eq:gmean}
+\]
+The G-mean generalizes easily for the multiclass scenario.
 
 \hypertarget{distributions}{%
 \chapter{Distributions}\label{distributions}}
@@ -611,8 +687,8 @@ We summarize cross-validated training performance of class metrics in the traini
 \hypertarget{training-set}{%
 \section{Training Set}\label{training-set}}
 
-\hypertarget{accuracy}{%
-\subsection{Accuracy}\label{accuracy}}
+\hypertarget{accuracy-1}{%
+\subsection{Accuracy}\label{accuracy-1}}
 
 \begin{figure}[H]
 
@@ -631,17 +707,17 @@ We summarize cross-validated training performance of class metrics in the traini
 \hline
 \multicolumn{1}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
 \cline{2-5}
-Subsampling & mr & rf & svm & xgb\\
+Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.814 & 0.922 & 0.937 & 0.813\\
+none & 0.922 & 0.937 & 0.813 & 0.814\\
 \hline
-down & 0.846 & 0.853 & 0.807 & 0.189\\
+down & 0.853 & 0.807 & 0.189 & 0.846\\
 \hline
-up & 0.894 & \textbf{0.941} & 0.931 & 0.94\\
+up & \cellcolor[HTML]{90ee90}{0.941} & 0.931 & 0.94 & 0.894\\
 \hline
-smote & 0.906 & 0.935 & 0.93 & 0.933\\
+smote & 0.935 & 0.93 & 0.933 & 0.906\\
 \hline
-hybrid & 0.908 & \textbf{0.941} & 0.93 & 0.927\\
+hybrid & \cellcolor[HTML]{90ee90}{0.941} & 0.93 & 0.927 & 0.908\\
 \hline
 \end{tabular}
 \end{table}
@@ -663,63 +739,63 @@ hybrid & 0.908 & \textbf{0.941} & 0.93 & 0.927\\
 \hline
 \multicolumn{2}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
 \cline{3-6}
-Subsampling & Histotype & mr & rf & svm & xgb\\
+Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & CCOC & 0.936 & 0.982 & 0.983 & 0.935\\
+ & HGSC & 0.936 & 0.953 & 0.813 & 0.814\\
 \cline{2-6}
- & ENOC & 0.947 & 0.961 & 0.973 & 0.947\\
-\cline{2-6}
- & HGSC & 0.814 & 0.936 & 0.953 & 0.813\\
+ & CCOC & 0.982 & 0.983 & 0.935 & 0.936\\
 \cline{2-6}
  & LGSC & 0.982 & 0.982 & 0.982 & 0.982\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.949 & 0.983 & 0.983 & 0.949\\
+ & ENOC & 0.961 & 0.973 & 0.947 & 0.947\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.983 & 0.983 & 0.949 & 0.949\\
 \cline{1-6}
- & CCOC & 0.974 & 0.973 & 0.969 & 0.935\\
+ & HGSC & 0.888 & 0.835 & 0.31 & 0.876\\
 \cline{2-6}
- & ENOC & 0.945 & 0.96 & 0.929 & 0.947\\
+ & CCOC & 0.973 & 0.969 & 0.935 & 0.974\\
 \cline{2-6}
- & HGSC & 0.876 & 0.888 & 0.835 & 0.31\\
+ & LGSC & 0.927 & 0.904 & 0.596 & 0.926\\
 \cline{2-6}
- & LGSC & 0.926 & 0.927 & 0.904 & 0.596\\
+ & ENOC & 0.96 & 0.929 & 0.947 & 0.945\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.971 & 0.959 & 0.976 & 0.59\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.959 & 0.976 & 0.59 & 0.971\\
 \cline{1-6}
- & CCOC & 0.975 & 0.984 & 0.978 & 0.984\\
+ & HGSC & 0.96 & 0.955 & 0.961 & 0.924\\
 \cline{2-6}
- & ENOC & 0.954 & 0.975 & 0.964 & 0.972\\
+ & CCOC & 0.984 & 0.978 & 0.984 & 0.975\\
 \cline{2-6}
- & HGSC & 0.924 & 0.96 & 0.955 & 0.961\\
+ & LGSC & 0.981 & 0.982 & 0.982 & 0.961\\
 \cline{2-6}
- & LGSC & 0.961 & 0.981 & 0.982 & 0.982\\
+ & ENOC & 0.975 & 0.964 & 0.972 & 0.954\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.974 & 0.983 & 0.982 & 0.981\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.983 & 0.982 & 0.981 & 0.974\\
 \cline{1-6}
- & CCOC & 0.978 & 0.979 & 0.975 & 0.981\\
+ & HGSC & 0.957 & 0.955 & 0.96 & 0.932\\
 \cline{2-6}
- & ENOC & 0.959 & 0.97 & 0.961 & 0.967\\
+ & CCOC & 0.979 & 0.975 & 0.981 & 0.978\\
 \cline{2-6}
- & HGSC & 0.932 & 0.957 & 0.955 & 0.96\\
+ & LGSC & 0.981 & \cellcolor[HTML]{90ee90}{0.985} & 0.979 & 0.966\\
 \cline{2-6}
- & LGSC & 0.966 & 0.981 & \textbf{0.985} & 0.979\\
+ & ENOC & 0.97 & 0.961 & 0.967 & 0.959\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.978 & 0.982 & 0.984 & 0.98\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.982 & 0.984 & 0.98 & 0.978\\
 \cline{1-6}
- & CCOC & 0.976 & 0.984 & 0.979 & 0.98\\
+ & HGSC & 0.962 & 0.957 & 0.952 & 0.939\\
 \cline{2-6}
- & ENOC & 0.957 & 0.973 & 0.962 & 0.966\\
+ & CCOC & 0.984 & 0.979 & 0.98 & 0.976\\
 \cline{2-6}
- & HGSC & 0.939 & 0.962 & 0.957 & 0.952\\
+ & LGSC & 0.982 & 0.982 & 0.978 & 0.969\\
 \cline{2-6}
- & LGSC & 0.969 & 0.982 & 0.982 & 0.978\\
+ & ENOC & 0.973 & 0.962 & 0.966 & 0.957\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.975 & 0.98 & 0.981 & 0.978\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.98 & 0.981 & 0.978 & 0.975\\
 \hline
 \end{tabular}
 \end{table}
 
-\hypertarget{f1-score}{%
-\subsection{F1-Score}\label{f1-score}}
+\hypertarget{f1-score-1}{%
+\subsection{F1-Score}\label{f1-score-1}}
 
 \begin{figure}[H]
 
@@ -738,17 +814,17 @@ Subsampling & Histotype & mr & rf & svm & xgb\\
 \hline
 \multicolumn{1}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
 \cline{2-5}
-Subsampling & mr & rf & svm & xgb\\
+Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.822 & 0.787 & 0.801 & \textbf{0.897}\\
+none & 0.787 & 0.801 & \cellcolor[HTML]{90ee90}{0.897} & 0.822\\
 \hline
-down & 0.664 & 0.657 & 0.645 & 0.231\\
+down & 0.657 & 0.645 & 0.231 & 0.664\\
 \hline
-up & 0.709 & 0.755 & 0.726 & 0.776\\
+up & 0.755 & 0.726 & 0.776 & 0.709\\
 \hline
-smote & 0.724 & 0.748 & 0.75 & 0.747\\
+smote & 0.748 & 0.75 & 0.747 & 0.724\\
 \hline
-hybrid & 0.72 & 0.77 & 0.751 & 0.728\\
+hybrid & 0.77 & 0.751 & 0.728 & 0.72\\
 \hline
 \end{tabular}
 \end{table}
@@ -770,63 +846,63 @@ hybrid & 0.72 & 0.77 & 0.751 & 0.728\\
 \hline
 \multicolumn{2}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
 \cline{3-6}
-Subsampling & Histotype & mr & rf & svm & xgb\\
+Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & CCOC & 0.154 & 0.852 & 0.858 & NA\\
+ & HGSC & 0.962 & 0.972 & 0.897 & 0.897\\
 \cline{2-6}
- & ENOC & NA & 0.497 & 0.719 & NA\\
+ & CCOC & 0.852 & 0.858 & NA & 0.154\\
 \cline{2-6}
- & HGSC & 0.897 & 0.962 & 0.972 & 0.897\\
+ & LGSC & NA & 0.375 & NA & NA\\
 \cline{2-6}
- & LGSC & NA & NA & 0.375 & NA\\
+ & ENOC & 0.497 & 0.719 & NA & NA\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & NA & 0.839 & 0.811 & NA\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.839 & 0.811 & NA & NA\\
 \cline{1-6}
- & CCOC & 0.8 & 0.808 & 0.771 & NA\\
+ & HGSC & 0.926 & 0.888 & 0.894 & 0.918\\
 \cline{2-6}
- & ENOC & 0.559 & 0.59 & 0.545 & NA\\
+ & CCOC & 0.808 & 0.771 & NA & 0.8\\
 \cline{2-6}
- & HGSC & 0.918 & 0.926 & 0.888 & 0.894\\
+ & LGSC & 0.301 & 0.262 & 0.035 & 0.308\\
 \cline{2-6}
- & LGSC & 0.308 & 0.301 & 0.262 & 0.035\\
+ & ENOC & 0.59 & 0.545 & NA & 0.559\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.732 & 0.66 & 0.759 & 0.096\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.66 & 0.759 & 0.096 & 0.732\\
 \cline{1-6}
- & CCOC & 0.8 & 0.869 & 0.822 & 0.87\\
+ & HGSC & 0.976 & 0.973 & 0.976 & 0.951\\
 \cline{2-6}
- & ENOC & 0.63 & 0.734 & 0.629 & 0.728\\
+ & CCOC & 0.869 & 0.822 & 0.87 & 0.8\\
 \cline{2-6}
- & HGSC & 0.951 & 0.976 & 0.973 & 0.976\\
+ & LGSC & 0.236 & 0.402 & 0.394 & 0.409\\
 \cline{2-6}
- & LGSC & 0.409 & 0.236 & 0.402 & 0.394\\
+ & ENOC & 0.734 & 0.629 & 0.728 & 0.63\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.756 & 0.835 & 0.804 & 0.814\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.835 & 0.804 & 0.814 & 0.756\\
 \cline{1-6}
- & CCOC & 0.817 & 0.833 & 0.782 & 0.846\\
+ & HGSC & 0.974 & 0.973 & 0.975 & 0.957\\
 \cline{2-6}
- & ENOC & 0.662 & 0.701 & 0.588 & 0.674\\
+ & CCOC & 0.833 & 0.782 & 0.846 & 0.817\\
 \cline{2-6}
- & HGSC & 0.957 & 0.974 & 0.973 & 0.975\\
+ & LGSC & 0.285 & 0.519 & 0.433 & 0.4\\
 \cline{2-6}
- & LGSC & 0.4 & 0.285 & 0.519 & 0.433\\
+ & ENOC & 0.701 & 0.588 & 0.674 & 0.662\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.784 & 0.827 & 0.825 & 0.805\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.827 & 0.825 & 0.805 & 0.784\\
 \cline{1-6}
- & CCOC & 0.799 & 0.868 & 0.825 & 0.843\\
+ & HGSC & \cellcolor[HTML]{90ee90}{0.977} & 0.973 & 0.97 & 0.962\\
 \cline{2-6}
- & ENOC & 0.638 & 0.742 & 0.659 & 0.661\\
+ & CCOC & 0.868 & 0.825 & 0.843 & 0.799\\
 \cline{2-6}
- & HGSC & 0.962 & \textbf{0.977} & 0.973 & 0.97\\
+ & LGSC & 0.456 & 0.495 & 0.384 & 0.436\\
 \cline{2-6}
- & LGSC & 0.436 & 0.456 & 0.495 & 0.384\\
+ & ENOC & 0.742 & 0.659 & 0.661 & 0.638\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.764 & 0.808 & 0.801 & 0.782\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.808 & 0.801 & 0.782 & 0.764\\
 \hline
 \end{tabular}
 \end{table}
 
-\hypertarget{kappa}{%
-\subsection{Kappa}\label{kappa}}
+\hypertarget{kappa-1}{%
+\subsection{Kappa}\label{kappa-1}}
 
 \begin{figure}[H]
 
@@ -845,17 +921,17 @@ Subsampling & Histotype & mr & rf & svm & xgb\\
 \hline
 \multicolumn{1}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
 \cline{2-5}
-Subsampling & mr & rf & svm & xgb\\
+Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.008 & 0.727 & 0.79 & 0\\
+none & 0.727 & 0.79 & 0 & 0.008\\
 \hline
-down & 0.63 & 0.639 & 0.569 & 0\\
+down & 0.639 & 0.569 & 0 & 0.63\\
 \hline
-up & 0.717 & 0.81 & 0.783 & 0.814\\
+up & 0.81 & 0.783 & 0.814 & 0.717\\
 \hline
-smote & 0.743 & 0.796 & 0.772 & 0.799\\
+smote & 0.796 & 0.772 & 0.799 & 0.743\\
 \hline
-hybrid & 0.744 & \textbf{0.819} & 0.788 & 0.783\\
+hybrid & \cellcolor[HTML]{90ee90}{0.819} & 0.788 & 0.783 & 0.744\\
 \hline
 \end{tabular}
 \end{table}
@@ -877,57 +953,57 @@ hybrid & 0.744 & \textbf{0.819} & 0.788 & 0.783\\
 \hline
 \multicolumn{2}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
 \cline{3-6}
-Subsampling & Histotype & mr & rf & svm & xgb\\
+Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & CCOC & 0.03 & 0.843 & 0.849 & 0\\
+ & HGSC & 0.761 & 0.834 & 0 & 0.008\\
 \cline{2-6}
- & ENOC & 0 & 0.479 & 0.705 & 0\\
+ & CCOC & 0.843 & 0.849 & 0 & 0.03\\
 \cline{2-6}
- & HGSC & 0.008 & 0.761 & 0.834 & 0\\
+ & LGSC & 0 & 0.148 & 0 & 0\\
 \cline{2-6}
- & LGSC & 0 & 0 & 0.148 & 0\\
+ & ENOC & 0.479 & 0.705 & 0 & 0\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0 & 0.83 & 0.803 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.83 & 0.803 & 0 & 0\\
 \cline{1-6}
- & CCOC & 0.786 & 0.793 & 0.755 & 0\\
+ & HGSC & 0.695 & 0.589 & 0 & 0.671\\
 \cline{2-6}
- & ENOC & 0.531 & 0.57 & 0.512 & 0\\
+ & CCOC & 0.793 & 0.755 & 0 & 0.786\\
 \cline{2-6}
- & HGSC & 0.671 & 0.695 & 0.589 & 0\\
+ & LGSC & 0.281 & 0.238 & 0 & 0.288\\
 \cline{2-6}
- & LGSC & 0.288 & 0.281 & 0.238 & 0\\
+ & ENOC & 0.57 & 0.512 & 0 & 0.531\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.718 & 0.64 & 0.747 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.64 & 0.747 & 0 & 0.718\\
 \cline{1-6}
- & CCOC & 0.787 & 0.86 & 0.81 & 0.861\\
+ & HGSC & 0.86 & 0.848 & 0.872 & 0.776\\
 \cline{2-6}
- & ENOC & 0.607 & 0.721 & 0.61 & 0.713\\
+ & CCOC & 0.86 & 0.81 & 0.861 & 0.787\\
 \cline{2-6}
- & HGSC & 0.776 & 0.86 & 0.848 & 0.872\\
+ & LGSC & 0.181 & 0.394 & 0.307 & 0.394\\
 \cline{2-6}
- & LGSC & 0.394 & 0.181 & 0.394 & 0.307\\
+ & ENOC & 0.721 & 0.61 & 0.713 & 0.607\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.743 & 0.826 & 0.795 & 0.804\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.826 & 0.795 & 0.804 & 0.743\\
 \cline{1-6}
- & CCOC & 0.805 & 0.822 & 0.769 & 0.836\\
+ & HGSC & 0.856 & 0.842 & 0.869 & 0.795\\
 \cline{2-6}
- & ENOC & 0.64 & 0.685 & 0.569 & 0.657\\
+ & CCOC & 0.822 & 0.769 & 0.836 & 0.805\\
 \cline{2-6}
- & HGSC & 0.795 & 0.856 & 0.842 & 0.869\\
+ & LGSC & 0.22 & 0.409 & 0.422 & 0.386\\
 \cline{2-6}
- & LGSC & 0.386 & 0.22 & 0.409 & 0.422\\
+ & ENOC & 0.685 & 0.569 & 0.657 & 0.64\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.772 & 0.818 & 0.817 & 0.795\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.818 & 0.817 & 0.795 & 0.772\\
 \cline{1-6}
- & CCOC & 0.786 & 0.86 & 0.814 & 0.832\\
+ & HGSC & \cellcolor[HTML]{90ee90}{0.876} & 0.857 & 0.844 & 0.815\\
 \cline{2-6}
- & ENOC & 0.615 & 0.728 & 0.639 & 0.644\\
+ & CCOC & 0.86 & 0.814 & 0.832 & 0.786\\
 \cline{2-6}
- & HGSC & 0.815 & \textbf{0.876} & 0.857 & 0.844\\
+ & LGSC & 0.448 & 0.486 & 0.373 & 0.423\\
 \cline{2-6}
- & LGSC & 0.423 & 0.448 & 0.486 & 0.373\\
+ & ENOC & 0.728 & 0.639 & 0.644 & 0.615\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.751 & 0.798 & 0.791 & 0.771\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.798 & 0.791 & 0.771 & 0.751\\
 \hline
 \end{tabular}
 \end{table}
@@ -952,17 +1028,17 @@ Subsampling & Histotype & mr & rf & svm & xgb\\
 \hline
 \multicolumn{1}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
 \cline{2-5}
-Subsampling & mr & rf & svm & xgb\\
+Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.858 & 0.705 & 0.732 & \textbf{1}\\
+none & 0.705 & 0.732 & \cellcolor[HTML]{90ee90}{1} & 0.858\\
 \hline
-down & 0.821 & 0.786 & 0.837 & \textbf{1}\\
+down & 0.786 & 0.837 & \cellcolor[HTML]{90ee90}{1} & 0.821\\
 \hline
-up & 0.817 & 0.717 & 0.722 & 0.735\\
+up & 0.717 & 0.722 & 0.735 & 0.817\\
 \hline
-smote & 0.847 & 0.739 & 0.694 & 0.738\\
+smote & 0.739 & 0.694 & 0.738 & 0.847\\
 \hline
-hybrid & 0.803 & 0.729 & 0.739 & 0.769\\
+hybrid & 0.729 & 0.739 & 0.769 & 0.803\\
 \hline
 \end{tabular}
 \end{table}
@@ -984,57 +1060,57 @@ hybrid & 0.803 & 0.729 & 0.739 & 0.769\\
 \hline
 \multicolumn{2}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
 \cline{3-6}
-Subsampling & Histotype & mr & rf & svm & xgb\\
+Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & CCOC & 0.858 & 0.888 & 0.893 & \textbf{1}\\
+ & HGSC & 0.823 & 0.878 & \cellcolor[HTML]{90ee90}{1} & 0.83\\
 \cline{2-6}
- & ENOC & \textbf{1} & 0.615 & 0.818 & \textbf{1}\\
+ & CCOC & 0.888 & 0.893 & \cellcolor[HTML]{90ee90}{1} & 0.858\\
 \cline{2-6}
- & HGSC & 0.83 & 0.823 & 0.878 & \textbf{1}\\
+ & LGSC & \cellcolor[HTML]{90ee90}{1} & 0.797 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
 \cline{2-6}
- & LGSC & \textbf{1} & \textbf{1} & 0.797 & \textbf{1}\\
+ & ENOC & 0.615 & 0.818 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & \textbf{1} & 0.901 & 0.87 & \textbf{1}\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.901 & 0.87 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
 \cline{1-6}
- & CCOC & 0.897 & 0.911 & 0.898 & \textbf{1}\\
+ & HGSC & 0.915 & 0.883 & \cellcolor[HTML]{90ee90}{1} & 0.909\\
 \cline{2-6}
- & ENOC & 0.803 & 0.758 & 0.857 & \textbf{1}\\
+ & CCOC & 0.911 & 0.898 & \cellcolor[HTML]{90ee90}{1} & 0.897\\
 \cline{2-6}
- & HGSC & 0.909 & 0.915 & 0.883 & \textbf{1}\\
+ & LGSC & 0.892 & 0.934 & \cellcolor[HTML]{90ee90}{1} & 0.926\\
 \cline{2-6}
- & LGSC & 0.926 & 0.892 & 0.934 & \textbf{1}\\
+ & ENOC & 0.758 & 0.857 & \cellcolor[HTML]{90ee90}{1} & 0.803\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.909 & 0.897 & 0.888 & \textbf{1}\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.897 & 0.888 & \cellcolor[HTML]{90ee90}{1} & 0.909\\
 \cline{1-6}
- & CCOC & 0.881 & 0.908 & 0.893 & 0.913\\
+ & HGSC & 0.904 & 0.91 & 0.928 & 0.935\\
 \cline{2-6}
- & ENOC & 0.844 & 0.82 & 0.779 & 0.843\\
+ & CCOC & 0.908 & 0.893 & 0.913 & 0.881\\
 \cline{2-6}
- & HGSC & 0.935 & 0.904 & 0.91 & 0.928\\
+ & LGSC & 0.677 & 0.754 & 0.653 & 0.876\\
 \cline{2-6}
- & LGSC & 0.876 & 0.677 & 0.754 & 0.653\\
+ & ENOC & 0.82 & 0.779 & 0.843 & 0.844\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.906 & 0.915 & 0.862 & 0.927\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.915 & 0.862 & 0.927 & 0.906\\
 \cline{1-6}
- & CCOC & 0.887 & 0.906 & 0.847 & 0.912\\
+ & HGSC & 0.915 & 0.891 & 0.937 & 0.934\\
 \cline{2-6}
- & ENOC & 0.844 & 0.814 & 0.735 & 0.805\\
+ & CCOC & 0.906 & 0.847 & 0.912 & 0.887\\
 \cline{2-6}
- & HGSC & 0.934 & 0.915 & 0.891 & 0.937\\
+ & LGSC & 0.724 & 0.734 & 0.673 & 0.912\\
 \cline{2-6}
- & LGSC & 0.912 & 0.724 & 0.734 & 0.673\\
+ & ENOC & 0.814 & 0.735 & 0.805 & 0.844\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.925 & 0.914 & 0.87 & 0.926\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.914 & 0.87 & 0.926 & 0.925\\
 \cline{1-6}
- & CCOC & 0.871 & 0.919 & 0.886 & 0.917\\
+ & HGSC & 0.938 & 0.93 & 0.929 & 0.941\\
 \cline{2-6}
- & ENOC & 0.837 & 0.864 & 0.834 & 0.802\\
+ & CCOC & 0.919 & 0.886 & 0.917 & 0.871\\
 \cline{2-6}
- & HGSC & 0.941 & 0.938 & 0.93 & 0.929\\
+ & LGSC & 0.615 & 0.714 & 0.779 & 0.822\\
 \cline{2-6}
- & LGSC & 0.822 & 0.615 & 0.714 & 0.779\\
+ & ENOC & 0.864 & 0.834 & 0.802 & 0.837\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.908 & 0.919 & 0.872 & 0.911\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.919 & 0.872 & 0.911 & 0.908\\
 \hline
 \end{tabular}
 \end{table}
@@ -1148,15 +1224,15 @@ We can test 2 additional methods by using either the full set of genes or the op
 \centering
 \begin{tabular}[t]{l|r|r|r|r}
 \hline
-method & accuracy & kappa & f1 & gmean\\
+Method & accuracy & f1 & kappa & gmean\\
 \hline
-sequential\_full & 0.834 & 0.669 & 0.654 & 0.574\\
+sequential\_full & 0.834 & 0.654 & 0.669 & 0.574\\
 \hline
-sequential\_optimal & 0.827 & 0.660 & 0.642 & 0.574\\
+sequential\_optimal & 0.827 & 0.642 & 0.660 & 0.574\\
 \hline
-two\_step\_full & 0.840 & 0.682 & 0.688 & 0.650\\
+two\_step\_full & 0.840 & 0.688 & 0.682 & 0.650\\
 \hline
-two\_step\_optimal & 0.834 & 0.668 & 0.679 & 0.639\\
+two\_step\_optimal & 0.834 & 0.679 & 0.668 & 0.639\\
 \hline
 \end{tabular}
 \end{table}
@@ -1167,39 +1243,41 @@ two\_step\_optimal & 0.834 & 0.668 & 0.679 & 0.639\\
 \centering
 \begin{tabular}[t]{l|l|r|r|r|r|r}
 \hline
-method & .metric & CCOC & ENOC & HGSC & LGSC & MUC\\
+\multicolumn{2}{c|}{ } & \multicolumn{5}{c}{Histotypes} \\
+\cline{3-7}
+Method & Metric & HGSC & CCOC & LGSC & ENOC & MUC\\
 \hline
- & accuracy & 0.970 & 0.896 & 0.869 & 0.969 & 0.975\\
+ & accuracy & 0.869 & 0.970 & 0.969 & 0.896 & 0.975\\
 \cline{2-7}
- & f\_meas & 0.872 & 0.626 & 0.904 & 0.333 & 0.704\\
+ & f1 & 0.904 & 0.872 & 0.333 & 0.626 & 0.704\\
 \cline{2-7}
- & kap & 0.856 & 0.568 & 0.701 & 0.318 & 0.691\\
+ & kappa & 0.701 & 0.856 & 0.318 & 0.568 & 0.691\\
 \cline{2-7}
-\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_full} & gmean & 0.924 & 0.715 & 0.833 & 0.614 & 0.833\\
+\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_full} & gmean & 0.833 & 0.924 & 0.614 & 0.715 & 0.833\\
 \cline{1-7}
- & accuracy & 0.969 & 0.890 & 0.866 & 0.964 & 0.978\\
+ & accuracy & 0.866 & 0.969 & 0.964 & 0.890 & 0.978\\
 \cline{2-7}
- & f\_meas & 0.865 & 0.594 & 0.902 & 0.303 & 0.731\\
+ & f1 & 0.902 & 0.865 & 0.303 & 0.594 & 0.731\\
 \cline{2-7}
- & kap & 0.847 & 0.534 & 0.692 & 0.286 & 0.719\\
+ & kappa & 0.692 & 0.847 & 0.286 & 0.534 & 0.719\\
 \cline{2-7}
-\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.916 & 0.689 & 0.827 & 0.613 & 0.835\\
+\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.827 & 0.916 & 0.613 & 0.689 & 0.835\\
 \cline{1-7}
- & accuracy & 0.961 & 0.893 & 0.869 & 0.969 & 0.975\\
+ & accuracy & 0.869 & 0.961 & 0.969 & 0.893 & 0.975\\
 \cline{2-7}
- & f\_meas & 0.839 & 0.619 & 0.904 & 0.231 & 0.680\\
+ & f1 & 0.904 & 0.839 & 0.231 & 0.619 & 0.680\\
 \cline{2-7}
- & kap & 0.817 & 0.558 & 0.701 & 0.215 & 0.667\\
+ & kappa & 0.701 & 0.817 & 0.215 & 0.558 & 0.667\\
 \cline{2-7}
-\multirow{-4}{*}{\raggedright\arraybackslash sequential\_full} & gmean & 0.919 & 0.714 & 0.833 & 0.477 & 0.790\\
+\multirow{-4}{*}{\raggedright\arraybackslash sequential\_full} & gmean & 0.833 & 0.919 & 0.477 & 0.714 & 0.790\\
 \cline{1-7}
- & accuracy & 0.950 & 0.896 & 0.869 & 0.967 & 0.972\\
+ & accuracy & 0.869 & 0.950 & 0.967 & 0.896 & 0.972\\
 \cline{2-7}
- & f\_meas & 0.800 & 0.617 & 0.903 & 0.222 & 0.667\\
+ & f1 & 0.903 & 0.800 & 0.222 & 0.617 & 0.667\\
 \cline{2-7}
- & kap & 0.772 & 0.560 & 0.702 & 0.206 & 0.652\\
+ & kappa & 0.702 & 0.772 & 0.206 & 0.560 & 0.652\\
 \cline{2-7}
-\multirow{-4}{*}{\raggedright\arraybackslash sequential\_optimal} & gmean & 0.907 & 0.704 & 0.836 & 0.476 & 0.811\\
+\multirow{-4}{*}{\raggedright\arraybackslash sequential\_optimal} & gmean & 0.836 & 0.907 & 0.476 & 0.704 & 0.811\\
 \hline
 \end{tabular}
 \end{table}
@@ -1213,9 +1291,9 @@ method & .metric & CCOC & ENOC & HGSC & LGSC & MUC\\
 \centering
 \begin{tabular}[t]{l|r|r|r|r}
 \hline
-method & accuracy & kappa & f1 & gmean\\
+Method & accuracy & f1 & kappa & gmean\\
 \hline
-two\_step\_optimal & 0.847 & 0.653 & 0.65 & 0.701\\
+two\_step\_optimal & 0.847 & 0.65 & 0.653 & 0.701\\
 \hline
 \end{tabular}
 \end{table}
@@ -1226,15 +1304,17 @@ two\_step\_optimal & 0.847 & 0.653 & 0.65 & 0.701\\
 \centering
 \begin{tabular}[t]{l|l|r|r|r|r|r}
 \hline
-method & .metric & CCOC & ENOC & HGSC & LGSC & MUC\\
+\multicolumn{2}{c|}{ } & \multicolumn{5}{c}{Histotypes} \\
+\cline{3-7}
+Method & Metric & HGSC & CCOC & LGSC & ENOC & MUC\\
 \hline
- & accuracy & 0.972 & 0.922 & 0.879 & 0.964 & 0.957\\
+ & accuracy & 0.879 & 0.972 & 0.964 & 0.922 & 0.957\\
 \cline{2-7}
- & f\_meas & 0.854 & 0.608 & 0.917 & 0.353 & 0.519\\
+ & f1 & 0.917 & 0.854 & 0.353 & 0.608 & 0.519\\
 \cline{2-7}
- & kap & 0.839 & 0.566 & 0.690 & 0.336 & 0.499\\
+ & kappa & 0.690 & 0.839 & 0.336 & 0.566 & 0.499\\
 \cline{2-7}
-\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.945 & 0.706 & 0.853 & 0.697 & 0.881\\
+\multirow{-4}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.853 & 0.945 & 0.697 & 0.706 & 0.881\\
 \hline
 \end{tabular}
 \end{table}
