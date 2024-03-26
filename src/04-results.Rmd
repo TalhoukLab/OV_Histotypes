@@ -66,7 +66,12 @@ all_metrics_train <- all_metrics_train %>%
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group == "Overall", .metric == "accuracy"),
-  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE), y = mean_estimate)
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
+    y = mean_estimate,
+    color = Algorithms,
+    shape = Subsampling
+  )
 ) +
   geom_point() +
   theme_bw() +
@@ -106,7 +111,12 @@ kable(overall_accuracy_train,
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "accuracy"),
-  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE), y = mean_estimate)
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
+    y = mean_estimate,
+    color = Algorithms,
+    shape = Subsampling
+  )
 ) +
   geom_point() +
   facet_wrap(~ class_group, ncol = 1) +
@@ -153,7 +163,9 @@ p <- ggplot(
     filter(class_group == "Overall", .metric == "f_meas"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
-    y = mean_estimate
+    y = mean_estimate,
+    color = Algorithms,
+    shape = Subsampling
   )
 ) +
   geom_point() +
@@ -194,7 +206,12 @@ kable(overall_f1_train,
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "f_meas"),
-  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE), y = mean_estimate)
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate,
+    color = Algorithms,
+    shape = Subsampling
+  )
 ) +
   geom_point() +
   facet_wrap(~ class_group, ncol = 1) +
@@ -239,7 +256,12 @@ kable(class_f1_train,
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group == "Overall", .metric == "kap"),
-  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE), y = mean_estimate)
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
+    y = mean_estimate,
+    color = Algorithms,
+    shape = Subsampling
+  )
 ) +
   geom_point() +
   theme_bw() +
@@ -279,7 +301,12 @@ kable(overall_kappa_train,
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "kap"),
-  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE), y = mean_estimate)
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate,
+    color = Algorithms,
+    shape = Subsampling
+  )
 ) +
   geom_point() +
   facet_wrap(~ class_group, ncol = 1) +
@@ -324,7 +351,12 @@ kable(class_kappa_train,
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group == "Overall", .metric == "gmean"),
-  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE), y = mean_estimate)
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
+    y = mean_estimate,
+    color = Algorithms,
+    shape = Subsampling
+  )
 ) +
   geom_point() +
   theme_bw() +
@@ -364,7 +396,12 @@ kable(overall_gmean_train,
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "gmean"),
-  aes(x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE), y = mean_estimate)
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate,
+    color = Algorithms,
+    shape = Subsampling
+  )
 ) +
   geom_point() +
   facet_wrap(~ class_group, ncol = 1) +
