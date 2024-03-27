@@ -15,5 +15,7 @@ folds <- nested_cv(
   suppressWarnings()
 
 # Metrics
-mset <- metric_set(accuracy, f_meas, kap, gmean, roc_auc)
-per_class_mset <- metric_set(accuracy, f_meas, kap, gmean)
+mset <-
+  metric_set(accuracy, sensitivity, specificity, f_meas, bal_accuracy, kap, gmean, roc_auc)
+per_class_mset <-
+  metric_set(accuracy, sensitivity, specificity, f_meas, bal_accuracy, kap, gmean)
