@@ -93,15 +93,16 @@ per_class_metrics <- test_preds %>%
               suppressWarnings()
           ) %>%
           unnest(cols = data) %>%
-          filter(!grepl("non", class_group)) %>%
-          relocate(class_group, .after = .estimate)
+          filter(!grepl("non", class_group))
       })
   ) %>%
   unnest(cols = metrics) %>%
-  summarise(
+  mutate(
     mean_estimate = mean(.estimate, na.rm = TRUE),
     .by = c(.metric, .estimator, class_group)
-  )
+  ) %>%
+  select(-data) %>%
+  relocate(class_group, .after = mean_estimate)
 
 # Variable importance metrics
 ## Use model-specific metrics if available, otherwise calculate

@@ -75,10 +75,11 @@ overall_metrics <- test_preds %>%
       })
   ) %>%
   unnest(cols = metrics) %>%
-  summarise(mean_estimate = mean(.estimate),
-            .by = c(.metric, .estimator)) %>%
+  mutate(mean_estimate = mean(.estimate),
+         .by = c(.metric, .estimator)) %>%
   add_column(class_group = "Overall") %>%
-  arrange(.metric)
+  select(-data) %>%
+  arrange(fold_id, .metric)
 
 # Write all metrics to file
 metrics_file <- file.path(

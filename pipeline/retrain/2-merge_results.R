@@ -75,8 +75,8 @@ overall_metrics <- test_preds %>%
       })
   ) %>%
   unnest(cols = metrics) %>%
-  summarise(mean_estimate = mean(.estimate),
-            .by = c(.metric, .estimator)) %>%
+  mutate(mean_estimate = mean(.estimate),
+         .by = c(.metric, .estimator)) %>%
   add_column(class_group = "Overall")
 
 # Calculate average of per-class metrics across folds using one-vs-all predictions
@@ -122,14 +122,16 @@ per_class_metrics <- test_preds %>%
       })
   ) %>%
   unnest(cols = metrics) %>%
-  summarise(
+  mutate(
     mean_estimate = mean(.estimate, na.rm = TRUE),
     .by = c(.metric, .estimator, class_group)
   )
 
 # Combine all metrics
-all_metrics <- bind_rows(overall_metrics, per_class_metrics) %>%
-  arrange(.metric)
+all_metrics <-
+  bind_rows(overall_metrics, per_class_metrics) %>%
+  select(-data) %>%
+  arrange(fold_id, .metric)
 
 # Variable importance metrics
 ## Use model-specific metrics if available, otherwise calculate
