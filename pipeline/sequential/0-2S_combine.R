@@ -6,8 +6,10 @@ library(purrr)
 seq_top_c5 <- readRDS(here("data/seq_top_c5.rds"))
 all_metrics_retrain_4 <- readRDS(here("data/all_metrics_retrain_4.rds"))
 rank_metric <- "f_meas"
-step2_wflow <-  all_metrics_retrain_4 %>%
+step2_wflow <- all_metrics_retrain_4 %>%
+  select(-c(fold_id, .estimate)) %>%
   filter(.metric == rank_metric, class_group == "Overall") %>%
+  distinct() %>%
   slice_max(order_by = mean_estimate) %>%
   pull(wflow)
 
