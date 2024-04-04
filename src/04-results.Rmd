@@ -65,7 +65,7 @@ all_metrics_train <- all_metrics_train %>%
     Algorithms = factor(Algorithms, levels = c("rf", "svm", "xgb", "mr")),
     class_group = factor(
       class_group,
-      levels = c("Overall", "HGSC", "CCOC", "LGSC", "ENOC", "MUC")
+      levels = c("Overall", "HGSC", "CCOC", "ENOC", "LGSC", "MUC")
     )
   ) %>% 
   mutate(
@@ -699,9 +699,9 @@ The top 2 methods are:
 
 - **sequential**: sequential algorithm with hybrid subsampling at every step. The sequence of algorithms used are:
   - HGSC vs. non-HGSC using random forest
-  - CCOC vs. non-CCOC using support vector machine
-  - LGSC vs. non-LGSC using support vector machine
-  - ENOC vs. MUC using regularized multinomial regression
+  - CCOC vs. non-CCOC using XGBoost
+  - ENOC vs. non-ENOC using support vector machine
+  - LGSC vs. MUC using support vector machine
 - **two_step**: two-step algorithm with hybrid subsampling at both steps. The sequence of algorithms used are:
   - HGSC vs. non-HGSC using random forest
   - CCOC vs. ENOC vs. MUC vs. LGSC support vector machine
