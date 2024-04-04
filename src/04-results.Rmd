@@ -881,7 +881,7 @@ conf_eval_per_class <- conf_pred_overall %>%
   select(-.estimator) %>% 
   mutate(
     .metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
-    class_group = factor(class_group, levels = c("HGSC", "CCOC", "LGSC", "ENOC", "MUC"))
+    class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))
   ) %>% 
   rename(Metric = .metric) %>% 
   arrange(class_group) %>%
@@ -986,7 +986,7 @@ val_eval_per_class <- val_pred_overall %>%
   select(-.estimator) %>% 
   mutate(
     .metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
-    class_group = factor(class_group, levels = c("HGSC", "CCOC", "LGSC", "ENOC", "MUC"))
+    class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))
   ) %>% 
   rename(Metric = .metric) %>% 
   arrange(class_group) %>%
