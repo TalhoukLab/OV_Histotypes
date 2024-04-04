@@ -579,6 +579,7 @@ per_class_metrics <- bind_rows(
 # Keep only workflows that predicted at least one case in each class
 per_class_f1 <- per_class_metrics %>%
   filter(.metric == "f_meas") %>%
+  distinct(pick(-fold_id, -.estimate)) %>% 
   select(wflow, class_group, mean_estimate) %>%
   arrange(class_group) %>% 
   pivot_wider(names_from = "class_group", values_from = "mean_estimate") %>%
@@ -649,6 +650,7 @@ wflow_top4 <- wflow_top %>%
   head(4)
 
 metrics_top4 <- per_class_metrics %>% 
+  distinct(pick(-fold_id, -.estimate)) %>% 
   inner_join(wflow_top4, by = "wflow") %>% 
   mutate(wflow = fct_reorder(wflow, rank)) %>% 
   arrange(rank)
@@ -661,7 +663,7 @@ p <-
   theme(plot.title = element_text(face = "bold")) +
   labs(
     x = "Workflow",
-    y = "Metric",
+    y = "Average Metric",
     color = "Metric",
     title = "Top 4 Workflow Per-Class Evaluation Metrics"
   )
@@ -680,7 +682,7 @@ p <-
   theme(plot.title = element_text(face = "bold")) +
   labs(
     x = "Class",
-    y = "Metric",
+    y = "Average Metric",
     color = "Workflow",
     title = "Top 4 Workflow Per-Class F1-Scores"
   )
