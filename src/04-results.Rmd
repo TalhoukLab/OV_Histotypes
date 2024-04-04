@@ -15,6 +15,7 @@ library(splendid)
 library(magrittr)
 library(DT)
 library(plotly)
+library(patchwork)
 library(tidymodels)
 library(themis)
 library(here)
@@ -821,7 +822,9 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
     names_to = "Method",
     names_prefix = "Prediction_",
     values_to = "Prediction"
-  )
+  ) %>% 
+  mutate(across(c(Truth, Prediction),
+         ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))))
 
 # Confirmation set overall metrics
 conf_eval_overall <- conf_pred_overall %>%
@@ -837,6 +840,22 @@ kable(conf_eval_overall,
       caption = "Overall Evaluation Metrics on Confirmation Set Models",
       digits = 3) %>%
   kable_styling()
+```
+
+```{r conf-conf-mat, fig.cap='Confusion Matrices for Confirmation Set Models'}
+conf_conf_mat <- conf_pred_overall %>% 
+  nest(.by = Method) %>% 
+  deframe() %>%
+  imap(~ conf_mat(.x, Truth, Prediction) %>%
+         autoplot(type = "heatmap") +
+         labs(title = .y)) %>% 
+  wrap_plots() +
+  plot_annotation(
+    title = "Confusion Matrices for Confirmation Set Models",
+    tag_levels = "A"
+  )
+
+print(conf_conf_mat)
 ```
 
 ```{r conf-eval-per-class}
@@ -926,7 +945,9 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     names_to = "Method",
     names_prefix = "Prediction_",
     values_to = "Prediction"
-  )
+  ) %>% 
+  mutate(across(c(Truth, Prediction),
+         ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))))
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall %>%
@@ -942,6 +963,19 @@ kable(val_eval_overall,
       caption = "Overall Evaluation Metrics on Validation Set Model",
       digits = 3) %>% 
   kable_styling()
+```
+
+```{r val-conf-mat, fig.cap='Confusion Matrix for Validation Set Model'}
+val_conf_mat <- val_pred_overall %>%
+  nest(.by = Method) %>%
+  deframe() %>%
+  imap( ~ conf_mat(.x, Truth, Prediction) %>%
+          autoplot(type = "heatmap") +
+          labs(title = .y)) %>%
+  wrap_plots() +
+  plot_annotation(title = "Confusion Matrix for Validation Set Model")
+
+print(val_conf_mat)
 ```
 
 ```{r val-eval-per-class}
