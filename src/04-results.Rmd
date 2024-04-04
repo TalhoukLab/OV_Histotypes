@@ -21,6 +21,10 @@ library(here)
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
 
+# Training data
+train_data <- readRDS(here("data/train_data.rds"))
+train_class <- readRDS(here("data/train_class.rds"))
+
 # Metrics
 all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
 per_class_metrics_seq <-
@@ -43,6 +47,7 @@ gene_opt_all_metrics_two_step <-
   readRDS(here("data/gene_opt_all_metrics_two_step.rds"))
 
 # PrOTYPE and SPOT genes
+coefmat <- readRDS(here("data/coefmat.rds"))
 overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
 overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
 overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
@@ -62,6 +67,11 @@ all_metrics_train <- all_metrics_train %>%
       class_group,
       levels = c("Overall", "HGSC", "CCOC", "LGSC", "ENOC", "MUC")
     )
+  ) %>% 
+  mutate(
+    lower = min(.estimate),
+    upper = max(.estimate),
+    .by = c(wflow, class_group, .metric)
   )
 ```
 
@@ -74,11 +84,13 @@ p <- ggplot(
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
     color = Algorithms,
     shape = Subsampling
   )
 ) +
-  geom_point(size = 3) +
+  geom_pointrange() +
   theme_bw() +
   theme(plot.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -92,6 +104,8 @@ print(p)
 overall_accuracy_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "accuracy") %>% 
+  select(-c(fold_id, .estimate)) %>% 
+  distinct() %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
@@ -119,11 +133,13 @@ p <- ggplot(
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
     color = Algorithms,
     shape = Subsampling
   )
 ) +
-  geom_point(size = 3) +
+  geom_pointrange() +
   facet_wrap(~ class_group, ncol = 1) +
   theme_bw() +
   theme(plot.title = element_text(face = "bold"),
@@ -138,6 +154,8 @@ print(p)
 class_accuracy_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "accuracy") %>% 
+  select(-c(fold_id, .estimate)) %>% 
+  distinct() %>% 
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
@@ -169,11 +187,13 @@ p <- ggplot(
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
     y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
     color = Algorithms,
     shape = Subsampling
   )
 ) +
-  geom_point(size = 3) +
+  geom_pointrange() +
   theme_bw() +
   theme(plot.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -187,6 +207,8 @@ print(p)
 overall_f1_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "f_meas") %>% 
+  select(-c(fold_id, .estimate)) %>% 
+  distinct() %>%
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
@@ -214,11 +236,13 @@ p <- ggplot(
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
     y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
     color = Algorithms,
     shape = Subsampling
   )
 ) +
-  geom_point(size = 3) +
+  geom_pointrange() +
   facet_wrap(~ class_group, ncol = 1) +
   theme_bw() +
   theme(plot.title = element_text(face = "bold"),
@@ -233,6 +257,8 @@ print(p)
 class_f1_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "f_meas") %>% 
+  select(-c(fold_id, .estimate)) %>% 
+  distinct() %>%
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
@@ -264,11 +290,13 @@ p <- ggplot(
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
     color = Algorithms,
     shape = Subsampling
   )
 ) +
-  geom_point(size = 3) +
+  geom_pointrange() +
   theme_bw() +
   theme(plot.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -282,6 +310,8 @@ print(p)
 overall_kappa_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "kap") %>% 
+  select(-c(fold_id, .estimate)) %>% 
+  distinct() %>%
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
@@ -309,11 +339,13 @@ p <- ggplot(
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
     y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
     color = Algorithms,
     shape = Subsampling
   )
 ) +
-  geom_point(size = 3) +
+  geom_pointrange() +
   facet_wrap(~ class_group, ncol = 1) +
   theme_bw() +
   theme(plot.title = element_text(face = "bold"),
@@ -328,6 +360,8 @@ print(p)
 class_kappa_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "kap") %>% 
+  select(-c(fold_id, .estimate)) %>% 
+  distinct() %>%
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
@@ -359,11 +393,13 @@ p <- ggplot(
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
     color = Algorithms,
     shape = Subsampling
   )
 ) +
-  geom_point(size = 3) +
+  geom_pointrange() +
   theme_bw() +
   theme(plot.title = element_text(face = "bold"),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -377,6 +413,8 @@ print(p)
 overall_gmean_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "gmean") %>% 
+  select(-c(fold_id, .estimate)) %>% 
+  distinct() %>%
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
@@ -404,11 +442,13 @@ p <- ggplot(
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
     y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
     color = Algorithms,
     shape = Subsampling
   )
 ) +
-  geom_point(size = 3) +
+  geom_pointrange() +
   facet_wrap(~ class_group, ncol = 1) +
   theme_bw() +
   theme(plot.title = element_text(face = "bold"),
@@ -423,6 +463,8 @@ print(p)
 class_gmean_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "gmean") %>% 
+  select(-c(fold_id, .estimate)) %>% 
+  distinct() %>%
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
