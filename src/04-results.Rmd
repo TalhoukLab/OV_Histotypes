@@ -858,52 +858,18 @@ print(conf_conf_mat)
 ```
 
 ```{r conf-eval-per-class}
-conf_eval_per_class <- conf_pred_overall %>% 
-  mutate(
-    pred_class_ova = map(Prediction, ~ {
-      ifelse(levels(Prediction) %in% .x, as.character(.x), "class_0") %>%
-        set_names(paste0(".pred_class_", levels(Prediction)))
-    }),
-    class_ova = map(Truth, ~ {
-      ifelse(levels(Truth) %in% .x, as.character(.x), "class_0") %>%
-        set_names(paste0("class_", levels(Truth)))
-    })
-  ) %>% 
-  unnest_wider(col = c(pred_class_ova, class_ova)) %>%
-  pivot_longer(
-    matches("^.pred_class_.*"),
-    names_to = ".pred_class_group",
-    names_prefix = ".pred_class_",
-    values_to = ".pred_class_value"
-  ) %>%
-  pivot_longer(
-    matches("^class_.*"),
-    names_to = "class_group",
-    names_prefix = "class_",
-    values_to = "class_value"
-  ) %>%
-  filter(class_group == .pred_class_group) %>%
-  nest(.by = c(Method, class_group)) %>% 
-  mutate(
-    data = data %>%
-      map(~ mutate(.x, across(
-        matches("class_value"),
-        ~ factor(.x, levels = unique(c(
-          .pred_class_group, "class_0"
-        )))
-      ))) %>%
-      map(per_class_mset, truth = class_value, estimate = .pred_class_value) %>%
-      suppressWarnings()
-  ) %>% 
-  unnest(cols = data) %>% 
-  select(-.estimator) %>% 
-  mutate(
-    .metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
-    class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))
-  ) %>% 
-  rename(Metric = .metric) %>% 
-  arrange(class_group) %>%
-  pivot_wider(names_from = "class_group", values_from = ".estimate")
+conf_eval_per_class <- conf_pred_overall %>%
+  nest(.by = Method) %>%
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction,
+                                        per_class_mset))) %>%
+  unnest(data) %>%
+  mutate(Metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
+         .keep = "unused") %>%
+  pivot_wider(
+    id_cols = c(Method, Metric),
+    names_from = class_group,
+    values_from = .estimate
+  )
 
 kable(conf_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Confirmation Set Model",
@@ -978,52 +944,18 @@ print(val_conf_mat)
 ```
 
 ```{r val-eval-per-class}
-val_eval_per_class <- val_pred_overall %>% 
-  mutate(
-    pred_class_ova = map(Prediction, ~ {
-      ifelse(levels(Prediction) %in% .x, as.character(.x), "class_0") %>%
-        set_names(paste0(".pred_class_", levels(Prediction)))
-    }),
-    class_ova = map(Truth, ~ {
-      ifelse(levels(Truth) %in% .x, as.character(.x), "class_0") %>%
-        set_names(paste0("class_", levels(Truth)))
-    })
-  ) %>% 
-  unnest_wider(col = c(pred_class_ova, class_ova)) %>%
-  pivot_longer(
-    matches("^.pred_class_.*"),
-    names_to = ".pred_class_group",
-    names_prefix = ".pred_class_",
-    values_to = ".pred_class_value"
-  ) %>%
-  pivot_longer(
-    matches("^class_.*"),
-    names_to = "class_group",
-    names_prefix = "class_",
-    values_to = "class_value"
-  ) %>%
-  filter(class_group == .pred_class_group) %>%
-  nest(.by = c(Method, class_group)) %>% 
-  mutate(
-    data = data %>%
-      map(~ mutate(.x, across(
-        matches("class_value"),
-        ~ factor(.x, levels = unique(c(
-          .pred_class_group, "class_0"
-        )))
-      ))) %>%
-      map(per_class_mset, truth = class_value, estimate = .pred_class_value) %>%
-      suppressWarnings()
-  ) %>% 
-  unnest(cols = data) %>% 
-  select(-.estimator) %>% 
-  mutate(
-    .metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
-    class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))
-  ) %>% 
-  rename(Metric = .metric) %>% 
-  arrange(class_group) %>%
-  pivot_wider(names_from = "class_group", values_from = ".estimate")
+val_eval_per_class <- val_pred_overall %>%
+  nest(.by = Method) %>%
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction,
+                                        per_class_mset))) %>%
+  unnest(data) %>%
+  mutate(Metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
+         .keep = "unused") %>%
+  pivot_wider(
+    id_cols = c(Method, Metric),
+    names_from = class_group,
+    values_from = .estimate
+  )
 
 kable(val_eval_per_class,
       caption = "Per-Class Eevaluation Metrics on Validation Set Model",
