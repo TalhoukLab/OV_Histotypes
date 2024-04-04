@@ -104,8 +104,7 @@ print(p)
 overall_accuracy_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "accuracy") %>% 
-  select(-c(fold_id, .estimate)) %>% 
-  distinct() %>% 
+  distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
@@ -154,8 +153,7 @@ print(p)
 class_accuracy_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "accuracy") %>% 
-  select(-c(fold_id, .estimate)) %>% 
-  distinct() %>% 
+  distinct(pick(-fold_id, -.estimate)) %>% 
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
@@ -207,8 +205,7 @@ print(p)
 overall_f1_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "f_meas") %>% 
-  select(-c(fold_id, .estimate)) %>% 
-  distinct() %>%
+  distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
@@ -257,8 +254,7 @@ print(p)
 class_f1_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "f_meas") %>% 
-  select(-c(fold_id, .estimate)) %>% 
-  distinct() %>%
+  distinct(pick(-fold_id, -.estimate)) %>% 
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
@@ -310,8 +306,7 @@ print(p)
 overall_kappa_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "kap") %>% 
-  select(-c(fold_id, .estimate)) %>% 
-  distinct() %>%
+  distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
@@ -360,8 +355,7 @@ print(p)
 class_kappa_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "kap") %>% 
-  select(-c(fold_id, .estimate)) %>% 
-  distinct() %>%
+  distinct(pick(-fold_id, -.estimate)) %>% 
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
@@ -413,8 +407,7 @@ print(p)
 overall_gmean_train <-
   all_metrics_train %>% 
   filter(class_group == "Overall", .metric == "gmean") %>% 
-  select(-c(fold_id, .estimate)) %>% 
-  distinct() %>%
+  distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = ifelse(
@@ -463,8 +456,7 @@ print(p)
 class_gmean_train <-
   all_metrics_train %>% 
   filter(class_group != "Overall", .metric == "gmean") %>% 
-  select(-c(fold_id, .estimate)) %>% 
-  distinct() %>%
+  distinct(pick(-fold_id, -.estimate)) %>% 
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
@@ -498,6 +490,7 @@ gene_seq_names <- all_vi_seq %>%
 
 dat_gene_seq <- gene_opt_all_metrics_seq %>% 
   filter(.metric == "f_meas") %>% 
+  distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     label = paste0(
       "Sequence: ",
@@ -519,7 +512,7 @@ p_gene_seq <-
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq)
 
-n_genes_seq <- 27
+n_genes_seq <- 13
 genes_add_seq <- gene_seq_names %>%
   slice_min(order_by = Genes, n = n_genes_seq) %>% 
   pull(Name)
@@ -537,6 +530,7 @@ gene_2s_names <- all_vi_two_step %>%
 
 dat_gene_2s <- gene_opt_all_metrics_two_step %>% 
   filter(.metric == "f_meas") %>% 
+  distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     label = paste0(
       "Sequence: ",
