@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-04-03}
+\date{2024-04-04}
 
 \begin{document}
 \maketitle
@@ -185,6 +185,8 @@ We use 4 classification algorithms in the supervised learning framework for the 
 \subsection{Resampling of Training Set}\label{resampling-of-training-set}}
 
 We used a nested cross-validation design to assess each classifier while also performing hyperparameter tuning. An outer 5-fold CV stratified by histotype was used together with an inner 5-fold CV with 2 repeats stratified by histotype. This design was chosen such that the test sets of the inner resamples would still have a reasonable number of samples belonging to the smallest minority class.
+
+The outer resampling method cannot be the bootstrap, because the inner training and inner test sets will likely contain the same samples as a result of sampling with replacement in the outer training set. This phenomenon might result in inflated performance as some observations are used both to train and evaluate the hyperparameter tuning in the inner loop.
 
 \hypertarget{hyperparameter-tuning}{%
 \subsection{Hyperparameter Tuning}\label{hyperparameter-tuning}}
@@ -816,15 +818,15 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \cline{2-5}
 Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.787 & 0.801 & \cellcolor[HTML]{90ee90}{0.897} & 0.822\\
+none & \cellcolor[HTML]{FF0000}{0.787} & \cellcolor[HTML]{FFD700}{0.801} & \cellcolor[HTML]{FF0000}{0.897} & \cellcolor[HTML]{FF0000}{0.822}\\
 \hline
-down & 0.657 & 0.645 & 0.231 & 0.664\\
+down & 0.657 & 0.645 & \cellcolor[HTML]{FF0000}{0.231} & 0.664\\
 \hline
-up & 0.755 & 0.726 & 0.776 & 0.709\\
+up & \cellcolor[HTML]{FFD700}{0.755} & 0.726 & \cellcolor[HTML]{FFD700}{0.776} & 0.709\\
 \hline
-smote & 0.748 & 0.75 & 0.747 & 0.724\\
+smote & \cellcolor[HTML]{FFD700}{0.748} & \cellcolor[HTML]{FFD700}{0.75} & 0.747 & 0.724\\
 \hline
-hybrid & 0.77 & 0.751 & 0.728 & 0.72\\
+hybrid & \cellcolor[HTML]{90ee90}{0.77} & 0.751 & 0.728 & 0.72\\
 \hline
 \end{tabular}
 \end{table}
@@ -848,45 +850,45 @@ hybrid & 0.77 & 0.751 & 0.728 & 0.72\\
 \cline{3-6}
 Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & HGSC & 0.962 & 0.972 & 0.897 & 0.897\\
+ & HGSC & \cellcolor[HTML]{FF0000}{0.962} & \cellcolor[HTML]{FFD700}{0.972} & \cellcolor[HTML]{FF0000}{0.897} & \cellcolor[HTML]{FF0000}{0.897}\\
 \cline{2-6}
- & CCOC & 0.852 & 0.858 & NA & 0.154\\
+ & CCOC & \cellcolor[HTML]{FF0000}{0.852} & \cellcolor[HTML]{FFD700}{0.858} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{0.154}\\
 \cline{2-6}
- & ENOC & 0.497 & 0.719 & NA & NA\\
+ & ENOC & \cellcolor[HTML]{FF0000}{0.497} & \cellcolor[HTML]{FFD700}{0.719} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{NaN}\\
 \cline{2-6}
- & LGSC & NA & 0.375 & NA & NA\\
+ & LGSC & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FFD700}{0.375} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{NaN}\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.839 & 0.811 & NA & NA\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & \cellcolor[HTML]{FF0000}{0.839} & \cellcolor[HTML]{FFD700}{0.811} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{NaN}\\
 \cline{1-6}
- & HGSC & 0.926 & 0.888 & 0.894 & 0.918\\
+ & HGSC & 0.926 & 0.888 & \cellcolor[HTML]{FF0000}{0.894} & 0.918\\
 \cline{2-6}
- & CCOC & 0.808 & 0.771 & NA & 0.8\\
+ & CCOC & 0.808 & 0.771 & \cellcolor[HTML]{FF0000}{NaN} & 0.8\\
 \cline{2-6}
- & ENOC & 0.59 & 0.545 & NA & 0.559\\
+ & ENOC & 0.59 & 0.545 & \cellcolor[HTML]{FF0000}{NaN} & 0.559\\
 \cline{2-6}
- & LGSC & 0.301 & 0.262 & 0.035 & 0.308\\
+ & LGSC & 0.301 & 0.262 & \cellcolor[HTML]{FF0000}{0.035} & 0.308\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.66 & 0.759 & 0.096 & 0.732\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.66 & 0.759 & \cellcolor[HTML]{FF0000}{0.096} & 0.732\\
 \cline{1-6}
- & HGSC & 0.976 & 0.973 & 0.976 & 0.951\\
+ & HGSC & \cellcolor[HTML]{FFD700}{0.976} & 0.973 & \cellcolor[HTML]{FFD700}{0.976} & 0.951\\
 \cline{2-6}
- & CCOC & 0.869 & 0.822 & 0.87 & 0.8\\
+ & CCOC & \cellcolor[HTML]{FFD700}{0.869} & 0.822 & \cellcolor[HTML]{FFD700}{0.87} & 0.8\\
 \cline{2-6}
- & ENOC & 0.734 & 0.629 & 0.728 & 0.63\\
+ & ENOC & \cellcolor[HTML]{FFD700}{0.734} & 0.629 & \cellcolor[HTML]{FFD700}{0.728} & 0.63\\
 \cline{2-6}
- & LGSC & 0.236 & 0.402 & 0.394 & 0.409\\
+ & LGSC & \cellcolor[HTML]{FFD700}{0.236} & 0.402 & \cellcolor[HTML]{FFD700}{0.394} & 0.409\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.835 & 0.804 & 0.814 & 0.756\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & \cellcolor[HTML]{FFD700}{0.835} & 0.804 & \cellcolor[HTML]{FFD700}{0.814} & 0.756\\
 \cline{1-6}
- & HGSC & 0.974 & 0.973 & 0.975 & 0.957\\
+ & HGSC & \cellcolor[HTML]{FFD700}{0.974} & \cellcolor[HTML]{FFD700}{0.973} & 0.975 & 0.957\\
 \cline{2-6}
- & CCOC & 0.833 & 0.782 & 0.846 & 0.817\\
+ & CCOC & \cellcolor[HTML]{FFD700}{0.833} & \cellcolor[HTML]{FFD700}{0.782} & 0.846 & 0.817\\
 \cline{2-6}
- & ENOC & 0.701 & 0.588 & 0.674 & 0.662\\
+ & ENOC & \cellcolor[HTML]{FFD700}{0.701} & \cellcolor[HTML]{FFD700}{0.588} & 0.674 & 0.662\\
 \cline{2-6}
- & LGSC & 0.285 & 0.519 & 0.433 & 0.4\\
+ & LGSC & \cellcolor[HTML]{FFD700}{0.285} & \cellcolor[HTML]{FFD700}{0.519} & 0.433 & 0.4\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.827 & 0.825 & 0.805 & 0.784\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & \cellcolor[HTML]{FFD700}{0.827} & \cellcolor[HTML]{FFD700}{0.825} & 0.805 & 0.784\\
 \cline{1-6}
  & HGSC & \cellcolor[HTML]{90ee90}{0.977} & 0.973 & 0.97 & 0.962\\
 \cline{2-6}
