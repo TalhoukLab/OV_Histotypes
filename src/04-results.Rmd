@@ -763,11 +763,106 @@ conf_eval_per_class <- conf_pred_overall %>%
   )
 
 kable(conf_eval_per_class,
-      caption = "Per-Class Eevaluation Metrics on Confirmation Set Model",
+      caption = "Per-Class Evaluation Metrics on Confirmation Set Model",
       digits = 3) %>% 
   kable_styling() %>% 
   collapse_rows(columns = 1) %>% 
   add_header_above(c(" " = 2, "Histotypes" = 5))
+```
+
+```{r roc-curve-seq-full, fig.cap='ROC Curves for Sequential Full Model in Confirmation Set', fig.width=10}
+conf_data_seq <- list(conf_data,
+                      conf_data[conf_class != "HGSC",],
+                      conf_data[!conf_class %in% c("HGSC", "CCOC"),],
+                      conf_data[!conf_class %in% c("HGSC", "CCOC", "ENOC"),])
+
+conf_class_seq <- list(
+  fct_other(conf_class, keep = "HGSC", other_level = "non-HGSC"),
+  fct_other(conf_class[conf_class != "HGSC"],  keep = "CCOC", other_level = "non-CCOC"),
+  fct_other(conf_class[!conf_class %in% c("HGSC", "CCOC")],  keep = "ENOC", other_level = "non-ENOC"),
+  factor(conf_class[!conf_class %in% c("HGSC", "CCOC", "ENOC")])
+)
+
+roc_curve_seq_full <- mod_seq_full %>% 
+  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
+  list(conf_data_seq, conf_class_seq) %>% 
+  pmap(~ {
+    predict(..1, ..2, type = "prob")%>% 
+      add_column(truth = ..3) %>% 
+      roc_curve(truth, matches(".pred")[1])
+  }) %>% 
+  imap(~ autoplot(.x) + labs(title = .y)) %>% 
+  wrap_plots() +
+  plot_annotation(
+    title = "ROC Curves for Sequential Full Model in Confirmation Set",
+    tag_levels = "A"
+  )
+print(roc_curve_seq_full)
+```
+
+```{r roc-curve-seq-opt, fig.cap='ROC Curves for Sequential Optimal Model in Confirmation Set', fig.width=10}
+roc_curve_seq_opt <- mod_seq_opt %>% 
+  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
+  list(conf_data_seq, conf_class_seq) %>% 
+  pmap(~ {
+    predict(..1, ..2, type = "prob")%>% 
+      add_column(truth = ..3) %>% 
+      roc_curve(truth, matches(".pred")[1])
+  }) %>% 
+  imap(~ autoplot(.x) + labs(title = .y)) %>% 
+  wrap_plots() +
+  plot_annotation(
+    title = "ROC Curves for Sequential Optimal Model in Confirmation Set",
+    tag_levels = "A"
+  )
+print(roc_curve_seq_opt)
+```
+
+```{r roc-curve-two-step-full, fig.cap='ROC Curves for Two-Step Full Model in Confirmation Set', fig.width=10}
+conf_data_two_step <- list(conf_data,
+                           conf_data[conf_class != "HGSC", ])
+
+conf_class_two_step <-
+  list(factor(ifelse(conf_class == "HGSC", "HGSC", "non-HGSC")),
+       factor(conf_class[conf_class != "HGSC"]))
+
+roc_curve_two_step_full <- mod_two_step_full %>% 
+  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
+  list(conf_data_two_step, conf_class_two_step) %>% 
+  pmap(~ {
+    preds <- predict(..1, ..2, type = "prob")
+    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
+    preds %>% 
+      add_column(truth = ..3) %>% 
+      roc_curve(truth, all_of(prob_cols))
+  }) %>% 
+  imap(~ autoplot(.x) +
+         labs(title = .y)) %>% 
+  wrap_plots() +
+  plot_annotation(
+    title = "ROC Curves for Two-Step Full Model in Confirmation Set",
+    tag_levels = "A"
+  )
+```
+
+```{r roc-curve-two-step-opt, fig.cap='ROC Curves for Two-Step Optimal Model in Confirmation Set', fig.width=10}
+roc_curve_two_step_opt <- mod_two_step_opt %>% 
+  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
+  list(conf_data_two_step, conf_class_two_step) %>% 
+  pmap(~ {
+    preds <- predict(..1, ..2, type = "prob")
+    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
+    preds %>% 
+      add_column(truth = ..3) %>% 
+      roc_curve(truth, all_of(prob_cols))
+  }) %>% 
+  imap(~ autoplot(.x) +
+         labs(title = .y)) %>% 
+  wrap_plots() +
+  plot_annotation(
+    title = "ROC Curves for Two-Step Optimal Model in Confirmation Set",
+    tag_levels = "A"
+  )
 ```
 
 ### Validation Set
