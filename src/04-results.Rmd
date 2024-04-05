@@ -108,23 +108,9 @@ print(p)
 ```
 
 ```{r train-accuracy-table}
-overall_accuracy_train <-
-  all_metrics_train %>% 
-  filter(class_group == "Overall", .metric == "accuracy") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  mutate(
-    mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
-      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
-      .default = as.character(mean_estimate)
-    )
-  ) %>% 
-  arrange(Subsampling, Algorithms) %>% 
-  pivot_wider(id_cols = Subsampling,
-              names_from = Algorithms,
-              values_from = mean_estimate)
+overall_accuracy_train <- summarize_metrics(all_metrics_train,
+                                            metric = "accuracy",
+                                            per_class = FALSE)
 
 kable(overall_accuracy_train,
       caption = "Training Set Mean Accuracy",
@@ -158,25 +144,9 @@ print(p)
 ```
 
 ```{r train-accuracy-class-table}
-class_accuracy_train <-
-  all_metrics_train %>% 
-  filter(class_group != "Overall", .metric == "accuracy") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  rename(Histotype = class_group) %>% 
-  mutate(
-    mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
-      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
-      .default = as.character(mean_estimate)
-    )
-  ) %>% 
-  arrange(Subsampling, Histotype, Algorithms) %>% 
-  pivot_wider(id_cols = c(Subsampling, Histotype),
-              names_from = Algorithms,
-              values_from = mean_estimate)
-
+class_accuracy_train <- summarize_metrics(all_metrics_train,
+                                          metric = "accuracy",
+                                          per_class = TRUE)
 kable(class_accuracy_train,
       caption = "Training Set Class-Specific Mean Accuracy",
       escape = FALSE) %>%
@@ -211,24 +181,9 @@ print(p)
 ```
 
 ```{r train-f1-table}
-overall_f1_train <-
-  all_metrics_train %>% 
-  filter(class_group == "Overall", .metric == "f_meas") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  mutate(
-    mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
-      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
-      .default = as.character(mean_estimate)
-    )
-  ) %>% 
-  arrange(Subsampling, Algorithms) %>% 
-  pivot_wider(id_cols = Subsampling,
-              names_from = Algorithms,
-              values_from = mean_estimate)
-
+overall_f1_train <- summarize_metrics(all_metrics_train,
+                                      metric = "f_meas",
+                                      per_class = FALSE)
 kable(overall_f1_train,
       caption = "Training Set Mean F1-Score",
       escape = FALSE) %>%
@@ -261,25 +216,9 @@ print(p)
 ```
 
 ```{r train-f1-class-table}
-class_f1_train <-
-  all_metrics_train %>% 
-  filter(class_group != "Overall", .metric == "f_meas") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  rename(Histotype = class_group) %>% 
-  mutate(
-    mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
-      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
-      .default = as.character(mean_estimate)
-    )
-  ) %>% 
-  arrange(Subsampling, Histotype, Algorithms) %>% 
-  pivot_wider(id_cols = c(Subsampling, Histotype),
-              names_from = Algorithms,
-              values_from = mean_estimate)
-
+class_f1_train <- summarize_metrics(all_metrics_train,
+                                    metric = "f_meas",
+                                    per_class = TRUE)
 kable(class_f1_train,
       caption = "Cross-Validated Training Set Class-Specific Mean F1-Score",
       escape = FALSE) %>%
@@ -314,24 +253,9 @@ print(p)
 ```
 
 ```{r train-kappa-table}
-overall_kappa_train <-
-  all_metrics_train %>% 
-  filter(class_group == "Overall", .metric == "kap") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  mutate(
-    mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
-      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
-      .default = as.character(mean_estimate)
-    )
-  ) %>% 
-  arrange(Subsampling, Algorithms) %>% 
-  pivot_wider(id_cols = Subsampling,
-              names_from = Algorithms,
-              values_from = mean_estimate)
-
+overall_kappa_train <- summarize_metrics(all_metrics_train,
+                                         metric = "kap",
+                                         per_class = FALSE)
 kable(overall_kappa_train,
       caption = "Training Set Mean Kappa",
       escape = FALSE) %>%
@@ -364,25 +288,9 @@ print(p)
 ```
 
 ```{r train-kappa-class-table}
-class_kappa_train <-
-  all_metrics_train %>% 
-  filter(class_group != "Overall", .metric == "kap") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  rename(Histotype = class_group) %>% 
-  mutate(
-    mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
-      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
-      .default = as.character(mean_estimate)
-    )
-  ) %>% 
-  arrange(Subsampling, Histotype, Algorithms) %>% 
-  pivot_wider(id_cols = c(Subsampling, Histotype),
-              names_from = Algorithms,
-              values_from = mean_estimate)
-
+class_kappa_train <- summarize_metrics(all_metrics_train,
+                                       metric = "kap",
+                                       per_class = TRUE)
 kable(class_kappa_train,
       caption = "Training Set Class-Specific Mean Kappa",
       escape = FALSE) %>%
@@ -417,24 +325,9 @@ print(p)
 ```
 
 ```{r train-gmean-table}
-overall_gmean_train <-
-  all_metrics_train %>% 
-  filter(class_group == "Overall", .metric == "gmean") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  mutate(
-    mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
-      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
-      .default = as.character(mean_estimate)
-    )
-  ) %>% 
-  arrange(Subsampling, Algorithms) %>% 
-  pivot_wider(id_cols = Subsampling,
-              names_from = Algorithms,
-              values_from = mean_estimate)
-
+overall_gmean_train <- summarize_metrics(all_metrics_train,
+                                         metric = "gmean",
+                                         per_class = FALSE)
 kable(overall_gmean_train,
       caption = "Training Set Mean G-mean",
       escape = FALSE) %>%
@@ -467,25 +360,9 @@ print(p)
 ```
 
 ```{r train-gmean-class-table}
-class_gmean_train <-
-  all_metrics_train %>% 
-  filter(class_group != "Overall", .metric == "gmean") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  rename(Histotype = class_group) %>% 
-  mutate(
-    mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
-      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
-      .default = as.character(mean_estimate)
-    )
-  ) %>% 
-  arrange(Subsampling, Histotype, Algorithms) %>% 
-  pivot_wider(id_cols = c(Subsampling, Histotype),
-              names_from = Algorithms,
-              values_from = mean_estimate)
-
+class_gmean_train <- summarize_metrics(all_metrics_train,
+                                       metric = "gmean",
+                                       per_class = TRUE)
 kable(class_gmean_train,
       caption = "Training Set Class-Specific Mean G-mean",
       escape = FALSE) %>%

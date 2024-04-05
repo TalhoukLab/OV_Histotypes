@@ -182,3 +182,37 @@ ova_metrics <- function(x, truth, estimate, metric_set) {
     ) %>%
     tidyr::unnest(cols = data)
 }
+
+# Summarize mean metrics across CV folds
+summarize_metrics <- function(x, metric, per_class = FALSE, highlight = TRUE,
+                              digits = 3) {
+  f <- ifelse(per_class, `!=`, `==`)
+  df <- x %>%
+    dplyr::filter(.metric == metric, f(class_group, "Overall")) %>%
+    dplyr::distinct(dplyr::pick(-fold_id, -.estimate)) %>%
+    dplyr::mutate(mean_estimate = round(mean_estimate, digits = digits))
+  if (highlight) {
+    df <- df %>%
+      dplyr::mutate(
+        mean_estimate = dplyr::case_when(
+          undefined == "all" ~ kableExtra::cell_spec(mean_estimate, background = "#FF0000"),
+          undefined == "some" ~ kableExtra::cell_spec(mean_estimate, background = "#FFD700"),
+          mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ kableExtra::cell_spec(mean_estimate, background = "#90ee90"),
+          .default = as.character(mean_estimate)
+        )
+      )
+  }
+  df <- df %>%
+    dplyr::arrange(Subsampling, class_group, Algorithms) %>%
+    tidyr::pivot_wider(
+      id_cols = c(Subsampling, class_group),
+      names_from = Algorithms,
+      values_from = mean_estimate
+    )
+  if (!per_class) {
+    df <- df %>% dplyr::select(-class_group)
+  } else {
+    df <- df %>% dplyr::rename(Histotype = class_group)
+  }
+  return(df)
+}
