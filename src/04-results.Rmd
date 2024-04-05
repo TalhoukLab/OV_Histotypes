@@ -70,8 +70,8 @@ all_metrics_train <- all_metrics_train %>%
     )
   ) %>% 
   mutate(
-    lower = min(.estimate),
-    upper = max(.estimate),
+    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
+    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
     .by = c(wflow, class_group, .metric)
   )
 ```
