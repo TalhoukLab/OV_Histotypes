@@ -115,8 +115,8 @@ overall_accuracy_train <-
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
       mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
       .default = as.character(mean_estimate)
     )
@@ -166,8 +166,8 @@ class_accuracy_train <-
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
       mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
       .default = as.character(mean_estimate)
     )
@@ -218,8 +218,8 @@ overall_f1_train <-
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
       mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
       .default = as.character(mean_estimate)
     )
@@ -269,8 +269,8 @@ class_f1_train <-
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
       mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
       .default = as.character(mean_estimate)
     )
@@ -321,8 +321,8 @@ overall_kappa_train <-
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
       mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
       .default = as.character(mean_estimate)
     )
@@ -372,8 +372,8 @@ class_kappa_train <-
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
       mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
       .default = as.character(mean_estimate)
     )
@@ -424,8 +424,8 @@ overall_gmean_train <-
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
       mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
       .default = as.character(mean_estimate)
     )
@@ -475,8 +475,8 @@ class_gmean_train <-
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
     mean_estimate = case_when(
-      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
-      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      undefined == "all" ~ cell_spec(mean_estimate, background = "#FF0000"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "#FFD700"),
       mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
       .default = as.character(mean_estimate)
     )
