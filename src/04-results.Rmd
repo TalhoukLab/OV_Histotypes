@@ -73,6 +73,12 @@ all_metrics_train <- all_metrics_train %>%
     lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
     upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
     .by = c(wflow, class_group, .metric)
+  ) %>% 
+  mutate(
+    undefined = case_when(any(is.nan(mean_estimate)) ~ "all",
+                          any(is.na(.estimate)) ~ "some",
+                          .default = "none"),
+    .by = c(wflow, .metric)
   )
 ```
 
@@ -108,10 +114,11 @@ overall_accuracy_train <-
   distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = ifelse(
-      mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "#90ee90"),
-      mean_estimate
+    mean_estimate = case_when(
+      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
+      .default = as.character(mean_estimate)
     )
   ) %>% 
   arrange(Subsampling, Algorithms) %>% 
@@ -158,10 +165,11 @@ class_accuracy_train <-
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = ifelse(
-      mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "#90ee90"),
-      mean_estimate
+    mean_estimate = case_when(
+      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
+      .default = as.character(mean_estimate)
     )
   ) %>% 
   arrange(Subsampling, Histotype, Algorithms) %>% 
@@ -209,10 +217,11 @@ overall_f1_train <-
   distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = ifelse(
-      mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "#90ee90"),
-      mean_estimate
+    mean_estimate = case_when(
+      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
+      .default = as.character(mean_estimate)
     )
   ) %>% 
   arrange(Subsampling, Algorithms) %>% 
@@ -259,10 +268,11 @@ class_f1_train <-
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = ifelse(
-      mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "#90ee90"),
-      mean_estimate
+    mean_estimate = case_when(
+      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
+      .default = as.character(mean_estimate)
     )
   ) %>% 
   arrange(Subsampling, Histotype, Algorithms) %>% 
@@ -310,10 +320,11 @@ overall_kappa_train <-
   distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = ifelse(
-      mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "#90ee90"),
-      mean_estimate
+    mean_estimate = case_when(
+      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
+      .default = as.character(mean_estimate)
     )
   ) %>% 
   arrange(Subsampling, Algorithms) %>% 
@@ -360,10 +371,11 @@ class_kappa_train <-
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = ifelse(
-      mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "#90ee90"),
-      mean_estimate
+    mean_estimate = case_when(
+      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
+      .default = as.character(mean_estimate)
     )
   ) %>% 
   arrange(Subsampling, Histotype, Algorithms) %>% 
@@ -411,10 +423,11 @@ overall_gmean_train <-
   distinct(pick(-fold_id, -.estimate)) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = ifelse(
-      mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "#90ee90"),
-      mean_estimate
+    mean_estimate = case_when(
+      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
+      .default = as.character(mean_estimate)
     )
   ) %>% 
   arrange(Subsampling, Algorithms) %>% 
@@ -461,10 +474,11 @@ class_gmean_train <-
   rename(Histotype = class_group) %>% 
   mutate(
     mean_estimate = round(mean_estimate, digits = 3),
-    mean_estimate = ifelse(
-      mean_estimate == max(mean_estimate, na.rm = TRUE),
-      cell_spec(mean_estimate, background = "#90ee90"),
-      mean_estimate
+    mean_estimate = case_when(
+      undefined == "all" ~ cell_spec(mean_estimate, background = "red"),
+      undefined == "some" ~ cell_spec(mean_estimate, background = "gold"),
+      mean_estimate == max(mean_estimate[undefined == "none"], na.rm = TRUE) ~ cell_spec(mean_estimate, background = "#90ee90"),
+      .default = as.character(mean_estimate)
     )
   ) %>% 
   arrange(Subsampling, Histotype, Algorithms) %>% 
