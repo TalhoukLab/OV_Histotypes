@@ -408,7 +408,7 @@ kable(overall_bal_accuracy_train,
   add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
-```{r train-accuracy-class, fig.cap='Training Set Class-Specific Mean Balanced Accuracy', fig.height=8}
+```{r train-bal-accuracy-class, fig.cap='Training Set Class-Specific Mean Balanced Accuracy', fig.height=8}
 p <- ggplot(
   all_metrics_train %>%
     filter(class_group != "Overall", .metric == "bal_accuracy"),
