@@ -787,11 +787,25 @@ roc_curve_seq_full <- mod_seq_full %>%
   set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
   list(conf_data_seq, conf_class_seq) %>% 
   pmap(~ {
-    predict(..1, ..2, type = "prob")%>% 
-      add_column(truth = ..3) %>% 
+    preds <- predict(..1, ..2, type = "prob")%>% 
+      add_column(truth = ..3)
+    roc_df <- preds %>% 
       roc_curve(truth, matches(".pred")[1])
+    auc <- preds %>% 
+      roc_auc(truth, matches(".pred")[1]) %>% 
+      pull(.estimate) %>% 
+      number(accuracy = 0.001, prefix = "AUC = ")
+    autoplot(roc_df) +
+      geom_label(
+        x = 1,
+        y = 0,
+        hjust = 1,
+        vjust = 0,
+        label = auc,
+        size = 3
+      )
   }) %>% 
-  imap(~ autoplot(.x) + labs(title = .y)) %>% 
+  imap(~ .x + labs(title = .y)) %>% 
   wrap_plots(widths = c(1, 1)) +
   plot_annotation(
     title = "ROC Curves for Sequential Full Model in Confirmation Set",
@@ -805,11 +819,25 @@ roc_curve_seq_opt <- mod_seq_opt %>%
   set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
   list(conf_data_seq, conf_class_seq) %>% 
   pmap(~ {
-    predict(..1, ..2, type = "prob")%>% 
-      add_column(truth = ..3) %>% 
+    preds <- predict(..1, ..2, type = "prob")%>% 
+      add_column(truth = ..3)
+    roc_df <- preds %>% 
       roc_curve(truth, matches(".pred")[1])
+    auc <- preds %>% 
+      roc_auc(truth, matches(".pred")[1]) %>% 
+      pull(.estimate) %>% 
+      number(accuracy = 0.001, prefix = "AUC = ")
+    autoplot(roc_df) +
+      geom_label(
+        x = 1,
+        y = 0,
+        hjust = 1,
+        vjust = 0,
+        label = auc,
+        size = 3
+      )
   }) %>% 
-  imap(~ autoplot(.x) + labs(title = .y)) %>% 
+  imap(~ .x + labs(title = .y)) %>% 
   wrap_plots(widths = c(1, 1)) +
   plot_annotation(
     title = "ROC Curves for Sequential Optimal Model in Confirmation Set",
@@ -832,12 +860,25 @@ roc_curve_two_step_full <- mod_two_step_full %>%
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")
     prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds %>% 
-      add_column(truth = ..3) %>% 
+    preds <- preds %>% 
+      add_column(truth = ..3)
+    roc_df <- preds %>% 
       roc_curve(truth, all_of(prob_cols))
+    auc <- preds %>% 
+      roc_auc(truth, all_of(prob_cols)) %>% 
+      pull(.estimate) %>% 
+      number(accuracy = 0.001, prefix = "AUC = ")
+    autoplot(roc_df) +
+      geom_label(
+        x = 1,
+        y = 0,
+        hjust = 1,
+        vjust = 0,
+        label = auc,
+        size = 3
+      )
   }) %>% 
-  imap(~ autoplot(.x) +
-         labs(title = .y)) %>% 
+  imap(~ .x + labs(title = .y)) %>% 
   wrap_plots(widths = c(1, 2)) +
   plot_annotation(
     title = "ROC Curves for Two-Step Full Model in Confirmation Set",
@@ -853,12 +894,25 @@ roc_curve_two_step_opt <- mod_two_step_opt %>%
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")
     prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds %>% 
-      add_column(truth = ..3) %>% 
+    preds <- preds %>% 
+      add_column(truth = ..3)
+    roc_df <- preds %>% 
       roc_curve(truth, all_of(prob_cols))
+    auc <- preds %>% 
+      roc_auc(truth, all_of(prob_cols)) %>% 
+      pull(.estimate) %>% 
+      number(accuracy = 0.001, prefix = "AUC = ")
+    autoplot(roc_df) +
+      geom_label(
+        x = 1,
+        y = 0,
+        hjust = 1,
+        vjust = 0,
+        label = auc,
+        size = 3
+      )
   }) %>% 
-  imap(~ autoplot(.x) +
-         labs(title = .y)) %>% 
+  imap(~ .x + labs(title = .y)) %>% 
   wrap_plots(widths = c(1, 2)) +
   plot_annotation(
     title = "ROC Curves for Two-Step Optimal Model in Confirmation Set",
