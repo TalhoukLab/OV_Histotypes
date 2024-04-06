@@ -155,6 +155,150 @@ kable(class_accuracy_train,
   add_header_above(c(" " = 2, "Algorithms" = 4))
 ```
 
+### Sensitivity
+
+```{r train-sens, fig.cap='Training Set Mean Sensitivity'}
+p <- ggplot(
+  all_metrics_train %>%
+    filter(class_group == "Overall", .metric == "sensitivity"),
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
+    color = Algorithms,
+    shape = Subsampling
+  )
+) +
+  geom_pointrange() +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Workflow",
+       y = "Sensitivity",
+       title = "Training Set Mean Sensitivity")
+print(p)
+```
+
+```{r train-sens-table}
+overall_sens_train <- summarize_metrics(all_metrics_train,
+                                        metric = "sensitivity",
+                                        per_class = FALSE)
+kable(overall_sens_train,
+      caption = "Training Set Mean Sensitivity",
+      escape = FALSE) %>%
+  kable_styling() %>% 
+  add_header_above(c(" " = 1, "Algorithms" = 4))
+```
+
+```{r train-sens-class, fig.cap='Training Set Class-Specific Mean Sensitivity', fig.height=8}
+p <- ggplot(
+  all_metrics_train %>%
+    filter(class_group != "Overall", .metric == "sensitivity"),
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
+    color = Algorithms,
+    shape = Subsampling
+  )
+) +
+  geom_pointrange() +
+  facet_wrap(~ class_group, ncol = 1) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Workflow",
+       y = "Sensitivity",
+       title = "Training Set Class-Specific Mean Sensitivity")
+print(p)
+```
+
+```{r train-sens-class-table}
+class_sens_train <- summarize_metrics(all_metrics_train,
+                                      metric = "sensitivity",
+                                      per_class = TRUE)
+kable(class_sens_train,
+      caption = "Cross-Validated Training Set Class-Specific Mean Sensitivity",
+      escape = FALSE) %>%
+  kable_styling() %>%
+  collapse_rows(columns = 1) %>%
+  add_header_above(c(" " = 2, "Algorithms" = 4))
+```
+
+### Specificity
+
+```{r train-spec, fig.cap='Training Set Mean Specificity'}
+p <- ggplot(
+  all_metrics_train %>%
+    filter(class_group == "Overall", .metric == "specificity"),
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
+    color = Algorithms,
+    shape = Subsampling
+  )
+) +
+  geom_pointrange() +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Workflow",
+       y = "Specificity",
+       title = "Training Set Mean Specificity")
+print(p)
+```
+
+```{r train-spec-table}
+overall_spec_train <- summarize_metrics(all_metrics_train,
+                                        metric = "specificity",
+                                        per_class = FALSE)
+kable(overall_spec_train,
+      caption = "Training Set Mean Specificity",
+      escape = FALSE) %>%
+  kable_styling() %>% 
+  add_header_above(c(" " = 1, "Algorithms" = 4))
+```
+
+```{r train-spec-class, fig.cap='Training Set Class-Specific Mean Specificity', fig.height=8}
+p <- ggplot(
+  all_metrics_train %>%
+    filter(class_group != "Overall", .metric == "specificity"),
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
+    color = Algorithms,
+    shape = Subsampling
+  )
+) +
+  geom_pointrange() +
+  facet_wrap(~ class_group, ncol = 1) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Workflow",
+       y = "Specificity",
+       title = "Training Set Class-Specific Mean Specificity")
+print(p)
+```
+
+```{r train-spec-class-table}
+class_spec_train <- summarize_metrics(all_metrics_train,
+                                      metric = "specificity",
+                                      per_class = TRUE)
+kable(class_spec_train,
+      caption = "Cross-Validated Training Set Class-Specific Mean Specificity",
+      escape = FALSE) %>%
+  kable_styling() %>%
+  collapse_rows(columns = 1) %>%
+  add_header_above(c(" " = 2, "Algorithms" = 4))
+```
+
 ### F1-Score
 
 ```{r train-f1, fig.cap='Training Set Mean F1-Score'}
@@ -221,6 +365,79 @@ class_f1_train <- summarize_metrics(all_metrics_train,
                                     per_class = TRUE)
 kable(class_f1_train,
       caption = "Cross-Validated Training Set Class-Specific Mean F1-Score",
+      escape = FALSE) %>%
+  kable_styling() %>% 
+  collapse_rows(columns = 1) %>% 
+  add_header_above(c(" " = 2, "Algorithms" = 4))
+```
+
+### Balanced Accuracy
+
+```{r train-bal-accuracy, fig.cap='Training Set Mean Balanced Accuracy'}
+p <- ggplot(
+  all_metrics_train %>%
+    filter(class_group == "Overall", .metric == "bal_accuracy"),
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
+    y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
+    color = Algorithms,
+    shape = Subsampling
+  )
+) +
+  geom_pointrange() +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Workflow",
+       y = "Balanced Accuracy",
+       title = "Training Set Mean Balanced Accuracy")
+print(p)
+```
+
+```{r train-bal-accuracy-table}
+overall_bal_accuracy_train <- summarize_metrics(all_metrics_train,
+                                                metric = "bal_accuracy",
+                                                per_class = FALSE)
+
+kable(overall_bal_accuracy_train,
+      caption = "Training Set Mean Balanced Accuracy",
+      escape = FALSE) %>%
+  kable_styling() %>% 
+  add_header_above(c(" " = 1, "Algorithms" = 4))
+```
+
+```{r train-accuracy-class, fig.cap='Training Set Class-Specific Mean Balanced Accuracy', fig.height=8}
+p <- ggplot(
+  all_metrics_train %>%
+    filter(class_group != "Overall", .metric == "bal_accuracy"),
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
+    y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
+    color = Algorithms,
+    shape = Subsampling
+  )
+) +
+  geom_pointrange() +
+  facet_wrap(~ class_group, ncol = 1) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Workflow",
+       y = "Balanced Accuracy",
+       title = "Training Set Class-Specific Mean Balanced Accuracy")
+print(p)
+```
+
+```{r train-bal-accuracy-class-table}
+class_bal_accuracy_train <- summarize_metrics(all_metrics_train,
+                                              metric = "bal_accuracy",
+                                              per_class = TRUE)
+kable(class_bal_accuracy_train,
+      caption = "Training Set Class-Specific Mean Balanced Accuracy",
       escape = FALSE) %>%
   kable_styling() %>% 
   collapse_rows(columns = 1) %>% 
