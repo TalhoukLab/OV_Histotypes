@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-04-04}
+\date{2024-04-05}
 
 \begin{document}
 \maketitle
@@ -796,6 +796,220 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \end{tabular}
 \end{table}
 
+\hypertarget{sensitivity}{%
+\subsection{Sensitivity}\label{sensitivity}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-sens-1} 
+
+}
+
+\caption{Training Set Mean Sensitivity}\label{fig:train-sens}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-sens-table}Training Set Mean Sensitivity}
+\centering
+\begin{tabular}[t]{l|l|l|l|l}
+\hline
+\multicolumn{1}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
+\cline{2-5}
+Subsampling & rf & svm & xgb & mr\\
+\hline
+none & 0.602 & 0.669 & 0.2 & 0.203\\
+\hline
+down & 0.805 & \cellcolor[HTML]{90ee90}{0.838} & 0.2 & 0.829\\
+\hline
+up & 0.697 & 0.714 & 0.737 & 0.82\\
+\hline
+smote & 0.708 & 0.682 & 0.765 & 0.802\\
+\hline
+hybrid & 0.771 & 0.758 & 0.754 & 0.796\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-sens-class-1} 
+
+}
+
+\caption{Training Set Class-Specific Mean Sensitivity}\label{fig:train-sens-class}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-sens-class-table}Cross-Validated Training Set Class-Specific Mean Sensitivity}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+\multicolumn{2}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
+\cline{3-6}
+Subsampling & Histotype & rf & svm & xgb & mr\\
+\hline
+ & HGSC & 0.994 & 0.994 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+\cline{2-6}
+ & CCOC & 0.792 & 0.802 & 0 & 0.017\\
+\cline{2-6}
+ & ENOC & 0.4 & 0.683 & 0 & 0\\
+\cline{2-6}
+ & LGSC & 0 & 0.1 & 0 & 0\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.823 & 0.764 & 0 & 0\\
+\cline{1-6}
+ & HGSC & 0.871 & 0.805 & 0.2 & 0.856\\
+\cline{2-6}
+ & CCOC & 0.846 & 0.825 & 0 & 0.818\\
+\cline{2-6}
+ & ENOC & 0.606 & 0.788 & 0 & 0.686\\
+\cline{2-6}
+ & LGSC & 0.867 & 0.967 & 0.4 & 0.933\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.837 & 0.806 & 0.4 & 0.851\\
+\cline{1-6}
+ & HGSC & 0.991 & 0.98 & 0.98 & 0.917\\
+\cline{2-6}
+ & CCOC & 0.83 & 0.809 & 0.839 & 0.787\\
+\cline{2-6}
+ & ENOC & 0.683 & 0.629 & 0.726 & 0.749\\
+\cline{2-6}
+ & LGSC & 0.133 & 0.4 & 0.267 & 0.8\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.848 & 0.751 & 0.873 & 0.845\\
+\cline{1-6}
+ & HGSC & 0.981 & 0.99 & 0.973 & 0.93\\
+\cline{2-6}
+ & CCOC & 0.83 & 0.728 & 0.839 & 0.799\\
+\cline{2-6}
+ & ENOC & 0.679 & 0.562 & 0.668 & 0.741\\
+\cline{2-6}
+ & LGSC & 0.2 & 0.367 & 0.467 & 0.667\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.849 & 0.765 & 0.876 & 0.876\\
+\cline{1-6}
+ & HGSC & 0.976 & 0.971 & 0.964 & 0.938\\
+\cline{2-6}
+ & CCOC & 0.85 & 0.795 & 0.852 & 0.769\\
+\cline{2-6}
+ & ENOC & 0.766 & 0.722 & 0.672 & 0.727\\
+\cline{2-6}
+ & LGSC & 0.4 & 0.533 & 0.433 & 0.7\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.862 & 0.769 & 0.848 & 0.845\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{specificity}{%
+\subsection{Specificity}\label{specificity}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-spec-1} 
+
+}
+
+\caption{Training Set Mean Specificity}\label{fig:train-spec}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-spec-table}Training Set Mean Specificity}
+\centering
+\begin{tabular}[t]{l|l|l|l|l}
+\hline
+\multicolumn{1}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
+\cline{2-5}
+Subsampling & rf & svm & xgb & mr\\
+\hline
+none & 0.933 & 0.951 & 0.8 & 0.801\\
+\hline
+down & 0.963 & 0.955 & 0.8 & 0.962\\
+\hline
+up & 0.959 & 0.961 & 0.968 & 0.97\\
+\hline
+smote & 0.963 & 0.954 & 0.97 & 0.971\\
+\hline
+hybrid & \cellcolor[HTML]{90ee90}{0.972} & 0.968 & 0.968 & \cellcolor[HTML]{90ee90}{0.972}\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-spec-class-1} 
+
+}
+
+\caption{Training Set Class-Specific Mean Specificity}\label{fig:train-spec-class}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-spec-class-table}Cross-Validated Training Set Class-Specific Mean Specificity}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+\multicolumn{2}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
+\cline{3-6}
+Subsampling & Histotype & rf & svm & xgb & mr\\
+\hline
+ & HGSC & 0.682 & 0.776 & 0 & 0.005\\
+\cline{2-6}
+ & CCOC & 0.996 & 0.996 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+\cline{2-6}
+ & ENOC & 0.992 & 0.988 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+\cline{2-6}
+ & LGSC & \cellcolor[HTML]{90ee90}{1} & 0.999 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.993 & 0.995 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+\cline{1-6}
+ & HGSC & 0.962 & 0.97 & 0.8 & 0.966\\
+\cline{2-6}
+ & CCOC & 0.982 & 0.979 & \cellcolor[HTML]{90ee90}{1} & 0.985\\
+\cline{2-6}
+ & ENOC & 0.978 & 0.936 & \cellcolor[HTML]{90ee90}{1} & 0.958\\
+\cline{2-6}
+ & LGSC & 0.928 & 0.903 & 0.6 & 0.926\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.967 & 0.987 & 0.6 & 0.979\\
+\cline{1-6}
+ & HGSC & 0.824 & 0.845 & 0.88 & 0.953\\
+\cline{2-6}
+ & CCOC & 0.995 & 0.99 & 0.994 & 0.988\\
+\cline{2-6}
+ & ENOC & 0.991 & 0.981 & 0.985 & 0.964\\
+\cline{2-6}
+ & LGSC & 0.996 & 0.992 & 0.994 & 0.964\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.992 & 0.995 & 0.987 & 0.982\\
+\cline{1-6}
+ & HGSC & 0.854 & 0.803 & 0.901 & 0.939\\
+\cline{2-6}
+ & CCOC & 0.99 & 0.991 & 0.991 & 0.99\\
+\cline{2-6}
+ & ENOC & 0.986 & 0.983 & 0.983 & 0.97\\
+\cline{2-6}
+ & LGSC & 0.994 & 0.995 & 0.989 & 0.97\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.991 & 0.996 & 0.987 & 0.984\\
+\cline{1-6}
+ & HGSC & 0.901 & 0.892 & 0.896 & 0.944\\
+\cline{2-6}
+ & CCOC & 0.993 & 0.991 & 0.989 & 0.99\\
+\cline{2-6}
+ & ENOC & 0.983 & 0.975 & 0.981 & 0.969\\
+\cline{2-6}
+ & LGSC & 0.993 & 0.989 & 0.988 & 0.973\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.987 & 0.992 & 0.986 & 0.983\\
+\hline
+\end{tabular}
+\end{table}
+
 \hypertarget{f1-score-1}{%
 \subsection{F1-Score}\label{f1-score-1}}
 
@@ -899,6 +1113,113 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
  & LGSC & 0.456 & 0.495 & 0.384 & 0.436\\
 \cline{2-6}
 \multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.808 & 0.801 & 0.782 & 0.764\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{balanced-accuracy}{%
+\subsection{Balanced Accuracy}\label{balanced-accuracy}}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-bal-accuracy-1} 
+
+}
+
+\caption{Training Set Mean Balanced Accuracy}\label{fig:train-bal-accuracy}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-bal-accuracy-table}Training Set Mean Balanced Accuracy}
+\centering
+\begin{tabular}[t]{l|l|l|l|l}
+\hline
+\multicolumn{1}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
+\cline{2-5}
+Subsampling & rf & svm & xgb & mr\\
+\hline
+none & 0.767 & 0.81 & 0.5 & 0.502\\
+\hline
+down & 0.884 & \cellcolor[HTML]{90ee90}{0.897} & 0.5 & 0.896\\
+\hline
+up & 0.828 & 0.837 & 0.852 & 0.895\\
+\hline
+smote & 0.835 & 0.818 & 0.867 & 0.886\\
+\hline
+hybrid & 0.871 & 0.863 & 0.861 & 0.884\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/train-bal-accuracy-class-1} 
+
+}
+
+\caption{Training Set Class-Specific Mean Balanced Accuracy}\label{fig:train-bal-accuracy-class}
+\end{figure}
+
+\begin{table}
+
+\caption{\label{tab:train-bal-accuracy-class-table}Training Set Class-Specific Mean Balanced Accuracy}
+\centering
+\begin{tabular}[t]{l|l|l|l|l|l}
+\hline
+\multicolumn{2}{c|}{ } & \multicolumn{4}{c}{Algorithms} \\
+\cline{3-6}
+Subsampling & Histotype & rf & svm & xgb & mr\\
+\hline
+ & HGSC & 0.838 & 0.885 & 0.5 & 0.502\\
+\cline{2-6}
+ & CCOC & 0.894 & 0.899 & 0.5 & 0.508\\
+\cline{2-6}
+ & ENOC & 0.696 & 0.836 & 0.5 & 0.5\\
+\cline{2-6}
+ & LGSC & 0.5 & 0.55 & 0.5 & 0.5\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.908 & 0.879 & 0.5 & 0.5\\
+\cline{1-6}
+ & HGSC & 0.916 & 0.887 & 0.5 & 0.911\\
+\cline{2-6}
+ & CCOC & 0.914 & 0.902 & 0.5 & 0.901\\
+\cline{2-6}
+ & ENOC & 0.792 & 0.862 & 0.5 & 0.822\\
+\cline{2-6}
+ & LGSC & 0.897 & 0.935 & 0.5 & 0.929\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.902 & 0.896 & 0.5 & 0.915\\
+\cline{1-6}
+ & HGSC & 0.908 & 0.913 & 0.93 & 0.935\\
+\cline{2-6}
+ & CCOC & 0.913 & 0.899 & 0.917 & 0.887\\
+\cline{2-6}
+ & ENOC & 0.837 & 0.805 & 0.855 & 0.857\\
+\cline{2-6}
+ & LGSC & 0.565 & 0.696 & 0.63 & 0.882\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.92 & 0.873 & 0.93 & 0.914\\
+\cline{1-6}
+ & HGSC & 0.918 & 0.897 & 0.937 & 0.935\\
+\cline{2-6}
+ & CCOC & 0.91 & 0.86 & 0.915 & 0.894\\
+\cline{2-6}
+ & ENOC & 0.832 & 0.773 & 0.826 & 0.855\\
+\cline{2-6}
+ & LGSC & 0.597 & 0.681 & 0.728 & 0.818\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.92 & 0.881 & 0.931 & 0.93\\
+\cline{1-6}
+ & HGSC & 0.939 & 0.931 & 0.93 & \cellcolor[HTML]{90ee90}{0.941}\\
+\cline{2-6}
+ & CCOC & 0.922 & 0.893 & 0.92 & 0.88\\
+\cline{2-6}
+ & ENOC & 0.874 & 0.848 & 0.827 & 0.848\\
+\cline{2-6}
+ & LGSC & 0.697 & 0.761 & 0.711 & 0.837\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.925 & 0.881 & 0.917 & 0.914\\
 \hline
 \end{tabular}
 \end{table}
@@ -1250,7 +1571,7 @@ two\_step\_optimal & 0.823 & 0.659 & 0.648 & 0.621\\
 
 \begin{table}
 
-\caption{\label{tab:conf-eval-per-class}Per-Class Eevaluation Metrics on Confirmation Set Model}
+\caption{\label{tab:conf-eval-per-class}Per-Class Evaluation Metrics on Confirmation Set Model}
 \centering
 \begin{tabular}[t]{l|l|r|r|r|r|r}
 \hline
@@ -1316,6 +1637,42 @@ Method & Metric & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
 \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/roc-curve-seq-full-1} 
+
+}
+
+\caption{ROC Curves for Sequential Full Model in Confirmation Set}\label{fig:roc-curve-seq-full}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/roc-curve-seq-opt-1} 
+
+}
+
+\caption{ROC Curves for Sequential Optimal Model in Confirmation Set}\label{fig:roc-curve-seq-opt}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/roc-curve-two-step-full-1} 
+
+}
+
+\caption{ROC Curves for Two-Step Full Model in Confirmation Set}\label{fig:roc-curve-two-step-full}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/roc-curve-two-step-opt-1} 
+
+}
+
+\caption{ROC Curves for Two-Step Optimal Model in Confirmation Set}\label{fig:roc-curve-two-step-opt}
+\end{figure}
 
 \hypertarget{validation-set}{%
 \subsection{Validation Set}\label{validation-set}}
