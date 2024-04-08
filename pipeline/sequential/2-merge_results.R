@@ -55,54 +55,24 @@ test_preds <- test_results %>%
 
 # Calculate average of per-class metrics across folds using one-vs-all predictions
 per_class_metrics <- test_preds %>%
-  nest(.by = "fold_id") %>%
-  mutate(
-    metrics = data %>%
-      map(~ {
-        .x %>%
-          mutate(
-            pred_class_ova = map(.pred_class, ~ {
-              ifelse(levels(.pred_class) %in% .x, as.character(.x), "class_0") %>%
-                set_names(paste0(".pred_class_", levels(.pred_class)))
-            }),
-            class_ova = map(class, ~ {
-              ifelse(levels(class) %in% .x, as.character(.x), "class_0") %>%
-                set_names(paste0("class_", levels(class)))
-            })
-          ) %>%
-          unnest_wider(col = c(pred_class_ova, class_ova)) %>%
-          pivot_longer(
-            matches("^.pred_class_.*"),
-            names_to = ".pred_class_group",
-            names_prefix = ".pred_class_",
-            values_to = ".pred_class_value"
-          ) %>%
-          pivot_longer(
-            matches("^class_.*"),
-            names_to = "class_group",
-            names_prefix = "class_",
-            values_to = "class_value"
-          ) %>%
-          filter(class_group == .pred_class_group) %>%
-          nest(.by = class_group) %>%
-          mutate(
-            data = data %>%
-              map(~ mutate(.x, across(matches("class_value"),
-                                      ~ factor(.x, levels = unique(c(.pred_class_group, "class_0")))))) %>%
-              map(per_class_mset, truth = class_value, estimate = .pred_class_value) %>%
-              suppressWarnings()
-          ) %>%
-          unnest(cols = data) %>%
-          filter(!grepl("non", class_group))
-      })
-  ) %>%
+  nest(.by = fold_id) %>%
+  mutate(metrics = map(
+    data,
+    ~ ova_metrics(
+      x = .x,
+      truth = class,
+      estimate = .pred_class,
+      metric_set = per_class_mset
+    )
+  ),
+  .keep = "unused") %>%
   unnest(cols = metrics) %>%
   mutate(
     mean_estimate = mean(.estimate, na.rm = TRUE),
     .by = c(.metric, .estimator, class_group)
   ) %>%
-  select(-data) %>%
-  relocate(class_group, .after = mean_estimate)
+  relocate(class_group, .after = mean_estimate) %>%
+  filter(!grepl("non", class_group))
 
 # Variable importance metrics
 ## Use model-specific metrics if available, otherwise calculate

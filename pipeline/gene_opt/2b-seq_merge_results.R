@@ -65,20 +65,20 @@ if (n_distinct(class) == 2) {
 
 # Calculate average of overall metrics across folds
 overall_metrics <- test_preds %>%
-  nest(.by = "fold_id") %>%
+  nest(.by = fold_id) %>%
   mutate(
     metrics = data %>%
       map(~ {
         .x %>%
           mset(truth = class, prob_cols, estimate = .pred_class) %>%
           suppressWarnings()
-      })
+      }),
+    .keep = "unused"
   ) %>%
   unnest(cols = metrics) %>%
   mutate(mean_estimate = mean(.estimate),
          .by = c(.metric, .estimator)) %>%
   add_column(class_group = "Overall") %>%
-  select(-data) %>%
   arrange(fold_id, .metric)
 
 # Write all metrics to file
