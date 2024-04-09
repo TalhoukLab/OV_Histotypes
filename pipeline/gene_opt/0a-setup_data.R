@@ -15,7 +15,7 @@ top_wflow <- readRDS(here("data/seq_top_c5.rds"))[["wflow"]]
 
 candidate_genes <- ranked_vi %>%
   filter(wflow == top_wflow) %>%
-  slice_min(order_by = Mean_Importance, n = as.numeric(ngene)) %>%
+  slice_head(n = as.numeric(ngene)) %>%
   pull(Variable)
 
 # Genes from PrOTYPE and SPOT to keep
