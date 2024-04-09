@@ -1,8 +1,12 @@
 # Import sequential training data and class labels
-sq_data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))
-sq_class <- readRDS(file.path(inputDir, paste0(dataset, "_class.rds")))
-data <- sq_data[[nseq]]
-class <- sq_class[[nseq]]
+data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))[[nseq]]
+class <- readRDS(file.path(inputDir, paste0(dataset, "_class.rds")))[[nseq]]
+
+# Genes from PrOTYPE and SPOT to keep
+base_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
+                "THBS2", "TCF7L1", "HMGA2", "FN1", "POSTN", "COL1A2", "COL5A2",
+                "PDZK1IP1", "FBN1", "HIF1A", "CXCL10", "DUSP4", "SOX17", "MITF",
+                "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9")
 
 # Import ranked variable importance for trained workflows
 ranked_vi <- readRDS(file.path(
@@ -17,12 +21,6 @@ ranked_vi <- readRDS(file.path(
 candidate_genes <- ranked_vi %>%
   slice_head(n = as.numeric(ngene)) %>%
   pull(Variable)
-
-# Genes from PrOTYPE and SPOT to keep
-base_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
-                "THBS2", "TCF7L1", "HMGA2", "FN1", "POSTN", "COL1A2", "COL5A2",
-                "PDZK1IP1", "FBN1", "HIF1A", "CXCL10", "DUSP4", "SOX17", "MITF",
-                "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9")
 
 # Select genes
 data <- data %>%
