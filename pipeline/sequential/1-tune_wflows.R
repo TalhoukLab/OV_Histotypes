@@ -90,12 +90,14 @@ models <- list(rf = rf_model,
 wflow_sets <- workflow_set(preproc, models)
 sq_wflows <- readRDS(file.path(inputDir, paste0(dataset, "_wflows.rds")))
 wflow <- sq_wflows[[nseq]]
-wflow_set <- wflow_sets %>% filter(wflow_id == wflow)
 
 # Hyperparameter tuning
 
 ## Algorithm-specific tuning setup
 if (grepl("rf|xgb", wflow)) {
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == wflow)
+
   tuning_grid <- 10
 
 } else if (grepl("svm", wflow)) {
@@ -109,12 +111,16 @@ if (grepl("rf|xgb", wflow)) {
       rbf_sigma = rbf_sigma(sigma_range, trans = NULL)
     )
 
-  wflow_set <- wflow_set %>%
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == wflow) %>%
     option_add(param_info = svm_params)
 
   tuning_grid <- 10
 
 } else if (grepl("mr", wflow)) {
+  wflow_set <- wflow_sets %>%
+    filter(wflow_id == wflow)
+
   set.seed(2024)
   tuning_grid <- crossing(
     grid_latin_hypercube(penalty(), size = 10),
