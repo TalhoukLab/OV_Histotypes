@@ -27,9 +27,8 @@ n_class <- n_distinct(class)
 
 # Top workflow by per-class F1-score out of n_class
 seq_top <- metrics %>%
-  select(-c(fold_id, .estimate)) %>%
+  distinct(pick(-fold_id, -.estimate)) %>%
   filter(.metric == rank_metric, class_group != "Overall") %>%
-  distinct() %>%
   slice_max(order_by = mean_estimate) %>%
   add_column(n_class = n_class)
 
