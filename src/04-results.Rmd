@@ -940,7 +940,10 @@ conf_eval_overall <- conf_pred_overall %>%
   group_by(Method) %>%
   summarize(
     accuracy = accuracy_vec(Truth, Prediction),
+    sensitivity = sensitivity_vec(Truth, Prediction),
+    specificity = specificity_vec(Truth, Prediction),
     f1 = f_meas_vec(Truth, Prediction),
+    bal_accuracy = bal_accuracy_vec(Truth, Prediction),
     kappa = kap_vec(Truth, Prediction),
     gmean = gmean_vec(Truth, Prediction)
   )
@@ -1180,7 +1183,10 @@ val_eval_overall <- val_pred_overall %>%
   group_by(Method) %>%
   summarize(
     accuracy = accuracy_vec(Truth, Prediction),
+    sensitivity = sensitivity_vec(Truth, Prediction),
+    specificity = specificity_vec(Truth, Prediction),
     f1 = f_meas_vec(Truth, Prediction),
+    bal_accuracy = bal_accuracy_vec(Truth, Prediction),
     kappa = kap_vec(Truth, Prediction),
     gmean = gmean_vec(Truth, Prediction)
   )
