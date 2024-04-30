@@ -21,17 +21,24 @@ coefmat <- readRDS(here("data/coefmat.rds"))
 
 The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each of the CodeSets.
 
-CS1 was normalized to CS3 using "Random1" reference samples. These reference samples are common samples between CS1 and CS3, randomly selected such that we obtain one from each of the five histotypes. Then we use the reference method to normalize CS1 to CS3.
+CS1 was normalized to CS3 using "Random1" reference samples. These reference samples are common samples between CS1, CS2, and CS3, randomly selected from CS1 such that we obtain one for each of the five histotypes. Then, we use the reference method to normalize CS1 to CS3 for the remaining expression samples.
 
-Similarly, CS2 was normalized to CS3 using "Random1" reference samples using five common samples between CS2 and CS3 such that there is one from each histotype.
+Similarly, CS2 was normalized to CS3 using the same "Random1" reference samples, randomly selected from CS2.
 
-For CS3, we first split the dataset by site: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a "reference standard", so we normalized CS3-USC and CS3-AOC to CS3-Vancouver using a "Random1" reference method where we reference samples are common between USC and Vancouver, and between AOC and Vancouver. The CS3-Vancouver is also included without further normalization.
+For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a "reference standard", and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a "Random1" reference set randomly selected among samples common between Vancouver, USC, and AOC. The CS3-Vancouver expression samples are included without further normalization.
 
 ## Case Selection
 
-Duplicate cases (two samples with the same ottaID) were removed from the training set before fitting the classification models. CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver were preferred over CS3-AOC and CS3-USC.
+Duplicate cases (two samples with the same ottaID) were removed from the training set before fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC.
 
-The training, confirmation, and validation sets all used a different set of cohorts.
+The training, confirmation, and validation sets all used a different set of cohorts:
+
+- Training
+  - CS1: MAYO, OOU, OOUE, VOA, MTL
+  - CS2: MAYO, OOU, OOUE, OVAR3, VOA, ICON7, JAPAN, MTL, POOL-CTRL
+  - CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
+- Confirmation: TNCO
+- Validation: DOVE4
 
 ## Classifiers
 
@@ -282,13 +289,13 @@ grViz(
 
 ## Gene Optimization
 
-We want to discover an optimal set of genes for the classifiers while including specific genes from other studies. A total of `r ncol(train_data)` genes are used in the classifier training set.
+We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of `r ncol(train_data)` genes are used in the classifier training set.
 
 ```{r overlap-protype}
 overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
 ```
 
-There are `r length(overlap_PrOTYPE)` genes in the classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`
+There are `r length(overlap_PrOTYPE)` genes in the classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`.
 
 ```{r overlap-SPOT}
 overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
@@ -301,7 +308,7 @@ overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
 candidates <- setdiff(names(train_data), overlap_all)
 ```
 
-Taking the union of PrOTYPE and SPOT genes we obtain a total of `r length(overlap_all)` unique genes that we want to use for the final classifier, regardless of model performance. We then incrementally add genes from the remaining `r length(candidates)` candidate genes based on an overall variable importance rank to this list and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
+We obtain a total of `r length(overlap_all)` genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining `r length(candidates)` candidate genes based on an overall variable importance rank to the set of `r length(overlap_all)` base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
 
 ### Variable Importance
 
@@ -309,11 +316,13 @@ Variable importance is calculated using either a model-based approach if it is a
 
 For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
 
-## Evaluation Metrics
+## Performance Evaluation
 
-We use the accuracy, kappa, F1-score, area under the ROC (AUC), and geometric mean as evaluation metrics to compare training performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class, except for AUC because it is potentially misleading to combine predicted probabilities in a one-vs-all fashion.
+### Class Metrics
 
-### Accuracy
+We use the accuracy, sensitivity, specificity, F1-score, kappa, balanced accuracy, and geometric mean, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class.
+
+#### Accuracy
 
 The accuracy is defined as the proportion of correct predictions out of all cases:
 
@@ -322,22 +331,25 @@ $$
 (\#eq:accuracy)
 $$
 
-### Kappa
+#### Sensitivity
 
-Kappa is the defined as:
+Sensitivity is the proportional of correctly predicted positive cases, out of all cases that were truly positive
 
 $$
-\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
-(\#eq:kappa)
+\text{sensitivity} = \frac{TP}{TP + FN}
+(\#eq:sens)
 $$
 
-where $p_0$ is the observed agreement among raters and $p_e$ is the hypothetical probability of agreement due to random chance.
+#### Specificity
 
-### AUC
+Specificity is the proportional of correctly predicted negative cases, out of all cases that were truly negative.
 
-The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs. 1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.
+$$
+\text{specificity} = \frac{TN}{TN + FP}
+(\#eq:spec)
+$$
 
-### F1-Score
+#### F1-Score
 
 The F-measure can be thought of as a harmonic mean between precision and recall:
 
@@ -356,7 +368,27 @@ where each ${F_1}_{i}$ is the F1-score computed frrom recoding classes into $k=i
 
 In situations where there is not at least one predicted case for each of the classes (e.g. for a poor classifier), ${F_1}_{i}$ is undefined because the per-class precision of class $i$ is undefined. Those ${F_1}_{i}$ terms are removed from the ${F_1}_{macro}$ equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.
 
-### Geometric Mean
+#### Kappa
+
+Kappa is the defined as:
+
+$$
+\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
+(\#eq:kappa)
+$$
+
+where $p_0$ is the observed agreement among raters and $p_e$ is the hypothetical probability of agreement due to random chance.
+
+#### Balanced Accuracy
+
+Balanced accuracy is the arithmetic mean of sensitivity and specificity.
+
+$$
+\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2}
+(\#eq:bal-accuracy)
+$$
+
+#### Geometric Mean
 
 The geometric mean (G-mean) is the $k^{th}$ root of the product of class-specific sensitivities for $k$ classes:
 
@@ -365,3 +397,11 @@ $$
 (\#eq:gmean)
 $$
 The G-mean generalizes easily for the multiclass scenario.
+
+### AUC
+
+The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs. 1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.
+
+We did not use AUC to measure class-specific training set performance because combining predicted probabilities in a one-vs-all fashion might be potentially misleading. The sum of probabilities that add up to the "other" class is not equivalent to the predicted probability of the "other" class when using a multiclass classifier.
+
+Instead, we only reported ROC curves and their associated AUCs for the test set performance of the sequential and two-step algorithms.
