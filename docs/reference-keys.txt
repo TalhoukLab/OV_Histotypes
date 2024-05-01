@@ -1,6 +1,7 @@
 fig:sampling
 eq:sequential
 fig:two-step-flowchart
+fig:two-step-predictions
 fig:sequential-flowchart
 fig:sequential-predictions
 eq:accuracy
@@ -76,8 +77,9 @@ hyperparameter-tuning
 subsampling
 workflows
 two-step-algorithm
-sequential-algorithm
 aggregating-predictions
+sequential-algorithm
+aggregating-predictions-1
 gene-optimization
 variable-importance
 performance-evaluation
