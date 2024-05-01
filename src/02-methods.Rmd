@@ -176,6 +176,45 @@ grViz(
 
 Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.
 
+### Aggregating Predictions
+
+The aggregation for two-step predictions is quite straightforward:
+
+1. Predict HGSC vs. non-HGSC
+2. Among all non-HGSC cases, predict CCOC vs. LGSC vs. MUC vs. ENOC
+
+```{r two-step-predictions, fig.cap='Aggregating Predictions for Two-Step Algorithm'}
+grViz(
+  paste0(
+    "digraph two_step_predictions {
+    
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    
+    a [label = 'Predict HGSC vs. non-HGSC']
+    b1 [label = 'HGSC']
+    b2 [label = 'non-HGSC']
+    c [label = 'Predict CCOC vs. LGSC vs. MUC vs. ENOC']
+    d1 [label = 'CCOC']
+    f1 [label = 'LGSC']
+    h1 [label = 'MUC']
+    h2 [label = 'ENOC']
+    
+    # edge definitions
+    a -> {b1 b2}
+    b2 -> c
+    c -> {d1 f1 h1 h2}
+    
+     # subgraph definitions
+    subgraph {rank = same; b2; c}
+    }"
+  )
+)
+```
+
 ## Sequential Algorithm
 
 Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the "other" class are those not equal to the current "one" class and excluding all "one" classes from previous steps. For example, if the "one" class in step 1 was HGSC, the "other" classes would include CCOC, ENOC, LGSC, and MUC. If the "one" class in step 2 was CCOC, the "other" classes include ENOC, LGSC, and MUC.
@@ -284,8 +323,6 @@ grViz(
   )
 )
 ```
-
-
 
 ## Gene Optimization
 
