@@ -66,6 +66,8 @@ The following specifications for each classifier were used for tuning hyperparam
 -   `svm`: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design. We tuned the cost parameter in the range [1, 8]. The range for tuning the sigma parameter was obtained from the 10% and 90% quantiles of the estimation using the `kernlab::sigest()` function.
 -   `mr`: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in [0, 1] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.
 
+The hyperparameter combination that resulted in the highest average F1-score across the inner training sets was selected for each classifier to use as the model for assessing prediction performance in the outer training loop.
+
 ### Subsampling
 
 Here are the specifications of the subsampling methods used to handle class imbalance:
@@ -352,9 +354,19 @@ We obtain a total of `r length(overlap_all)` genes from the union of PrOTYPE and
 
 ### Variable Importance
 
-Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g. for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
+Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
 
 For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
+
+The variable importance measures are:
+
+-   Random Forest: impurity measure (Gini index)
+
+-   XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features's splits)
+
+-   SVM: permutation based p-values
+
+-   Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value
 
 ## Performance Evaluation
 
