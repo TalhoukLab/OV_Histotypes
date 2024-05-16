@@ -8,7 +8,7 @@ geometry: margin=1in
 colorlinks: true
 lof: true
 lot: true
-bibliography: packages.bib
+bibliography: [book.bib, packages.bib]
 biblio-style: apalike
 link-citations: true
 description: "This report of statistical findings summarizes results for the classification of ovarian cancer histotypes."

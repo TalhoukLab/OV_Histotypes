@@ -10,6 +10,7 @@ library(purrr)
 library(forcats)
 library(DiagrammeR)
 library(here)
+source(here("validation/cs_classifier.R"))
 data("rawOTTA3", package = "otta")
 cs5 <- rawOTTA3
 train_data <- readRDS(here("data/train_data.rds"))
@@ -19,26 +20,28 @@ coefmat <- readRDS(here("data/coefmat.rds"))
 
 ## Normalization
 
-The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each of the CodeSets.
+The full training set (n=`r nrow(train_data)`) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.
 
-CS1 was normalized to CS3 using "Random1" reference samples. These reference samples are common samples between CS1, CS2, and CS3, randomly selected from CS1 such that we obtain one for each of the five histotypes. Then, we use the reference method to normalize CS1 to CS3 for the remaining expression samples.
+CS1 was normalized to CS3 using five "Random1" reference samples. These reference samples are randomly selected from CS1 among all samples in the three CodeSets that share common otta IDs, such that we obtain one sample from each of the five histotypes. Then, we use the reference-based method to normalize CS1 to CS3 across their common genes, for the remaining expression samples @talhouk2016.
 
-Similarly, CS2 was normalized to CS3 using the same "Random1" reference samples, randomly selected from CS2.
+Similarly, CS2 was normalized to CS3 using the same "Random1" reference samples, now taken from CS2. Normalization was performed across common genes between CS2 and CS3.
 
-For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a "reference standard", and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a "Random1" reference set randomly selected among samples common between Vancouver, USC, and AOC. The CS3-Vancouver expression samples are included without further normalization.
+For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a "reference standard", and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a "Random1" reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.
 
 ## Case Selection
 
-Duplicate cases (two samples with the same ottaID) were removed from the training set before fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC.
+Duplicate cases (two samples with the same ottaID) were removed before generating the final training set to use for fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC when selecting duplicates.
 
-The training, confirmation, and validation sets all used a different set of cohorts:
+The training, confirmation, and validation sets all used samples from different set of cohorts:
 
-- Training
-  - CS1: MAYO, OOU, OOUE, VOA, MTL
-  - CS2: MAYO, OOU, OOUE, OVAR3, VOA, ICON7, JAPAN, MTL, POOL-CTRL
-  - CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
-- Confirmation: TNCO
-- Validation: DOVE4
+-   Training
+    -   CS1: MAYO, OOU, OOUE, VOA, MTL
+    -   CS2: MAYO, OOU, OOUE, OVAR3, VOA, ICON7, JAPAN, MTL, POOL-CTRL
+    -   CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
+-   Confirmation: TNCO
+-   Validation: DOVE4
+
+The final training set used only genes that were common across all three CodeSets.
 
 ## Classifiers
 
@@ -180,8 +183,8 @@ Although the class imbalance problem is mostly eliminated in Step 2 after removi
 
 The aggregation for two-step predictions is quite straightforward:
 
-1. Predict HGSC vs. non-HGSC
-2. Among all non-HGSC cases, predict CCOC vs. LGSC vs. MUC vs. ENOC
+1.  Predict HGSC vs. non-HGSC
+2.  Among all non-HGSC cases, predict CCOC vs. LGSC vs. MUC vs. ENOC
 
 ```{r two-step-predictions, fig.cap='Aggregating Predictions for Two-Step Algorithm'}
 grViz(
@@ -400,8 +403,7 @@ The $\beta$ value can be adjusted to place more weight upon precision or recall.
 $$
 {F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}
 (\#eq:f1-macro)
-$$
-where each ${F_1}_{i}$ is the F1-score computed frrom recoding classes into $k=i$ vs. $k \neq i$.
+$$ where each ${F_1}_{i}$ is the F1-score computed frrom recoding classes into $k=i$ vs. $k \neq i$.
 
 In situations where there is not at least one predicted case for each of the classes (e.g. for a poor classifier), ${F_1}_{i}$ is undefined because the per-class precision of class $i$ is undefined. Those ${F_1}_{i}$ terms are removed from the ${F_1}_{macro}$ equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.
 
@@ -432,8 +434,7 @@ The geometric mean (G-mean) is the $k^{th}$ root of the product of class-specifi
 $$
 \text{G-mean} = \sqrt[k]{\prod_{i=1}^{k}{\text{Sensitivity}_k}}
 (\#eq:gmean)
-$$
-The G-mean generalizes easily for the multiclass scenario.
+$$ The G-mean generalizes easily for the multiclass scenario.
 
 ### AUC
 
