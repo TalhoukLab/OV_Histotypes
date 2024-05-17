@@ -18,7 +18,31 @@ train_class <- readRDS(here("data/train_class.rds"))
 coefmat <- readRDS(here("data/coefmat.rds"))
 ```
 
-## Normalization
+## Pre-Processing
+
+### Case Selection
+
+Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples from these sets of cohorts:
+
+-   Training
+    -   CS1: MAYO, OOU, OOUE, VOA, MTL
+    -   CS2: MAYO, OOU, OOUE, OVAR3, VOA, ICON7, JAPAN, MTL, POOL-CTRL
+    -   CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
+-   Confirmation:
+    -   CS3: TNCO
+-   Validation:
+    -   CS3: DOVE4
+
+### Quality Control
+
+Samples that failed any of the following NanoString quality control conditions were removed:
+
+-   `linFlag`: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown
+-   `imagingFlag`: percent of field of view is less than 75%
+-   `spcFlag`: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero
+-   `normFlag`: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the [%GD vs. SNR] relationship below.
+
+### Normalization
 
 The full training set (n=`r nrow(train_data)`) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.
 
@@ -28,18 +52,11 @@ Similarly, CS2 was normalized to CS3 using the same "Random1" reference samples,
 
 For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a "reference standard", and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a "Random1" reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.
 
-## Case Selection
+### Final Processing
+
+We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian caricoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).
 
 Duplicate cases (two samples with the same ottaID) were removed before generating the final training set to use for fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC when selecting duplicates.
-
-The training, confirmation, and validation sets all used samples from different set of cohorts:
-
--   Training
-    -   CS1: MAYO, OOU, OOUE, VOA, MTL
-    -   CS2: MAYO, OOU, OOUE, OVAR3, VOA, ICON7, JAPAN, MTL, POOL-CTRL
-    -   CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
--   Confirmation: TNCO
--   Validation: DOVE4
 
 The final training set used only genes that were common across all three CodeSets.
 
