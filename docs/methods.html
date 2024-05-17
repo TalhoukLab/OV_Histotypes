@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>2 Methods | Ovarian Cancer Histotypes: Report of Statistical Findings</title>
 <meta name="author" content="Derek Chiu">
-<meta name="description" content="2.1 Normalization The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each...">
+<meta name="description" content="2.1 Pre-Processing  2.1.1 Case Selection Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples...">
 <meta name="generator" content="bookdown 0.39 with bs4_book()">
 <meta property="og:title" content="2 Methods | Ovarian Cancer Histotypes: Report of Statistical Findings">
 <meta property="og:type" content="book">
-<meta property="og:description" content="2.1 Normalization The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each...">
+<meta property="og:description" content="2.1 Pre-Processing  2.1.1 Case Selection Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2 Methods | Ovarian Cancer Histotypes: Report of Statistical Findings">
-<meta name="twitter:description" content="2.1 Normalization The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each...">
+<meta name="twitter:description" content="2.1 Pre-Processing  2.1.1 Case Selection Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples...">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="assets/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="assets/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="assets/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="assets/bs3compat-0.4.2/transition.js"></script><script src="assets/bs3compat-0.4.2/tabs.js"></script><script src="assets/bs3compat-0.4.2/bs3compat.js"></script><link href="assets/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
@@ -30,6 +30,29 @@
 <script src="assets/plotly-main-2.11.1/plotly-latest.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
     
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
   </style>
 </head>
 <body data-spy="scroll" data-target="#toc">
@@ -69,21 +92,15 @@
 <h1>
 <span class="header-section-number">2</span> Methods<a class="anchor" aria-label="anchor" href="#methods"><i class="fas fa-link"></i></a>
 </h1>
-<div id="normalization" class="section level2" number="2.1">
+<div id="pre-processing" class="section level2" number="2.1">
 <h2>
-<span class="header-section-number">2.1</span> Normalization<a class="anchor" aria-label="anchor" href="#normalization"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.1</span> Pre-Processing<a class="anchor" aria-label="anchor" href="#pre-processing"><i class="fas fa-link"></i></a>
 </h2>
-<p>The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each of the CodeSets.</p>
-<p>CS1 was normalized to CS3 using “Random1” reference samples. These reference samples are common samples between CS1, CS2, and CS3, randomly selected from CS1 such that we obtain one for each of the five histotypes. Then, we use the reference method to normalize CS1 to CS3 for the remaining expression samples.</p>
-<p>Similarly, CS2 was normalized to CS3 using the same “Random1” reference samples, randomly selected from CS2.</p>
-<p>For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a “reference standard”, and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a “Random1” reference set randomly selected among samples common between Vancouver, USC, and AOC. The CS3-Vancouver expression samples are included without further normalization.</p>
-</div>
-<div id="case-selection" class="section level2" number="2.2">
-<h2>
-<span class="header-section-number">2.2</span> Case Selection<a class="anchor" aria-label="anchor" href="#case-selection"><i class="fas fa-link"></i></a>
-</h2>
-<p>Duplicate cases (two samples with the same ottaID) were removed from the training set before fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC.</p>
-<p>The training, confirmation, and validation sets all used a different set of cohorts:</p>
+<div id="case-selection" class="section level3" number="2.1.1">
+<h3>
+<span class="header-section-number">2.1.1</span> Case Selection<a class="anchor" aria-label="anchor" href="#case-selection"><i class="fas fa-link"></i></a>
+</h3>
+<p>Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples from these sets of cohorts:</p>
 <ul>
 <li>Training
 <ul>
@@ -92,13 +109,55 @@
 <li>CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3</li>
 </ul>
 </li>
-<li>Confirmation: TNCO</li>
-<li>Validation: DOVE4</li>
+<li>Confirmation:
+<ul>
+<li>CS3: TNCO</li>
+</ul>
+</li>
+<li>Validation:
+<ul>
+<li>CS3: DOVE4</li>
+</ul>
+</li>
 </ul>
 </div>
-<div id="classifiers" class="section level2" number="2.3">
+<div id="quality-control" class="section level3" number="2.1.2">
+<h3>
+<span class="header-section-number">2.1.2</span> Quality Control<a class="anchor" aria-label="anchor" href="#quality-control"><i class="fas fa-link"></i></a>
+</h3>
+<p>Samples that failed any of the following NanoString quality control conditions were removed:</p>
+<ul>
+<li>
+<code>linFlag</code>: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown</li>
+<li>
+<code>imagingFlag</code>: percent of field of view is less than 75%</li>
+<li>
+<code>spcFlag</code>: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero</li>
+<li>
+<code>normFlag</code>: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the <a href="distributions.html#gd-vs.-snr">%GD vs. SNR</a> relationship below.</li>
+</ul>
+</div>
+<div id="normalization" class="section level3" number="2.1.3">
+<h3>
+<span class="header-section-number">2.1.3</span> Normalization<a class="anchor" aria-label="anchor" href="#normalization"><i class="fas fa-link"></i></a>
+</h3>
+<p>The full training set (n=1246) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.</p>
+<p>CS1 was normalized to CS3 using five “Random1” reference samples. These reference samples are randomly selected from CS1 among all samples in the three CodeSets that share common otta IDs, such that we obtain one sample from each of the five histotypes. Then, we use the reference-based method to normalize CS1 to CS3 across their common genes, for the remaining expression samples <span class="citation">Talhouk et al. (<a href="references.html#ref-talhouk2016">2016</a>)</span>.</p>
+<p>Similarly, CS2 was normalized to CS3 using the same “Random1” reference samples, now taken from CS2. Normalization was performed across common genes between CS2 and CS3.</p>
+<p>For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a “reference standard”, and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a “Random1” reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.</p>
+</div>
+<div id="final-processing" class="section level3" number="2.1.4">
+<h3>
+<span class="header-section-number">2.1.4</span> Final Processing<a class="anchor" aria-label="anchor" href="#final-processing"><i class="fas fa-link"></i></a>
+</h3>
+<p>We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian caricoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).</p>
+<p>Duplicate cases (two samples with the same ottaID) were removed before generating the final training set to use for fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC when selecting duplicates.</p>
+<p>The final training set used only genes that were common across all three CodeSets.</p>
+</div>
+</div>
+<div id="classifiers" class="section level2" number="2.2">
 <h2>
-<span class="header-section-number">2.3</span> Classifiers<a class="anchor" aria-label="anchor" href="#classifiers"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.2</span> Classifiers<a class="anchor" aria-label="anchor" href="#classifiers"><i class="fas fa-link"></i></a>
 </h2>
 <p>We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the <code>tidymodels</code> suite of packages. The classifiers we used are:</p>
 <ul>
@@ -107,16 +166,16 @@
 <li>XGBoost (<code>xgb</code>)</li>
 <li>Regularized Multinomial Regression (<code>mr</code>)</li>
 </ul>
-<div id="resampling-of-training-set" class="section level3" number="2.3.1">
+<div id="resampling-of-training-set" class="section level3" number="2.2.1">
 <h3>
-<span class="header-section-number">2.3.1</span> Resampling of Training Set<a class="anchor" aria-label="anchor" href="#resampling-of-training-set"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.2.1</span> Resampling of Training Set<a class="anchor" aria-label="anchor" href="#resampling-of-training-set"><i class="fas fa-link"></i></a>
 </h3>
 <p>We used a nested cross-validation design to assess each classifier while also performing hyperparameter tuning. An outer 5-fold CV stratified by histotype was used together with an inner 5-fold CV with 2 repeats stratified by histotype. This design was chosen such that the test sets of the inner resamples would still have a reasonable number of samples belonging to the smallest minority class.</p>
 <p>The outer resampling method cannot be the bootstrap, because the inner training and inner test sets will likely contain the same samples as a result of sampling with replacement in the outer training set. This phenomenon might result in inflated performance as some observations are used both to train and evaluate the hyperparameter tuning in the inner loop.</p>
 </div>
-<div id="hyperparameter-tuning" class="section level3" number="2.3.2">
+<div id="hyperparameter-tuning" class="section level3" number="2.2.2">
 <h3>
-<span class="header-section-number">2.3.2</span> Hyperparameter Tuning<a class="anchor" aria-label="anchor" href="#hyperparameter-tuning"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.2.2</span> Hyperparameter Tuning<a class="anchor" aria-label="anchor" href="#hyperparameter-tuning"><i class="fas fa-link"></i></a>
 </h3>
 <p>The following specifications for each classifier were used for tuning hyperparameters:</p>
 <ul>
@@ -127,10 +186,11 @@
 <li>
 <code>mr</code>: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in [0, 1] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.</li>
 </ul>
+<p>The hyperparameter combination that resulted in the highest average F1-score across the inner training sets was selected for each classifier to use as the model for assessing prediction performance in the outer training loop.</p>
 </div>
-<div id="subsampling" class="section level3" number="2.3.3">
+<div id="subsampling" class="section level3" number="2.2.3">
 <h3>
-<span class="header-section-number">2.3.3</span> Subsampling<a class="anchor" aria-label="anchor" href="#subsampling"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.2.3</span> Subsampling<a class="anchor" aria-label="anchor" href="#subsampling"><i class="fas fa-link"></i></a>
 </h3>
 <p>Here are the specifications of the subsampling methods used to handle class imbalance:</p>
 <ul>
@@ -148,16 +208,16 @@ Figure 2.1: Visualization of Subsampling Techniques
 </p>
 </div>
 </div>
-<div id="workflows" class="section level3" number="2.3.4">
+<div id="workflows" class="section level3" number="2.2.4">
 <h3>
-<span class="header-section-number">2.3.4</span> Workflows<a class="anchor" aria-label="anchor" href="#workflows"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.2.4</span> Workflows<a class="anchor" aria-label="anchor" href="#workflows"><i class="fas fa-link"></i></a>
 </h3>
 <p>The 4 <strong>algorithms</strong> and 5 <strong>subsampling</strong> methods are crossed to create 20 different classification <strong>workflows</strong>. For example, the <code>hybrid_xgb</code> workflow is a classifier that first pre-processes a training set by applying a hybrid subsampling method, and then proceeds to use the XGBoost algorithm to classify ovarian histotypes.</p>
 </div>
 </div>
-<div id="two-step-algorithm" class="section level2" number="2.4">
+<div id="two-step-algorithm" class="section level2" number="2.3">
 <h2>
-<span class="header-section-number">2.4</span> Two-Step Algorithm<a class="anchor" aria-label="anchor" href="#two-step-algorithm"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.3</span> Two-Step Algorithm<a class="anchor" aria-label="anchor" href="#two-step-algorithm"><i class="fas fa-link"></i></a>
 </h2>
 <p>The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. We can implement a two-step algorithm as such:</p>
 <ul>
@@ -176,15 +236,15 @@ Figure 2.1: Visualization of Subsampling Techniques
 <p>Figure <a href="methods.html#fig:two-step-flowchart">2.2</a> shows how the two-step algorithm works:</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:two-step-flowchart"></span>
-<div class="grViz html-widget html-fill-item" id="htmlwidget-a26748bb3099926c8348" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-a26748bb3099926c8348">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = \"Store HGSC predictions\"]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT> for HGSC>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = \"Store remaining predictions\"]\n    d2 [label = \"Select best workflow with highest overall F1-score\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train HGSC vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n\n    b1 -> c [xlabel = <  Remove HGSC cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = \"Train multinomial classes with best workflow\"]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n\n    j [label = \"Aggregate all predictions\"]\n\n    {b1 d1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-ae4d06d311f3d433af2b" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-ae4d06d311f3d433af2b">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = \"Store HGSC predictions\"]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT> for HGSC>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = \"Store remaining predictions\"]\n    d2 [label = \"Select best workflow with highest overall F1-score\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train HGSC vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n\n    b1 -> c [xlabel = <  Remove HGSC cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = \"Train multinomial classes with best workflow\"]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n\n    j [label = \"Aggregate all predictions\"]\n\n    {b1 d1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
 Figure 2.2: Two-Step Algorithm
 </p>
 </div>
 <p>Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.</p>
-<div id="aggregating-predictions" class="section level3" number="2.4.1">
+<div id="aggregating-predictions" class="section level3" number="2.3.1">
 <h3>
-<span class="header-section-number">2.4.1</span> Aggregating Predictions<a class="anchor" aria-label="anchor" href="#aggregating-predictions"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.3.1</span> Aggregating Predictions<a class="anchor" aria-label="anchor" href="#aggregating-predictions"><i class="fas fa-link"></i></a>
 </h3>
 <p>The aggregation for two-step predictions is quite straightforward:</p>
 <ol style="list-style-type: decimal">
@@ -193,70 +253,77 @@ Figure 2.2: Two-Step Algorithm
 </ol>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:two-step-predictions"></span>
-<div class="grViz html-widget html-fill-item" id="htmlwidget-a637fabc38e01cfd534c" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-a637fabc38e01cfd534c">{"x":{"diagram":"digraph two_step_predictions {\n    \n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    \n    a [label = \"Predict HGSC vs. non-HGSC\"]\n    b1 [label = \"HGSC\"]\n    b2 [label = \"non-HGSC\"]\n    c [label = \"Predict CCOC vs. LGSC vs. MUC vs. ENOC\"]\n    d1 [label = \"CCOC\"]\n    f1 [label = \"LGSC\"]\n    h1 [label = \"MUC\"]\n    h2 [label = \"ENOC\"]\n    \n    # edge definitions\n    a -> {b1 b2}\n    b2 -> c\n    c -> {d1 f1 h1 h2}\n    \n     # subgraph definitions\n    subgraph {rank = same; b2; c}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-7af551895e456e2acc1f" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-7af551895e456e2acc1f">{"x":{"diagram":"digraph two_step_predictions {\n    \n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    \n    a [label = \"Predict HGSC vs. non-HGSC\"]\n    b1 [label = \"HGSC\"]\n    b2 [label = \"non-HGSC\"]\n    c [label = \"Predict CCOC vs. LGSC vs. MUC vs. ENOC\"]\n    d1 [label = \"CCOC\"]\n    f1 [label = \"LGSC\"]\n    h1 [label = \"MUC\"]\n    h2 [label = \"ENOC\"]\n    \n    # edge definitions\n    a -> {b1 b2}\n    b2 -> c\n    c -> {d1 f1 h1 h2}\n    \n     # subgraph definitions\n    subgraph {rank = same; b2; c}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
 Figure 2.3: Aggregating Predictions for Two-Step Algorithm
 </p>
 </div>
 </div>
 </div>
-<div id="sequential-algorithm" class="section level2" number="2.5">
+<div id="sequential-algorithm" class="section level2" number="2.4">
 <h2>
-<span class="header-section-number">2.5</span> Sequential Algorithm<a class="anchor" aria-label="anchor" href="#sequential-algorithm"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.4</span> Sequential Algorithm<a class="anchor" aria-label="anchor" href="#sequential-algorithm"><i class="fas fa-link"></i></a>
 </h2>
 <p>Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the “other” class are those not equal to the current “one” class and excluding all “one” classes from previous steps. For example, if the “one” class in step 1 was HGSC, the “other” classes would include CCOC, ENOC, LGSC, and MUC. If the “one” class in step 2 was CCOC, the “other” classes include ENOC, LGSC, and MUC.</p>
 <p>The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).</p>
 <p>Figure <a href="methods.html#fig:sequential-flowchart">2.4</a> illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:sequential-flowchart"></span>
-<div class="grViz html-widget html-fill-item" id="htmlwidget-dc23a51b2ef191bddc6d" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-dc23a51b2ef191bddc6d">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  predictions>]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  predictions>]\n    d2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f [label = <X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    g1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  predictions>]\n    g2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h [label = <X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    i1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  predictions>]\n    i2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    j [label = \"Aggregate all predictions\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n    #b2 -> b1\n    b1 -> c [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n    #d2 -> d1\n    d1 -> f [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f -> g1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    f -> g2 [label = \"Retrain multinomial classes\"]\n    #g2 -> g1\n    g1 -> h [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h -> i1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    h -> i2 [label = \"Retrain multinomial classes\"]\n\n    {b1 d1 g1 i1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    subgraph {rank = same; g1; g2}\n    subgraph {rank = same; i1; i2}\n    subgraph {rank = same; }\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-7b578cff6c415e4f4c80" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-7b578cff6c415e4f4c80">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  predictions>]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  predictions>]\n    d2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f [label = <X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    g1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  predictions>]\n    g2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h [label = <X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    i1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  predictions>]\n    i2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    j [label = \"Aggregate all predictions\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n    #b2 -> b1\n    b1 -> c [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n    #d2 -> d1\n    d1 -> f [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f -> g1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    f -> g2 [label = \"Retrain multinomial classes\"]\n    #g2 -> g1\n    g1 -> h [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h -> i1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    h -> i2 [label = \"Retrain multinomial classes\"]\n\n    {b1 d1 g1 i1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    subgraph {rank = same; g1; g2}\n    subgraph {rank = same; i1; i2}\n    subgraph {rank = same; }\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
 Figure 2.4: Sequential Algorithm
 </p>
 </div>
 <p>The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.</p>
-<div id="aggregating-predictions-1" class="section level3" number="2.5.1">
+<div id="aggregating-predictions-1" class="section level3" number="2.4.1">
 <h3>
-<span class="header-section-number">2.5.1</span> Aggregating Predictions<a class="anchor" aria-label="anchor" href="#aggregating-predictions-1"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.4.1</span> Aggregating Predictions<a class="anchor" aria-label="anchor" href="#aggregating-predictions-1"><i class="fas fa-link"></i></a>
 </h3>
 <p>We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the “all” class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSC vs. non-HGSC, CCOC vs. non-CCOC, LGSC vs. non-LGSC, and then MUC vs. ENOC. Figure <a href="methods.html#fig:sequential-predictions">2.5</a> illustrates how the final predictions are assigned:</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:sequential-predictions"></span>
-<div class="grViz html-widget html-fill-item" id="htmlwidget-78dcb69428575d29f219" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-78dcb69428575d29f219">{"x":{"diagram":"digraph sequential_predictions {\n    \n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    \n    a [label = \"Predict HGSC vs. non-HGSC\"]\n    b1 [label = \"HGSC\"]\n    b2 [label = \"non-HGSC\"]\n    c [label = \"Predict CCOC vs. non-CCOC\"]\n    d1 [label = \"CCOC\"]\n    d2 [label = \"non-CCOC\"]\n    e [label = \"Predict LGSC vs. non-LGSC\"]\n    f1 [label = \"LGSC\"]\n    f2 [label = \"non-LGSC\"]\n    g [label = \"Predict MUC vs. ENOC\"]\n    h1 [label = \"MUC\"]\n    h2 [label = \"ENOC\"]\n    \n    # edge definitions\n    a -> {b1 b2}\n    b2 -> c\n    c -> {d1 d2}\n    d2 -> e\n    e -> {f1 f2}\n    f2 -> g\n    g -> {h1 h2}\n    \n     # subgraph definitions\n    subgraph {rank = same; b2; c}\n    subgraph {rank = same; d2; e}\n    subgraph {rank = same; f2; g}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-a5021c18acaad8446a39" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-a5021c18acaad8446a39">{"x":{"diagram":"digraph sequential_predictions {\n    \n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    \n    a [label = \"Predict HGSC vs. non-HGSC\"]\n    b1 [label = \"HGSC\"]\n    b2 [label = \"non-HGSC\"]\n    c [label = \"Predict CCOC vs. non-CCOC\"]\n    d1 [label = \"CCOC\"]\n    d2 [label = \"non-CCOC\"]\n    e [label = \"Predict LGSC vs. non-LGSC\"]\n    f1 [label = \"LGSC\"]\n    f2 [label = \"non-LGSC\"]\n    g [label = \"Predict MUC vs. ENOC\"]\n    h1 [label = \"MUC\"]\n    h2 [label = \"ENOC\"]\n    \n    # edge definitions\n    a -> {b1 b2}\n    b2 -> c\n    c -> {d1 d2}\n    d2 -> e\n    e -> {f1 f2}\n    f2 -> g\n    g -> {h1 h2}\n    \n     # subgraph definitions\n    subgraph {rank = same; b2; c}\n    subgraph {rank = same; d2; e}\n    subgraph {rank = same; f2; g}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
 Figure 2.5: Aggregating Predictions for Sequential Algorithm
 </p>
 </div>
 </div>
 </div>
-<div id="gene-optimization" class="section level2" number="2.6">
+<div id="gene-optimization" class="section level2" number="2.5">
 <h2>
-<span class="header-section-number">2.6</span> Gene Optimization<a class="anchor" aria-label="anchor" href="#gene-optimization"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.5</span> Gene Optimization<a class="anchor" aria-label="anchor" href="#gene-optimization"><i class="fas fa-link"></i></a>
 </h2>
 <p>We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of 72 genes are used in the classifier training set.</p>
 <p>There are 16 genes in the classifier set that overlap with the PrOTYPE classifier: COL11A1, CD74, CD2, TIMP3, LUM, CYTIP, COL3A1, THBS2, TCF7L1, HMGA2, FN1, POSTN, COL1A2, COL5A2, PDZK1IP1, FBN1.</p>
 <p>There are also 13 genes in the classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.</p>
 <p>We obtain a total of 28 genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining 44 candidate genes based on an overall variable importance rank to the set of 28 base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.</p>
-<div id="variable-importance" class="section level3" number="2.6.1">
+<div id="variable-importance" class="section level3" number="2.5.1">
 <h3>
-<span class="header-section-number">2.6.1</span> Variable Importance<a class="anchor" aria-label="anchor" href="#variable-importance"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.5.1</span> Variable Importance<a class="anchor" aria-label="anchor" href="#variable-importance"><i class="fas fa-link"></i></a>
 </h3>
-<p>Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g. for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.</p>
+<p>Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.</p>
 <p>For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.</p>
+<p>The variable importance measures are:</p>
+<ul>
+<li><p>Random Forest: impurity measure (Gini index)</p></li>
+<li><p>XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features’s splits)</p></li>
+<li><p>SVM: permutation based p-values</p></li>
+<li><p>Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value</p></li>
+</ul>
 </div>
 </div>
-<div id="performance-evaluation" class="section level2" number="2.7">
+<div id="performance-evaluation" class="section level2" number="2.6">
 <h2>
-<span class="header-section-number">2.7</span> Performance Evaluation<a class="anchor" aria-label="anchor" href="#performance-evaluation"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6</span> Performance Evaluation<a class="anchor" aria-label="anchor" href="#performance-evaluation"><i class="fas fa-link"></i></a>
 </h2>
-<div id="class-metrics" class="section level3" number="2.7.1">
+<div id="class-metrics" class="section level3" number="2.6.1">
 <h3>
-<span class="header-section-number">2.7.1</span> Class Metrics<a class="anchor" aria-label="anchor" href="#class-metrics"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.1</span> Class Metrics<a class="anchor" aria-label="anchor" href="#class-metrics"><i class="fas fa-link"></i></a>
 </h3>
 <p>We use the accuracy, sensitivity, specificity, F1-score, kappa, balanced accuracy, and geometric mean, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class.</p>
-<div id="accuracy" class="section level4" number="2.7.1.1">
+<div id="accuracy" class="section level4" number="2.6.1.1">
 <h4>
-<span class="header-section-number">2.7.1.1</span> Accuracy<a class="anchor" aria-label="anchor" href="#accuracy"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.1.1</span> Accuracy<a class="anchor" aria-label="anchor" href="#accuracy"><i class="fas fa-link"></i></a>
 </h4>
 <p>The accuracy is defined as the proportion of correct predictions out of all cases:</p>
 <p><span class="math display" id="eq:accuracy">\[
@@ -264,9 +331,9 @@ Figure 2.5: Aggregating Predictions for Sequential Algorithm
 \tag{2.2}
 \]</span></p>
 </div>
-<div id="sensitivity" class="section level4" number="2.7.1.2">
+<div id="sensitivity" class="section level4" number="2.6.1.2">
 <h4>
-<span class="header-section-number">2.7.1.2</span> Sensitivity<a class="anchor" aria-label="anchor" href="#sensitivity"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.1.2</span> Sensitivity<a class="anchor" aria-label="anchor" href="#sensitivity"><i class="fas fa-link"></i></a>
 </h4>
 <p>Sensitivity is the proportional of correctly predicted positive cases, out of all cases that were truly positive</p>
 <p><span class="math display" id="eq:sens">\[
@@ -274,9 +341,9 @@ Figure 2.5: Aggregating Predictions for Sequential Algorithm
 \tag{2.3}
 \]</span></p>
 </div>
-<div id="specificity" class="section level4" number="2.7.1.3">
+<div id="specificity" class="section level4" number="2.6.1.3">
 <h4>
-<span class="header-section-number">2.7.1.3</span> Specificity<a class="anchor" aria-label="anchor" href="#specificity"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.1.3</span> Specificity<a class="anchor" aria-label="anchor" href="#specificity"><i class="fas fa-link"></i></a>
 </h4>
 <p>Specificity is the proportional of correctly predicted negative cases, out of all cases that were truly negative.</p>
 <p><span class="math display" id="eq:spec">\[
@@ -284,9 +351,9 @@ Figure 2.5: Aggregating Predictions for Sequential Algorithm
 \tag{2.4}
 \]</span></p>
 </div>
-<div id="f1-score" class="section level4" number="2.7.1.4">
+<div id="f1-score" class="section level4" number="2.6.1.4">
 <h4>
-<span class="header-section-number">2.7.1.4</span> F1-Score<a class="anchor" aria-label="anchor" href="#f1-score"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.1.4</span> F1-Score<a class="anchor" aria-label="anchor" href="#f1-score"><i class="fas fa-link"></i></a>
 </h4>
 <p>The F-measure can be thought of as a harmonic mean between precision and recall:</p>
 <p><span class="math display" id="eq:f1">\[
@@ -297,13 +364,12 @@ F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times p
 <p><span class="math display" id="eq:f1-macro">\[
 {F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}
 \tag{2.6}
-\]</span>
-where each <span class="math inline">\({F_1}_{i}\)</span> is the F1-score computed frrom recoding classes into <span class="math inline">\(k=i\)</span> vs. <span class="math inline">\(k \neq i\)</span>.</p>
+\]</span> where each <span class="math inline">\({F_1}_{i}\)</span> is the F1-score computed frrom recoding classes into <span class="math inline">\(k=i\)</span> vs. <span class="math inline">\(k \neq i\)</span>.</p>
 <p>In situations where there is not at least one predicted case for each of the classes (e.g. for a poor classifier), <span class="math inline">\({F_1}_{i}\)</span> is undefined because the per-class precision of class <span class="math inline">\(i\)</span> is undefined. Those <span class="math inline">\({F_1}_{i}\)</span> terms are removed from the <span class="math inline">\({F_1}_{macro}\)</span> equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.</p>
 </div>
-<div id="kappa" class="section level4" number="2.7.1.5">
+<div id="kappa" class="section level4" number="2.6.1.5">
 <h4>
-<span class="header-section-number">2.7.1.5</span> Kappa<a class="anchor" aria-label="anchor" href="#kappa"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.1.5</span> Kappa<a class="anchor" aria-label="anchor" href="#kappa"><i class="fas fa-link"></i></a>
 </h4>
 <p>Kappa is the defined as:</p>
 <p><span class="math display" id="eq:kappa">\[
@@ -312,9 +378,9 @@ where each <span class="math inline">\({F_1}_{i}\)</span> is the F1-score comput
 \]</span></p>
 <p>where <span class="math inline">\(p_0\)</span> is the observed agreement among raters and <span class="math inline">\(p_e\)</span> is the hypothetical probability of agreement due to random chance.</p>
 </div>
-<div id="balanced-accuracy" class="section level4" number="2.7.1.6">
+<div id="balanced-accuracy" class="section level4" number="2.6.1.6">
 <h4>
-<span class="header-section-number">2.7.1.6</span> Balanced Accuracy<a class="anchor" aria-label="anchor" href="#balanced-accuracy"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.1.6</span> Balanced Accuracy<a class="anchor" aria-label="anchor" href="#balanced-accuracy"><i class="fas fa-link"></i></a>
 </h4>
 <p>Balanced accuracy is the arithmetic mean of sensitivity and specificity.</p>
 <p><span class="math display" id="eq:bal-accuracy">\[
@@ -322,21 +388,20 @@ where each <span class="math inline">\({F_1}_{i}\)</span> is the F1-score comput
 \tag{2.8}
 \]</span></p>
 </div>
-<div id="geometric-mean" class="section level4" number="2.7.1.7">
+<div id="geometric-mean" class="section level4" number="2.6.1.7">
 <h4>
-<span class="header-section-number">2.7.1.7</span> Geometric Mean<a class="anchor" aria-label="anchor" href="#geometric-mean"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.1.7</span> Geometric Mean<a class="anchor" aria-label="anchor" href="#geometric-mean"><i class="fas fa-link"></i></a>
 </h4>
 <p>The geometric mean (G-mean) is the <span class="math inline">\(k^{th}\)</span> root of the product of class-specific sensitivities for <span class="math inline">\(k\)</span> classes:</p>
 <p><span class="math display" id="eq:gmean">\[
 \text{G-mean} = \sqrt[k]{\prod_{i=1}^{k}{\text{Sensitivity}_k}}
 \tag{2.9}
-\]</span>
-The G-mean generalizes easily for the multiclass scenario.</p>
+\]</span> The G-mean generalizes easily for the multiclass scenario.</p>
 </div>
 </div>
-<div id="auc" class="section level3" number="2.7.2">
+<div id="auc" class="section level3" number="2.6.2">
 <h3>
-<span class="header-section-number">2.7.2</span> AUC<a class="anchor" aria-label="anchor" href="#auc"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.6.2</span> AUC<a class="anchor" aria-label="anchor" href="#auc"><i class="fas fa-link"></i></a>
 </h3>
 <p>The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs. 1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.</p>
 <p>We did not use AUC to measure class-specific training set performance because combining predicted probabilities in a one-vs-all fashion might be potentially misleading. The sum of probabilities that add up to the “other” class is not equivalent to the predicted probability of the “other” class when using a multiclass classifier.</p>
@@ -352,29 +417,35 @@ The G-mean generalizes easily for the multiclass scenario.</p>
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
       <ul class="nav navbar-nav">
 <li><a class="nav-link" href="#methods"><span class="header-section-number">2</span> Methods</a></li>
-<li><a class="nav-link" href="#normalization"><span class="header-section-number">2.1</span> Normalization</a></li>
-<li><a class="nav-link" href="#case-selection"><span class="header-section-number">2.2</span> Case Selection</a></li>
 <li>
-<a class="nav-link" href="#classifiers"><span class="header-section-number">2.3</span> Classifiers</a><ul class="nav navbar-nav">
-<li><a class="nav-link" href="#resampling-of-training-set"><span class="header-section-number">2.3.1</span> Resampling of Training Set</a></li>
-<li><a class="nav-link" href="#hyperparameter-tuning"><span class="header-section-number">2.3.2</span> Hyperparameter Tuning</a></li>
-<li><a class="nav-link" href="#subsampling"><span class="header-section-number">2.3.3</span> Subsampling</a></li>
-<li><a class="nav-link" href="#workflows"><span class="header-section-number">2.3.4</span> Workflows</a></li>
+<a class="nav-link" href="#pre-processing"><span class="header-section-number">2.1</span> Pre-Processing</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#case-selection"><span class="header-section-number">2.1.1</span> Case Selection</a></li>
+<li><a class="nav-link" href="#quality-control"><span class="header-section-number">2.1.2</span> Quality Control</a></li>
+<li><a class="nav-link" href="#normalization"><span class="header-section-number">2.1.3</span> Normalization</a></li>
+<li><a class="nav-link" href="#final-processing"><span class="header-section-number">2.1.4</span> Final Processing</a></li>
 </ul>
 </li>
 <li>
-<a class="nav-link" href="#two-step-algorithm"><span class="header-section-number">2.4</span> Two-Step Algorithm</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#aggregating-predictions"><span class="header-section-number">2.4.1</span> Aggregating Predictions</a></li></ul>
+<a class="nav-link" href="#classifiers"><span class="header-section-number">2.2</span> Classifiers</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#resampling-of-training-set"><span class="header-section-number">2.2.1</span> Resampling of Training Set</a></li>
+<li><a class="nav-link" href="#hyperparameter-tuning"><span class="header-section-number">2.2.2</span> Hyperparameter Tuning</a></li>
+<li><a class="nav-link" href="#subsampling"><span class="header-section-number">2.2.3</span> Subsampling</a></li>
+<li><a class="nav-link" href="#workflows"><span class="header-section-number">2.2.4</span> Workflows</a></li>
+</ul>
 </li>
 <li>
-<a class="nav-link" href="#sequential-algorithm"><span class="header-section-number">2.5</span> Sequential Algorithm</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#aggregating-predictions-1"><span class="header-section-number">2.5.1</span> Aggregating Predictions</a></li></ul>
+<a class="nav-link" href="#two-step-algorithm"><span class="header-section-number">2.3</span> Two-Step Algorithm</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#aggregating-predictions"><span class="header-section-number">2.3.1</span> Aggregating Predictions</a></li></ul>
 </li>
 <li>
-<a class="nav-link" href="#gene-optimization"><span class="header-section-number">2.6</span> Gene Optimization</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#variable-importance"><span class="header-section-number">2.6.1</span> Variable Importance</a></li></ul>
+<a class="nav-link" href="#sequential-algorithm"><span class="header-section-number">2.4</span> Sequential Algorithm</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#aggregating-predictions-1"><span class="header-section-number">2.4.1</span> Aggregating Predictions</a></li></ul>
 </li>
 <li>
-<a class="nav-link" href="#performance-evaluation"><span class="header-section-number">2.7</span> Performance Evaluation</a><ul class="nav navbar-nav">
-<li><a class="nav-link" href="#class-metrics"><span class="header-section-number">2.7.1</span> Class Metrics</a></li>
-<li><a class="nav-link" href="#auc"><span class="header-section-number">2.7.2</span> AUC</a></li>
+<a class="nav-link" href="#gene-optimization"><span class="header-section-number">2.5</span> Gene Optimization</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#variable-importance"><span class="header-section-number">2.5.1</span> Variable Importance</a></li></ul>
+</li>
+<li>
+<a class="nav-link" href="#performance-evaluation"><span class="header-section-number">2.6</span> Performance Evaluation</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#class-metrics"><span class="header-section-number">2.6.1</span> Class Metrics</a></li>
+<li><a class="nav-link" href="#auc"><span class="header-section-number">2.6.2</span> AUC</a></li>
 </ul>
 </li>
 </ul>
@@ -394,7 +465,7 @@ The G-mean generalizes easily for the multiclass scenario.</p>
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-05-01.</p>
+    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-05-17.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

@@ -101,7 +101,7 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-04-05}
+\date{2024-05-17}
 
 \begin{document}
 \maketitle
@@ -128,44 +128,94 @@
 }
 \listoffigures
 \listoftables
-\hypertarget{preface}{%
-\chapter*{Preface}\label{preface}}
+\chapter*{Preface}\label{preface}
 \addcontentsline{toc}{chapter}{Preface}
 
 This report of statistical findings describes the classification of ovarian cancer histotypes using data from NanoString CodeSets.
 
 Marina Pavanello conducted the initial exploratory data analysis, Cathy Tang implemented class imbalance techniques, Derek Chiu conducted the normalization and statistical analysis, and Lauren Tindale and Aline Talhouk are the project leads.
 
-\hypertarget{introduction}{%
-\chapter{Introduction}\label{introduction}}
+\chapter{Introduction}\label{introduction}
 
 Ovarian cancer has five major histotypes: high-grade serous carcinoma (HGSC), low-grade serous carcinoma (LGSC), endometrioid carcinoma (ENOC), mucinous carcinoma (MUC), and clear cell carcinoma (CCOC). A common problem with classifying these histotypes is that there is a class imbalance issue. HGSC dominates the distribution, commonly accounting for 70\% of cases in many patient cohorts, while the other four histotypes are spread over the rest of the cases. Subsampling methods like up-sampling, down-sampling, and SMOTE can be used to mitigate this problem.
 
 The supervised learning is performed under a consensus framework: we consider various classification algorithms and use evaluation metrics like accuracy, F1-score, Kappa, and G-mean to inform the decision of which methods to carry forward for prediction in confirmation and validation sets.
 
-\hypertarget{methods}{%
-\chapter{Methods}\label{methods}}
+\chapter{Methods}\label{methods}
 
-\hypertarget{normalization}{%
-\section{Normalization}\label{normalization}}
+\section{Pre-Processing}\label{pre-processing}
 
-The full training set was comprised of data from CodeSet (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then a different approach was taken for each of the CodeSets.
+\subsection{Case Selection}\label{case-selection}
 
-CS1 was normalized to CS3 using ``Random1'' reference samples. These reference samples are common samples between CS1 and CS3, randomly selected such that we obtain one from each of the five histotypes. Then we use the reference method to normalize CS1 to CS3.
+Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples from these sets of cohorts:
 
-Similarly, CS2 was normalized to CS3 using ``Random1'' reference samples using five common samples between CS2 and CS3 such that there is one from each histotype.
+\begin{itemize}
+\tightlist
+\item
+  Training
 
-For CS3, we first split the dataset by site: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a ``reference standard'', so we normalized CS3-USC and CS3-AOC to CS3-Vancouver using a ``Random1'' reference method where we reference samples are common between USC and Vancouver, and between AOC and Vancouver. The CS3-Vancouver is also included without further normalization.
+  \begin{itemize}
+  \tightlist
+  \item
+    CS1: MAYO, OOU, OOUE, VOA, MTL
+  \item
+    CS2: MAYO, OOU, OOUE, OVAR3, VOA, ICON7, JAPAN, MTL, POOL-CTRL
+  \item
+    CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
+  \end{itemize}
+\item
+  Confirmation:
 
-\hypertarget{case-selection}{%
-\section{Case Selection}\label{case-selection}}
+  \begin{itemize}
+  \tightlist
+  \item
+    CS3: TNCO
+  \end{itemize}
+\item
+  Validation:
 
-Duplicate cases (two samples with the same ottaID) were removed from the training set before fitting the classification models. CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver were preferred over CS3-AOC and CS3-USC.
+  \begin{itemize}
+  \tightlist
+  \item
+    CS3: DOVE4
+  \end{itemize}
+\end{itemize}
 
-The training, confirmation, and validation sets all used a different set of cohorts.
+\subsection{Quality Control}\label{quality-control}
 
-\hypertarget{classifiers}{%
-\section{Classifiers}\label{classifiers}}
+Samples that failed any of the following NanoString quality control conditions were removed:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{linFlag}: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown
+\item
+  \texttt{imagingFlag}: percent of field of view is less than 75\%
+\item
+  \texttt{spcFlag}: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero
+\item
+  \texttt{normFlag}: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the \hyperref[gd-vs.-snr]{\%GD vs.~SNR} relationship below.
+\end{itemize}
+
+\subsection{Normalization}\label{normalization}
+
+The full training set (n=1246) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.
+
+CS1 was normalized to CS3 using five ``Random1'' reference samples. These reference samples are randomly selected from CS1 among all samples in the three CodeSets that share common otta IDs, such that we obtain one sample from each of the five histotypes. Then, we use the reference-based method to normalize CS1 to CS3 across their common genes, for the remaining expression samples \citet{talhouk2016}.
+
+Similarly, CS2 was normalized to CS3 using the same ``Random1'' reference samples, now taken from CS2. Normalization was performed across common genes between CS2 and CS3.
+
+For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a ``reference standard'', and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a ``Random1'' reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.
+
+\subsection{Final Processing}\label{final-processing}
+
+We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian caricoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).
+
+Duplicate cases (two samples with the same ottaID) were removed before generating the final training set to use for fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC when selecting duplicates.
+
+The final training set used only genes that were common across all three CodeSets.
+
+\section{Classifiers}\label{classifiers}
 
 We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the \texttt{tidymodels} suite of packages. The classifiers we used are:
 
@@ -181,15 +231,13 @@ We use 4 classification algorithms in the supervised learning framework for the 
   Regularized Multinomial Regression (\texttt{mr})
 \end{itemize}
 
-\hypertarget{resampling-of-training-set}{%
-\subsection{Resampling of Training Set}\label{resampling-of-training-set}}
+\subsection{Resampling of Training Set}\label{resampling-of-training-set}
 
 We used a nested cross-validation design to assess each classifier while also performing hyperparameter tuning. An outer 5-fold CV stratified by histotype was used together with an inner 5-fold CV with 2 repeats stratified by histotype. This design was chosen such that the test sets of the inner resamples would still have a reasonable number of samples belonging to the smallest minority class.
 
 The outer resampling method cannot be the bootstrap, because the inner training and inner test sets will likely contain the same samples as a result of sampling with replacement in the outer training set. This phenomenon might result in inflated performance as some observations are used both to train and evaluate the hyperparameter tuning in the inner loop.
 
-\hypertarget{hyperparameter-tuning}{%
-\subsection{Hyperparameter Tuning}\label{hyperparameter-tuning}}
+\subsection{Hyperparameter Tuning}\label{hyperparameter-tuning}
 
 The following specifications for each classifier were used for tuning hyperparameters:
 
@@ -203,8 +251,9 @@ The following specifications for each classifier were used for tuning hyperparam
   \texttt{mr}: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in {[}0, 1{]} for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.
 \end{itemize}
 
-\hypertarget{subsampling}{%
-\subsection{Subsampling}\label{subsampling}}
+The hyperparameter combination that resulted in the highest average F1-score across the inner training sets was selected for each classifier to use as the model for assessing prediction performance in the outer training loop.
+
+\subsection{Subsampling}\label{subsampling}
 
 Here are the specifications of the subsampling methods used to handle class imbalance:
 
@@ -233,13 +282,11 @@ The figure below helps visualize how the distribution of classes changes when we
 \caption{Visualization of Subsampling Techniques}\label{fig:sampling}
 \end{figure}
 
-\hypertarget{workflows}{%
-\subsection{Workflows}\label{workflows}}
+\subsection{Workflows}\label{workflows}
 
 The 4 \textbf{algorithms} and 5 \textbf{subsampling} methods are crossed to create 20 different classification \textbf{workflows}. For example, the \texttt{hybrid\_xgb} workflow is a classifier that first pre-processes a training set by applying a hybrid subsampling method, and then proceeds to use the XGBoost algorithm to classify ovarian histotypes.
 
-\hypertarget{two-step-algorithm}{%
-\section{Two-Step Algorithm}\label{two-step-algorithm}}
+\section{Two-Step Algorithm}\label{two-step-algorithm}
 
 The HGSC histotype comprises of approximately 80\% of cases among ovarian carcinoma patients, while the remaining 20\% of cases are relatively, evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. We can implement a two-step algorithm as such:
 
@@ -275,8 +322,29 @@ Figure \ref{fig:two-step-flowchart} shows how the two-step algorithm works:
 
 Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.
 
-\hypertarget{sequential-algorithm}{%
-\section{Sequential Algorithm}\label{sequential-algorithm}}
+\subsection{Aggregating Predictions}\label{aggregating-predictions}
+
+The aggregation for two-step predictions is quite straightforward:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Predict HGSC vs.~non-HGSC
+\item
+  Among all non-HGSC cases, predict CCOC vs.~LGSC vs.~MUC vs.~ENOC
+\end{enumerate}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/two-step-predictions-1} 
+
+}
+
+\caption{Aggregating Predictions for Two-Step Algorithm}\label{fig:two-step-predictions}
+\end{figure}
+
+\section{Sequential Algorithm}\label{sequential-algorithm}
 
 Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs.~all other classes, where the classes that make up the ``other'' class are those not equal to the current ``one'' class and excluding all ``one'' classes from previous steps. For example, if the ``one'' class in step 1 was HGSC, the ``other'' classes would include CCOC, ENOC, LGSC, and MUC. If the ``one'' class in step 2 was CCOC, the ``other'' classes include ENOC, LGSC, and MUC.
 
@@ -295,8 +363,7 @@ Figure \ref{fig:sequential-flowchart} illustrates how the sequential algorithm w
 
 The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.
 
-\hypertarget{aggregating-predictions}{%
-\subsection{Aggregating Predictions}\label{aggregating-predictions}}
+\subsection{Aggregating Predictions}\label{aggregating-predictions-1}
 
 We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the ``all'' class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSC vs.~non-HGSC, CCOC vs.~non-CCOC, LGSC vs.~non-LGSC, and then MUC vs.~ENOC. Figure \ref{fig:sequential-predictions} illustrates how the final predictions are assigned:
 
@@ -309,31 +376,42 @@ We have to aggregate the one-vs-all predictions from each of the sequential algo
 \caption{Aggregating Predictions for Sequential Algorithm}\label{fig:sequential-predictions}
 \end{figure}
 
-\hypertarget{gene-optimization}{%
-\section{Gene Optimization}\label{gene-optimization}}
+\section{Gene Optimization}\label{gene-optimization}
 
-We want to discover an optimal set of genes for the classifiers while including specific genes from other studies. A total of 72 genes are used in the classifier training set.
+We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of 72 genes are used in the classifier training set.
 
-There are 16 genes in the classifier set that overlap with the PrOTYPE classifier: COL11A1, CD74, CD2, TIMP3, LUM, CYTIP, COL3A1, THBS2, TCF7L1, HMGA2, FN1, POSTN, COL1A2, COL5A2, PDZK1IP1, FBN1
+There are 16 genes in the classifier set that overlap with the PrOTYPE classifier: COL11A1, CD74, CD2, TIMP3, LUM, CYTIP, COL3A1, THBS2, TCF7L1, HMGA2, FN1, POSTN, COL1A2, COL5A2, PDZK1IP1, FBN1.
 
 There are also 13 genes in the classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.
 
-Taking the union of PrOTYPE and SPOT genes we obtain a total of 28 unique genes that we want to use for the final classifier, regardless of model performance. We then incrementally add genes from the remaining 44 candidate genes based on an overall variable importance rank to this list and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
+We obtain a total of 28 genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining 44 candidate genes based on an overall variable importance rank to the set of 28 base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
 
-\hypertarget{variable-importance}{%
-\subsection{Variable Importance}\label{variable-importance}}
+\subsection{Variable Importance}\label{variable-importance}
 
-Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g.~for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
+Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
 
 For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
 
-\hypertarget{evaluation-metrics}{%
-\section{Evaluation Metrics}\label{evaluation-metrics}}
+The variable importance measures are:
 
-We use the accuracy, kappa, F1-score, area under the ROC (AUC), and geometric mean as evaluation metrics to compare training performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class, except for AUC because it is potentially misleading to combine predicted probabilities in a one-vs-all fashion.
+\begin{itemize}
+\item
+  Random Forest: impurity measure (Gini index)
+\item
+  XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features's splits)
+\item
+  SVM: permutation based p-values
+\item
+  Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value
+\end{itemize}
 
-\hypertarget{accuracy}{%
-\subsection{Accuracy}\label{accuracy}}
+\section{Performance Evaluation}\label{performance-evaluation}
+
+\subsection{Class Metrics}\label{class-metrics}
+
+We use the accuracy, sensitivity, specificity, F1-score, kappa, balanced accuracy, and geometric mean, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class.
+
+\subsubsection{Accuracy}\label{accuracy}
 
 The accuracy is defined as the proportion of correct predictions out of all cases:
 
@@ -342,25 +420,25 @@ The accuracy is defined as the proportion of correct predictions out of all case
 \label{eq:accuracy}
 \]
 
-\hypertarget{kappa}{%
-\subsection{Kappa}\label{kappa}}
+\subsubsection{Sensitivity}\label{sensitivity}
 
-Kappa is the defined as:
+Sensitivity is the proportional of correctly predicted positive cases, out of all cases that were truly positive
 
 \[
-\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
-\label{eq:kappa}
+\text{sensitivity} = \frac{TP}{TP + FN}
+\label{eq:sens}
 \]
 
-where \(p_0\) is the observed agreement among raters and \(p_e\) is the hypothetical probability of agreement due to random chance.
+\subsubsection{Specificity}\label{specificity}
 
-\hypertarget{auc}{%
-\subsection{AUC}\label{auc}}
+Specificity is the proportional of correctly predicted negative cases, out of all cases that were truly negative.
 
-The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs.~1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.
+\[
+\text{specificity} = \frac{TN}{TN + FP}
+\label{eq:spec}
+\]
 
-\hypertarget{f1-score}{%
-\subsection{F1-Score}\label{f1-score}}
+\subsubsection{F1-Score}\label{f1-score}
 
 The F-measure can be thought of as a harmonic mean between precision and recall:
 
@@ -374,27 +452,50 @@ The \(\beta\) value can be adjusted to place more weight upon precision or recal
 \[
 {F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}
 \label{eq:f1-macro}
-\]
-where each \({F_1}_{i}\) is the F1-score computed frrom recoding classes into \(k=i\) vs.~\(k \neq i\).
+\] where each \({F_1}_{i}\) is the F1-score computed frrom recoding classes into \(k=i\) vs.~\(k \neq i\).
 
 In situations where there is not at least one predicted case for each of the classes (e.g.~for a poor classifier), \({F_1}_{i}\) is undefined because the per-class precision of class \(i\) is undefined. Those \({F_1}_{i}\) terms are removed from the \({F_1}_{macro}\) equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.
 
-\hypertarget{geometric-mean}{%
-\subsection{Geometric Mean}\label{geometric-mean}}
+\subsubsection{Kappa}\label{kappa}
+
+Kappa is the defined as:
+
+\[
+\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
+\label{eq:kappa}
+\]
+
+where \(p_0\) is the observed agreement among raters and \(p_e\) is the hypothetical probability of agreement due to random chance.
+
+\subsubsection{Balanced Accuracy}\label{balanced-accuracy}
+
+Balanced accuracy is the arithmetic mean of sensitivity and specificity.
+
+\[
+\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2}
+\label{eq:bal-accuracy}
+\]
+
+\subsubsection{Geometric Mean}\label{geometric-mean}
 
 The geometric mean (G-mean) is the \(k^{th}\) root of the product of class-specific sensitivities for \(k\) classes:
 
 \[
 \text{G-mean} = \sqrt[k]{\prod_{i=1}^{k}{\text{Sensitivity}_k}}
 \label{eq:gmean}
-\]
-The G-mean generalizes easily for the multiclass scenario.
+\] The G-mean generalizes easily for the multiclass scenario.
 
-\hypertarget{distributions}{%
-\chapter{Distributions}\label{distributions}}
+\subsection{AUC}\label{auc}
 
-\hypertarget{histotypes-in-classifier-data}{%
-\section{Histotypes in Classifier Data}\label{histotypes-in-classifier-data}}
+The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs.~1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.
+
+We did not use AUC to measure class-specific training set performance because combining predicted probabilities in a one-vs-all fashion might be potentially misleading. The sum of probabilities that add up to the ``other'' class is not equivalent to the predicted probability of the ``other'' class when using a multiclass classifier.
+
+Instead, we only reported ROC curves and their associated AUCs for the test set performance of the sequential and two-step algorithms.
+
+\chapter{Distributions}\label{distributions}
+
+\section{Histotypes in Classifier Data}\label{histotypes-in-classifier-data}
 
 \begin{table}
 
@@ -488,8 +589,7 @@ Total & N (\%) & 643 (42\%) & 906 (58\%)\\
 \end{tabular}
 \end{table}
 
-\hypertarget{cohort-counts}{%
-\section{Cohort Counts}\label{cohort-counts}}
+\section{Cohort Counts}\label{cohort-counts}
 
 \begin{table}
 
@@ -516,8 +616,7 @@ Removed Duplicates & 77 & 701 & 468 & 1246\\
 \end{tabular}
 \end{table}
 
-\hypertarget{cohorts-in-classifier-data}{%
-\section{Cohorts in Classifier Data}\label{cohorts-in-classifier-data}}
+\section{Cohorts in Classifier Data}\label{cohorts-in-classifier-data}
 
 \begin{table}
 
@@ -566,11 +665,9 @@ CS3 & DOVE4 & 0 & 0 & 906\\
 \end{tabular}
 \end{table}
 
-\hypertarget{quality-control}{%
-\section{Quality Control}\label{quality-control}}
+\section{Quality Control}\label{quality-control-1}
 
-\hypertarget{failed-samples}{%
-\subsection{Failed Samples}\label{failed-samples}}
+\subsection{Failed Samples}\label{failed-samples}
 
 We use an aggregated \texttt{QCFlag} that considers a sample to have failed QC if any of the following conditions are true:
 
@@ -583,7 +680,7 @@ We use an aggregated \texttt{QCFlag} that considers a sample to have failed QC i
 \item
   \texttt{spcFlag}: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero
 \item
-  \texttt{normFlag}: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the \protect\hyperlink{gd-vs.-snr}{\%GD vs.~SNR} relationship below.
+  \texttt{normFlag}: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the \hyperref[gd-vs.-snr]{\%GD vs.~SNR} relationship below.
 \end{itemize}
 
 \begin{table}
@@ -621,33 +718,31 @@ CodeSet & CodeSet Total & linFlag & imagingFlag & spcFlag & normFlag & QCFlag & 
 \end{tabular}
 \end{table}
 
-\hypertarget{gd-vs.-snr}{%
-\subsection{\%GD vs.~SNR}\label{gd-vs.-snr}}
-
-\textbackslash begin\{figure\}{[}H{]}
-
-\{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/qc-gd-snr-all-1}
-
-\}
-
-\textbackslash caption\{\% Genes Detected vs.~Signal to Noise Ratio\}\label{fig:qc-gd-snr-all}
-\textbackslash end\{figure\}
-
-\textbackslash begin\{figure\}{[}H{]}
-
-\{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/qc-gd-snr-zoomed-1}
-
-\}
-
-\textbackslash caption\{\% Genes Detected vs.~Signal to Noise Ratio (Zoomed)\}\label{fig:qc-gd-snr-zoomed}
-\textbackslash end\{figure\}
-
-\hypertarget{pairwise-gene-expression}{%
-\section{Pairwise Gene Expression}\label{pairwise-gene-expression}}
+\subsection{\%GD vs.~SNR}\label{gd-vs.-snr}
 
 \begin{figure}[H]
 
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/genes-cs13-rand1-1} 
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/qc-gd-snr-all-1} 
+
+}
+
+\caption{\% Genes Detected vs. Signal to Noise Ratio}\label{fig:qc-gd-snr-all}
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/qc-gd-snr-zoomed-1} 
+
+}
+
+\caption{\% Genes Detected vs. Signal to Noise Ratio (Zoomed)}\label{fig:qc-gd-snr-zoomed}
+\end{figure}
+
+\section{Pairwise Gene Expression}\label{pairwise-gene-expression}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/genes-cs13-rand1-1} 
 
 }
 
@@ -656,7 +751,7 @@ CodeSet & CodeSet Total & linFlag & imagingFlag & spcFlag & normFlag & QCFlag & 
 
 \begin{figure}[H]
 
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/genes-cs23-rand1-1} 
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/genes-cs23-rand1-1} 
 
 }
 
@@ -665,7 +760,7 @@ CodeSet & CodeSet Total & linFlag & imagingFlag & spcFlag & normFlag & QCFlag & 
 
 \begin{figure}[H]
 
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/genes-cs13-hkgenes-1} 
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/genes-cs13-hkgenes-1} 
 
 }
 
@@ -674,23 +769,20 @@ CodeSet & CodeSet Total & linFlag & imagingFlag & spcFlag & normFlag & QCFlag & 
 
 \begin{figure}[H]
 
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/genes-cs23-hkgenes-1} 
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/genes-cs23-hkgenes-1} 
 
 }
 
 \caption{HKgenes-Normalized CS2 vs. CS3 Gene Expression}\label{fig:genes-cs23-hkgenes}
 \end{figure}
 
-\hypertarget{results}{%
-\chapter{Results}\label{results}}
+\chapter{Results}\label{results}
 
 We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, kappa, and G-mean are the metrics of interest. Workflows are ordered by their mean estimates across the outer folds of the nested CV for each metric.
 
-\hypertarget{training-set}{%
-\section{Training Set}\label{training-set}}
+\section{Training Set}\label{training-set}
 
-\hypertarget{accuracy-1}{%
-\subsection{Accuracy}\label{accuracy-1}}
+\subsection{Accuracy}\label{accuracy-1}
 
 \begin{figure}[H]
 
@@ -796,8 +888,7 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \end{tabular}
 \end{table}
 
-\hypertarget{sensitivity}{%
-\subsection{Sensitivity}\label{sensitivity}}
+\subsection{Sensitivity}\label{sensitivity-1}
 
 \begin{figure}[H]
 
@@ -903,8 +994,7 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \end{tabular}
 \end{table}
 
-\hypertarget{specificity}{%
-\subsection{Specificity}\label{specificity}}
+\subsection{Specificity}\label{specificity-1}
 
 \begin{figure}[H]
 
@@ -1010,8 +1100,7 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \end{tabular}
 \end{table}
 
-\hypertarget{f1-score-1}{%
-\subsection{F1-Score}\label{f1-score-1}}
+\subsection{F1-Score}\label{f1-score-1}
 
 \begin{figure}[H]
 
@@ -1117,8 +1206,7 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \end{tabular}
 \end{table}
 
-\hypertarget{balanced-accuracy}{%
-\subsection{Balanced Accuracy}\label{balanced-accuracy}}
+\subsection{Balanced Accuracy}\label{balanced-accuracy-1}
 
 \begin{figure}[H]
 
@@ -1224,8 +1312,7 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \end{tabular}
 \end{table}
 
-\hypertarget{kappa-1}{%
-\subsection{Kappa}\label{kappa-1}}
+\subsection{Kappa}\label{kappa-1}
 
 \begin{figure}[H]
 
@@ -1331,8 +1418,7 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \end{tabular}
 \end{table}
 
-\hypertarget{g-mean}{%
-\subsection{G-mean}\label{g-mean}}
+\subsection{G-mean}\label{g-mean}
 
 \begin{figure}[H]
 
@@ -1438,46 +1524,13 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \end{tabular}
 \end{table}
 
-\hypertarget{optimal-gene-sets}{%
-\section{Optimal Gene Sets}\label{optimal-gene-sets}}
-
-\hypertarget{sequential-algorithm-1}{%
-\subsection{Sequential Algorithm}\label{sequential-algorithm-1}}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/gene-seq-1} 
-
-}
-
-\caption{Gene Optimization for Sequential Classifier}\label{fig:gene-seq}
-\end{figure}
-
-In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.9 when we reach 13 genes added, hence the optimal number of genes used will be n=28+13=41 The added genes are: CYP2C18, TFF3, KLK7, HNF1B, IL6, IGFBP1, SLC3A1, SERPINA5, WT1, CPNE8, EGFL6, GPR64 and MUC5B.
-
-\hypertarget{two-step-algorithm-1}{%
-\subsection{Two-Step Algorithm}\label{two-step-algorithm-1}}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/gene-2s-1} 
-
-}
-
-\caption{Gene Optimization for Two-Step Classifier}\label{fig:gene-2s}
-\end{figure}
-
-Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.85 when we reach 12 added. The optimal number of genes used will be n=28+12=40. The added genes are: CYP2C18, MUC5B, HNF1B, SLC3A1, IGFBP1, WT1, EGFL6, TFF3, MET, KLK7, CPNE8 and STC1.
-
-\hypertarget{rank-aggregation}{%
-\section{Rank Aggregation}\label{rank-aggregation}}
+\section{Rank Aggregation}\label{rank-aggregation}
 
 \begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/per-class-metrics-1} \end{center}
 
 The 18 workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
 
-\hypertarget{top-workflows}{%
-\subsection{Top Workflows}\label{top-workflows}}
+\subsection{Top Workflows}\label{top-workflows}
 
 We look at the per-class evaluation metrics of the top 4 workflows.
 
@@ -1501,8 +1554,35 @@ We look at the per-class evaluation metrics of the top 4 workflows.
 
 Misclassified cases from a previous step of the sequence of classifiers are not included in subsequent steps of the training set CV folds. Thus, we cannot piece together the test set predictions from the sequential and two-step algorithms to obtain overall metrics.
 
-\hypertarget{test-set-performance}{%
-\section{Test Set Performance}\label{test-set-performance}}
+\section{Optimal Gene Sets}\label{optimal-gene-sets}
+
+\subsection{Sequential Algorithm}\label{sequential-algorithm-1}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/gene-seq-1} 
+
+}
+
+\caption{Gene Optimization for Sequential Classifier}\label{fig:gene-seq}
+\end{figure}
+
+In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.9 when we reach 13 genes added, hence the optimal number of genes used will be n=28+13=41 The added genes are: CYP2C18, TFF3, KLK7, HNF1B, IL6, IGFBP1, SLC3A1, SERPINA5, WT1, CPNE8, EGFL6, GPR64 and MUC5B.
+
+\subsection{Two-Step Algorithm}\label{two-step-algorithm-1}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{OV_Histotypes_RSF_files/figure-latex/gene-2s-1} 
+
+}
+
+\caption{Gene Optimization for Two-Step Classifier}\label{fig:gene-2s}
+\end{figure}
+
+Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.85 when we reach 12 added. The optimal number of genes used will be n=28+12=40. The added genes are: CYP2C18, MUC5B, HNF1B, SLC3A1, IGFBP1, WT1, EGFL6, TFF3, MET, KLK7, CPNE8 and STC1.
+
+\section{Test Set Performance}\label{test-set-performance}
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
@@ -1538,24 +1618,23 @@ The top 2 methods are:
 
 We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these methods.
 
-\hypertarget{confirmation-set}{%
-\subsection{Confirmation Set}\label{confirmation-set}}
+\subsection{Confirmation Set}\label{confirmation-set}
 
 \begin{table}
 
 \caption{\label{tab:conf-eval-overall}Overall Evaluation Metrics on Confirmation Set Models}
 \centering
-\begin{tabular}[t]{l|r|r|r|r}
+\begin{tabular}[t]{l|r|r|r|r|r|r|r}
 \hline
-Method & accuracy & f1 & kappa & gmean\\
+Method & accuracy & sensitivity & specificity & f1 & bal\_accuracy & kappa & gmean\\
 \hline
-sequential\_full & 0.837 & 0.670 & 0.676 & 0.619\\
+sequential\_full & 0.837 & 0.667 & 0.932 & 0.670 & 0.799 & 0.676 & 0.619\\
 \hline
-sequential\_optimal & 0.826 & 0.658 & 0.652 & 0.595\\
+sequential\_optimal & 0.826 & 0.641 & 0.927 & 0.658 & 0.784 & 0.652 & 0.595\\
 \hline
-two\_step\_full & 0.837 & 0.686 & 0.676 & 0.645\\
+two\_step\_full & 0.837 & 0.680 & 0.932 & 0.686 & 0.806 & 0.676 & 0.645\\
 \hline
-two\_step\_optimal & 0.823 & 0.659 & 0.648 & 0.621\\
+two\_step\_optimal & 0.823 & 0.658 & 0.928 & 0.659 & 0.793 & 0.648 & 0.621\\
 \hline
 \end{tabular}
 \end{table}
@@ -1674,18 +1753,17 @@ Method & Metric & HGSC & CCOC & ENOC & LGSC & MUC\\
 \caption{ROC Curves for Two-Step Optimal Model in Confirmation Set}\label{fig:roc-curve-two-step-opt}
 \end{figure}
 
-\hypertarget{validation-set}{%
-\subsection{Validation Set}\label{validation-set}}
+\subsection{Validation Set}\label{validation-set}
 
 \begin{table}
 
 \caption{\label{tab:val-eval-overall}Overall Evaluation Metrics on Validation Set Model}
 \centering
-\begin{tabular}[t]{l|r|r|r|r}
+\begin{tabular}[t]{l|r|r|r|r|r|r|r}
 \hline
-Method & accuracy & f1 & kappa & gmean\\
+Method & accuracy & sensitivity & specificity & f1 & bal\_accuracy & kappa & gmean\\
 \hline
-two\_step\_optimal & 0.851 & 0.663 & 0.663 & 0.7\\
+two\_step\_optimal & 0.851 & 0.729 & 0.939 & 0.663 & 0.834 & 0.663 & 0.7\\
 \hline
 \end{tabular}
 \end{table}
@@ -1726,7 +1804,7 @@ Method & Metric & HGSC & CCOC & ENOC & LGSC & MUC\\
 \end{tabular}
 \end{table}
 
-  \bibliography{packages.bib}
+  \bibliography{book.bib,packages.bib}
 \addcontentsline{toc}{chapter}{\bibname}
 
 \end{document}
