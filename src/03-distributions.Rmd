@@ -220,6 +220,8 @@ p_gd_snr_all <- p1 / p2 / p3 &
   labs(x = "SNR", y = "% GD") &
   geom_vline(xintercept = 100, color = "red", linetype = "dashed") &
   geom_hline(yintercept = 50, color = "red", linetype = "dashed") &
+  theme_bw() &
+  theme(panel.grid.minor = element_blank()) &
   plot_annotation(title = "% Genes Detected vs. SNR",
                   tag_levels = "a")
 print(p_gd_snr_all)
