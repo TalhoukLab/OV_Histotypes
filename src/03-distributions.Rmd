@@ -237,7 +237,7 @@ print(p_gd_snr_zoomed)
 
 ## Pairwise Gene Expression
 
-```{r genes-cs13-rand1, fig.height=10, fig.width=11, fig.cap='Random1-Normalized CS1 vs. CS3 Gene Expression'}
+```{r genes-cs13-rand1, fig.height=10, fig.width=11, out.width='100%', fig.cap='Random1-Normalized CS1 vs. CS3 Gene Expression'}
 genes_cs13_rand1 <- train_ref_all %>%
   rownames_to_column("FileName") %>%
   group_by(ottaID) %>%
@@ -269,6 +269,7 @@ p_genes_cs13_rand1 <-
   geom_text(
     x = -24,
     y = 5,
+    size = 3,
     hjust = 0,
     vjust = 1,
     aes(label = Rc),
@@ -289,7 +290,7 @@ p_genes_cs13_rand1 <-
 print(p_genes_cs13_rand1)
 ```
 
-```{r genes-cs23-rand1, fig.height=10, fig.width=11, fig.cap='Random1-Normalized CS2 vs. CS3 Gene Expression'}
+```{r genes-cs23-rand1, fig.height=10, fig.width=11, out.width='100%', fig.cap='Random1-Normalized CS2 vs. CS3 Gene Expression'}
 genes_cs23_rand1 <- train_ref_all %>%
   rownames_to_column("FileName") %>%
   group_by(ottaID) %>%
@@ -321,6 +322,7 @@ p_genes_cs23_rand1 <-
   geom_text(
     x = -24,
     y = 5,
+    size = 3,
     hjust = 0,
     vjust = 1,
     aes(label = Rc),
@@ -341,7 +343,7 @@ p_genes_cs23_rand1 <-
 print(p_genes_cs23_rand1)
 ```
 
-```{r genes-cs13-hkgenes, fig.height=10, fig.width=11, fig.cap='HKgenes-Normalized CS1 vs. CS3 Gene Expression'}
+```{r genes-cs13-hkgenes, fig.height=10, fig.width=11, out.width='100%', fig.cap='HKgenes-Normalized CS1 vs. CS3 Gene Expression'}
 genes_cs13_hkgenes <-
   list(CS1 = cs1_norm, CS3 = cs3_norm) %>%
   imap(~ {
@@ -370,6 +372,7 @@ p_genes_cs13_hkgenes <-
   geom_text(
     x = -24,
     y = 5,
+    size = 3,
     hjust = 0,
     vjust = 1,
     aes(label = Rc),
@@ -391,7 +394,7 @@ p_genes_cs13_hkgenes <-
 print(p_genes_cs13_hkgenes)
 ```
 
-```{r genes-cs23-hkgenes, fig.height=10, fig.width=11, fig.cap='HKgenes-Normalized CS2 vs. CS3 Gene Expression'}
+```{r genes-cs23-hkgenes, fig.height=10, fig.width=11, out.width='100%', fig.cap='HKgenes-Normalized CS2 vs. CS3 Gene Expression'}
 genes_cs23_hkgenes <-
   list(CS2 = cs2_norm, CS3 = cs3_norm) %>%
   imap(~ {
@@ -420,6 +423,7 @@ p_genes_cs23_hkgenes <-
   geom_text(
     x = -24,
     y = 5,
+    size = 3,
     hjust = 0,
     vjust = 1,
     aes(label = Rc),
