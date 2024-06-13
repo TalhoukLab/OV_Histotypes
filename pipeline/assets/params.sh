@@ -10,12 +10,6 @@ seqData=(seq)
 nseq=4
 ngenes=44
 
-# Splendid parameters (DEPRECATED)
-# reps=50
-# norm_by="none"
-# norm_type="conventional"
-# min_var=0
-
 # Directory parameters
 user="$(whoami)"
 projDir="/home"/$user"/Projects/OV_Histotypes"
