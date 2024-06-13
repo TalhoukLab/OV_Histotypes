@@ -2140,7 +2140,7 @@
     },
     "nanostringr": {
       "Package": "nanostringr",
-      "Version": "0.4.0",
+      "Version": "0.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2148,15 +2148,11 @@
         "assertthat",
         "ccaPP",
         "dplyr",
-        "epiR",
-        "forcats",
-        "magrittr",
         "purrr",
         "rlang",
-        "tibble",
         "tidyr"
       ],
-      "Hash": "8170b9ec42bd3873d58c0e6f3efd545c"
+      "Hash": "8d3cc434b11bbfb2b34d56870f5f374d"
     },
     "nlme": {
       "Package": "nlme",
