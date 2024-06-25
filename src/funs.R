@@ -171,10 +171,10 @@ ova_metrics <- function(x, truth, estimate, metric_set) {
     tidyr::nest(.by = class_group) %>%
     dplyr::mutate(
       data = data %>%
-        purrr::map(~ dplyr::mutate(.x, dplyr::across(
+        purrr::map2(data, class_group, \(x, y) dplyr::mutate(x, dplyr::across(
           dplyr::matches("ova"),
-          ~ factor(.x) %>%
-            forcats::fct_expand("class_0") %>%
+          ~ .x %>%
+            forcats::fct_expand(y, "class_0") %>%
             forcats::fct_relevel("class_0", after = Inf)
         ))) %>%
         purrr::map(metric_set, truth = truth_ova, estimate = estimate_ova) %>%
