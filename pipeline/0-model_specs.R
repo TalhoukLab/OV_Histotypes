@@ -21,10 +21,10 @@ preproc <- list(
 
 # Choose best subsampling method if doing retrain pipeline
 if (!exists("samp")) {
-  top_samp <- readRDS(file.path(inputDir, "seq_top_c5.rds")) %>%
+  samp <- readRDS(file.path(inputDir, "seq_top_c5.rds")) %>%
     pluck("wflow") %>%
     gsub("(.*)_.*", "\\1", .)
-  preproc <- preproc %>% keep_at(top_samp)
+  preproc <- preproc %>% keep_at(samp)
 }
 
 # Models
