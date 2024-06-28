@@ -170,7 +170,7 @@ ova_metrics <- function(x, truth, estimate, metric_set) {
     dplyr::mutate(class_group = purrr::map2_chr(truth_ova_id, estimate_ova_id, unique)) %>%
     tidyr::nest(.by = class_group) %>%
     dplyr::mutate(
-      data = data %>%
+      data =
         purrr::map2(data, class_group, \(x, y) dplyr::mutate(x, dplyr::across(
           dplyr::matches("ova"),
           ~ .x %>%
