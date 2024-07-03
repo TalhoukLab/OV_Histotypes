@@ -206,13 +206,13 @@ qc_failed %>%
 ### %GD vs. SNR
 
 ```{r qc-gd-snr-all, fig.height=8, fig.cap='% Genes Detected vs. Signal to Noise Ratio'}
-p1 <- ggplot(cs1_qc, aes(sn, pergd)) + 
+p1 <- ggplot(cs1_qc, aes(snr, pergd)) + 
   geom_point() +
   labs(title = "CS1")
-p2 <- ggplot(cs2_qc, aes(sn, pergd)) + 
+p2 <- ggplot(cs2_qc, aes(snr, pergd)) + 
   geom_point() +
   labs(title = "CS2")
-p3 <- ggplot(cs3_qc, aes(sn, pergd)) + 
+p3 <- ggplot(cs3_qc, aes(snr, pergd)) + 
   geom_point() +
   labs(title = "CS3")
 
