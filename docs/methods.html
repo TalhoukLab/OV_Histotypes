@@ -141,7 +141,7 @@
 <h3>
 <span class="header-section-number">2.1.3</span> Normalization<a class="anchor" aria-label="anchor" href="#normalization"><i class="fas fa-link"></i></a>
 </h3>
-<p>The full training set (n=1246) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.</p>
+<p>The full training set (n=1243) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.</p>
 <p>CS1 was normalized to CS3 using five “Random1” reference samples. These reference samples are randomly selected from CS1 among all samples in the three CodeSets that share common otta IDs, such that we obtain one sample from each of the five histotypes. Then, we use the reference-based method to normalize CS1 to CS3 across their common genes, for the remaining expression samples <span class="citation">Talhouk et al. (<a href="references.html#ref-talhouk2016">2016</a>)</span>.</p>
 <p>Similarly, CS2 was normalized to CS3 using the same “Random1” reference samples, now taken from CS2. Normalization was performed across common genes between CS2 and CS3.</p>
 <p>For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a “reference standard”, and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a “Random1” reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.</p>
@@ -465,7 +465,7 @@ F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times p
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-05-17.</p>
+    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-07-03.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
