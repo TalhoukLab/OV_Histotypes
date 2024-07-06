@@ -779,7 +779,7 @@ dat_gene_2s <- gene_opt_all_metrics_two_step %>%
       ", Measure: ",
       .metric)
   ) %>% 
-  inner_join(gene_seq_names, by = "Genes")
+  inner_join(gene_2s_names, by = "Genes")
 
 p_gene_2s <-
   ggplot(dat_gene_2s, aes(x = Genes, y = mean_estimate, text = Name)) +
