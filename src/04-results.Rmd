@@ -751,14 +751,14 @@ p_gene_seq <-
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq)
 
-n_genes_seq <- 13
+n_genes_seq <- 12
 genes_add_seq <- gene_seq_names %>%
   slice_min(order_by = Genes, n = n_genes_seq) %>% 
   pull(Name)
 opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
 
-In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.9 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
+In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.91 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ### Two-Step Algorithm
 
@@ -791,14 +791,14 @@ p_gene_2s <-
        title = "Gene Optimziation for Two-Step Classifier")
 ggplotly(p_gene_2s)
 
-n_genes_2s <- 12
+n_genes_2s <- 11
 genes_add_2s <- gene_2s_names %>%
   slice_min(order_by = Genes, n = n_genes_2s) %>% 
   pull(Name)
 opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
-Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.85 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
+Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.84 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
 
 
 
