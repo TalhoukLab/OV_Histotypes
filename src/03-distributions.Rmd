@@ -132,7 +132,6 @@ knitr::kable(hist_conf_val,
 ## Cohort Counts
 
 ```{r cohort-counts}
-n_raw <- map_int(list(cs1, cs2, cs3), ~ ncol(.) - 3)
 n_coh <-
   lengths(list(cs1_samples_preqc, cs2_samples_preqc, cs3_samples_preqc))
 n_qc <- lengths(list(cs1_samples, cs2_samples, cs3_samples))
@@ -142,7 +141,6 @@ n_train_hist <- train_ref_all %>% count(CodeSet) %>% deframe()
 n_train_uniq <- train_ref %>% count(CodeSet) %>% deframe()
 
 cohort_counts <- list(
-  `Raw Data` = n_raw,
   `Selected Cohorts` = n_coh,
   QC = n_qc,
   `Normalized to Reference` = n_ref_norm,
