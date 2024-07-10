@@ -11,6 +11,35 @@ library(here)
 source(here("validation/cs_classifier.R"))
 ```
 
+## CodeSet Counts
+
+```{r codeset-counts}
+n_coh <-
+  lengths(list(cs1_samples_coh, cs2_samples_coh, cs3_samples_coh))
+n_qc <- lengths(list(cs1_samples, cs2_samples, cs3_samples))
+n_ref_norm <- lengths(list(cs1_samples_X, cs2_samples_X, cs3_samples_X))
+n_train <- map_int(list(cs1_train, cs2_train, cs3_train), nrow)
+n_train_hist <- train_ref_all %>% count(CodeSet) %>% deframe()
+n_train_uniq <- train_ref %>% count(CodeSet) %>% deframe()
+
+codeset_counts <- list(
+  `Selected Cohorts` = n_coh,
+  QC = n_qc,
+  `Normalized to Reference` = n_ref_norm,
+  `CS3: remove test sets, add AOC/USC` = n_train,
+  `Major Histotypes` = n_train_hist,
+  `Removed Duplicates` = n_train_uniq
+) %>%
+  map(set_names, c("CS1", "CS2", "CS3")) %>%
+  bind_rows(.id = "Processing Stage") %>%
+  rowwise() %>%
+  mutate(Total = sum(c_across(CS1:CS3))) %>%
+  ungroup()
+
+codeset_counts %>% 
+  kbl(caption = "Training Set Counts by CodeSet and Processing Stage")
+```
+
 ## Histotypes in Classifier Data
 
 ```{r preqc-hist-codeset}
@@ -49,11 +78,9 @@ preqc_hist_codeset <- preqc_df %>%
     by1 = "CodeSet",
     test = FALSE,
     total = "bottom",
-    bold_var = FALSE
+    bold_var = FALSE,
+    fill = TRUE
   )
-
-knitr::kable(preqc_hist_codeset,
-             caption = "Pre-QC Training Set Histotype Distribution by CodeSet")
 ```
 
 ```{r train-all-hist-codeset}
@@ -65,11 +92,9 @@ train_all_hist_codeset <- train_ref_all %>%
     by1 = "CodeSet",
     test = FALSE,
     total = "bottom",
-    bold_var = FALSE
+    bold_var = FALSE,
+    fill = TRUE
   )
-
-knitr::kable(train_all_hist_codeset,
-             caption = "Training Set (with duplicates) Histotype Distribution by CodeSet")
 ```
 
 ```{r train-hist-codeset}
@@ -81,11 +106,23 @@ train_hist_codeset <- train_ref %>%
     by1 = "CodeSet",
     test = FALSE,
     total = "bottom",
-    bold_var = FALSE
+    bold_var = FALSE,
+    fill = TRUE
   )
+```
 
-knitr::kable(train_hist_codeset,
-             caption = "Final Training Set Histotype Distribution by CodeSet")
+```{r hist-codeset}
+bind_rows(preqc_hist_codeset,
+          train_all_hist_codeset,
+          train_hist_codeset) %>%
+  kbl(caption = "Histotype Distribution by CodeSet and Processing Stage") %>%
+  kable_styling() %>%
+  pack_rows(index = c(
+    "Pre-QC" = 6,
+    "Major Histotypes" = 6,
+    "Deduplicated" = 6
+  )) %>% 
+  collapse_rows(columns = 1)
 ```
 
 ```{r hist-conf-val}
@@ -106,35 +143,6 @@ hist_conf_val <- list(Confirmation = conf_ref,
 
 knitr::kable(hist_conf_val,
              caption = "Histotype Distribution in Confirmation and Validation Sets")
-```
-
-## Cohort Counts
-
-```{r cohort-counts}
-n_coh <-
-  lengths(list(cs1_samples_coh, cs2_samples_coh, cs3_samples_coh))
-n_qc <- lengths(list(cs1_samples, cs2_samples, cs3_samples))
-n_ref_norm <- lengths(list(cs1_samples_X, cs2_samples_X, cs3_samples_X))
-n_train <- map_int(list(cs1_train, cs2_train, cs3_train), nrow)
-n_train_hist <- train_ref_all %>% count(CodeSet) %>% deframe()
-n_train_uniq <- train_ref %>% count(CodeSet) %>% deframe()
-
-cohort_counts <- list(
-  `Selected Cohorts` = n_coh,
-  QC = n_qc,
-  `Normalized to Reference` = n_ref_norm,
-  `CS3: remove test sets, add AOC/USC` = n_train,
-  `Major Histotypes` = n_train_hist,
-  `Removed Duplicates` = n_train_uniq
-) %>%
-  map(set_names, c("CS1", "CS2", "CS3")) %>%
-  bind_rows(.id = "Processing Stage") %>%
-  rowwise() %>%
-  mutate(Total = sum(c_across(CS1:CS3))) %>%
-  ungroup()
-
-cohort_counts %>% 
-  kbl(caption = "Training Set counts by CodeSet and Processing Stage")
 ```
 
 ## Cohorts in Classifier Data
