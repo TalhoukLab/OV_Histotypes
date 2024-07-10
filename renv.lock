@@ -34,13 +34,13 @@
   "Packages": {
     "Amisc": {
       "Package": "Amisc",
-      "Version": "0.6.0",
+      "Version": "0.6.1",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteUsername": "AlineTalhouk",
       "RemoteRepo": "Amisc",
       "RemoteRef": "master",
-      "RemoteSha": "49f34dbc35f7a09879dbf2b377c08d518d370096",
+      "RemoteSha": "dddcb4e81fe885dce3f09b9573df5bd657399b2b",
       "RemoteHost": "api.github.com",
       "Requirements": [
         "R",
@@ -52,7 +52,7 @@
         "scales",
         "tidyr"
       ],
-      "Hash": "c6f17de9bd57cd9a3c41a78068a097ee"
+      "Hash": "e4a1325e356e891a52dc1fc76d8f6869"
     },
     "BBmisc": {
       "Package": "BBmisc",

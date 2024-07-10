@@ -14,28 +14,7 @@ source(here("validation/cs_classifier.R"))
 ## Histotypes in Classifier Data
 
 ```{r preqc-hist-codeset}
-cs1_samples_preqc <- cohorts %>%
-  filter(
-    file_source == "cs1",
-    cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL")
-  ) %>%
-  pull(col_name)
-
-cs2_samples_preqc <- cohorts %>%
-  filter(
-    file_source == "cs2",
-    cohort %in% c("MAYO", "OOU", "OOUE", "OVAR3", "VOA", "ICON7", "JAPAN", "MTL", "POOL-CTRL"),
-  ) %>%
-  pull(col_name)
-
-cs3_samples_preqc <- cohorts %>%
-  filter(
-    file_source == "cs3",
-    cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3")
-  ) %>%
-  pull(col_name)
-
-cs3_train_samples_precqc <- cohorts %>%
+cs3_train_samples_preqc <- cohorts %>%
   filter(
     file_source == "cs3",
     cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3"),
@@ -46,7 +25,7 @@ cs3_train_samples_precqc <- cohorts %>%
 
 preqc_df <-
   list(list(cs1, cs2, cs3),
-       list(cs1_samples_preqc, cs2_samples_preqc, cs3_train_samples_precqc)) %>%
+       list(cs1_samples_coh, cs2_samples_coh, cs3_train_samples_preqc)) %>%
   pmap( ~ {
     ..1 %>%
       dplyr::select(Name, all_of(..2)) %>%
@@ -133,7 +112,7 @@ knitr::kable(hist_conf_val,
 
 ```{r cohort-counts}
 n_coh <-
-  lengths(list(cs1_samples_preqc, cs2_samples_preqc, cs3_samples_preqc))
+  lengths(list(cs1_samples_coh, cs2_samples_coh, cs3_samples_coh))
 n_qc <- lengths(list(cs1_samples, cs2_samples, cs3_samples))
 n_ref_norm <- lengths(list(cs1_samples_X, cs2_samples_X, cs3_samples_X))
 n_train <- map_int(list(cs1_train, cs2_train, cs3_train), nrow)

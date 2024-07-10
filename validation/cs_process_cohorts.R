@@ -70,36 +70,58 @@ cs2_qc_failed <- filter(cs2_qc, QCFlag == "Failed")[["FileName"]]
 cs3_qc_failed <- filter(cs3_qc, QCFlag == "Failed")[["FileName"]]
 
 # Filter for specific cohorts and extract samples
-cs1_samples <- cohorts %>%
-  filter(
-    file_source == "cs1",
-    cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL"),
-    !col_name %in% paste0("X", cs1_qc_failed)
-  ) %>%
+cs1_samples_coh <- cohorts %>%
+  filter(file_source == "cs1",
+         cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL")) %>%
   pull(col_name)
 
-cs2_samples <- cohorts %>%
+cs2_samples_coh <- cohorts %>%
   filter(
     file_source == "cs2",
-    cohort %in% c("MAYO", "OOU", "OOUE", "OVAR3", "VOA", "ICON7", "JAPAN", "MTL", "POOL-CTRL"),
-    !col_name %in% paste0("X", cs2_qc_failed)
+    cohort %in% c(
+      "MAYO",
+      "OOU",
+      "OOUE",
+      "OVAR3",
+      "VOA",
+      "ICON7",
+      "JAPAN",
+      "MTL",
+      "POOL-CTRL"
+    ),
   ) %>%
   pull(col_name)
 
-cs3_samples <- cohorts %>%
+cs3_samples_coh <- cohorts %>%
   filter(
     file_source == "cs3",
-    cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3"),
-    !col_name %in% paste0("X", cs3_qc_failed)
+    cohort %in% c(
+      "DOVE4",
+      "OOU",
+      "OOUE",
+      "TNCO",
+      "VOA",
+      "POOL-1",
+      "POOL-2",
+      "POOL-3"
+    )
   ) %>%
   pull(col_name)
+
+cs1_samples <- setdiff(cs1_samples_coh, paste0("X", cs1_qc_failed))
+cs2_samples <- setdiff(cs2_samples_coh, paste0("X", cs2_qc_failed))
+cs3_samples <- setdiff(cs3_samples_coh, paste0("X", cs3_qc_failed))
 
 cs123_samples <- gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))
 
 # Select only samples from these cohorts in the data
-cs1_coh <- select(cs1, Code.Class, Name, Accession, all_of(cs1_samples))
-cs2_coh <- select(cs2, Code.Class, Name, Accession, all_of(cs2_samples))
-cs3_coh <- select(cs3, Code.Class, Name, Accession, all_of(cs3_samples))
+cs1_coh1 <- cs1 %>% select(Code.Class, Name, Accession, all_of(cs1_samples_coh))
+cs2_coh1 <- cs2 %>% select(Code.Class, Name, Accession, all_of(cs2_samples_coh))
+cs3_coh1 <- cs3 %>% select(Code.Class, Name, Accession, all_of(cs3_samples_coh))
+
+cs1_coh <- cs1_coh1 %>% select(Code.Class, Name, Accession, all_of(cs1_samples))
+cs2_coh <- cs2_coh1 %>% select(Code.Class, Name, Accession, all_of(cs2_samples))
+cs3_coh <- cs3_coh1 %>% select(Code.Class, Name, Accession, all_of(cs3_samples))
 
 # Normalize to housekeeping genes
 cs1_norm <- HKnorm(cs1_coh)
