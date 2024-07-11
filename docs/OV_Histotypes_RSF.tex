@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-05-17}
+\date{2024-07-10}
 
 \begin{document}
 \maketitle
@@ -199,7 +199,7 @@ Samples that failed any of the following NanoString quality control conditions w
 
 \subsection{Normalization}\label{normalization}
 
-The full training set (n=1246) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.
+The full training set (n=1243) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.
 
 CS1 was normalized to CS3 using five ``Random1'' reference samples. These reference samples are randomly selected from CS1 among all samples in the three CodeSets that share common otta IDs, such that we obtain one sample from each of the five histotypes. Then, we use the reference-based method to normalize CS1 to CS3 across their common genes, for the remaining expression samples \citet{talhouk2016}.
 
@@ -495,73 +495,82 @@ Instead, we only reported ROC curves and their associated AUCs for the test set 
 
 \chapter{Distributions}\label{distributions}
 
+\section{CodeSet Counts}\label{codeset-counts}
+
+\begin{table}
+
+\caption{\label{tab:codeset-counts}Training Set Counts by CodeSet and Processing Stage}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+Processing Stage & CS1 & CS2 & CS3 & Total\\
+\hline
+Selected Cohorts & 294 & 903 & 2477 & 3674\\
+\hline
+QC & 286 & 882 & 2273 & 3441\\
+\hline
+Normalized to Reference & 263 & 827 & 2095 & 3185\\
+\hline
+CS3: remove test sets, add AOC/USC & 263 & 827 & 514 & 1604\\
+\hline
+Major Histotypes & 244 & 779 & 506 & 1529\\
+\hline
+Removed Duplicates & 77 & 698 & 468 & 1243\\
+\hline
+\end{tabular}
+\end{table}
+
 \section{Histotypes in Classifier Data}\label{histotypes-in-classifier-data}
 
 \begin{table}
 
-\caption{\label{tab:preqc-hist-codeset}Pre-QC Training Set Histotype Distribution by CodeSet}
+\caption{\label{tab:hist-codeset}Histotype Distribution by CodeSet and Processing Stage}
 \centering
 \begin{tabular}[t]{l|l|l|l|l|l}
 \hline
 Variable & Levels & CS1 & CS2 & CS3 & Total\\
 \hline
-Histotype & HGSC & 120 (45\%) & 643 (79\%) & 515 (92\%) & 1278 (78\%)\\
+\multicolumn{6}{l}{\textbf{Pre-QC}}\\
 \hline
+ & HGSC & 120 (45\%) & 641 (79\%) & 515 (92\%) & 1276 (78\%)\\
+\cline{2-6}
  & CCOC & 48 (18\%) & 61 (7\%) & 11 (2\%) & 120 (7\%)\\
-\hline
+\cline{2-6}
  & ENOC & 60 (22\%) & 32 (4\%) & 11 (2\%) & 103 (6\%)\\
+\cline{2-6}
+ & MUC & 19 (7\%) & 60 (7\%) & 12 (2\%) & 91 (6\%)\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash \hspace{1em}Histotype} & LGSC & 20 (7\%) & 21 (3\%) & 9 (2\%) & 50 (3\%)\\
+\cline{1-6}
+\hspace{1em}Total & N (\%) & 267 (16\%) & 815 (50\%) & 558 (34\%) & 1640 (100\%)\\
+\cline{1-6}
+\multicolumn{6}{l}{\textbf{Major Histotypes}}\\
 \hline
- & MUC & 19 (7\%) & 62 (8\%) & 12 (2\%) & 93 (6\%)\\
-\hline
- & LGSC & 20 (7\%) & 21 (3\%) & 9 (2\%) & 50 (3\%)\\
-\hline
-Total & N (\%) & 267 (16\%) & 819 (50\%) & 558 (34\%) & 1644 (100\%)\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:train-all-hist-codeset}Training Set (with duplicates) Histotype Distribution by CodeSet}
-\centering
-\begin{tabular}[t]{l|l|l|l|l|l}
-\hline
-Variable & Levels & CS1 & CS2 & CS3 & Total\\
-\hline
-Histotype & HGSC & 116 (48\%) & 623 (80\%) & 475 (94\%) & 1214 (79\%)\\
-\hline
+ & HGSC & 116 (48\%) & 622 (80\%) & 475 (94\%) & 1213 (79\%)\\
+\cline{2-6}
  & CCOC & 44 (18\%) & 54 (7\%) & 8 (2\%) & 106 (7\%)\\
-\hline
+\cline{2-6}
  & ENOC & 55 (23\%) & 27 (3\%) & 8 (2\%) & 90 (6\%)\\
+\cline{2-6}
+ & MUC & 15 (6\%) & 57 (7\%) & 9 (2\%) & 81 (5\%)\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash \hspace{1em}Histotype} & LGSC & 14 (6\%) & 19 (2\%) & 6 (1\%) & 39 (3\%)\\
+\cline{1-6}
+\hspace{1em}Total & N (\%) & 244 (16\%) & 779 (51\%) & 506 (33\%) & 1529 (100\%)\\
+\cline{1-6}
+\multicolumn{6}{l}{\textbf{Deduplicated}}\\
 \hline
- & MUC & 15 (6\%) & 59 (8\%) & 9 (2\%) & 83 (5\%)\\
-\hline
- & LGSC & 14 (6\%) & 19 (2\%) & 6 (1\%) & 39 (3\%)\\
-\hline
-Total & N (\%) & 244 (16\%) & 782 (51\%) & 506 (33\%) & 1532 (100\%)\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:train-hist-codeset}Final Training Set Histotype Distribution by CodeSet}
-\centering
-\begin{tabular}[t]{l|l|l|l|l|l}
-\hline
-Variable & Levels & CS1 & CS2 & CS3 & Total\\
-\hline
-Histotype & HGSC & 9 (12\%) & 553 (79\%) & 451 (96\%) & 1013 (81\%)\\
-\hline
+ & HGSC & 9 (12\%) & 552 (79\%) & 451 (96\%) & 1012 (81\%)\\
+\cline{2-6}
  & CCOC & 25 (32\%) & 52 (7\%) & 4 (1\%) & 81 (7\%)\\
-\hline
+\cline{2-6}
  & ENOC & 37 (48\%) & 25 (4\%) & 4 (1\%) & 66 (5\%)\\
-\hline
- & MUC & 3 (4\%) & 55 (8\%) & 5 (1\%) & 63 (5\%)\\
-\hline
- & LGSC & 3 (4\%) & 16 (2\%) & 4 (1\%) & 23 (2\%)\\
-\hline
-Total & N (\%) & 77 (6\%) & 701 (56\%) & 468 (38\%) & 1246 (100\%)\\
+\cline{2-6}
+ & MUC & 3 (4\%) & 53 (8\%) & 5 (1\%) & 61 (5\%)\\
+\cline{2-6}
+\multirow{-5}{*}{\raggedright\arraybackslash \hspace{1em}Histotype} & LGSC & 3 (4\%) & 16 (2\%) & 4 (1\%) & 23 (2\%)\\
+\cline{1-6}
+\hspace{1em}Total & N (\%) & 77 (6\%) & 698 (56\%) & 468 (38\%) & 1243 (100\%)\\
 \hline
 \end{tabular}
 \end{table}
@@ -574,44 +583,17 @@ Total & N (\%) & 77 (6\%) & 701 (56\%) & 468 (38\%) & 1246 (100\%)\\
 \hline
 Variable & Levels & Confirmation & Validation\\
 \hline
-Histotype & HGSC & 422 (66\%) & 674 (74\%)\\
+Histotype & HGSC & 422 (66\%) & 667 (75\%)\\
 \hline
- & CCOC & 75 (12\%) & 80 (9\%)\\
+ & CCOC & 75 (12\%) & 79 (9\%)\\
 \hline
- & ENOC & 106 (16\%) & 108 (12\%)\\
+ & ENOC & 106 (16\%) & 105 (12\%)\\
 \hline
  & MUC & 27 (4\%) & 26 (3\%)\\
 \hline
  & LGSC & 13 (2\%) & 18 (2\%)\\
 \hline
-Total & N (\%) & 643 (42\%) & 906 (58\%)\\
-\hline
-\end{tabular}
-\end{table}
-
-\section{Cohort Counts}\label{cohort-counts}
-
-\begin{table}
-
-\caption{\label{tab:cohort-counts}Training Set counts by CodeSet and Processing Stage}
-\centering
-\begin{tabular}[t]{l|r|r|r|r}
-\hline
-Processing Stage & CS1 & CS2 & CS3 & Total\\
-\hline
-Raw Data & 412 & 1223 & 5424 & 7059\\
-\hline
-Selected Cohorts & 294 & 903 & 2477 & 3674\\
-\hline
-QC & 286 & 888 & 2285 & 3459\\
-\hline
-Normalized to Reference & 263 & 832 & 2107 & 3202\\
-\hline
-CS3: remove test sets, add AOC/USC & 263 & 832 & 514 & 1609\\
-\hline
-Major Histotypes & 244 & 782 & 506 & 1532\\
-\hline
-Removed Duplicates & 77 & 701 & 468 & 1246\\
+Total & N (\%) & 643 (42\%) & 895 (58\%)\\
 \hline
 \end{tabular}
 \end{table}
@@ -640,7 +622,7 @@ CS2 & ICON7 & 365 & 0 & 0\\
 \hline
 CS2 & JAPAN & 8 & 0 & 0\\
 \hline
-CS2 & MAYO & 42 & 0 & 0\\
+CS2 & MAYO & 40 & 0 & 0\\
 \hline
 CS2 & MTL & 59 & 0 & 0\\
 \hline
@@ -648,7 +630,7 @@ CS2 & OOU & 27 & 0 & 0\\
 \hline
 CS2 & OOUE & 18 & 0 & 0\\
 \hline
-CS2 & OVAR3 & 136 & 0 & 0\\
+CS2 & OVAR3 & 135 & 0 & 0\\
 \hline
 CS2 & VOA & 46 & 0 & 0\\
 \hline
@@ -660,7 +642,7 @@ CS3 & VOA & 439 & 0 & 0\\
 \hline
 CS3 & TNCO & 0 & 643 & 0\\
 \hline
-CS3 & DOVE4 & 0 & 0 & 906\\
+CS3 & DOVE4 & 0 & 0 & 895\\
 \hline
 \end{tabular}
 \end{table}
@@ -695,25 +677,15 @@ CodeSet & CodeSet Total & linFlag & imagingFlag & spcFlag & normFlag & QCFlag & 
 \cline{3-8}
 \multirow{-2}{*}{\raggedright\arraybackslash CS1} & \multirow{-2}{*}{\raggedleft\arraybackslash 8} & Passed & Passed & Passed & Failed & Failed & 5\\
 \cline{1-8}
- &  & Failed & Failed & Failed & Failed & Failed & 2\\
+ &  & Failed & Passed & Failed & Failed & Failed & 2\\
 \cline{3-8}
- &  & Failed & Passed & Failed & Failed & Failed & 3\\
+ &  & Failed & Passed & Passed & Passed & Failed & 2\\
 \cline{3-8}
- &  & Failed & Passed & Passed & Passed & Failed & 3\\
-\cline{3-8}
- &  & Passed & Failed & Passed & Passed & Failed & 3\\
-\cline{3-8}
-\multirow{-5}{*}{\raggedright\arraybackslash CS2} & \multirow{-5}{*}{\raggedleft\arraybackslash 32} & Passed & Passed & Passed & Failed & Failed & 21\\
+\multirow{-3}{*}{\raggedright\arraybackslash CS2} & \multirow{-3}{*}{\raggedleft\arraybackslash 21} & Passed & Passed & Passed & Failed & Failed & 17\\
 \cline{1-8}
- &  & Failed & Failed & Failed & Failed & Failed & 1\\
+ &  & Passed & Failed & Passed & Passed & Failed & 4\\
 \cline{3-8}
- &  & Failed & Failed & Passed & Failed & Failed & 3\\
-\cline{3-8}
- &  & Failed & Passed & Passed & Failed & Failed & 11\\
-\cline{3-8}
- &  & Passed & Failed & Passed & Passed & Failed & 7\\
-\cline{3-8}
-\multirow{-5}{*}{\raggedright\arraybackslash CS3} & \multirow{-5}{*}{\raggedleft\arraybackslash 274} & Passed & Passed & Passed & Failed & Failed & 252\\
+\multirow{-2}{*}{\raggedright\arraybackslash CS3} & \multirow{-2}{*}{\raggedleft\arraybackslash 204} & Passed & Passed & Passed & Failed & Failed & 200\\
 \hline
 \end{tabular}
 \end{table}
@@ -803,15 +775,15 @@ We summarize cross-validated training performance of class metrics in the traini
 \cline{2-5}
 Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.922 & 0.937 & 0.813 & 0.814\\
+none & 0.933 & \cellcolor[HTML]{90ee90}{0.938} & 0.818 & 0.936\\
 \hline
-down & 0.853 & 0.807 & 0.189 & 0.846\\
+down & 0.854 & 0.798 & 0.358 & 0.838\\
 \hline
-up & \cellcolor[HTML]{90ee90}{0.941} & 0.931 & 0.94 & 0.894\\
+up & 0.93 & 0.929 & 0.934 & 0.911\\
 \hline
-smote & 0.935 & 0.93 & 0.933 & 0.906\\
+smote & 0.937 & 0.934 & 0.936 & 0.914\\
 \hline
-hybrid & \cellcolor[HTML]{90ee90}{0.941} & 0.93 & 0.927 & 0.908\\
+hybrid & 0.931 & 0.932 & 0.926 & 0.901\\
 \hline
 \end{tabular}
 \end{table}
@@ -835,55 +807,55 @@ hybrid & \cellcolor[HTML]{90ee90}{0.941} & 0.93 & 0.927 & 0.908\\
 \cline{3-6}
 Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & HGSC & 0.936 & 0.953 & 0.813 & 0.814\\
+ & HGSC & 0.95 & 0.954 & 0.818 & 0.949\\
 \cline{2-6}
- & CCOC & 0.982 & 0.983 & 0.935 & 0.936\\
+ & CCOC & 0.982 & 0.98 & 0.939 & 0.981\\
 \cline{2-6}
- & ENOC & 0.961 & 0.973 & 0.947 & 0.947\\
+ & ENOC & 0.965 & 0.973 & 0.947 & 0.973\\
 \cline{2-6}
- & LGSC & 0.982 & 0.982 & 0.982 & 0.982\\
+ & LGSC & 0.984 & 0.983 & 0.982 & 0.982\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.983 & 0.983 & 0.949 & 0.949\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.986 & 0.986 & 0.951 & \cellcolor[HTML]{90ee90}{0.988}\\
 \cline{1-6}
- & HGSC & 0.888 & 0.835 & 0.31 & 0.876\\
+ & HGSC & 0.884 & 0.835 & 0.446 & 0.872\\
 \cline{2-6}
- & CCOC & 0.973 & 0.969 & 0.935 & 0.974\\
+ & CCOC & 0.975 & 0.973 & 0.935 & 0.972\\
 \cline{2-6}
- & ENOC & 0.96 & 0.929 & 0.947 & 0.945\\
+ & ENOC & 0.957 & 0.926 & 0.597 & 0.947\\
 \cline{2-6}
- & LGSC & 0.927 & 0.904 & 0.596 & 0.926\\
+ & LGSC & 0.921 & 0.892 & 0.788 & 0.914\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.959 & 0.976 & 0.59 & 0.971\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.97 & 0.97 & 0.951 & 0.972\\
 \cline{1-6}
- & HGSC & 0.96 & 0.955 & 0.961 & 0.924\\
+ & HGSC & 0.948 & 0.952 & 0.958 & 0.94\\
 \cline{2-6}
- & CCOC & 0.984 & 0.978 & 0.984 & 0.975\\
+ & CCOC & 0.98 & 0.973 & 0.981 & 0.977\\
 \cline{2-6}
- & ENOC & 0.975 & 0.964 & 0.972 & 0.954\\
+ & ENOC & 0.971 & 0.967 & 0.967 & 0.954\\
 \cline{2-6}
- & LGSC & 0.981 & 0.982 & 0.982 & 0.961\\
+ & LGSC & 0.977 & 0.982 & 0.982 & 0.973\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.983 & 0.982 & 0.981 & 0.974\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.984 & 0.984 & 0.981 & 0.977\\
 \cline{1-6}
- & HGSC & 0.957 & 0.955 & 0.96 & 0.932\\
+ & HGSC & 0.963 & 0.96 & 0.958 & 0.942\\
 \cline{2-6}
- & CCOC & 0.979 & 0.975 & 0.981 & 0.978\\
+ & CCOC & 0.977 & 0.973 & 0.979 & 0.975\\
 \cline{2-6}
- & ENOC & 0.97 & 0.961 & 0.967 & 0.959\\
+ & ENOC & 0.969 & 0.966 & 0.969 & 0.955\\
 \cline{2-6}
- & LGSC & 0.981 & \cellcolor[HTML]{90ee90}{0.985} & 0.979 & 0.966\\
+ & LGSC & 0.98 & 0.983 & 0.982 & 0.975\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.982 & 0.984 & 0.98 & 0.978\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.986 & 0.986 & 0.983 & 0.981\\
 \cline{1-6}
- & HGSC & 0.962 & 0.957 & 0.952 & 0.939\\
+ & HGSC & 0.955 & 0.955 & 0.951 & 0.928\\
 \cline{2-6}
- & CCOC & 0.984 & 0.979 & 0.98 & 0.976\\
+ & CCOC & 0.978 & 0.974 & 0.977 & 0.977\\
 \cline{2-6}
- & ENOC & 0.973 & 0.962 & 0.966 & 0.957\\
+ & ENOC & 0.969 & 0.966 & 0.965 & 0.955\\
 \cline{2-6}
- & LGSC & 0.982 & 0.982 & 0.978 & 0.969\\
+ & LGSC & 0.979 & 0.983 & 0.977 & 0.965\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.98 & 0.981 & 0.978 & 0.975\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.98 & 0.985 & 0.982 & 0.977\\
 \hline
 \end{tabular}
 \end{table}
@@ -909,15 +881,15 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \cline{2-5}
 Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.602 & 0.669 & 0.2 & 0.203\\
+none & 0.696 & 0.695 & 0.215 & 0.655\\
 \hline
-down & 0.805 & \cellcolor[HTML]{90ee90}{0.838} & 0.2 & 0.829\\
+down & \cellcolor[HTML]{90ee90}{0.826} & 0.806 & 0.2 & 0.819\\
 \hline
-up & 0.697 & 0.714 & 0.737 & 0.82\\
+up & 0.676 & 0.745 & 0.771 & 0.82\\
 \hline
-smote & 0.708 & 0.682 & 0.765 & 0.802\\
+smote & 0.714 & 0.746 & 0.788 & 0.818\\
 \hline
-hybrid & 0.771 & 0.758 & 0.754 & 0.796\\
+hybrid & 0.727 & 0.773 & 0.764 & 0.816\\
 \hline
 \end{tabular}
 \end{table}
@@ -941,55 +913,55 @@ hybrid & 0.771 & 0.758 & 0.754 & 0.796\\
 \cline{3-6}
 Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & HGSC & 0.994 & 0.994 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+ & HGSC & 0.991 & 0.992 & \cellcolor[HTML]{90ee90}{1} & 0.994\\
 \cline{2-6}
- & CCOC & 0.792 & 0.802 & 0 & 0.017\\
+ & CCOC & 0.827 & 0.779 & 0.074 & 0.782\\
 \cline{2-6}
- & ENOC & 0.4 & 0.683 & 0 & 0\\
+ & ENOC & 0.58 & 0.728 & 0 & 0.65\\
 \cline{2-6}
- & LGSC & 0 & 0.1 & 0 & 0\\
+ & LGSC & 0.25 & 0.19 & 0 & 0\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.823 & 0.764 & 0 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.833 & 0.786 & 0 & 0.849\\
 \cline{1-6}
- & HGSC & 0.871 & 0.805 & 0.2 & 0.856\\
+ & HGSC & 0.866 & 0.802 & 0.4 & 0.849\\
 \cline{2-6}
- & CCOC & 0.846 & 0.825 & 0 & 0.818\\
+ & CCOC & 0.863 & 0.789 & 0 & 0.829\\
 \cline{2-6}
- & ENOC & 0.606 & 0.788 & 0 & 0.686\\
+ & ENOC & 0.685 & 0.733 & 0.4 & 0.678\\
 \cline{2-6}
- & LGSC & 0.867 & 0.967 & 0.4 & 0.933\\
+ & LGSC & 0.87 & 0.95 & 0.2 & 0.91\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.837 & 0.806 & 0.4 & 0.851\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.845 & 0.754 & 0 & 0.831\\
 \cline{1-6}
- & HGSC & 0.991 & 0.98 & 0.98 & 0.917\\
+ & HGSC & 0.982 & 0.978 & 0.97 & 0.935\\
 \cline{2-6}
- & CCOC & 0.83 & 0.809 & 0.839 & 0.787\\
+ & CCOC & 0.827 & 0.747 & 0.84 & 0.839\\
 \cline{2-6}
- & ENOC & 0.683 & 0.629 & 0.726 & 0.749\\
+ & ENOC & 0.652 & 0.675 & 0.726 & 0.708\\
 \cline{2-6}
- & LGSC & 0.133 & 0.4 & 0.267 & 0.8\\
+ & LGSC & 0.107 & 0.552 & 0.44 & 0.76\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.848 & 0.751 & 0.873 & 0.845\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.814 & 0.771 & 0.877 & 0.858\\
 \cline{1-6}
- & HGSC & 0.981 & 0.99 & 0.973 & 0.93\\
+ & HGSC & 0.984 & 0.978 & 0.971 & 0.94\\
 \cline{2-6}
- & CCOC & 0.83 & 0.728 & 0.839 & 0.799\\
+ & CCOC & 0.827 & 0.799 & 0.874 & 0.826\\
 \cline{2-6}
- & ENOC & 0.679 & 0.562 & 0.668 & 0.741\\
+ & ENOC & 0.72 & 0.701 & 0.666 & 0.691\\
 \cline{2-6}
- & LGSC & 0.2 & 0.367 & 0.467 & 0.667\\
+ & LGSC & 0.207 & 0.452 & 0.552 & 0.76\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.849 & 0.765 & 0.876 & 0.876\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.833 & 0.801 & 0.877 & 0.873\\
 \cline{1-6}
- & HGSC & 0.976 & 0.971 & 0.964 & 0.938\\
+ & HGSC & 0.971 & 0.97 & 0.959 & 0.923\\
 \cline{2-6}
- & CCOC & 0.85 & 0.795 & 0.852 & 0.769\\
+ & CCOC & 0.841 & 0.809 & 0.848 & 0.837\\
 \cline{2-6}
- & ENOC & 0.766 & 0.722 & 0.672 & 0.727\\
+ & ENOC & 0.732 & 0.705 & 0.709 & 0.717\\
 \cline{2-6}
- & LGSC & 0.4 & 0.533 & 0.433 & 0.7\\
+ & LGSC & 0.229 & 0.581 & 0.424 & 0.743\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.862 & 0.769 & 0.848 & 0.845\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.862 & 0.801 & 0.877 & 0.858\\
 \hline
 \end{tabular}
 \end{table}
@@ -1015,15 +987,15 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \cline{2-5}
 Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.933 & 0.951 & 0.8 & 0.801\\
+none & 0.949 & 0.952 & 0.804 & 0.946\\
 \hline
-down & 0.963 & 0.955 & 0.8 & 0.962\\
+down & 0.964 & 0.954 & 0.8 & 0.961\\
 \hline
-up & 0.959 & 0.961 & 0.968 & 0.97\\
+up & 0.952 & 0.958 & 0.971 & \cellcolor[HTML]{90ee90}{0.974}\\
 \hline
-smote & 0.963 & 0.954 & 0.97 & 0.971\\
+smote & 0.966 & 0.966 & 0.97 & 0.973\\
 \hline
-hybrid & \cellcolor[HTML]{90ee90}{0.972} & 0.968 & 0.968 & \cellcolor[HTML]{90ee90}{0.972}\\
+hybrid & 0.966 & 0.967 & 0.97 & 0.972\\
 \hline
 \end{tabular}
 \end{table}
@@ -1047,55 +1019,55 @@ hybrid & \cellcolor[HTML]{90ee90}{0.972} & 0.968 & 0.968 & \cellcolor[HTML]{90ee
 \cline{3-6}
 Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & HGSC & 0.682 & 0.776 & 0 & 0.005\\
+ & HGSC & 0.772 & 0.786 & 0.022 & 0.751\\
 \cline{2-6}
- & CCOC & 0.996 & 0.996 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+ & CCOC & 0.994 & 0.995 & \cellcolor[HTML]{90ee90}{1} & 0.996\\
 \cline{2-6}
- & ENOC & 0.992 & 0.988 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+ & ENOC & 0.987 & 0.987 & \cellcolor[HTML]{90ee90}{1} & 0.991\\
 \cline{2-6}
  & LGSC & \cellcolor[HTML]{90ee90}{1} & 0.999 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.993 & 0.995 & \cellcolor[HTML]{90ee90}{1} & \cellcolor[HTML]{90ee90}{1}\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.993 & 0.995 & \cellcolor[HTML]{90ee90}{1} & 0.994\\
 \cline{1-6}
- & HGSC & 0.962 & 0.97 & 0.8 & 0.966\\
+ & HGSC & 0.965 & 0.978 & 0.6 & 0.97\\
 \cline{2-6}
- & CCOC & 0.982 & 0.979 & \cellcolor[HTML]{90ee90}{1} & 0.985\\
+ & CCOC & 0.984 & 0.986 & \cellcolor[HTML]{90ee90}{1} & 0.983\\
 \cline{2-6}
- & ENOC & 0.978 & 0.936 & \cellcolor[HTML]{90ee90}{1} & 0.958\\
+ & ENOC & 0.973 & 0.937 & 0.6 & 0.963\\
 \cline{2-6}
- & LGSC & 0.928 & 0.903 & 0.6 & 0.926\\
+ & LGSC & 0.922 & 0.891 & 0.8 & 0.914\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.967 & 0.987 & 0.6 & 0.979\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.976 & 0.981 & \cellcolor[HTML]{90ee90}{1} & 0.979\\
 \cline{1-6}
- & HGSC & 0.824 & 0.845 & 0.88 & 0.953\\
+ & HGSC & 0.795 & 0.832 & 0.904 & 0.956\\
 \cline{2-6}
- & CCOC & 0.995 & 0.99 & 0.994 & 0.988\\
+ & CCOC & 0.991 & 0.99 & 0.991 & 0.987\\
 \cline{2-6}
- & ENOC & 0.991 & 0.981 & 0.985 & 0.964\\
+ & ENOC & 0.99 & 0.984 & 0.98 & 0.969\\
 \cline{2-6}
- & LGSC & 0.996 & 0.992 & 0.994 & 0.964\\
+ & LGSC & 0.993 & 0.99 & 0.992 & 0.977\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.992 & 0.995 & 0.987 & 0.982\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.992 & 0.994 & 0.986 & 0.982\\
 \cline{1-6}
- & HGSC & 0.854 & 0.803 & 0.901 & 0.939\\
+ & HGSC & 0.87 & 0.877 & 0.899 & 0.948\\
 \cline{2-6}
- & CCOC & 0.99 & 0.991 & 0.991 & 0.99\\
+ & CCOC & 0.989 & 0.985 & 0.987 & 0.986\\
 \cline{2-6}
- & ENOC & 0.986 & 0.983 & 0.983 & 0.97\\
+ & ENOC & 0.983 & 0.982 & 0.986 & 0.97\\
 \cline{2-6}
- & LGSC & 0.994 & 0.995 & 0.989 & 0.97\\
+ & LGSC & 0.994 & 0.992 & 0.99 & 0.979\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.991 & 0.996 & 0.987 & 0.984\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.993 & 0.995 & 0.988 & 0.985\\
 \cline{1-6}
- & HGSC & 0.901 & 0.892 & 0.896 & 0.944\\
+ & HGSC & 0.882 & 0.885 & 0.913 & 0.953\\
 \cline{2-6}
- & CCOC & 0.993 & 0.991 & 0.989 & 0.99\\
+ & CCOC & 0.989 & 0.986 & 0.987 & 0.987\\
 \cline{2-6}
- & ENOC & 0.983 & 0.975 & 0.981 & 0.969\\
+ & ENOC & 0.983 & 0.981 & 0.98 & 0.968\\
 \cline{2-6}
- & LGSC & 0.993 & 0.989 & 0.988 & 0.973\\
+ & LGSC & 0.993 & 0.989 & 0.986 & 0.968\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.987 & 0.992 & 0.986 & 0.983\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.986 & 0.993 & 0.986 & 0.982\\
 \hline
 \end{tabular}
 \end{table}
@@ -1121,15 +1093,15 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \cline{2-5}
 Subsampling & rf & svm & xgb & mr\\
 \hline
-none & \cellcolor[HTML]{FF0000}{0.787} & \cellcolor[HTML]{FFD700}{0.801} & \cellcolor[HTML]{FF0000}{0.897} & \cellcolor[HTML]{FF0000}{0.822}\\
+none & \cellcolor[HTML]{FFD700}{0.819} & \cellcolor[HTML]{FFD700}{0.799} & \cellcolor[HTML]{FF0000}{0.78} & \cellcolor[HTML]{FF0000}{0.851}\\
 \hline
-down & 0.657 & 0.645 & \cellcolor[HTML]{FF0000}{0.231} & 0.664\\
+down & 0.674 & 0.622 & \cellcolor[HTML]{FF0000}{0.415} & 0.659\\
 \hline
-up & \cellcolor[HTML]{FFD700}{0.755} & 0.726 & \cellcolor[HTML]{FFD700}{0.776} & 0.709\\
+up & 0.7 & 0.749 & 0.752 & 0.723\\
 \hline
-smote & \cellcolor[HTML]{FFD700}{0.748} & \cellcolor[HTML]{FFD700}{0.75} & 0.747 & 0.724\\
+smote & 0.724 & 0.747 & \cellcolor[HTML]{90ee90}{0.771} & 0.731\\
 \hline
-hybrid & \cellcolor[HTML]{90ee90}{0.77} & 0.751 & 0.728 & 0.72\\
+hybrid & 0.717 & 0.76 & 0.731 & 0.716\\
 \hline
 \end{tabular}
 \end{table}
@@ -1153,55 +1125,55 @@ hybrid & \cellcolor[HTML]{90ee90}{0.77} & 0.751 & 0.728 & 0.72\\
 \cline{3-6}
 Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & HGSC & \cellcolor[HTML]{FF0000}{0.962} & \cellcolor[HTML]{FFD700}{0.972} & \cellcolor[HTML]{FF0000}{0.897} & \cellcolor[HTML]{FF0000}{0.897}\\
+ & HGSC & \cellcolor[HTML]{FFD700}{0.97} & \cellcolor[HTML]{FFD700}{0.972} & \cellcolor[HTML]{FF0000}{0.9} & \cellcolor[HTML]{FF0000}{0.969}\\
 \cline{2-6}
- & CCOC & \cellcolor[HTML]{FF0000}{0.852} & \cellcolor[HTML]{FFD700}{0.858} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{0.154}\\
+ & CCOC & \cellcolor[HTML]{FFD700}{0.861} & \cellcolor[HTML]{FFD700}{0.836} & \cellcolor[HTML]{FF0000}{0.31} & \cellcolor[HTML]{FF0000}{0.846}\\
 \cline{2-6}
- & ENOC & \cellcolor[HTML]{FF0000}{0.497} & \cellcolor[HTML]{FFD700}{0.719} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{NaN}\\
+ & ENOC & \cellcolor[HTML]{FFD700}{0.641} & \cellcolor[HTML]{FFD700}{0.741} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{0.72}\\
 \cline{2-6}
- & LGSC & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FFD700}{0.375} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{NaN}\\
+ & LGSC & \cellcolor[HTML]{FFD700}{0.7} & \cellcolor[HTML]{FFD700}{0.444} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{NaN}\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & \cellcolor[HTML]{FF0000}{0.839} & \cellcolor[HTML]{FFD700}{0.811} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{NaN}\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & \cellcolor[HTML]{FFD700}{0.848} & \cellcolor[HTML]{FFD700}{0.834} & \cellcolor[HTML]{FF0000}{NaN} & \cellcolor[HTML]{FF0000}{0.869}\\
 \cline{1-6}
- & HGSC & 0.926 & 0.888 & \cellcolor[HTML]{FF0000}{0.894} & 0.918\\
+ & HGSC & 0.924 & 0.885 & \cellcolor[HTML]{FF0000}{0.904} & 0.914\\
 \cline{2-6}
- & CCOC & 0.808 & 0.771 & \cellcolor[HTML]{FF0000}{NaN} & 0.8\\
+ & CCOC & 0.827 & 0.788 & \cellcolor[HTML]{FF0000}{NaN} & 0.8\\
 \cline{2-6}
- & ENOC & 0.59 & 0.545 & \cellcolor[HTML]{FF0000}{NaN} & 0.559\\
+ & ENOC & 0.616 & 0.505 & \cellcolor[HTML]{FF0000}{0.117} & 0.579\\
 \cline{2-6}
- & LGSC & 0.301 & 0.262 & \cellcolor[HTML]{FF0000}{0.035} & 0.308\\
+ & LGSC & 0.279 & 0.24 & \cellcolor[HTML]{FF0000}{0.032} & 0.275\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.66 & 0.759 & \cellcolor[HTML]{FF0000}{0.096} & 0.732\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.722 & 0.692 & \cellcolor[HTML]{FF0000}{NaN} & 0.725\\
 \cline{1-6}
- & HGSC & \cellcolor[HTML]{FFD700}{0.976} & 0.973 & \cellcolor[HTML]{FFD700}{0.976} & 0.951\\
+ & HGSC & 0.968 & 0.971 & 0.974 & 0.962\\
 \cline{2-6}
- & CCOC & \cellcolor[HTML]{FFD700}{0.869} & 0.822 & \cellcolor[HTML]{FFD700}{0.87} & 0.8\\
+ & CCOC & 0.847 & 0.786 & 0.856 & 0.829\\
 \cline{2-6}
- & ENOC & \cellcolor[HTML]{FFD700}{0.734} & 0.629 & \cellcolor[HTML]{FFD700}{0.728} & 0.63\\
+ & ENOC & 0.71 & 0.669 & 0.699 & 0.608\\
 \cline{2-6}
- & LGSC & \cellcolor[HTML]{FFD700}{0.236} & 0.402 & \cellcolor[HTML]{FFD700}{0.394} & 0.409\\
+ & LGSC & 0.147 & 0.498 & 0.425 & 0.448\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & \cellcolor[HTML]{FFD700}{0.835} & 0.804 & \cellcolor[HTML]{FFD700}{0.814} & 0.756\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.828 & 0.82 & 0.807 & 0.766\\
 \cline{1-6}
- & HGSC & \cellcolor[HTML]{FFD700}{0.974} & \cellcolor[HTML]{FFD700}{0.973} & 0.975 & 0.957\\
+ & HGSC & \cellcolor[HTML]{90ee90}{0.977} & 0.975 & 0.974 & 0.963\\
 \cline{2-6}
- & CCOC & \cellcolor[HTML]{FFD700}{0.833} & \cellcolor[HTML]{FFD700}{0.782} & 0.846 & 0.817\\
+ & CCOC & 0.831 & 0.788 & 0.852 & 0.816\\
 \cline{2-6}
- & ENOC & \cellcolor[HTML]{FFD700}{0.701} & \cellcolor[HTML]{FFD700}{0.588} & 0.674 & 0.662\\
+ & ENOC & 0.703 & 0.673 & 0.686 & 0.612\\
 \cline{2-6}
- & LGSC & \cellcolor[HTML]{FFD700}{0.285} & \cellcolor[HTML]{FFD700}{0.519} & 0.433 & 0.4\\
+ & LGSC & 0.259 & 0.457 & 0.516 & 0.469\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & \cellcolor[HTML]{FFD700}{0.827} & \cellcolor[HTML]{FFD700}{0.825} & 0.805 & 0.784\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.847 & 0.844 & 0.829 & 0.794\\
 \cline{1-6}
- & HGSC & \cellcolor[HTML]{90ee90}{0.977} & 0.973 & 0.97 & 0.962\\
+ & HGSC & 0.972 & 0.972 & 0.969 & 0.954\\
 \cline{2-6}
- & CCOC & 0.868 & 0.825 & 0.843 & 0.799\\
+ & CCOC & 0.838 & 0.803 & 0.835 & 0.829\\
 \cline{2-6}
- & ENOC & 0.742 & 0.659 & 0.661 & 0.638\\
+ & ENOC & 0.708 & 0.676 & 0.669 & 0.623\\
 \cline{2-6}
- & LGSC & 0.456 & 0.495 & 0.384 & 0.436\\
+ & LGSC & 0.273 & 0.516 & 0.362 & 0.406\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.808 & 0.801 & 0.782 & 0.764\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.795 & 0.833 & 0.819 & 0.767\\
 \hline
 \end{tabular}
 \end{table}
@@ -1227,15 +1199,15 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \cline{2-5}
 Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.767 & 0.81 & 0.5 & 0.502\\
+none & 0.823 & 0.824 & 0.51 & 0.801\\
 \hline
-down & 0.884 & \cellcolor[HTML]{90ee90}{0.897} & 0.5 & 0.896\\
+down & 0.895 & 0.88 & 0.5 & 0.89\\
 \hline
-up & 0.828 & 0.837 & 0.852 & 0.895\\
+up & 0.814 & 0.851 & 0.871 & \cellcolor[HTML]{90ee90}{0.897}\\
 \hline
-smote & 0.835 & 0.818 & 0.867 & 0.886\\
+smote & 0.84 & 0.856 & 0.879 & 0.896\\
 \hline
-hybrid & 0.871 & 0.863 & 0.861 & 0.884\\
+hybrid & 0.847 & 0.87 & 0.867 & 0.894\\
 \hline
 \end{tabular}
 \end{table}
@@ -1259,55 +1231,55 @@ hybrid & 0.871 & 0.863 & 0.861 & 0.884\\
 \cline{3-6}
 Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & HGSC & 0.838 & 0.885 & 0.5 & 0.502\\
+ & HGSC & 0.881 & 0.889 & 0.511 & 0.873\\
 \cline{2-6}
- & CCOC & 0.894 & 0.899 & 0.5 & 0.508\\
+ & CCOC & 0.91 & 0.887 & 0.537 & 0.889\\
 \cline{2-6}
- & ENOC & 0.696 & 0.836 & 0.5 & 0.5\\
+ & ENOC & 0.783 & 0.858 & 0.5 & 0.821\\
 \cline{2-6}
- & LGSC & 0.5 & 0.55 & 0.5 & 0.5\\
+ & LGSC & 0.625 & 0.595 & 0.5 & 0.5\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.908 & 0.879 & 0.5 & 0.5\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.913 & 0.891 & 0.5 & 0.921\\
 \cline{1-6}
- & HGSC & 0.916 & 0.887 & 0.5 & 0.911\\
+ & HGSC & 0.915 & 0.89 & 0.5 & 0.909\\
 \cline{2-6}
- & CCOC & 0.914 & 0.902 & 0.5 & 0.901\\
+ & CCOC & 0.923 & 0.888 & 0.5 & 0.906\\
 \cline{2-6}
- & ENOC & 0.792 & 0.862 & 0.5 & 0.822\\
+ & ENOC & 0.829 & 0.835 & 0.5 & 0.82\\
 \cline{2-6}
- & LGSC & 0.897 & 0.935 & 0.5 & 0.929\\
+ & LGSC & 0.896 & 0.92 & 0.5 & 0.912\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.902 & 0.896 & 0.5 & 0.915\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.911 & 0.867 & 0.5 & 0.905\\
 \cline{1-6}
- & HGSC & 0.908 & 0.913 & 0.93 & 0.935\\
+ & HGSC & 0.889 & 0.905 & 0.937 & \cellcolor[HTML]{90ee90}{0.946}\\
 \cline{2-6}
- & CCOC & 0.913 & 0.899 & 0.917 & 0.887\\
+ & CCOC & 0.909 & 0.869 & 0.916 & 0.913\\
 \cline{2-6}
- & ENOC & 0.837 & 0.805 & 0.855 & 0.857\\
+ & ENOC & 0.821 & 0.83 & 0.853 & 0.838\\
 \cline{2-6}
- & LGSC & 0.565 & 0.696 & 0.63 & 0.882\\
+ & LGSC & 0.55 & 0.771 & 0.716 & 0.869\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.92 & 0.873 & 0.93 & 0.914\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.903 & 0.883 & 0.932 & 0.92\\
 \cline{1-6}
- & HGSC & 0.918 & 0.897 & 0.937 & 0.935\\
+ & HGSC & 0.927 & 0.928 & 0.935 & 0.944\\
 \cline{2-6}
- & CCOC & 0.91 & 0.86 & 0.915 & 0.894\\
+ & CCOC & 0.908 & 0.892 & 0.931 & 0.906\\
 \cline{2-6}
- & ENOC & 0.832 & 0.773 & 0.826 & 0.855\\
+ & ENOC & 0.851 & 0.841 & 0.826 & 0.831\\
 \cline{2-6}
- & LGSC & 0.597 & 0.681 & 0.728 & 0.818\\
+ & LGSC & 0.6 & 0.722 & 0.771 & 0.869\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.92 & 0.881 & 0.931 & 0.93\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.913 & 0.898 & 0.933 & 0.929\\
 \cline{1-6}
- & HGSC & 0.939 & 0.931 & 0.93 & \cellcolor[HTML]{90ee90}{0.941}\\
+ & HGSC & 0.927 & 0.928 & 0.936 & 0.938\\
 \cline{2-6}
- & CCOC & 0.922 & 0.893 & 0.92 & 0.88\\
+ & CCOC & 0.915 & 0.898 & 0.918 & 0.912\\
 \cline{2-6}
- & ENOC & 0.874 & 0.848 & 0.827 & 0.848\\
+ & ENOC & 0.858 & 0.843 & 0.844 & 0.843\\
 \cline{2-6}
- & LGSC & 0.697 & 0.761 & 0.711 & 0.837\\
+ & LGSC & 0.611 & 0.785 & 0.705 & 0.856\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.925 & 0.881 & 0.917 & 0.914\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.924 & 0.897 & 0.932 & 0.92\\
 \hline
 \end{tabular}
 \end{table}
@@ -1333,15 +1305,15 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \cline{2-5}
 Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0.727 & 0.79 & 0 & 0.008\\
+none & 0.776 & 0.793 & 0.038 & 0.782\\
 \hline
-down & 0.639 & 0.569 & 0 & 0.63\\
+down & 0.642 & 0.558 & 0 & 0.618\\
 \hline
-up & 0.81 & 0.783 & 0.814 & 0.717\\
+up & 0.772 & 0.775 & 0.802 & 0.754\\
 \hline
-smote & 0.796 & 0.772 & 0.799 & 0.743\\
+smote & 0.803 & 0.794 & \cellcolor[HTML]{90ee90}{0.808} & 0.761\\
 \hline
-hybrid & \cellcolor[HTML]{90ee90}{0.819} & 0.788 & 0.783 & 0.744\\
+hybrid & 0.788 & 0.792 & 0.784 & 0.734\\
 \hline
 \end{tabular}
 \end{table}
@@ -1365,55 +1337,55 @@ hybrid & \cellcolor[HTML]{90ee90}{0.819} & 0.788 & 0.783 & 0.744\\
 \cline{3-6}
 Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & HGSC & 0.761 & 0.834 & 0 & 0.008\\
+ & HGSC & 0.821 & 0.835 & 0.035 & 0.814\\
 \cline{2-6}
- & CCOC & 0.843 & 0.849 & 0 & 0.03\\
+ & CCOC & 0.852 & 0.826 & 0.119 & 0.836\\
 \cline{2-6}
- & ENOC & 0.479 & 0.705 & 0 & 0\\
+ & ENOC & 0.622 & 0.727 & 0 & 0.706\\
 \cline{2-6}
- & LGSC & 0 & 0.148 & 0 & 0\\
+ & LGSC & 0.279 & 0.264 & 0 & 0\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.83 & 0.803 & 0 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.84 & 0.827 & 0 & 0.863\\
 \cline{1-6}
- & HGSC & 0.695 & 0.589 & 0 & 0.671\\
+ & HGSC & 0.686 & 0.598 & 0 & 0.665\\
 \cline{2-6}
- & CCOC & 0.793 & 0.755 & 0 & 0.786\\
+ & CCOC & 0.813 & 0.773 & 0 & 0.785\\
 \cline{2-6}
- & ENOC & 0.57 & 0.512 & 0 & 0.531\\
+ & ENOC & 0.594 & 0.47 & 0 & 0.552\\
 \cline{2-6}
- & LGSC & 0.281 & 0.238 & 0 & 0.288\\
+ & LGSC & 0.258 & 0.216 & 0 & 0.252\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.64 & 0.747 & 0 & 0.718\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.707 & 0.676 & 0 & 0.711\\
 \cline{1-6}
- & HGSC & 0.86 & 0.848 & 0.872 & 0.776\\
+ & HGSC & 0.818 & 0.834 & 0.864 & 0.819\\
 \cline{2-6}
- & CCOC & 0.86 & 0.81 & 0.861 & 0.787\\
+ & CCOC & 0.836 & 0.773 & 0.846 & 0.817\\
 \cline{2-6}
- & ENOC & 0.721 & 0.61 & 0.713 & 0.607\\
+ & ENOC & 0.696 & 0.652 & 0.681 & 0.584\\
 \cline{2-6}
- & LGSC & 0.181 & 0.394 & 0.307 & 0.394\\
+ & LGSC & 0.137 & 0.489 & 0.416 & 0.437\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.826 & 0.795 & 0.804 & 0.743\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.82 & 0.812 & 0.797 & 0.755\\
 \cline{1-6}
- & HGSC & 0.856 & 0.842 & 0.869 & 0.795\\
+ & HGSC & \cellcolor[HTML]{90ee90}{0.875} & 0.865 & 0.865 & 0.824\\
 \cline{2-6}
- & CCOC & 0.822 & 0.769 & 0.836 & 0.805\\
+ & CCOC & 0.819 & 0.773 & 0.84 & 0.803\\
 \cline{2-6}
- & ENOC & 0.685 & 0.569 & 0.657 & 0.64\\
+ & ENOC & 0.687 & 0.655 & 0.67 & 0.588\\
 \cline{2-6}
- & LGSC & 0.22 & 0.409 & 0.422 & 0.386\\
+ & LGSC & 0.25 & 0.449 & 0.508 & 0.458\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.818 & 0.817 & 0.795 & 0.772\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.839 & 0.836 & 0.82 & 0.784\\
 \cline{1-6}
- & HGSC & \cellcolor[HTML]{90ee90}{0.876} & 0.857 & 0.844 & 0.815\\
+ & HGSC & 0.852 & 0.851 & 0.845 & 0.789\\
 \cline{2-6}
- & CCOC & 0.86 & 0.814 & 0.832 & 0.786\\
+ & CCOC & 0.826 & 0.79 & 0.823 & 0.816\\
 \cline{2-6}
- & ENOC & 0.728 & 0.639 & 0.644 & 0.615\\
+ & ENOC & 0.692 & 0.659 & 0.651 & 0.599\\
 \cline{2-6}
- & LGSC & 0.448 & 0.486 & 0.373 & 0.423\\
+ & LGSC & 0.264 & 0.507 & 0.351 & 0.391\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.798 & 0.791 & 0.771 & 0.751\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.784 & 0.825 & 0.809 & 0.756\\
 \hline
 \end{tabular}
 \end{table}
@@ -1439,15 +1411,15 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 \cline{2-5}
 Subsampling & rf & svm & xgb & mr\\
 \hline
-none & 0 & 0.255 & 0 & 0\\
+none & 0.293 & 0.389 & 0 & 0\\
 \hline
-down & 0.784 & \cellcolor[HTML]{90ee90}{0.831} & 0 & 0.815\\
+down & \cellcolor[HTML]{90ee90}{0.815} & 0.795 & 0 & 0.81\\
 \hline
-up & 0.375 & 0.561 & 0.555 & 0.809\\
+up & 0.246 & 0.71 & 0.602 & 0.666\\
 \hline
-smote & 0.393 & 0.524 & 0.732 & 0.653\\
+smote & 0.403 & 0.709 & 0.749 & 0.665\\
 \hline
-hybrid & 0.725 & 0.732 & 0.597 & 0.784\\
+hybrid & 0.415 & 0.747 & 0.598 & 0.794\\
 \hline
 \end{tabular}
 \end{table}
@@ -1471,55 +1443,55 @@ hybrid & 0.725 & 0.732 & 0.597 & 0.784\\
 \cline{3-6}
 Subsampling & Histotype & rf & svm & xgb & mr\\
 \hline
- & HGSC & 0.823 & 0.878 & 0 & 0.03\\
+ & HGSC & 0.873 & 0.882 & 0.094 & 0.863\\
 \cline{2-6}
- & CCOC & 0.888 & 0.893 & 0 & 0.058\\
+ & CCOC & 0.905 & 0.878 & 0.171 & 0.88\\
 \cline{2-6}
- & ENOC & 0.615 & 0.818 & 0 & 0\\
+ & ENOC & 0.753 & 0.844 & 0 & 0.797\\
 \cline{2-6}
- & LGSC & 0 & 0.197 & 0 & 0\\
+ & LGSC & 0.3 & 0.331 & 0 & 0\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.901 & 0.87 & 0 & 0\\
+\multirow{-5}{*}{\raggedright\arraybackslash none} & MUC & 0.909 & 0.88 & 0 & 0.916\\
 \cline{1-6}
- & HGSC & 0.915 & 0.883 & 0 & 0.909\\
+ & HGSC & 0.914 & 0.884 & 0 & 0.907\\
 \cline{2-6}
- & CCOC & 0.911 & 0.898 & 0 & 0.897\\
+ & CCOC & 0.92 & 0.88 & 0 & 0.9\\
 \cline{2-6}
- & ENOC & 0.758 & 0.857 & 0 & 0.803\\
+ & ENOC & 0.811 & 0.824 & 0 & 0.803\\
 \cline{2-6}
- & LGSC & 0.892 & 0.934 & 0 & 0.926\\
+ & LGSC & 0.891 & 0.918 & 0 & 0.909\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.897 & 0.888 & 0 & 0.909\\
+\multirow{-5}{*}{\raggedright\arraybackslash down} & MUC & 0.907 & 0.857 & 0 & 0.901\\
 \cline{1-6}
- & HGSC & 0.904 & 0.91 & 0.928 & 0.935\\
+ & HGSC & 0.883 & 0.901 & 0.936 & \cellcolor[HTML]{90ee90}{0.946}\\
 \cline{2-6}
- & CCOC & 0.908 & 0.893 & 0.913 & 0.881\\
+ & CCOC & 0.904 & 0.858 & 0.911 & 0.908\\
 \cline{2-6}
- & ENOC & 0.82 & 0.779 & 0.843 & 0.844\\
+ & ENOC & 0.798 & 0.81 & 0.842 & 0.823\\
 \cline{2-6}
- & LGSC & 0.278 & 0.555 & 0.453 & 0.876\\
+ & LGSC & 0.204 & 0.715 & 0.566 & 0.769\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.915 & 0.862 & 0.927 & 0.906\\
+\multirow{-5}{*}{\raggedright\arraybackslash up} & MUC & 0.897 & 0.872 & 0.928 & 0.916\\
 \cline{1-6}
- & HGSC & 0.915 & 0.891 & 0.937 & 0.934\\
+ & HGSC & 0.925 & 0.926 & 0.934 & 0.944\\
 \cline{2-6}
- & CCOC & 0.906 & 0.847 & 0.912 & 0.887\\
+ & CCOC & 0.903 & 0.885 & 0.928 & 0.902\\
 \cline{2-6}
- & ENOC & 0.814 & 0.735 & 0.805 & 0.844\\
+ & ENOC & 0.836 & 0.824 & 0.805 & 0.816\\
 \cline{2-6}
- & LGSC & 0.325 & 0.534 & 0.673 & 0.717\\
+ & LGSC & 0.346 & 0.657 & 0.715 & 0.77\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.914 & 0.87 & 0.926 & 0.925\\
+\multirow{-5}{*}{\raggedright\arraybackslash smote} & MUC & 0.909 & 0.89 & 0.93 & 0.925\\
 \cline{1-6}
- & HGSC & 0.938 & 0.93 & 0.929 & \cellcolor[HTML]{90ee90}{0.941}\\
+ & HGSC & 0.926 & 0.926 & 0.936 & 0.937\\
 \cline{2-6}
- & CCOC & 0.919 & 0.886 & 0.917 & 0.871\\
+ & CCOC & 0.91 & 0.892 & 0.914 & 0.908\\
 \cline{2-6}
- & ENOC & 0.864 & 0.834 & 0.802 & 0.837\\
+ & ENOC & 0.845 & 0.826 & 0.826 & 0.831\\
 \cline{2-6}
- & LGSC & 0.615 & 0.714 & 0.579 & 0.822\\
+ & LGSC & 0.363 & 0.744 & 0.568 & 0.828\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.919 & 0.872 & 0.911 & 0.908\\
+\multirow{-5}{*}{\raggedright\arraybackslash hybrid} & MUC & 0.92 & 0.889 & 0.929 & 0.916\\
 \hline
 \end{tabular}
 \end{table}
@@ -1528,7 +1500,7 @@ Subsampling & Histotype & rf & svm & xgb & mr\\
 
 \begin{center}\includegraphics{OV_Histotypes_RSF_files/figure-latex/per-class-metrics-1} \end{center}
 
-The 18 workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
+The 19 workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
 
 \subsection{Top Workflows}\label{top-workflows}
 
@@ -1567,7 +1539,7 @@ Misclassified cases from a previous step of the sequence of classifiers are not 
 \caption{Gene Optimization for Sequential Classifier}\label{fig:gene-seq}
 \end{figure}
 
-In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.9 when we reach 13 genes added, hence the optimal number of genes used will be n=28+13=41 The added genes are: CYP2C18, TFF3, KLK7, HNF1B, IL6, IGFBP1, SLC3A1, SERPINA5, WT1, CPNE8, EGFL6, GPR64 and MUC5B.
+In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.91 when we reach 12 genes added, hence the optimal number of genes used will be n=28+12=40 The added genes are: CYP2C18, TFF3, HNF1B, SLC3A1, MAP1LC3A, IL6, BRCA1, EGFL6, IGFBP1, MUC5B, BCL2 and WT1.
 
 \subsection{Two-Step Algorithm}\label{two-step-algorithm-1}
 
@@ -1580,7 +1552,7 @@ In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average 
 \caption{Gene Optimization for Two-Step Classifier}\label{fig:gene-2s}
 \end{figure}
 
-Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.85 when we reach 12 added. The optimal number of genes used will be n=28+12=40. The added genes are: CYP2C18, MUC5B, HNF1B, SLC3A1, IGFBP1, WT1, EGFL6, TFF3, MET, KLK7, CPNE8 and STC1.
+Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.84 when we reach 11 added. The optimal number of genes used will be n=28+11=39. The added genes are: CYP2C18, MUC5B, HNF1B, SLC3A1, EGFL6, WT1, TFF3, MET, IGFBP1, TP53 and KLK7.
 
 \section{Test Set Performance}\label{test-set-performance}
 
@@ -1628,13 +1600,13 @@ We can test 2 additional methods by using either the full set of genes or the op
 \hline
 Method & accuracy & sensitivity & specificity & f1 & bal\_accuracy & kappa & gmean\\
 \hline
-sequential\_full & 0.837 & 0.667 & 0.932 & 0.670 & 0.799 & 0.676 & 0.619\\
+sequential\_full & 0.832 & 0.646 & 0.927 & 0.664 & 0.786 & 0.660 & 0.599\\
 \hline
-sequential\_optimal & 0.826 & 0.641 & 0.927 & 0.658 & 0.784 & 0.652 & 0.595\\
+sequential\_optimal & 0.829 & 0.609 & 0.924 & 0.628 & 0.767 & 0.651 & 0.516\\
 \hline
-two\_step\_full & 0.837 & 0.680 & 0.932 & 0.686 & 0.806 & 0.676 & 0.645\\
+two\_step\_full & 0.838 & 0.674 & 0.928 & 0.694 & 0.801 & 0.673 & 0.638\\
 \hline
-two\_step\_optimal & 0.823 & 0.658 & 0.928 & 0.659 & 0.793 & 0.648 & 0.621\\
+two\_step\_optimal & 0.832 & 0.672 & 0.923 & 0.694 & 0.798 & 0.655 & 0.639\\
 \hline
 \end{tabular}
 \end{table}
@@ -1658,61 +1630,61 @@ two\_step\_optimal & 0.823 & 0.658 & 0.928 & 0.659 & 0.793 & 0.648 & 0.621\\
 \cline{3-7}
 Method & Metric & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
- & accuracy & 0.869 & 0.958 & 0.897 & 0.970 & 0.978\\
+ & accuracy & 0.866 & 0.961 & 0.894 & 0.975 & 0.980\\
 \cline{2-7}
- & sensitivity & 0.936 & 0.867 & 0.509 & 0.385 & 0.704\\
+ & sensitivity & 0.948 & 0.853 & 0.481 & 0.385 & 0.704\\
 \cline{2-7}
- & specificity & 0.742 & 0.970 & 0.974 & 0.983 & 0.990\\
+ & specificity & 0.710 & 0.975 & 0.976 & 0.987 & 0.992\\
 \cline{2-7}
- & f1 & 0.904 & 0.828 & 0.621 & 0.345 & 0.731\\
+ & f1 & 0.903 & 0.837 & 0.600 & 0.385 & 0.745\\
 \cline{2-7}
- & bal\_accuracy & 0.839 & 0.918 & 0.742 & 0.684 & 0.847\\
+ & bal\_accuracy & 0.829 & 0.914 & 0.728 & 0.686 & 0.848\\
 \cline{2-7}
- & kappa & 0.701 & 0.804 & 0.565 & 0.330 & 0.719\\
+ & kappa & 0.689 & 0.815 & 0.543 & 0.372 & 0.735\\
 \cline{2-7}
-\multirow{-7}{*}{\raggedright\arraybackslash two\_step\_full} & gmean & 0.833 & 0.917 & 0.704 & 0.615 & 0.835\\
+\multirow{-7}{*}{\raggedright\arraybackslash two\_step\_full} & gmean & 0.821 & 0.912 & 0.685 & 0.616 & 0.835\\
 \cline{1-7}
- & accuracy & 0.865 & 0.946 & 0.891 & 0.966 & 0.978\\
+ & accuracy & 0.860 & 0.963 & 0.885 & 0.977 & 0.980\\
 \cline{2-7}
- & sensitivity & 0.934 & 0.853 & 0.453 & 0.385 & 0.667\\
+ & sensitivity & 0.953 & 0.853 & 0.425 & 0.462 & 0.667\\
 \cline{2-7}
- & specificity & 0.733 & 0.958 & 0.978 & 0.978 & 0.992\\
+ & specificity & 0.683 & 0.977 & 0.976 & 0.987 & 0.994\\
 \cline{2-7}
- & f1 & 0.901 & 0.785 & 0.578 & 0.312 & 0.720\\
+ & f1 & 0.899 & 0.842 & 0.549 & 0.444 & 0.735\\
 \cline{2-7}
- & bal\_accuracy & 0.833 & 0.906 & 0.715 & 0.681 & 0.829\\
+ & bal\_accuracy & 0.818 & 0.915 & 0.700 & 0.724 & 0.830\\
 \cline{2-7}
- & kappa & 0.690 & 0.754 & 0.521 & 0.296 & 0.709\\
+ & kappa & 0.672 & 0.821 & 0.489 & 0.433 & 0.724\\
 \cline{2-7}
-\multirow{-7}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.827 & 0.904 & 0.665 & 0.613 & 0.813\\
+\multirow{-7}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.807 & 0.913 & 0.644 & 0.675 & 0.814\\
 \cline{1-7}
- & accuracy & 0.869 & 0.964 & 0.899 & 0.975 & 0.966\\
+ & accuracy & 0.866 & 0.963 & 0.890 & 0.975 & 0.970\\
 \cline{2-7}
- & sensitivity & 0.936 & 0.867 & 0.519 & 0.308 & 0.704\\
+ & sensitivity & 0.948 & 0.827 & 0.481 & 0.308 & 0.667\\
 \cline{2-7}
- & specificity & 0.742 & 0.977 & 0.974 & 0.989 & 0.977\\
+ & specificity & 0.710 & 0.981 & 0.970 & 0.989 & 0.984\\
 \cline{2-7}
- & f1 & 0.904 & 0.850 & 0.629 & 0.333 & 0.633\\
+ & f1 & 0.903 & 0.838 & 0.590 & 0.333 & 0.655\\
 \cline{2-7}
- & bal\_accuracy & 0.839 & 0.922 & 0.746 & 0.648 & 0.840\\
+ & bal\_accuracy & 0.829 & 0.904 & 0.726 & 0.648 & 0.825\\
 \cline{2-7}
- & kappa & 0.701 & 0.829 & 0.573 & 0.321 & 0.616\\
+ & kappa & 0.689 & 0.817 & 0.530 & 0.321 & 0.639\\
 \cline{2-7}
-\multirow{-7}{*}{\raggedright\arraybackslash sequential\_full} & gmean & 0.833 & 0.920 & 0.711 & 0.552 & 0.829\\
+\multirow{-7}{*}{\raggedright\arraybackslash sequential\_full} & gmean & 0.821 & 0.900 & 0.683 & 0.552 & 0.810\\
 \cline{1-7}
- & accuracy & 0.865 & 0.960 & 0.882 & 0.978 & 0.967\\
+ & accuracy & 0.863 & 0.964 & 0.890 & 0.974 & 0.967\\
 \cline{2-7}
- & sensitivity & 0.936 & 0.840 & 0.491 & 0.308 & 0.630\\
+ & sensitivity & 0.950 & 0.840 & 0.472 & 0.154 & 0.630\\
 \cline{2-7}
- & specificity & 0.729 & 0.975 & 0.959 & 0.992 & 0.982\\
+ & specificity & 0.697 & 0.981 & 0.972 & 0.990 & 0.982\\
 \cline{2-7}
- & f1 & 0.901 & 0.829 & 0.578 & 0.364 & 0.618\\
+ & f1 & 0.901 & 0.846 & 0.585 & 0.190 & 0.618\\
 \cline{2-7}
- & bal\_accuracy & 0.832 & 0.908 & 0.725 & 0.650 & 0.806\\
+ & bal\_accuracy & 0.824 & 0.910 & 0.722 & 0.572 & 0.806\\
 \cline{2-7}
- & kappa & 0.689 & 0.806 & 0.512 & 0.353 & 0.601\\
+ & kappa & 0.681 & 0.825 & 0.525 & 0.178 & 0.601\\
 \cline{2-7}
-\multirow{-7}{*}{\raggedright\arraybackslash sequential\_optimal} & gmean & 0.826 & 0.905 & 0.686 & 0.552 & 0.786\\
+\multirow{-7}{*}{\raggedright\arraybackslash sequential\_optimal} & gmean & 0.814 & 0.908 & 0.677 & 0.390 & 0.786\\
 \hline
 \end{tabular}
 \end{table}
@@ -1763,7 +1735,7 @@ Method & Metric & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
 Method & accuracy & sensitivity & specificity & f1 & bal\_accuracy & kappa & gmean\\
 \hline
-two\_step\_optimal & 0.851 & 0.729 & 0.939 & 0.663 & 0.834 & 0.663 & 0.7\\
+two\_step\_optimal & 0.87 & 0.713 & 0.94 & 0.679 & 0.826 & 0.691 & 0.662\\
 \hline
 \end{tabular}
 \end{table}
@@ -1787,19 +1759,19 @@ two\_step\_optimal & 0.851 & 0.729 & 0.939 & 0.663 & 0.834 & 0.663 & 0.7\\
 \cline{3-7}
 Method & Metric & HGSC & CCOC & ENOC & LGSC & MUC\\
 \hline
- & accuracy & 0.875 & 0.967 & 0.928 & 0.971 & 0.960\\
+ & accuracy & 0.894 & 0.972 & 0.928 & 0.974 & 0.972\\
 \cline{2-7}
- & sensitivity & 0.901 & 0.938 & 0.556 & 0.444 & 0.808\\
+ & sensitivity & 0.934 & 0.937 & 0.514 & 0.333 & 0.846\\
 \cline{2-7}
- & specificity & 0.802 & 0.970 & 0.979 & 0.982 & 0.965\\
+ & specificity & 0.776 & 0.975 & 0.984 & 0.987 & 0.976\\
 \cline{2-7}
- & f1 & 0.915 & 0.833 & 0.649 & 0.381 & 0.538\\
+ & f1 & 0.929 & 0.855 & 0.628 & 0.343 & 0.638\\
 \cline{2-7}
- & bal\_accuracy & 0.851 & 0.954 & 0.767 & 0.713 & 0.886\\
+ & bal\_accuracy & 0.855 & 0.956 & 0.749 & 0.660 & 0.911\\
 \cline{2-7}
- & kappa & 0.682 & 0.815 & 0.610 & 0.367 & 0.520\\
+ & kappa & 0.718 & 0.840 & 0.590 & 0.330 & 0.624\\
 \cline{2-7}
-\multirow{-7}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.850 & 0.953 & 0.737 & 0.661 & 0.883\\
+\multirow{-7}{*}{\raggedright\arraybackslash two\_step\_optimal} & gmean & 0.852 & 0.956 & 0.711 & 0.574 & 0.909\\
 \hline
 \end{tabular}
 \end{table}

@@ -12,13 +12,10 @@ eq:f1-macro
 eq:kappa
 eq:bal-accuracy
 eq:gmean
-tab:preqc-hist-codeset
-tab:train-all-hist-codeset
-tab:train-hist-codeset
+tab:codeset-counts
+tab:hist-codeset
 tab:hist-conf-val
-tab:cohort-counts
 tab:cohort-dist
-tab:qc-failed
 fig:qc-gd-snr-all
 fig:qc-gd-snr-zoomed
 fig:genes-cs13-rand1
@@ -96,8 +93,8 @@ balanced-accuracy
 geometric-mean
 auc
 distributions
+codeset-counts
 histotypes-in-classifier-data
-cohort-counts
 cohorts-in-classifier-data
 quality-control-1
 failed-samples
