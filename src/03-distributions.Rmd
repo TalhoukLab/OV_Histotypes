@@ -19,16 +19,16 @@ n_coh <-
 n_qc <- lengths(list(cs1_samples, cs2_samples, cs3_samples))
 n_ref_norm <- lengths(list(cs1_samples_X, cs2_samples_X, cs3_samples_X))
 n_train <- map_int(list(cs1_train, cs2_train, cs3_train), nrow)
-n_train_hist <- train_ref_all %>% count(CodeSet) %>% deframe()
-n_train_uniq <- train_ref %>% count(CodeSet) %>% deframe()
+n_train_uniq <- train_ref_all %>% count(CodeSet) %>% deframe()
+n_train_hist <- train_ref %>% count(CodeSet) %>% deframe()
 
 codeset_counts <- list(
   `Selected Cohorts` = n_coh,
   QC = n_qc,
   `Normalized to Reference` = n_ref_norm,
   `CS3: remove test sets, add AOC/USC` = n_train,
-  `Major Histotypes` = n_train_hist,
-  `Removed Duplicates` = n_train_uniq
+  `Removed Duplicates` = n_train_uniq,
+  `Major Histotypes` = n_train_hist
 ) %>%
   map(set_names, c("CS1", "CS2", "CS3")) %>%
   bind_rows(.id = "Processing Stage") %>%
