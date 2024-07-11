@@ -107,22 +107,30 @@ cs1_exp_coh <- cs1_exp %>% filter(FileName %in% gsub("^X", "", cs1_samples_coh))
 cs2_exp_coh <- cs2_exp %>% filter(FileName %in% gsub("^X", "", cs2_samples_coh))
 cs3_exp_coh <- cs3_exp %>% filter(FileName %in% gsub("^X", "", cs3_samples_coh))
 
-# Run QC on CS1/2/3 from selected cohorts
-cs1_qc <- NanoStringQC(raw = cs1_coh, exp = cs1_exp_coh, detect = 50, sn = 100)
-cs2_qc <- NanoStringQC(raw = cs2_coh, exp = cs2_exp_coh, detect = 50, sn = 100)
-cs3_qc <- NanoStringQC(raw = cs3_coh, exp = cs3_exp_coh, detect = 50, sn = 100)
+# Samples that failed QC from selected cohorts on CS1/2/3
+cs1_qc_failed <-
+  NanoStringQC(raw = cs1_coh, exp = cs1_exp_coh, detect = 50, sn = 100) %>%
+  filter(QCFlag == "Failed") %>%
+  pull(FileName) %>%
+  paste0("X", .)
+cs2_qc_failed <-
+  NanoStringQC(raw = cs2_coh, exp = cs2_exp_coh, detect = 50, sn = 100) %>%
+  filter(QCFlag == "Failed") %>%
+  pull(FileName) %>%
+  paste0("X", .)
+cs3_qc_failed <-
+  NanoStringQC(raw = cs3_coh, exp = cs3_exp_coh, detect = 50, sn = 100) %>%
+  filter(QCFlag == "Failed") %>%
+  pull(FileName) %>%
+  paste0("X", .)
 
-# Samples that failed QC
-cs1_qc_failed <- filter(cs1_qc, QCFlag == "Failed")[["FileName"]]
-cs2_qc_failed <- filter(cs2_qc, QCFlag == "Failed")[["FileName"]]
-cs3_qc_failed <- filter(cs3_qc, QCFlag == "Failed")[["FileName"]]
-
-cs1_samples <- setdiff(cs1_samples_coh, paste0("X", cs1_qc_failed))
-cs2_samples <- setdiff(cs2_samples_coh, paste0("X", cs2_qc_failed))
-cs3_samples <- setdiff(cs3_samples_coh, paste0("X", cs3_qc_failed))
+cs1_samples <- setdiff(cs1_samples_coh, cs1_qc_failed)
+cs2_samples <- setdiff(cs2_samples_coh, cs2_qc_failed)
+cs3_samples <- setdiff(cs3_samples_coh, cs3_qc_failed)
 
 cs123_samples <- gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))
 
+# Cohorts selected, QC fails removed
 cs1_coh_qc <- cs1_coh %>%
   select(Code.Class, Name, Accession, all_of(cs1_samples))
 cs2_coh_qc <- cs2_coh %>%
