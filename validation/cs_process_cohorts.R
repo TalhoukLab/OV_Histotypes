@@ -108,18 +108,26 @@ cs2_exp_coh <- cs2_exp %>% filter(FileName %in% gsub("^X", "", cs2_samples_coh))
 cs3_exp_coh <- cs3_exp %>% filter(FileName %in% gsub("^X", "", cs3_samples_coh))
 
 # Samples that failed QC from selected cohorts on CS1/2/3
+cs1_qc <-
+  NanoStringQC(raw = cs1_coh, exp = cs1_exp_coh, detect = 50, sn = 100)
 cs1_qc_failed <-
-  NanoStringQC(raw = cs1_coh, exp = cs1_exp_coh, detect = 50, sn = 100) %>%
+  cs1_qc %>%
   filter(QCFlag == "Failed") %>%
   pull(FileName) %>%
   paste0("X", .)
+
+cs2_qc <-
+  NanoStringQC(raw = cs2_coh, exp = cs2_exp_coh, detect = 50, sn = 100)
 cs2_qc_failed <-
-  NanoStringQC(raw = cs2_coh, exp = cs2_exp_coh, detect = 50, sn = 100) %>%
+  cs2_qc %>%
   filter(QCFlag == "Failed") %>%
   pull(FileName) %>%
   paste0("X", .)
+
+cs3_qc <-
+  NanoStringQC(raw = cs3_coh, exp = cs3_exp_coh, detect = 50, sn = 100)
 cs3_qc_failed <-
-  NanoStringQC(raw = cs3_coh, exp = cs3_exp_coh, detect = 50, sn = 100) %>%
+  cs3_qc %>%
   filter(QCFlag == "Failed") %>%
   pull(FileName) %>%
   paste0("X", .)
