@@ -176,16 +176,24 @@ We use an aggregated `QCFlag` that considers a sample to have failed QC if any o
 - `normFlag`: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the [%GD vs. SNR] relationship below.
 
 ```{r qc-failed}
-qc_failed <- bind_rows(cs1_qc, cs2_qc, cs3_qc) %>%
-  count(CodeSet, linFlag, imagingFlag, spcFlag, normFlag, QCFlag) %>%
-  filter(QCFlag == "Failed" ) %>%
-  add_count(CodeSet, wt = n, name = "CodeSet Total") %>% 
-  relocate(`CodeSet Total`, .after = CodeSet)
+qc_failed <-
+  bind_rows(cs1_qc, cs2_qc, cs3_qc) %>% 
+  droplevels() %>% 
+  tbl_summary(
+    by = CodeSet,
+    label = list(
+      linFlag ~ "Linearity",
+      imagingFlag ~ "Imaging",
+      spcFlag ~ "Smallest Positive Control",
+      normFlag ~ "Normality",
+      QCFlag ~ "Overall QC"
+    ),
+    include = matches("(?<!bd)Flag", perl = TRUE)
+  ) %>% 
+  bold_labels() %>% 
+  modify_header(label ~ "**Quality Control Flag**")
 
-qc_failed %>% 
-  kable(caption = "Number of failed samples by CodeSet and fail condition") %>% 
-  kable_styling() %>% 
-  collapse_rows(columns = 1:2)
+qc_failed
 ```
 
 ### %GD vs. SNR
