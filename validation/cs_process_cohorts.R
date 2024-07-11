@@ -6,6 +6,7 @@ library(naniar)
 library(nanostringr)
 library(ottaOvca)
 library(knitr)
+library(gtsummary)
 library(here)
 
 
