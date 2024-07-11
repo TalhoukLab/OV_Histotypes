@@ -243,8 +243,12 @@ train_ref_all <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
+  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   inner_join(transmute(cohorts, FileName = gsub("^X", "", col_name), cohort),
              by = "FileName") %>%
+  column_to_rownames("FileName")
+
+train_ref <- train_ref_all %>%
   mutate(
     CodeSet_Site = fct_cross(CodeSet, site, sep = "_") %>%
       fct_relevel(
@@ -259,11 +263,7 @@ train_ref_all <-
   arrange(CodeSet_Site) %>%
   filter(!duplicated(ottaID)) %>%
   select(-CodeSet_Site) %>%
-  arrange(CodeSet) %>%
-  column_to_rownames("FileName")
-
-train_ref <- train_ref_all %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC"))
+  arrange(CodeSet)
 
 train_data <- select(train_ref, where(is.double))
 train_class <- train_ref[["revHist"]]
