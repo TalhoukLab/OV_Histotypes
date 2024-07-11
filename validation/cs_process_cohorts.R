@@ -59,17 +59,7 @@ cs1_exp <- filter(annot_all, CodeSet == "CS1")
 cs2_exp <- filter(annot_all, CodeSet == "CS2")
 cs3_exp <- filter(annot_all, CodeSet == "CS3")
 
-# Run QC on CS1/2/3
-cs1_qc <- NanoStringQC(raw = cs1, exp = cs1_exp, detect = 50, sn = 100)
-cs2_qc <- NanoStringQC(raw = cs2, exp = cs2_exp, detect = 50, sn = 100)
-cs3_qc <- NanoStringQC(raw = cs3, exp = cs3_exp, detect = 50, sn = 100)
-
-# Samples that failed QC
-cs1_qc_failed <- filter(cs1_qc, QCFlag == "Failed")[["FileName"]]
-cs2_qc_failed <- filter(cs2_qc, QCFlag == "Failed")[["FileName"]]
-cs3_qc_failed <- filter(cs3_qc, QCFlag == "Failed")[["FileName"]]
-
-# Filter for specific cohorts and extract samples
+# Select specific cohorts and extract samples
 cs1_samples_coh <- cohorts %>%
   filter(file_source == "cs1",
          cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL")) %>%
@@ -108,25 +98,42 @@ cs3_samples_coh <- cohorts %>%
   ) %>%
   pull(col_name)
 
+# Select only samples from these cohorts in the data and expression
+cs1_coh <- cs1 %>% select(Code.Class, Name, Accession, all_of(cs1_samples_coh))
+cs2_coh <- cs2 %>% select(Code.Class, Name, Accession, all_of(cs2_samples_coh))
+cs3_coh <- cs3 %>% select(Code.Class, Name, Accession, all_of(cs3_samples_coh))
+
+cs1_exp_coh <- cs1_exp %>% filter(FileName %in% gsub("^X", "", cs1_samples_coh))
+cs2_exp_coh <- cs2_exp %>% filter(FileName %in% gsub("^X", "", cs2_samples_coh))
+cs3_exp_coh <- cs3_exp %>% filter(FileName %in% gsub("^X", "", cs3_samples_coh))
+
+# Run QC on CS1/2/3 from selected cohorts
+cs1_qc <- NanoStringQC(raw = cs1_coh, exp = cs1_exp_coh, detect = 50, sn = 100)
+cs2_qc <- NanoStringQC(raw = cs2_coh, exp = cs2_exp_coh, detect = 50, sn = 100)
+cs3_qc <- NanoStringQC(raw = cs3_coh, exp = cs3_exp_coh, detect = 50, sn = 100)
+
+# Samples that failed QC
+cs1_qc_failed <- filter(cs1_qc, QCFlag == "Failed")[["FileName"]]
+cs2_qc_failed <- filter(cs2_qc, QCFlag == "Failed")[["FileName"]]
+cs3_qc_failed <- filter(cs3_qc, QCFlag == "Failed")[["FileName"]]
+
 cs1_samples <- setdiff(cs1_samples_coh, paste0("X", cs1_qc_failed))
 cs2_samples <- setdiff(cs2_samples_coh, paste0("X", cs2_qc_failed))
 cs3_samples <- setdiff(cs3_samples_coh, paste0("X", cs3_qc_failed))
 
 cs123_samples <- gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))
 
-# Select only samples from these cohorts in the data
-cs1_coh1 <- cs1 %>% select(Code.Class, Name, Accession, all_of(cs1_samples_coh))
-cs2_coh1 <- cs2 %>% select(Code.Class, Name, Accession, all_of(cs2_samples_coh))
-cs3_coh1 <- cs3 %>% select(Code.Class, Name, Accession, all_of(cs3_samples_coh))
-
-cs1_coh <- cs1_coh1 %>% select(Code.Class, Name, Accession, all_of(cs1_samples))
-cs2_coh <- cs2_coh1 %>% select(Code.Class, Name, Accession, all_of(cs2_samples))
-cs3_coh <- cs3_coh1 %>% select(Code.Class, Name, Accession, all_of(cs3_samples))
+cs1_coh_qc <- cs1_coh %>%
+  select(Code.Class, Name, Accession, all_of(cs1_samples))
+cs2_coh_qc <- cs2_coh %>%
+  select(Code.Class, Name, Accession, all_of(cs2_samples))
+cs3_coh_qc <- cs3_coh %>%
+  select(Code.Class, Name, Accession, all_of(cs3_samples))
 
 # Normalize to housekeeping genes
-cs1_norm <- HKnorm(cs1_coh)
-cs2_norm <- HKnorm(cs2_coh)
-cs3_norm <- HKnorm(cs3_coh)
+cs1_norm <- HKnorm(cs1_coh_qc)
+cs2_norm <- HKnorm(cs2_coh_qc)
+cs3_norm <- HKnorm(cs3_coh_qc)
 
 # Filter annotations for CS1/CS2/CS3 samples
 annot_cs123 <- annot_all %>%
