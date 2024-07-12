@@ -145,23 +145,41 @@ knitr::kable(hist_conf_val,
              caption = "Histotype Distribution in Confirmation and Validation Sets")
 ```
 
-## Cohorts in Classifier Data
+## Cohort Distribution
 
-```{r cohort-dist}
-cohort_dist <- list(Training = train_ref,
-                    Confirmation = conf_ref,
-                    Validation = val_ref) %>%
-  map(~ count(.x, CodeSet, cohort)) %>%
-  list_rbind(names_to = "Data") %>%
-  rename(Cohort = cohort) %>% 
-  pivot_wider(
-    names_from = "Data",
-    values_from = "n",
-    values_fill = list(n = 0)
-  )
+```{r cohorts-dist}
+cohorts_dist <-
+  cohorts %>%
+  filter(col_name %in% c(cs1_samples_coh, cs2_samples_coh, cs3_samples_coh)) %>%
+  mutate(CodeSet = toupper(file_source),
+         cohort = factor(
+           cohort,
+           levels = c(
+             "OOU",
+             "OOUE",
+             "VOA",
+             "OVAR3",
+             "ICON7",
+             "MAYO",
+             "DOVE4",
+             "TNCO",
+             "MTL",
+             "JAPAN",
+             "POOL-CTRL",
+             "POOL-1",
+             "POOL-2",
+             "POOL-3"
+           )
+         )) %>%
+  tbl_summary(
+    by = CodeSet,
+    label = list(cohort ~ "Cohort"),
+    include = c(CodeSet, cohort)
+  ) %>%
+  modify_header(label ~ "**CodeSet**") %>% 
+  modify_caption(caption = "Pre-QC Cohort Distribution by CodeSet")
 
-knitr::kable(cohort_dist,
-             caption = "Cohort Distribution in Training, Confirmation, and Validation Sets")
+cohorts_dist
 ```
 
 ## Quality Control
