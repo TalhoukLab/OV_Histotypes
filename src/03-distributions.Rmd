@@ -191,7 +191,8 @@ qc_failed <-
     include = matches("(?<!bd)Flag", perl = TRUE)
   ) %>% 
   bold_labels() %>% 
-  modify_header(label ~ "**Quality Control Flag**")
+  modify_header(label ~ "**Quality Control Flag**") %>% 
+  modify_caption(caption = "Quality Control Summary")
 
 qc_failed
 ```
