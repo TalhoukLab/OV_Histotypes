@@ -40,38 +40,70 @@ codeset_counts %>%
   kbl(caption = "Training Set Counts by CodeSet and Processing Stage")
 ```
 
-## Histotypes in Classifier Data
+## Histotype Distribution
 
-```{r preqc-hist-codeset}
-cs3_train_samples_preqc <- cohorts %>%
-  filter(
-    file_source == "cs3",
-    cohort %in% c("DOVE4", "OOU", "OOUE", "TNCO", "VOA", "POOL-1", "POOL-2", "POOL-3"),
-    !cohort %in% c("TNCO", "DOVE4"),
-    !grepl("pool", col_name, ignore.case = TRUE)
-  ) %>%
-  pull(col_name)
+```{r train-cohort-codeset}
+train_cohort_codeset <- hist_all %>%
+  filter(FileName %in% gsub("^X", "", c(
+    cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
+  ))) %>% 
+  mutate(revHist = revHist %>%
+           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
+           fct_na_value_to_level(level = "Other")) %>%
+  droplevels() %>% 
+  describeBy(
+    var.names = "revHist",
+    var.labels = "Histotype",
+    by1 = "CodeSet",
+    test = FALSE,
+    total = "bottom",
+    bold_var = FALSE,
+    fill = TRUE
+  )
+```
 
-preqc_df <-
-  list(list(cs1, cs2, cs3),
-       list(cs1_samples_coh, cs2_samples_coh, cs3_train_samples_preqc)) %>%
-  pmap( ~ {
-    ..1 %>%
-      dplyr::select(Name, all_of(..2)) %>%
-      column_to_rownames("Name") %>%
-      t() %>%
-      as.data.frame() %>%
-      select(all_of(common_genes123))
-  }) %>% 
-  bind_rows() %>%
+```{r train-qc-codeset}
+train_qc_codeset <- hist %>%
+  filter(FileName %in% gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))) %>%
+  mutate(revHist = revHist %>%
+           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
+           fct_na_value_to_level(level = "Other")) %>%
+  describeBy(
+    var.names = "revHist",
+    var.labels = "Histotype",
+    by1 = "CodeSet",
+    test = FALSE,
+    total = "bottom",
+    bold_var = FALSE,
+    fill = TRUE
+  )
+```
+
+```{r train-norm-codeset}
+train_norm_codeset <- hist %>%
+  filter(FileName %in% gsub("^X", "", c(cs1_samples_X, cs2_samples_X, cs3_samples_X))) %>%
+  mutate(revHist = revHist %>%
+           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
+           fct_na_value_to_level(level = "Other")) %>%
+  describeBy(
+    var.names = "revHist",
+    var.labels = "Histotype",
+    by1 = "CodeSet",
+    test = FALSE,
+    total = "bottom",
+    bold_var = FALSE,
+    fill = TRUE
+  )
+```
+
+```{r train-cs3-processing-codeset}
+train_cs3_processing_codeset <- 
+  bind_rows(cs1_train, cs2_train, cs3_train) %>%
   rownames_to_column("FileName") %>%
-  mutate(FileName = gsub("^X", "", FileName)) %>% 
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
-
-preqc_hist_codeset <- preqc_df %>% 
-  mutate(revHist = fct_infreq(revHist)) %>% 
+  inner_join(hist, by = "FileName") %>% 
+  mutate(revHist = revHist %>%
+           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
+           fct_na_value_to_level(level = "Other")) %>%
   describeBy(
     var.names = "revHist",
     var.labels = "Histotype",
@@ -97,8 +129,8 @@ train_all_hist_codeset <- train_ref_all %>%
   )
 ```
 
-```{r train-hist-codeset}
-train_hist_codeset <- train_ref %>% 
+```{r train-dedup-codeset}
+train_dedup_codeset <- train_ref %>% 
   mutate(revHist = fct_infreq(revHist)) %>% 
   describeBy(
     var.names = "revHist",
@@ -112,16 +144,29 @@ train_hist_codeset <- train_ref %>%
 ```
 
 ```{r hist-codeset}
-bind_rows(preqc_hist_codeset,
-          train_all_hist_codeset,
-          train_hist_codeset) %>%
+hist_codeset <-
+  bind_rows(
+    train_cohort_codeset,
+    train_qc_codeset,
+    train_norm_codeset,
+    train_cs3_processing_codeset,
+    train_all_hist_codeset,
+    train_dedup_codeset
+  )
+
+hist_codeset %>%
   kbl(caption = "Histotype Distribution by CodeSet and Processing Stage") %>%
   kable_styling() %>%
-  pack_rows(index = c(
-    "Pre-QC" = 6,
-    "Major Histotypes" = 6,
-    "Deduplicated" = 6
-  )) %>% 
+  pack_rows(
+    index = c(
+      "Selected Cohorts" = 7,
+      "QC" = 7,
+      "Normalized to Reference" = 7,
+      "Combine CS3 Training with AOC/USC sites" = 7,
+      "Major Histotypes" = 6,
+      "Deduplicated" = 6
+    )
+  ) %>%
   collapse_rows(columns = 1)
 ```
 
