@@ -26,9 +26,9 @@ codeset_counts <- list(
   `Selected Cohorts` = n_coh,
   QC = n_qc,
   `Normalized to Reference` = n_ref_norm,
-  `CS3: remove test sets, add AOC/USC` = n_train,
+  `Combine CS3 Training with AOC/USC sites` = n_train,
   `Major Histotypes` = n_train_hist,
-  `Removed Duplicates` = n_train_uniq
+  `Deduplicated` = n_train_uniq
 ) %>%
   map(set_names, c("CS1", "CS2", "CS3")) %>%
   bind_rows(.id = "Processing Stage") %>%
