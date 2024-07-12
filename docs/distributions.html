@@ -171,7 +171,7 @@ Normalized to Reference
 </tr>
 <tr>
 <td style="text-align:left;">
-CS3: remove test sets, add AOC/USC
+Combine CS3 Training with AOC/USC sites
 </td>
 <td style="text-align:right;">
 263
@@ -205,7 +205,7 @@ Major Histotypes
 </tr>
 <tr>
 <td style="text-align:left;">
-Removed Duplicates
+Deduplicated
 </td>
 <td style="text-align:right;">
 77
@@ -223,9 +223,9 @@ Removed Duplicates
 </tbody>
 </table></div>
 </div>
-<div id="histotypes-in-classifier-data" class="section level2" number="3.2">
+<div id="histotype-distribution" class="section level2" number="3.2">
 <h2>
-<span class="header-section-number">3.2</span> Histotypes in Classifier Data<a class="anchor" aria-label="anchor" href="#histotypes-in-classifier-data"><i class="fas fa-link"></i></a>
+<span class="header-section-number">3.2</span> Histotype Distribution<a class="anchor" aria-label="anchor" href="#histotype-distribution"><i class="fas fa-link"></i></a>
 </h2>
 <div class="inline-table"><table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -252,29 +252,29 @@ Total
 </th>
 </tr></thead>
 <tbody>
-<tr grouplength="6">
+<tr grouplength="7">
 <td colspan="6" style="border-bottom: 1px solid;">
-<strong>Pre-QC</strong>
+<strong>Selected Cohorts</strong>
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;vertical-align: middle !important;" indentlevel="1" rowspan="5">
+<td style="text-align:left; padding-left:  2em;vertical-align: middle !important;" indentlevel="1" rowspan="6">
 Histotype
 </td>
 <td style="text-align:left;">
 HGSC
 </td>
 <td style="text-align:left;">
-120 (45%)
+126 (43%)
 </td>
 <td style="text-align:left;">
-641 (79%)
+655 (73%)
 </td>
 <td style="text-align:left;">
-515 (92%)
+1779 (72%)
 </td>
 <td style="text-align:left;">
-1276 (78%)
+2560 (70%)
 </td>
 </tr>
 <tr>
@@ -282,16 +282,16 @@ HGSC
 CCOC
 </td>
 <td style="text-align:left;">
-48 (18%)
+48 (16%)
 </td>
 <td style="text-align:left;">
 61 (7%)
 </td>
 <td style="text-align:left;">
-11 (2%)
+181 (7%)
 </td>
 <td style="text-align:left;">
-120 (7%)
+290 (8%)
 </td>
 </tr>
 <tr>
@@ -299,16 +299,146 @@ CCOC
 ENOC
 </td>
 <td style="text-align:left;">
-60 (22%)
+60 (20%)
+</td>
+<td style="text-align:left;">
+34 (4%)
+</td>
+<td style="text-align:left;">
+268 (11%)
+</td>
+<td style="text-align:left;">
+362 (10%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MUC
+</td>
+<td style="text-align:left;">
+20 (7%)
+</td>
+<td style="text-align:left;">
+62 (7%)
+</td>
+<td style="text-align:left;">
+77 (3%)
+</td>
+<td style="text-align:left;">
+159 (4%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LGSC
+</td>
+<td style="text-align:left;">
+21 (7%)
+</td>
+<td style="text-align:left;">
+21 (2%)
+</td>
+<td style="text-align:left;">
+42 (2%)
+</td>
+<td style="text-align:left;">
+84 (2%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other
+</td>
+<td style="text-align:left;">
+19 (6%)
+</td>
+<td style="text-align:left;">
+70 (8%)
+</td>
+<td style="text-align:left;">
+130 (5%)
+</td>
+<td style="text-align:left;">
+219 (6%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+Total
+</td>
+<td style="text-align:left;">
+N (%)
+</td>
+<td style="text-align:left;">
+294 (8%)
+</td>
+<td style="text-align:left;">
+903 (25%)
+</td>
+<td style="text-align:left;">
+2477 (67%)
+</td>
+<td style="text-align:left;">
+3674 (100%)
+</td>
+</tr>
+<tr grouplength="7">
+<td colspan="6" style="border-bottom: 1px solid;">
+<strong>QC</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2em;vertical-align: middle !important;" indentlevel="1" rowspan="6">
+Histotype
+</td>
+<td style="text-align:left;">
+HGSC
+</td>
+<td style="text-align:left;">
+120 (42%)
+</td>
+<td style="text-align:left;">
+641 (73%)
+</td>
+<td style="text-align:left;">
+1636 (72%)
+</td>
+<td style="text-align:left;">
+2397 (70%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCOC
+</td>
+<td style="text-align:left;">
+48 (17%)
+</td>
+<td style="text-align:left;">
+61 (7%)
+</td>
+<td style="text-align:left;">
+173 (8%)
+</td>
+<td style="text-align:left;">
+282 (8%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENOC
+</td>
+<td style="text-align:left;">
+60 (21%)
 </td>
 <td style="text-align:left;">
 32 (4%)
 </td>
 <td style="text-align:left;">
-11 (2%)
+229 (10%)
 </td>
 <td style="text-align:left;">
-103 (6%)
+321 (9%)
 </td>
 </tr>
 <tr>
@@ -322,10 +452,10 @@ MUC
 60 (7%)
 </td>
 <td style="text-align:left;">
-12 (2%)
+69 (3%)
 </td>
 <td style="text-align:left;">
-91 (6%)
+148 (4%)
 </td>
 </tr>
 <tr>
@@ -336,13 +466,30 @@ LGSC
 20 (7%)
 </td>
 <td style="text-align:left;">
-21 (3%)
+21 (2%)
 </td>
 <td style="text-align:left;">
-9 (2%)
+40 (2%)
 </td>
 <td style="text-align:left;">
-50 (3%)
+81 (2%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other
+</td>
+<td style="text-align:left;">
+19 (7%)
+</td>
+<td style="text-align:left;">
+67 (8%)
+</td>
+<td style="text-align:left;">
+126 (6%)
+</td>
+<td style="text-align:left;">
+212 (6%)
 </td>
 </tr>
 <tr>
@@ -353,16 +500,276 @@ Total
 N (%)
 </td>
 <td style="text-align:left;">
-267 (16%)
+286 (8%)
 </td>
 <td style="text-align:left;">
-815 (50%)
+882 (26%)
 </td>
 <td style="text-align:left;">
-558 (34%)
+2273 (66%)
 </td>
 <td style="text-align:left;">
-1640 (100%)
+3441 (100%)
+</td>
+</tr>
+<tr grouplength="7">
+<td colspan="6" style="border-bottom: 1px solid;">
+<strong>Normalized to Reference</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2em;vertical-align: middle !important;" indentlevel="1" rowspan="6">
+Histotype
+</td>
+<td style="text-align:left;">
+HGSC
+</td>
+<td style="text-align:left;">
+116 (44%)
+</td>
+<td style="text-align:left;">
+622 (75%)
+</td>
+<td style="text-align:left;">
+1540 (74%)
+</td>
+<td style="text-align:left;">
+2278 (72%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCOC
+</td>
+<td style="text-align:left;">
+44 (17%)
+</td>
+<td style="text-align:left;">
+54 (7%)
+</td>
+<td style="text-align:left;">
+158 (8%)
+</td>
+<td style="text-align:left;">
+256 (8%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENOC
+</td>
+<td style="text-align:left;">
+55 (21%)
+</td>
+<td style="text-align:left;">
+27 (3%)
+</td>
+<td style="text-align:left;">
+215 (10%)
+</td>
+<td style="text-align:left;">
+297 (9%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MUC
+</td>
+<td style="text-align:left;">
+15 (6%)
+</td>
+<td style="text-align:left;">
+57 (7%)
+</td>
+<td style="text-align:left;">
+58 (3%)
+</td>
+<td style="text-align:left;">
+130 (4%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LGSC
+</td>
+<td style="text-align:left;">
+14 (5%)
+</td>
+<td style="text-align:left;">
+19 (2%)
+</td>
+<td style="text-align:left;">
+35 (2%)
+</td>
+<td style="text-align:left;">
+68 (2%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other
+</td>
+<td style="text-align:left;">
+19 (7%)
+</td>
+<td style="text-align:left;">
+48 (6%)
+</td>
+<td style="text-align:left;">
+89 (4%)
+</td>
+<td style="text-align:left;">
+156 (5%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+Total
+</td>
+<td style="text-align:left;">
+N (%)
+</td>
+<td style="text-align:left;">
+263 (8%)
+</td>
+<td style="text-align:left;">
+827 (26%)
+</td>
+<td style="text-align:left;">
+2095 (66%)
+</td>
+<td style="text-align:left;">
+3185 (100%)
+</td>
+</tr>
+<tr grouplength="7">
+<td colspan="6" style="border-bottom: 1px solid;">
+<strong>Combine CS3 Training with AOC/USC sites</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2em;vertical-align: middle !important;" indentlevel="1" rowspan="6">
+Histotype
+</td>
+<td style="text-align:left;">
+HGSC
+</td>
+<td style="text-align:left;">
+116 (44%)
+</td>
+<td style="text-align:left;">
+622 (75%)
+</td>
+<td style="text-align:left;">
+475 (92%)
+</td>
+<td style="text-align:left;">
+1213 (76%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCOC
+</td>
+<td style="text-align:left;">
+44 (17%)
+</td>
+<td style="text-align:left;">
+54 (7%)
+</td>
+<td style="text-align:left;">
+8 (2%)
+</td>
+<td style="text-align:left;">
+106 (7%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ENOC
+</td>
+<td style="text-align:left;">
+55 (21%)
+</td>
+<td style="text-align:left;">
+27 (3%)
+</td>
+<td style="text-align:left;">
+8 (2%)
+</td>
+<td style="text-align:left;">
+90 (6%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MUC
+</td>
+<td style="text-align:left;">
+15 (6%)
+</td>
+<td style="text-align:left;">
+57 (7%)
+</td>
+<td style="text-align:left;">
+9 (2%)
+</td>
+<td style="text-align:left;">
+81 (5%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LGSC
+</td>
+<td style="text-align:left;">
+14 (5%)
+</td>
+<td style="text-align:left;">
+19 (2%)
+</td>
+<td style="text-align:left;">
+6 (1%)
+</td>
+<td style="text-align:left;">
+39 (2%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other
+</td>
+<td style="text-align:left;">
+19 (7%)
+</td>
+<td style="text-align:left;">
+48 (6%)
+</td>
+<td style="text-align:left;">
+8 (2%)
+</td>
+<td style="text-align:left;">
+75 (5%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+Total
+</td>
+<td style="text-align:left;">
+N (%)
+</td>
+<td style="text-align:left;">
+263 (16%)
+</td>
+<td style="text-align:left;">
+827 (52%)
+</td>
+<td style="text-align:left;">
+514 (32%)
+</td>
+<td style="text-align:left;">
+1604 (100%)
 </td>
 </tr>
 <tr grouplength="6">
@@ -695,360 +1102,10 @@ N (%)
 </tbody>
 </table></div>
 </div>
-<div id="cohorts-in-classifier-data" class="section level2" number="3.3">
+<div id="cohort-distribution" class="section level2" number="3.3">
 <h2>
-<span class="header-section-number">3.3</span> Cohorts in Classifier Data<a class="anchor" aria-label="anchor" href="#cohorts-in-classifier-data"><i class="fas fa-link"></i></a>
+<span class="header-section-number">3.3</span> Cohort Distribution<a class="anchor" aria-label="anchor" href="#cohort-distribution"><i class="fas fa-link"></i></a>
 </h2>
-<div class="inline-table"><table class="table table-sm">
-<caption>
-<span id="tab:cohort-dist">Table 3.4: </span>Cohort Distribution in Training, Confirmation, and Validation Sets
-</caption>
-<thead><tr>
-<th style="text-align:left;">
-CodeSet
-</th>
-<th style="text-align:left;">
-Cohort
-</th>
-<th style="text-align:right;">
-Training
-</th>
-<th style="text-align:right;">
-Confirmation
-</th>
-<th style="text-align:right;">
-Validation
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-CS1
-</td>
-<td style="text-align:left;">
-MAYO
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS1
-</td>
-<td style="text-align:left;">
-MTL
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS1
-</td>
-<td style="text-align:left;">
-OOU
-</td>
-<td style="text-align:right;">
-53
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS1
-</td>
-<td style="text-align:left;">
-OOUE
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS1
-</td>
-<td style="text-align:left;">
-VOA
-</td>
-<td style="text-align:right;">
-20
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS2
-</td>
-<td style="text-align:left;">
-ICON7
-</td>
-<td style="text-align:right;">
-365
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS2
-</td>
-<td style="text-align:left;">
-JAPAN
-</td>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS2
-</td>
-<td style="text-align:left;">
-MAYO
-</td>
-<td style="text-align:right;">
-40
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS2
-</td>
-<td style="text-align:left;">
-MTL
-</td>
-<td style="text-align:right;">
-59
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS2
-</td>
-<td style="text-align:left;">
-OOU
-</td>
-<td style="text-align:right;">
-27
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS2
-</td>
-<td style="text-align:left;">
-OOUE
-</td>
-<td style="text-align:right;">
-18
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS2
-</td>
-<td style="text-align:left;">
-OVAR3
-</td>
-<td style="text-align:right;">
-135
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS2
-</td>
-<td style="text-align:left;">
-VOA
-</td>
-<td style="text-align:right;">
-46
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS3
-</td>
-<td style="text-align:left;">
-OOU
-</td>
-<td style="text-align:right;">
-18
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS3
-</td>
-<td style="text-align:left;">
-OOUE
-</td>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS3
-</td>
-<td style="text-align:left;">
-VOA
-</td>
-<td style="text-align:right;">
-439
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS3
-</td>
-<td style="text-align:left;">
-TNCO
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-643
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CS3
-</td>
-<td style="text-align:left;">
-DOVE4
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-895
-</td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div id="quality-control-1" class="section level2" number="3.4">
-<h2>
-<span class="header-section-number">3.4</span> Quality Control<a class="anchor" aria-label="anchor" href="#quality-control-1"><i class="fas fa-link"></i></a>
-</h2>
-<div id="failed-samples" class="section level3" number="3.4.1">
-<h3>
-<span class="header-section-number">3.4.1</span> Failed Samples<a class="anchor" aria-label="anchor" href="#failed-samples"><i class="fas fa-link"></i></a>
-</h3>
-<p>We use an aggregated <code>QCFlag</code> that considers a sample to have failed QC if any of the following conditions are true:</p>
-<ul>
-<li>
-<code>linFlag</code>: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown</li>
-<li>
-<code>imagingFlag</code>: percent of field of view is less than 75%</li>
-<li>
-<code>spcFlag</code>: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero</li>
-<li>
-<code>normFlag</code>: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the <a href="distributions.html#gd-vs.-snr">%GD vs. SNR</a> relationship below.</li>
-</ul>
 <div id="djfqmxhjrp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#djfqmxhjrp table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -1499,7 +1556,594 @@ DOVE4
 }
 </style>
 <div class="inline-table"><table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-<thead><tr class="gt_col_headings">
+<caption>
+<span id="tab:cohorts-dist">Table 3.4: </span><span class="gt_from_md">Pre-QC Cohort Distribution by CodeSet</span>
+</caption>
+  <thead><tr class="gt_col_headings">
+<th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="&lt;span class='gt_from_md'&gt;&lt;strong&gt;CodeSet&lt;/strong&gt;&lt;/span&gt;"><span class="gt_from_md"><strong>CodeSet</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;span class='gt_from_md'&gt;&lt;strong&gt;CS1&lt;/strong&gt;, N = 294&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;">
+<span class="gt_from_md"><strong>CS1</strong>, N = 294</span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;"><sup>1</sup></span>
+</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;span class='gt_from_md'&gt;&lt;strong&gt;CS2&lt;/strong&gt;, N = 903&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;">
+<span class="gt_from_md"><strong>CS2</strong>, N = 903</span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;"><sup>1</sup></span>
+</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;span class='gt_from_md'&gt;&lt;strong&gt;CS3&lt;/strong&gt;, N = 2,477&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;">
+<span class="gt_from_md"><strong>CS3</strong>, N = 2,477</span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;"><sup>1</sup></span>
+</th>
+    </tr></thead>
+<tbody class="gt_table_body">
+<tr>
+<td headers="label" class="gt_row gt_left">Cohort</td>
+<td headers="stat_1" class="gt_row gt_center"><br></td>
+<td headers="stat_2" class="gt_row gt_center"><br></td>
+<td headers="stat_3" class="gt_row gt_center"><br></td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    OOU</td>
+<td headers="stat_1" class="gt_row gt_center">108 (37%)</td>
+<td headers="stat_2" class="gt_row gt_center">43 (4.8%)</td>
+<td headers="stat_3" class="gt_row gt_center">19 (0.8%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    OOUE</td>
+<td headers="stat_1" class="gt_row gt_center">32 (11%)</td>
+<td headers="stat_2" class="gt_row gt_center">30 (3.3%)</td>
+<td headers="stat_3" class="gt_row gt_center">11 (0.4%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    VOA</td>
+<td headers="stat_1" class="gt_row gt_center">145 (49%)</td>
+<td headers="stat_2" class="gt_row gt_center">122 (14%)</td>
+<td headers="stat_3" class="gt_row gt_center">538 (22%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    OVAR3</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">150 (17%)</td>
+<td headers="stat_3" class="gt_row gt_center">0 (0%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    ICON7</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">416 (46%)</td>
+<td headers="stat_3" class="gt_row gt_center">0 (0%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    MAYO</td>
+<td headers="stat_1" class="gt_row gt_center">6 (2.0%)</td>
+<td headers="stat_2" class="gt_row gt_center">63 (7.0%)</td>
+<td headers="stat_3" class="gt_row gt_center">0 (0%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    DOVE4</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_3" class="gt_row gt_center">1,160 (47%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    TNCO</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_3" class="gt_row gt_center">691 (28%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    MTL</td>
+<td headers="stat_1" class="gt_row gt_center">3 (1.0%)</td>
+<td headers="stat_2" class="gt_row gt_center">59 (6.5%)</td>
+<td headers="stat_3" class="gt_row gt_center">0 (0%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    JAPAN</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">8 (0.9%)</td>
+<td headers="stat_3" class="gt_row gt_center">0 (0%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    POOL-CTRL</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">12 (1.3%)</td>
+<td headers="stat_3" class="gt_row gt_center">0 (0%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    POOL-1</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_3" class="gt_row gt_center">31 (1.3%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    POOL-2</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_3" class="gt_row gt_center">14 (0.6%)</td>
+</tr>
+<tr>
+<td headers="label" class="gt_row gt_left">    POOL-3</td>
+<td headers="stat_1" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_2" class="gt_row gt_center">0 (0%)</td>
+<td headers="stat_3" class="gt_row gt_center">13 (0.5%)</td>
+</tr>
+</tbody>
+<tfoot class="gt_footnotes"><tr>
+<td class="gt_footnote" colspan="4">
+<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;"><sup>1</sup></span> <span class="gt_from_md">n (%)</span>
+</td>
+    </tr></tfoot>
+</table></div>
+</div>
+</div>
+<div id="quality-control-1" class="section level2" number="3.4">
+<h2>
+<span class="header-section-number">3.4</span> Quality Control<a class="anchor" aria-label="anchor" href="#quality-control-1"><i class="fas fa-link"></i></a>
+</h2>
+<div id="failed-samples" class="section level3" number="3.4.1">
+<h3>
+<span class="header-section-number">3.4.1</span> Failed Samples<a class="anchor" aria-label="anchor" href="#failed-samples"><i class="fas fa-link"></i></a>
+</h3>
+<p>We use an aggregated <code>QCFlag</code> that considers a sample to have failed QC if any of the following conditions are true:</p>
+<ul>
+<li>
+<code>linFlag</code>: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown</li>
+<li>
+<code>imagingFlag</code>: percent of field of view is less than 75%</li>
+<li>
+<code>spcFlag</code>: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero</li>
+<li>
+<code>normFlag</code>: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the <a href="distributions.html#gd-vs.-snr">%GD vs. SNR</a> relationship below.</li>
+</ul>
+<div id="ymkyekzfby" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ymkyekzfby table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ymkyekzfby thead, #ymkyekzfby tbody, #ymkyekzfby tfoot, #ymkyekzfby tr, #ymkyekzfby td, #ymkyekzfby th {
+  border-style: none;
+}
+
+#ymkyekzfby p {
+  margin: 0;
+  padding: 0;
+}
+
+#ymkyekzfby .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ymkyekzfby .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ymkyekzfby .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ymkyekzfby .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ymkyekzfby .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ymkyekzfby .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ymkyekzfby .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ymkyekzfby .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ymkyekzfby .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ymkyekzfby .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ymkyekzfby .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ymkyekzfby .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ymkyekzfby .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ymkyekzfby .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ymkyekzfby .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ymkyekzfby .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ymkyekzfby .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ymkyekzfby .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ymkyekzfby .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ymkyekzfby .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ymkyekzfby .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ymkyekzfby .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ymkyekzfby .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ymkyekzfby .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ymkyekzfby .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ymkyekzfby .gt_left {
+  text-align: left;
+}
+
+#ymkyekzfby .gt_center {
+  text-align: center;
+}
+
+#ymkyekzfby .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ymkyekzfby .gt_font_normal {
+  font-weight: normal;
+}
+
+#ymkyekzfby .gt_font_bold {
+  font-weight: bold;
+}
+
+#ymkyekzfby .gt_font_italic {
+  font-style: italic;
+}
+
+#ymkyekzfby .gt_super {
+  font-size: 65%;
+}
+
+#ymkyekzfby .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ymkyekzfby .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ymkyekzfby .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ymkyekzfby .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ymkyekzfby .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ymkyekzfby .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ymkyekzfby .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#ymkyekzfby .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#ymkyekzfby div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<div class="inline-table"><table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<caption>
+<span id="tab:qc-failed">Table 3.5: </span><span class="gt_from_md">Quality Control Summary</span>
+</caption>
+  <thead><tr class="gt_col_headings">
 <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="&lt;span class='gt_from_md'&gt;&lt;strong&gt;Quality Control Flag&lt;/strong&gt;&lt;/span&gt;"><span class="gt_from_md"><strong>Quality Control Flag</strong></span></th>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;span class='gt_from_md'&gt;&lt;strong&gt;CS1&lt;/strong&gt;, N = 294&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;">
 <span class="gt_from_md"><strong>CS1</strong>, N = 294</span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height: 0;"><sup>1</sup></span>
@@ -1668,8 +2312,8 @@ Figure 3.6: HKgenes-Normalized CS2 vs. CS3 Gene Expression
       <ul class="nav navbar-nav">
 <li><a class="nav-link" href="#distributions"><span class="header-section-number">3</span> Distributions</a></li>
 <li><a class="nav-link" href="#codeset-counts"><span class="header-section-number">3.1</span> CodeSet Counts</a></li>
-<li><a class="nav-link" href="#histotypes-in-classifier-data"><span class="header-section-number">3.2</span> Histotypes in Classifier Data</a></li>
-<li><a class="nav-link" href="#cohorts-in-classifier-data"><span class="header-section-number">3.3</span> Cohorts in Classifier Data</a></li>
+<li><a class="nav-link" href="#histotype-distribution"><span class="header-section-number">3.2</span> Histotype Distribution</a></li>
+<li><a class="nav-link" href="#cohort-distribution"><span class="header-section-number">3.3</span> Cohort Distribution</a></li>
 <li>
 <a class="nav-link" href="#quality-control-1"><span class="header-section-number">3.4</span> Quality Control</a><ul class="nav navbar-nav">
 <li><a class="nav-link" href="#failed-samples"><span class="header-section-number">3.4.1</span> Failed Samples</a></li>
@@ -1694,7 +2338,7 @@ Figure 3.6: HKgenes-Normalized CS2 vs. CS3 Gene Expression
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-07-11.</p>
+    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2024-07-12.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

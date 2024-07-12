@@ -15,7 +15,8 @@ eq:gmean
 tab:codeset-counts
 tab:hist-codeset
 tab:hist-conf-val
-tab:cohort-dist
+tab:cohorts-dist
+tab:qc-failed
 fig:qc-gd-snr-all
 fig:qc-gd-snr-zoomed
 fig:genes-cs13-rand1
@@ -94,8 +95,8 @@ geometric-mean
 auc
 distributions
 codeset-counts
-histotypes-in-classifier-data
-cohorts-in-classifier-data
+histotype-distribution
+cohort-distribution
 quality-control-1
 failed-samples
 gd-vs.-snr
