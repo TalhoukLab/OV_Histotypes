@@ -9,6 +9,8 @@ library(rlang)
 library(purrr)
 library(forcats)
 library(DiagrammeR)
+library(VennDiagram)
+library(futile.logger)
 library(here)
 source(here("validation/cs_classifier.R"))
 data("rawOTTA3", package = "otta")
@@ -52,9 +54,38 @@ Similarly, CS2 was normalized to CS3 using the same "Random1" reference samples,
 
 For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a "reference standard", and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a "Random1" reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.
 
+```{r venn-genes, fig.cap='Venn diagram of common and unique gene targets covered by each CodeSet', fig.width=6, fig.height=6, out.width='100%'}
+invisible(flog.threshold(ERROR, name = "VennDiagramLogger"))
+venn_genes <- venn.diagram(
+  x = list(cs1_norm$Name, cs2_norm$Name, cs3_norm$Name),
+  category.names = c("CodeSet1", "CodeSet2", "CodeSet3"),
+  filename = NULL,
+  output = TRUE,
+  imagetype = "png",
+  height = 400, 
+  width = 400, 
+  resolution = 300,
+  compression = "lzw",
+  lwd = 1,
+  col = c("#440154ff", "#21908dff", "#fde725ff"), 
+  fill = c(alpha("#440154ff", 0.3),
+           alpha("#21908dff", 0.3),
+           alpha("#fde725ff", 0.3)), 
+  cex = 2,
+  fontfamily = "sans",
+  cat.cex = 1.5,
+  cat.default.pos = "outer",
+  cat.pos = c(-27, 27, 135),
+  cat.dist = c(0.055, 0.055, 0.085),
+  cat.fontfamily = "sans",
+  rotation = 1
+) 
+grid.draw(venn_genes)
+```
+
 ### Final Processing
 
-We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian caricoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).
+We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian carcinoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).
 
 Duplicate cases (two samples with the same ottaID) were removed before generating the final training set to use for fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC when selecting duplicates.
 
