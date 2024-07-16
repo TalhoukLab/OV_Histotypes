@@ -116,7 +116,7 @@
 
 \title{Ovarian Cancer Histotypes: Report of Statistical Findings}
 \author{Derek Chiu}
-\date{2024-07-10}
+\date{2024-07-16}
 
 \begin{document}
 \maketitle
@@ -207,9 +207,18 @@ Similarly, CS2 was normalized to CS3 using the same ``Random1'' reference sample
 
 For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a ``reference standard'', and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a ``Random1'' reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.
 
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\linewidth]{OV_Histotypes_RSF_files/figure-latex/venn-genes-1} 
+
+}
+
+\caption{Venn diagram of common and unique gene targets covered by each CodeSet}\label{fig:venn-genes}
+\end{figure}
+
 \subsection{Final Processing}\label{final-processing}
 
-We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian caricoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).
+We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian carcinoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).
 
 Duplicate cases (two samples with the same ottaID) were removed before generating the final training set to use for fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC when selecting duplicates.
 
@@ -511,16 +520,16 @@ QC & 286 & 882 & 2273 & 3441\\
 \hline
 Normalized to Reference & 263 & 827 & 2095 & 3185\\
 \hline
-CS3: remove test sets, add AOC/USC & 263 & 827 & 514 & 1604\\
+Combine CS3 Training with AOC/USC sites & 263 & 827 & 514 & 1604\\
 \hline
 Major Histotypes & 244 & 779 & 506 & 1529\\
 \hline
-Removed Duplicates & 77 & 698 & 468 & 1243\\
+Deduplicated & 77 & 698 & 468 & 1243\\
 \hline
 \end{tabular}
 \end{table}
 
-\section{Histotypes in Classifier Data}\label{histotypes-in-classifier-data}
+\section{Histotype Distribution}\label{histotype-distribution}
 
 \begin{table}
 
@@ -530,19 +539,69 @@ Removed Duplicates & 77 & 698 & 468 & 1243\\
 \hline
 Variable & Levels & CS1 & CS2 & CS3 & Total\\
 \hline
-\multicolumn{6}{l}{\textbf{Pre-QC}}\\
+\multicolumn{6}{l}{\textbf{Selected Cohorts}}\\
 \hline
- & HGSC & 120 (45\%) & 641 (79\%) & 515 (92\%) & 1276 (78\%)\\
+ & HGSC & 126 (43\%) & 655 (73\%) & 1779 (72\%) & 2560 (70\%)\\
 \cline{2-6}
- & CCOC & 48 (18\%) & 61 (7\%) & 11 (2\%) & 120 (7\%)\\
+ & CCOC & 48 (16\%) & 61 (7\%) & 181 (7\%) & 290 (8\%)\\
 \cline{2-6}
- & ENOC & 60 (22\%) & 32 (4\%) & 11 (2\%) & 103 (6\%)\\
+ & ENOC & 60 (20\%) & 34 (4\%) & 268 (11\%) & 362 (10\%)\\
 \cline{2-6}
- & MUC & 19 (7\%) & 60 (7\%) & 12 (2\%) & 91 (6\%)\\
+ & MUC & 20 (7\%) & 62 (7\%) & 77 (3\%) & 159 (4\%)\\
 \cline{2-6}
-\multirow{-5}{*}{\raggedright\arraybackslash \hspace{1em}Histotype} & LGSC & 20 (7\%) & 21 (3\%) & 9 (2\%) & 50 (3\%)\\
+ & LGSC & 21 (7\%) & 21 (2\%) & 42 (2\%) & 84 (2\%)\\
+\cline{2-6}
+\multirow{-6}{*}{\raggedright\arraybackslash \hspace{1em}Histotype} & Other & 19 (6\%) & 70 (8\%) & 130 (5\%) & 219 (6\%)\\
 \cline{1-6}
-\hspace{1em}Total & N (\%) & 267 (16\%) & 815 (50\%) & 558 (34\%) & 1640 (100\%)\\
+\hspace{1em}Total & N (\%) & 294 (8\%) & 903 (25\%) & 2477 (67\%) & 3674 (100\%)\\
+\cline{1-6}
+\multicolumn{6}{l}{\textbf{QC}}\\
+\hline
+ & HGSC & 120 (42\%) & 641 (73\%) & 1636 (72\%) & 2397 (70\%)\\
+\cline{2-6}
+ & CCOC & 48 (17\%) & 61 (7\%) & 173 (8\%) & 282 (8\%)\\
+\cline{2-6}
+ & ENOC & 60 (21\%) & 32 (4\%) & 229 (10\%) & 321 (9\%)\\
+\cline{2-6}
+ & MUC & 19 (7\%) & 60 (7\%) & 69 (3\%) & 148 (4\%)\\
+\cline{2-6}
+ & LGSC & 20 (7\%) & 21 (2\%) & 40 (2\%) & 81 (2\%)\\
+\cline{2-6}
+\multirow{-6}{*}{\raggedright\arraybackslash \hspace{1em}Histotype} & Other & 19 (7\%) & 67 (8\%) & 126 (6\%) & 212 (6\%)\\
+\cline{1-6}
+\hspace{1em}Total & N (\%) & 286 (8\%) & 882 (26\%) & 2273 (66\%) & 3441 (100\%)\\
+\cline{1-6}
+\multicolumn{6}{l}{\textbf{Normalized to Reference}}\\
+\hline
+ & HGSC & 116 (44\%) & 622 (75\%) & 1540 (74\%) & 2278 (72\%)\\
+\cline{2-6}
+ & CCOC & 44 (17\%) & 54 (7\%) & 158 (8\%) & 256 (8\%)\\
+\cline{2-6}
+ & ENOC & 55 (21\%) & 27 (3\%) & 215 (10\%) & 297 (9\%)\\
+\cline{2-6}
+ & MUC & 15 (6\%) & 57 (7\%) & 58 (3\%) & 130 (4\%)\\
+\cline{2-6}
+ & LGSC & 14 (5\%) & 19 (2\%) & 35 (2\%) & 68 (2\%)\\
+\cline{2-6}
+\multirow{-6}{*}{\raggedright\arraybackslash \hspace{1em}Histotype} & Other & 19 (7\%) & 48 (6\%) & 89 (4\%) & 156 (5\%)\\
+\cline{1-6}
+\hspace{1em}Total & N (\%) & 263 (8\%) & 827 (26\%) & 2095 (66\%) & 3185 (100\%)\\
+\cline{1-6}
+\multicolumn{6}{l}{\textbf{Combine CS3 Training with AOC/USC sites}}\\
+\hline
+ & HGSC & 116 (44\%) & 622 (75\%) & 475 (92\%) & 1213 (76\%)\\
+\cline{2-6}
+ & CCOC & 44 (17\%) & 54 (7\%) & 8 (2\%) & 106 (7\%)\\
+\cline{2-6}
+ & ENOC & 55 (21\%) & 27 (3\%) & 8 (2\%) & 90 (6\%)\\
+\cline{2-6}
+ & MUC & 15 (6\%) & 57 (7\%) & 9 (2\%) & 81 \vphantom{1} (5\%)\\
+\cline{2-6}
+ & LGSC & 14 (5\%) & 19 (2\%) & 6 (1\%) & 39 (2\%)\\
+\cline{2-6}
+\multirow{-6}{*}{\raggedright\arraybackslash \hspace{1em}Histotype} & Other & 19 (7\%) & 48 (6\%) & 8 (2\%) & 75 (5\%)\\
+\cline{1-6}
+\hspace{1em}Total & N (\%) & 263 (16\%) & 827 (52\%) & 514 (32\%) & 1604 (100\%)\\
 \cline{1-6}
 \multicolumn{6}{l}{\textbf{Major Histotypes}}\\
 \hline
@@ -598,51 +657,45 @@ Total & N (\%) & 643 (42\%) & 895 (58\%)\\
 \end{tabular}
 \end{table}
 
-\section{Cohorts in Classifier Data}\label{cohorts-in-classifier-data}
+\section{Cohort Distribution}\label{cohort-distribution}
 
 \begin{table}
 
-\caption{\label{tab:cohort-dist}Cohort Distribution in Training, Confirmation, and Validation Sets}
+\caption{\label{tab:cohorts-dist}Pre-QC Cohort Distribution by CodeSet}
 \centering
-\begin{tabular}[t]{l|l|r|r|r}
+\begin{tabular}[t]{l|c|c|c}
 \hline
-CodeSet & Cohort & Training & Confirmation & Validation\\
+**CodeSet** & **CS1**, N = 294 & **CS2**, N = 903 & **CS3**, N = 2,477\\
 \hline
-CS1 & MAYO & 2 & 0 & 0\\
+Cohort &  &  & \\
 \hline
-CS1 & MTL & 1 & 0 & 0\\
+OOU & 108 (37\%) & 43 (4.8\%) & 19 (0.8\%)\\
 \hline
-CS1 & OOU & 53 & 0 & 0\\
+OOUE & 32 (11\%) & 30 (3.3\%) & 11 (0.4\%)\\
 \hline
-CS1 & OOUE & 1 & 0 & 0\\
+VOA & 145 (49\%) & 122 (14\%) & 538 (22\%)\\
 \hline
-CS1 & VOA & 20 & 0 & 0\\
+OVAR3 & 0 (0\%) & 150 (17\%) & 0 (0\%)\\
 \hline
-CS2 & ICON7 & 365 & 0 & 0\\
+ICON7 & 0 (0\%) & 416 (46\%) & 0 (0\%)\\
 \hline
-CS2 & JAPAN & 8 & 0 & 0\\
+MAYO & 6 (2.0\%) & 63 (7.0\%) & 0 (0\%)\\
 \hline
-CS2 & MAYO & 40 & 0 & 0\\
+DOVE4 & 0 (0\%) & 0 (0\%) & 1,160 (47\%)\\
 \hline
-CS2 & MTL & 59 & 0 & 0\\
+TNCO & 0 (0\%) & 0 (0\%) & 691 (28\%)\\
 \hline
-CS2 & OOU & 27 & 0 & 0\\
+MTL & 3 (1.0\%) & 59 (6.5\%) & 0 (0\%)\\
 \hline
-CS2 & OOUE & 18 & 0 & 0\\
+JAPAN & 0 (0\%) & 8 (0.9\%) & 0 (0\%)\\
 \hline
-CS2 & OVAR3 & 135 & 0 & 0\\
+POOL-CTRL & 0 (0\%) & 12 (1.3\%) & 0 (0\%)\\
 \hline
-CS2 & VOA & 46 & 0 & 0\\
+POOL-1 & 0 (0\%) & 0 (0\%) & 31 (1.3\%)\\
 \hline
-CS3 & OOU & 18 & 0 & 0\\
+POOL-2 & 0 (0\%) & 0 (0\%) & 14 (0.6\%)\\
 \hline
-CS3 & OOUE & 11 & 0 & 0\\
-\hline
-CS3 & VOA & 439 & 0 & 0\\
-\hline
-CS3 & TNCO & 0 & 643 & 0\\
-\hline
-CS3 & DOVE4 & 0 & 0 & 895\\
+POOL-3 & 0 (0\%) & 0 (0\%) & 13 (0.5\%)\\
 \hline
 \end{tabular}
 \end{table}
@@ -667,25 +720,41 @@ We use an aggregated \texttt{QCFlag} that considers a sample to have failed QC i
 
 \begin{table}
 
-\caption{\label{tab:qc-failed}Number of failed samples by CodeSet and fail condition}
+\caption{\label{tab:qc-failed}Quality Control Summary}
 \centering
-\begin{tabular}[t]{l|r|l|l|l|l|l|r}
+\begin{tabular}[t]{l|c|c|c}
 \hline
-CodeSet & CodeSet Total & linFlag & imagingFlag & spcFlag & normFlag & QCFlag & n\\
+**Quality Control Flag** & **CS1**, N = 294 & **CS2**, N = 903 & **CS3**, N = 2,477\\
 \hline
- &  & Passed & Failed & Passed & Passed & Failed & 3\\
-\cline{3-8}
-\multirow{-2}{*}{\raggedright\arraybackslash CS1} & \multirow{-2}{*}{\raggedleft\arraybackslash 8} & Passed & Passed & Passed & Failed & Failed & 5\\
-\cline{1-8}
- &  & Failed & Passed & Failed & Failed & Failed & 2\\
-\cline{3-8}
- &  & Failed & Passed & Passed & Passed & Failed & 2\\
-\cline{3-8}
-\multirow{-3}{*}{\raggedright\arraybackslash CS2} & \multirow{-3}{*}{\raggedleft\arraybackslash 21} & Passed & Passed & Passed & Failed & Failed & 17\\
-\cline{1-8}
- &  & Passed & Failed & Passed & Passed & Failed & 4\\
-\cline{3-8}
-\multirow{-2}{*}{\raggedright\arraybackslash CS3} & \multirow{-2}{*}{\raggedleft\arraybackslash 204} & Passed & Passed & Passed & Failed & Failed & 200\\
+\_\_Linearity\_\_ &  &  & \\
+\hline
+Failed & 0 (0\%) & 4 (0.4\%) & 0 (0\%)\\
+\hline
+Passed & 294 (100\%) & 899 (100\%) & 2,477 (100\%)\\
+\hline
+\_\_Imaging\_\_ &  &  & \\
+\hline
+Failed & 3 (1.0\%) & 0 (0\%) & 4 (0.2\%)\\
+\hline
+Passed & 291 (99\%) & 903 (100\%) & 2,473 (100\%)\\
+\hline
+\_\_Smallest Positive Control\_\_ &  &  & \\
+\hline
+Failed & 0 (0\%) & 2 (0.2\%) & 0 (0\%)\\
+\hline
+Passed & 294 (100\%) & 901 (100\%) & 2,477 (100\%)\\
+\hline
+\_\_Normality\_\_ &  &  & \\
+\hline
+Failed & 5 (1.7\%) & 19 (2.1\%) & 200 (8.1\%)\\
+\hline
+Passed & 289 (98\%) & 884 (98\%) & 2,277 (92\%)\\
+\hline
+\_\_Overall QC\_\_ &  &  & \\
+\hline
+Failed & 8 (2.7\%) & 21 (2.3\%) & 204 (8.2\%)\\
+\hline
+Passed & 286 (97\%) & 882 (98\%) & 2,273 (92\%)\\
 \hline
 \end{tabular}
 \end{table}
