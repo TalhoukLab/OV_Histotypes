@@ -2,16 +2,25 @@
 source(here::here("validation/cs_process_cohorts.R"))
 source(here::here("src/funs.R"))
 
-# Random selection of common samples with equal number of histotypes
-set.seed(2020)
-hist_rand1 <- hist %>%
-  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
-  distinct(ottaID, revHist) %>%
-  group_by(revHist) %>%
-  slice_sample(n = 1) %>%
-  ungroup()
+# # Random selection of common samples with equal number of histotypes
+# set.seed(2020)
+# hist_rand1 <- hist %>%
+#   filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
+#   distinct(ottaID, revHist) %>%
+#   group_by(revHist) %>%
+#   slice_sample(n = 1) %>%
+#   ungroup()
 
-# Reference Samples (n=5)
+# CS3 site mapping used for prioritizing Vancouver site and most recent date
+hist_cs3 <- hist %>%
+  mutate(
+    col_name = paste0("X", FileName),
+    site = factor(site, levels = c("Vancouver", "USC", "AOC")),
+    .keep = "none"
+  )
+
+# Reference Samples
+# CS1: n=5
 cs1_samples_R <- cohorts %>%
   inner_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
@@ -19,6 +28,7 @@ cs1_samples_R <- cohorts %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
+# CS2: n=5
 cs2_samples_R <- cohorts %>%
   inner_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
@@ -26,10 +36,15 @@ cs2_samples_R <- cohorts %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
+# CS3: n=5 (ensure Vancouver site)
 cs3_samples_R <- cohorts %>%
   inner_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs3_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
+  inner_join(hist_cs3, by = "col_name") %>%
+  group_by(ottaID) %>%
+  arrange(site, desc(col_name)) %>%
+  ungroup() %>%
+  distinct(ottaID, .keep_all = TRUE) %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
@@ -64,11 +79,20 @@ cs2_samples_all_X <- cohorts %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
-# CS3: n=2095
+# CS3: n=2094 (ensure Vancouver site)
 cs3_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs3_samples) %>%
+  inner_join(hist_cs3, by = "col_name") %>%
+  filter(site == "Vancouver") %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
+  pull(col_name) %>%
+  gsub("^X", "", .)
+
+# CS3 with duplicates: n=2264
+cs3_samples_all_X <- cohorts %>%
+  anti_join(hist_rand1, by = "ottaID") %>%
+  filter(col_name %in% cs3_samples) %>%
   pull(col_name) %>%
   gsub("^X", "", .)
 
@@ -222,6 +246,64 @@ cs3_norm_aoc_rand1 <-
   refMethod(cs3_aoc_dist_counts1, cs3_van_rand1, cs3_aoc_rand1) %>%
   as.data.frame()
 
+# CS3-VAN reference pools setup
+weights <- c("Pool1", "Pool2", "Pool3") %>%
+  purrr::set_names() %>%
+  purrr::map_dbl(~ ncol(dplyr::select(ref_pools, dplyr::matches(.))) /
+                   ncol(ref_pools))
+
+ref_mean_gx <-
+  rowMeans(ref_pools) %>%
+  tibble::enframe(name = "Name", value = "ref_exp")
+
+# CS3-USC normalized to CS3-VAN by pools
+cs3_usc_R_mean_gx <-
+  weights %>%
+  purrr::imap( ~ {
+    df <- dplyr::select(cs3_usc_R, Name, dplyr::matches(.y)) %>%
+      tibble::column_to_rownames("Name")
+    tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
+  })  %>%
+  purrr::reduce(dplyr::inner_join, by = "Name") %>%
+  dplyr::transmute(Name, norm_exp = rowSums(dplyr::select(., dplyr::contains("Pool"))))
+
+merged_usc <- dplyr::inner_join(ref_mean_gx, cs3_usc_R_mean_gx, by = "Name") %>%
+  dplyr::transmute(Name, be = ref_exp - norm_exp) %>%
+  dplyr::inner_join(cs3_usc_X, by = "Name")
+
+cs3_usc_norm <- merged_usc %>%
+  as.data.frame() %>%
+  tibble::column_to_rownames("Name") %>%
+  dplyr::select(-c(be, Code.Class, Accession)) %>%
+  dplyr::rename_with(~ gsub("^X", "", .)) %>%
+  apply(2, `+`, merged_usc[["be"]]) %>%
+  t() %>%
+  as.data.frame()
+
+# CS3-USC normalized to CS3-VAN by pools
+cs3_aoc_R_mean_gx <-
+  weights %>%
+  purrr::imap( ~ {
+    df <- dplyr::select(cs3_aoc_R, Name, dplyr::matches(.y)) %>%
+      tibble::column_to_rownames("Name")
+    tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
+  })  %>%
+  purrr::reduce(dplyr::inner_join, by = "Name") %>%
+  dplyr::transmute(Name, norm_exp = rowSums(dplyr::select(., dplyr::contains("Pool"))))
+
+merged_aoc <- dplyr::inner_join(ref_mean_gx, cs3_aoc_R_mean_gx, by = "Name") %>%
+  dplyr::transmute(Name, be = ref_exp - norm_exp) %>%
+  dplyr::inner_join(cs3_aoc_X, by = "Name")
+
+cs3_aoc_norm <- merged_aoc %>%
+  as.data.frame() %>%
+  tibble::column_to_rownames("Name") %>%
+  dplyr::select(-c(be, Code.Class, Accession)) %>%
+  dplyr::rename_with(~ gsub("^X", "", .)) %>%
+  apply(2, `+`, merged_aoc[["be"]]) %>%
+  t() %>%
+  as.data.frame()
+
 # Combine the two CS3-VAN used to normalize CS1/CS2 and normalize CS3-USC/CS3-AOC
 # and remove duplicates
 cs3_train <-
@@ -235,6 +317,15 @@ cs3_train <-
          !grepl("pool", col_name, ignore.case = TRUE)) %>%
   mutate(col_name = gsub("^X", "", col_name)) %>%
   column_to_rownames("col_name") %>%
+  select(all_of(common_genes123))
+
+cs3_train2 <-
+  list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
+  map_dfr(rownames_to_column, "FileName") %>%
+  mutate(col_name = paste0("X", FileName)) %>%
+  inner_join(cohorts, by = "col_name") %>%
+  filter(!cohort %in% c("TNCO", "DOVE4", "POOL-1", "POOL-2", "POOL-3")) %>%
+  column_to_rownames("FileName") %>%
   select(all_of(common_genes123))
 
 # Training set, n=263+827+514-75-286=1243 (CS1 + CS2 + CS3 excluding TNCO and DOVE

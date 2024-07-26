@@ -252,30 +252,12 @@ common_cs_full <- annot_full %>%
 # common_cs_full %>% filter(CS1 > 0 | CS2 > 0, CS3 > 0, CS4 > 0, CS5 > 0)
 
 # CS3 site-specific samples
-## Van
+## Vancouver
 van_samples <- hist %>%
   filter(CodeSet == "CS3", site == "Vancouver") %>%
   pull(FileName)
-full_samples <- hist_all %>%
-  filter(CodeSet == "CS3") %>%
-  pull(FileName)
 
 cs3_norm_van <- select(cs3_norm, 1:3, any_of(paste0("X", van_samples)))
-cs3_norm_full <- cs3 %>%
-  HKnorm() %>%
-  select(1:3, any_of(paste0("X", full_samples)))
-
-cs3_van <- cs3_norm_van %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select(-c(Code.Class, Accession)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
-
-cs3_van_X <- cs3_norm_van %>% select(Name, !matches("POOL"))
-cs3_van_R <- cs3_norm_van %>% select(Name, matches("POOL"))
 
 ## AOC
 aoc_samples <- hist %>%
@@ -284,36 +266,12 @@ aoc_samples <- hist %>%
 
 cs3_norm_aoc <- select(cs3_norm, 1:3, any_of(paste0("X", aoc_samples)))
 
-cs3_aoc <- cs3_norm_aoc %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select(-c(Code.Class, Accession)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
-
-cs3_aoc_X <- cs3_norm_aoc %>% select(Name, !matches("POOL"))
-cs3_aoc_R <- cs3_norm_aoc %>% select(Name, matches("POOL"))
-
 ## USC
 usc_samples <- hist %>%
   filter(CodeSet == "CS3", site == "USC") %>%
   pull(FileName)
 
 cs3_norm_usc <- select(cs3_norm, 1:3, any_of(paste0("X", usc_samples)))
-
-cs3_usc <- cs3_norm_usc %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select(-c(Code.Class, Accession)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
-
-cs3_usc_X <- cs3_norm_usc %>% select(Name, !matches("POOL"))
-cs3_usc_R <- cs3_norm_usc %>% select(Name, matches("POOL"))
 
 # Find summaryID common to CS1/CS2/CS3
 common_cs <- annot_cs123 %>%
@@ -375,6 +333,15 @@ cs3_clean <- cs3_norm_van %>%
   spread(Name, value) %>%
   select(FileName, ottaID, all_of(common_genes123))
 
+# Random selection of common samples with equal number of histotypes
+set.seed(2020)
+hist_rand1 <- hist %>%
+  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
+  distinct(ottaID, revHist) %>%
+  group_by(revHist) %>%
+  slice_sample(n = 1) %>%
+  ungroup()
+
 # Find summaryID common to all site
 common_site <- annot_cs123 %>%
   count(site, summaryID) %>%
@@ -420,3 +387,69 @@ cs3_clean_usc <- cs3_norm_usc %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
   select(-c(CodeSet, revHist, hist_gr, site))
+
+# CS3 site-specific expression and reference data
+## Vancouver
+cs3_van <- cs3_norm_van %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select(-c(Code.Class, Accession)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
+  anti_join(hist_rand1, by = c("ottaID", "revHist")) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))
+
+cs3_van_X <- cs3_norm_van %>% select(Name, !matches("POOL"))
+cs3_van_R <- cs3_norm_van %>% select(Name, matches("POOL"))
+
+## AOC
+cs3_aoc <- cs3_norm_aoc %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select(-c(Code.Class, Accession)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))
+
+cs3_aoc_X <- cs3_norm_aoc %>%
+  select(Name, !matches(paste0("POOL|", paste(hist_rand1$ottaID, collapse = "|"))))
+cs3_aoc_R <- cs3_norm_aoc %>%
+  select(Name, matches("POOL")) %>%
+  `rownames<-`(NULL)
+cs3_aoc_R_mean_gx <-
+  weights %>%
+  purrr::imap( ~ {
+    df <- dplyr::select(cs3_aoc_R, Name, dplyr::matches(.y)) %>%
+      tibble::column_to_rownames("Name")
+    tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
+  })  %>%
+  purrr::reduce(dplyr::inner_join, by = "Name") %>%
+  dplyr::transmute(Name, norm_exp = rowSums(dplyr::select(., dplyr::contains("Pool"))))
+
+## USC
+cs3_usc <- cs3_norm_usc %>%
+  rename_all(~ gsub("^X", "", .)) %>%
+  select(-c(Code.Class, Accession)) %>%
+  mutate(Name = fct_inorder(Name)) %>%
+  gather(FileName, value, -Name) %>%
+  inner_join(hist, by = "FileName") %>%
+  spread(Name, value) %>%
+  select(-c(CodeSet, revHist, hist_gr, site))
+
+cs3_usc_X <- cs3_norm_usc %>%
+  select(Name, !matches(paste0("POOL|", paste(hist_rand1$ottaID, collapse = "|"))))
+cs3_usc_R <- cs3_norm_usc %>%
+  select(Name, matches("POOL")) %>%
+  `rownames<-`(NULL)
+cs3_usc_R_mean_gx <-
+  weights %>%
+  purrr::imap( ~ {
+    df <- dplyr::select(cs3_usc_R, Name, dplyr::matches(.y)) %>%
+      tibble::column_to_rownames("Name")
+    tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
+  })  %>%
+  purrr::reduce(dplyr::inner_join, by = "Name") %>%
+  dplyr::transmute(Name, norm_exp = rowSums(dplyr::select(., dplyr::contains("Pool"))))
