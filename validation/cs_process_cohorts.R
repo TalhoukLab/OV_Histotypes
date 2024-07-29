@@ -419,15 +419,6 @@ cs3_aoc_X <- cs3_norm_aoc %>%
 cs3_aoc_R <- cs3_norm_aoc %>%
   select(Name, matches("POOL")) %>%
   `rownames<-`(NULL)
-cs3_aoc_R_mean_gx <-
-  weights %>%
-  purrr::imap( ~ {
-    df <- dplyr::select(cs3_aoc_R, Name, dplyr::matches(.y)) %>%
-      tibble::column_to_rownames("Name")
-    tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
-  })  %>%
-  purrr::reduce(dplyr::inner_join, by = "Name") %>%
-  dplyr::transmute(Name, norm_exp = rowSums(dplyr::select(., dplyr::contains("Pool"))))
 
 ## USC
 cs3_usc <- cs3_norm_usc %>%
@@ -444,12 +435,3 @@ cs3_usc_X <- cs3_norm_usc %>%
 cs3_usc_R <- cs3_norm_usc %>%
   select(Name, matches("POOL")) %>%
   `rownames<-`(NULL)
-cs3_usc_R_mean_gx <-
-  weights %>%
-  purrr::imap( ~ {
-    df <- dplyr::select(cs3_usc_R, Name, dplyr::matches(.y)) %>%
-      tibble::column_to_rownames("Name")
-    tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
-  })  %>%
-  purrr::reduce(dplyr::inner_join, by = "Name") %>%
-  dplyr::transmute(Name, norm_exp = rowSums(dplyr::select(., dplyr::contains("Pool"))))
