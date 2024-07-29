@@ -366,7 +366,7 @@ conf_class <- conf_ref[["revHist"]]
 saveRDS(conf_data, here::here("data/conf_data.rds"))
 saveRDS(conf_class, here::here("data/conf_class.rds"))
 
-# Validation set, n=924-29=895 (DOVE - other histotypes)
+# Validation set, n=923-29=895 (DOVE - other histotypes)
 val_ref <- cs3_X %>%
   rownames_to_column("col_name") %>%
   mutate(col_name = paste0("X", col_name)) %>%
