@@ -186,27 +186,31 @@ cs3_X <- cs3_norm %>%
 # Normalized by Reference Method
 # Normalizing CS1 to CS3 uses n=79 common genes
 cs13_genes <- intersect(names(cs3_R), names(cs1_R))
-cs1_train <- as.data.frame(refMethod(cs1_X[cs13_genes],
-                                     cs3_R[cs13_genes],
-                                     cs1_R[cs13_genes])) %>%
+cs1_train <- refMethod(Y = cs1_X[cs13_genes],
+                       R1 = cs3_R[cs13_genes],
+                       R2 = cs1_R[cs13_genes]) %>%
+  as.data.frame() %>%
   select(all_of(common_genes123))
 
 # Normalizing CS1 all to CS3 using n=79 common genes
-cs1_all_train <- as.data.frame(refMethod(cs1_all_X[cs13_genes],
-                                         cs3_R[cs13_genes],
-                                         cs1_R[cs13_genes]))
+cs1_all_train <- refMethod(Y = cs1_all_X[cs13_genes],
+                           R1 = cs3_R[cs13_genes],
+                           R2 = cs1_R[cs13_genes]) %>%
+  as.data.frame()
 
 # Normalizing CS2 to CS3 uses n=136 common genes
 cs23_genes <- intersect(names(cs3_R), names(cs2_R))
-cs2_train <- as.data.frame(refMethod(cs2_X[cs23_genes],
-                                     cs3_R[cs23_genes],
-                                     cs2_R[cs23_genes])) %>%
+cs2_train <- refMethod(Y = cs2_X[cs23_genes],
+                       R1 = cs3_R[cs23_genes],
+                       R2 = cs2_R[cs23_genes]) %>%
+  as.data.frame() %>%
   select(all_of(common_genes123))
 
 # Normalizing CS2 all to CS3 using n=136 common genes
-cs2_all_train <- as.data.frame(refMethod(cs2_all_X[cs23_genes],
-                                         cs3_R[cs23_genes],
-                                         cs2_R[cs23_genes]))
+cs2_all_train <- refMethod(Y = cs2_all_X[cs23_genes],
+                           R1 = cs3_R[cs23_genes],
+                           R2 = cs2_R[cs23_genes]) %>%
+  as.data.frame()
 
 # Normalize by Pools
 # CS3-VAN reference pools setup
@@ -270,7 +274,8 @@ cs3_aoc_norm <- merged_aoc %>%
 # Combine CS3-VAN with normalized CS3-USC and CS3-AOC and remove duplicates
 cs3_train <-
   list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
-  map_dfr(rownames_to_column, "FileName") %>%
+  map(rownames_to_column, "FileName") %>%
+  list_rbind() %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   filter(!cohort %in% c("TNCO", "DOVE4", "POOL-1", "POOL-2", "POOL-3")) %>%
@@ -335,7 +340,7 @@ cs1_all_class <- cs1_all_ref[["revHist"]]
 saveRDS(cs1_all_data, here::here("data/cs1_all_data.rds"))
 saveRDS(cs1_all_class, here::here("data/cs1_all_class.rds"))
 
-# CS2 all set, n=876-67=807 (CS2 - other histotypes), common genes with CS3 n=136
+# CS2 all set, n=876-67=809 (CS2 - other histotypes), common genes with CS3 n=136
 cs2_all_ref <- cs2_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
