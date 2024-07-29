@@ -2,15 +2,6 @@
 source(here::here("validation/cs_process_cohorts.R"))
 source(here::here("src/funs.R"))
 
-# # Random selection of common samples with equal number of histotypes
-# set.seed(2020)
-# hist_rand1 <- hist %>%
-#   filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
-#   distinct(ottaID, revHist) %>%
-#   group_by(revHist) %>%
-#   slice_sample(n = 1) %>%
-#   ungroup()
-
 # CS3 site mapping used for prioritizing Vancouver site and most recent date
 hist_cs3 <- hist %>%
   mutate(
@@ -22,31 +13,31 @@ hist_cs3 <- hist %>%
 # Reference Samples
 # CS1: n=5
 cs1_samples_R <- cohorts %>%
-  inner_join(hist_rand1, by = "ottaID") %>%
+  semi_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  arrange(ottaID) %>%
+  pull(col_name)
 
 # CS2: n=5
 cs2_samples_R <- cohorts %>%
-  inner_join(hist_rand1, by = "ottaID") %>%
+  semi_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  arrange(ottaID) %>%
+  pull(col_name)
 
 # CS3: n=5 (ensure Vancouver site)
 cs3_samples_R <- cohorts %>%
-  inner_join(hist_rand1, by = "ottaID") %>%
+  semi_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs3_samples) %>%
   inner_join(hist_cs3, by = "col_name") %>%
   group_by(ottaID) %>%
   arrange(site, desc(col_name)) %>%
   ungroup() %>%
   distinct(ottaID, .keep_all = TRUE) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  arrange(ottaID) %>%
+  pull(col_name)
 
 # Expression Samples
 # CS1: n=263
@@ -54,30 +45,26 @@ cs1_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  pull(col_name)
 
 # CS1 with duplicates: n=279
 cs1_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  pull(col_name)
 
 # CS2: n=827
 cs2_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  pull(col_name)
 
 # CS2 with duplicates: n=876
 cs2_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  pull(col_name)
 
 # CS3: n=2094 (ensure Vancouver site)
 cs3_samples_X <- cohorts %>%
@@ -86,94 +73,117 @@ cs3_samples_X <- cohorts %>%
   inner_join(hist_cs3, by = "col_name") %>%
   filter(site == "Vancouver") %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  pull(col_name)
 
 # CS3 with duplicates: n=2264
 cs3_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs3_samples) %>%
-  pull(col_name) %>%
-  gsub("^X", "", .)
+  pull(col_name)
 
 # Reference Datasets
 # CS1: 5 samples by 256 genes
 cs1_R <- cs1_norm %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select_if(names(.) %in% c("Name", cs1_samples_R)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-ottaID:-site) %>%
+  pivot_longer(
+    cols = all_of(cs1_samples_R),
+    names_to = "FileName",
+    names_prefix = "X",
+    values_to = "value"
+  ) %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
   column_to_rownames("FileName")
 
 # CS2: 5 samples by 365 genes
 cs2_R <- cs2_norm %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select_if(names(.) %in% c("Name", cs2_samples_R)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-ottaID:-site) %>%
+  pivot_longer(
+    cols = all_of(cs2_samples_R),
+    names_to = "FileName",
+    names_prefix = "X",
+    values_to = "value"
+  ) %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
   column_to_rownames("FileName")
 
 # CS3: 5 samples by 513 genes
 cs3_R <- cs3_norm %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select_if(names(.) %in% c("Name", cs3_samples_R)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-ottaID:-site) %>%
+  pivot_longer(
+    cols = all_of(cs3_samples_R),
+    names_to = "FileName",
+    names_prefix = "X",
+    values_to = "value"
+  ) %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
   column_to_rownames("FileName")
 
 # Expression Datasets
-
-# CS1 transposed
-cs1_norm_t <- cs1_norm %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select(-c(Code.Class, Accession)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  spread(Name, value) %>%
+# CS1: 263 samples by 256 genes
+cs1_X <- cs1_norm %>%
+  pivot_longer(
+    cols = all_of(cs1_samples_X),
+    names_to = "FileName",
+    names_prefix = "X",
+    values_to = "value"
+  ) %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
   column_to_rownames("FileName")
 
-# CS1: 263 samples by 256 genes
-cs1_X <- cs1_norm_t[cs1_samples_X, ]
-
 # CS1 with duplicates: 279 samples by 256 genes
-cs1_all_X <- cs1_norm_t[cs1_samples_all_X, ]
-
-# CS2 transposed
-cs2_norm_t <- cs2_norm %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select(-c(Code.Class, Accession)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  spread(Name, value) %>%
+cs1_all_X <- cs1_norm %>%
+  pivot_longer(
+    cols = all_of(cs1_samples_all_X),
+    names_to = "FileName",
+    names_prefix = "X",
+    values_to = "value"
+  ) %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
   column_to_rownames("FileName")
 
 # CS2: 827 samples by 365 genes
-cs2_X <- cs2_norm_t[cs2_samples_X, ]
-
-# CS2 with duplicates: 876 samples by 365 genes
-cs2_all_X <- cs2_norm_t[cs2_samples_all_X, ]
-
-# CS3: 2095 samples by 513 genes
-cs3_X <- cs3_norm %>%
-  rename_all(~ gsub("^X", "", .)) %>%
-  select_if(names(.) %in% c("Name", cs3_samples_X)) %>%
-  mutate(Name = fct_inorder(Name)) %>%
-  gather(FileName, value, -Name) %>%
-  inner_join(hist, by = "FileName") %>%
-  spread(Name, value) %>%
-  select(-ottaID:-site) %>%
+cs2_X <- cs2_norm %>%
+  pivot_longer(
+    cols = all_of(cs2_samples_X),
+    names_to = "FileName",
+    names_prefix = "X",
+    values_to = "value"
+  ) %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
   column_to_rownames("FileName")
 
-# Normalized Datasets
+# CS2 with duplicates: 876 samples by 365 genes
+cs2_all_X <- cs2_norm %>%
+  pivot_longer(cols = all_of(cs2_samples_all_X),
+               names_to = "FileName",
+               names_prefix = "X",
+               values_to = "value") %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
+  column_to_rownames("FileName")
+
+# CS3: 2094 samples by 513 genes
+cs3_X <- cs3_norm %>%
+  pivot_longer(cols = all_of(cs3_samples_X),
+               names_to = "FileName",
+               names_prefix = "X",
+               values_to = "value") %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
+  column_to_rownames("FileName")
+
+# Normalized by Reference Method
 # Normalizing CS1 to CS3 uses n=79 common genes
 cs13_genes <- intersect(names(cs3_R), names(cs1_R))
 cs1_train <- as.data.frame(refMethod(cs1_X[cs13_genes],
