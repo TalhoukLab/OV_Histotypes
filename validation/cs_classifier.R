@@ -208,54 +208,7 @@ cs2_all_train <- as.data.frame(refMethod(cs2_all_X[cs23_genes],
                                          cs3_R[cs23_genes],
                                          cs2_R[cs23_genes]))
 
-# Random selection of common samples with equal number of histotypes
-set.seed(2020)
-hist_site_rand1 <- hist %>%
-  filter(
-    FileName %in%
-      c(cs3_clean_van$FileName,
-        cs3_clean_aoc$FileName,
-        cs3_clean_usc$FileName)
-  ) %>%
-  distinct(ottaID, revHist) %>%
-  group_by(revHist) %>%
-  slice_sample(n = 1) %>%
-  ungroup()
-
-# Gene expression from random common samples, preserving gene order
-# Reference Datasets: each are 5 samples by 513 genes
-cs3_usc_rand1 <- join_avg(cs3_clean_usc, hist_site_rand1, "ottaID", "keep")
-cs3_aoc_rand1 <- join_avg(cs3_clean_aoc, hist_site_rand1, "ottaID", "keep")
-cs3_van_rand1 <- join_avg(cs3_clean_van, hist_site_rand1, "ottaID", "keep")
-
-# Remove common samples from CS1, preserving gene order
-# Remove common samples and keep last run sample for duplicates
-# Expression Datasets: each are 19 samples by 513 genes
-cs3_usc_dist_counts1 <- cs3_clean_usc %>%
-  anti_join(hist_site_rand1, by = "ottaID") %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  select(-ottaID) %>%
-  column_to_rownames("FileName")
-cs3_aoc_dist_counts1 <- cs3_clean_aoc %>%
-  anti_join(hist_site_rand1, by = "ottaID") %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  select(-ottaID) %>%
-  column_to_rownames("FileName")
-cs3_van_dist_counts1 <- cs3_clean_van %>%
-  anti_join(hist_site_rand1, by = "ottaID") %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  select(-ottaID) %>%
-  column_to_rownames("FileName")
-
-# Normalize by reference method using common samples, add histotypes from annot
-cs3_norm_usc_rand1 <-
-  refMethod(cs3_usc_dist_counts1, cs3_van_rand1, cs3_usc_rand1) %>%
-  as.data.frame()
-
-cs3_norm_aoc_rand1 <-
-  refMethod(cs3_aoc_dist_counts1, cs3_van_rand1, cs3_aoc_rand1) %>%
-  as.data.frame()
-
+# Normalize by Pools
 # CS3-VAN reference pools setup
 weights <- c("Pool1", "Pool2", "Pool3") %>%
   purrr::set_names() %>%
@@ -314,22 +267,8 @@ cs3_aoc_norm <- merged_aoc %>%
   t() %>%
   as.data.frame()
 
-# Combine the two CS3-VAN used to normalize CS1/CS2 and normalize CS3-USC/CS3-AOC
-# and remove duplicates
+# Combine CS3-VAN with normalized CS3-USC and CS3-AOC and remove duplicates
 cs3_train <-
-  list(cs3_X, cs3_van_dist_counts1, cs3_norm_usc_rand1, cs3_norm_aoc_rand1) %>%
-  map_dfr(rownames_to_column, "FileName") %>%
-  distinct() %>%
-  filter(!duplicated(FileName, fromLast = TRUE)) %>%
-  mutate(col_name = paste0("X", FileName)) %>%
-  inner_join(cohorts, by = "col_name") %>%
-  filter(!cohort %in% c("TNCO", "DOVE4"),
-         !grepl("pool", col_name, ignore.case = TRUE)) %>%
-  mutate(col_name = gsub("^X", "", col_name)) %>%
-  column_to_rownames("col_name") %>%
-  select(all_of(common_genes123))
-
-cs3_train2 <-
   list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
   map_dfr(rownames_to_column, "FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
@@ -338,7 +277,7 @@ cs3_train2 <-
   column_to_rownames("FileName") %>%
   select(all_of(common_genes123))
 
-# Training set, n=263+827+514-75-286=1243 (CS1 + CS2 + CS3 excluding TNCO and DOVE
+# Training set, n=263+827+520-75-292=1243 (CS1 + CS2 + CS3 excluding TNCO and DOVE
 # - other histotypes - duplicates), common genes n=72
 train_ref_all <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
