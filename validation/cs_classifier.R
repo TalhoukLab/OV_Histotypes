@@ -228,6 +228,7 @@ train_ref_all <-
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
 
+# Replicates processing: keep Vancouver > AOC > USC; CS3 > CS2 > CS1
 train_ref <- train_ref_all %>%
   mutate(site = factor(site, levels = c("USC", "AOC", "Vancouver"))) %>%
   slice_max(n = 1, order_by = site, by = ottaID) %>%
