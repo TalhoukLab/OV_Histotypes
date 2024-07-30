@@ -213,33 +213,25 @@ cs3_train <-
   column_to_rownames("FileName") %>%
   select(all_of(common_genes123))
 
+
+# Construct Training Set --------------------------------------------------
+
 # Training set, n=263+827+520-75-292=1243 (CS1 + CS2 + CS3 excluding TNCO and DOVE
 # - other histotypes - duplicates), common genes n=72
 train_ref_all <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
   rownames_to_column("FileName") %>%
+  mutate(col_name = paste0("X", FileName)) %>%
+  inner_join(cohorts, by = "col_name") %>%
+  select(FileName, all_of(common_genes123), cohort) %>%
   inner_join(hist, by = "FileName") %>%
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  inner_join(transmute(cohorts, FileName = gsub("^X", "", col_name), cohort),
-             by = "FileName") %>%
   column_to_rownames("FileName")
 
 train_ref <- train_ref_all %>%
-  mutate(
-    CodeSet_Site = fct_cross(CodeSet, site, sep = "_") %>%
-      fct_relevel(
-        "CS3_Vancouver",
-        "CS3_AOC",
-        "CS3_USC",
-        "CS2_Vancouver",
-        "CS2_AOC",
-        "CS1_Vancouver"
-      )
-  ) %>%
-  arrange(CodeSet_Site) %>%
-  filter(!duplicated(ottaID)) %>%
-  select(-CodeSet_Site) %>%
-  arrange(CodeSet)
+  mutate(site = factor(site, levels = c("USC", "AOC", "Vancouver"))) %>%
+  slice_max(n = 1, order_by = site, by = ottaID) %>%
+  slice_tail(n = 1, by = ottaID)
 
 train_data <- select(train_ref, where(is.double))
 train_class <- train_ref[["revHist"]]
@@ -247,7 +239,10 @@ train_class <- train_ref[["revHist"]]
 saveRDS(train_data, here::here("data/train_data.rds"))
 saveRDS(train_class, here::here("data/train_class.rds"))
 
-# Training set for 2-step process
+
+# Two-Step Training Set ---------------------------------------------------
+
+# Training set for two-step classifier
 train_step1_data <- train_data
 train_step1_class <- ifelse(train_class == "HGSC", "HGSC", "non-HGSC")
 train_step2_data <- train_data[train_step1_class != "HGSC", ]
@@ -257,6 +252,9 @@ saveRDS(train_step1_data, here::here("data/train_step1_data.rds"))
 saveRDS(train_step1_class, here::here("data/train_step1_class.rds"))
 saveRDS(train_step2_data, here::here("data/train_step2_data.rds"))
 saveRDS(train_step2_class, here::here("data/train_step2_class.rds"))
+
+
+# CS1 and CS2 with duplicates ---------------------------------------------
 
 # CS1 all set, n=279-19=260 (CS1 - other histotypes), common genes with CS3 n=79
 cs1_all_ref <- cs1_all_train %>%
@@ -284,6 +282,9 @@ cs2_all_class <- cs2_all_ref[["revHist"]]
 saveRDS(cs2_all_data, here::here("data/cs2_all_data.rds"))
 saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 
+
+# Construct Test Sets -----------------------------------------------------
+
 # Confirmation set, n=673-30=643 (TNCO - other histotypes)
 conf_ref <-
   list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
@@ -291,11 +292,10 @@ conf_ref <-
   list_rbind() %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
-  filter(cohort == "TNCO") %>%
-  mutate(col_name = gsub("^X", "", col_name)) %>%
-  select(FileName = col_name, cohort, all_of(common_genes123)) %>%
+  select(FileName, all_of(common_genes123), cohort) %>%
   inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  filter(cohort == "TNCO",
+         revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
 
 conf_data <- select(conf_ref, where(is.double))
@@ -311,11 +311,10 @@ val_ref <-
   list_rbind() %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
-  filter(cohort == "DOVE4") %>%
-  mutate(col_name = gsub("^X", "", col_name)) %>%
-  select(FileName = col_name, cohort, all_of(common_genes123)) %>%
+  select(FileName, all_of(common_genes123), cohort) %>%
   inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  filter(cohort == "DOVE4",
+         revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
 
 val_data <- select(val_ref, where(is.double))
