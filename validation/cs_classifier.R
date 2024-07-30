@@ -2,13 +2,10 @@
 source(here::here("validation/cs_process_cohorts.R"))
 source(here::here("src/funs.R"))
 
-# CS3 site mapping used for prioritizing Vancouver site and most recent date
-hist_cs3 <- hist %>%
-  mutate(
-    col_name = paste0("X", FileName),
-    site = factor(site, levels = c("Vancouver", "USC", "AOC")),
-    .keep = "none"
-  )
+# CS3-VAN site mapping used for ensuring CS3 samples are from Vancouver
+hist_cs3_van <- hist %>%
+  filter(site == "Vancouver") %>%
+  mutate(col_name = paste0("X", FileName), .keep = "none")
 
 # Reference Samples
 # CS1: n=5
@@ -30,12 +27,9 @@ cs2_samples_R <- cohorts %>%
 # CS3: n=5 (ensure Vancouver site)
 cs3_samples_R <- cohorts %>%
   semi_join(hist_rand1, by = "ottaID") %>%
+  semi_join(hist_cs3_van, by = "col_name") %>%
   filter(col_name %in% cs3_samples) %>%
-  inner_join(hist_cs3, by = "col_name") %>%
-  group_by(ottaID) %>%
-  arrange(site, desc(col_name)) %>%
-  ungroup() %>%
-  distinct(ottaID, .keep_all = TRUE) %>%
+  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
   arrange(ottaID) %>%
   pull(col_name)
 
@@ -69,9 +63,8 @@ cs2_samples_all_X <- cohorts %>%
 # CS3: n=2094 (ensure Vancouver site)
 cs3_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
+  semi_join(hist_cs3_van, by = "col_name") %>%
   filter(col_name %in% cs3_samples) %>%
-  inner_join(hist_cs3, by = "col_name") %>%
-  filter(site == "Vancouver") %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
   pull(col_name)
 
