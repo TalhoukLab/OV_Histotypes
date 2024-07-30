@@ -1,5 +1,21 @@
 # Helper Functions --------------------------------------------------------
 
+# Select samples from CodeSets and transpose to standard format:
+# Rows: Samples, Columns: Genes, Rownames: Sample FileName
+select_samples <- function(cs_norm, samples) {
+  cs_norm %>%
+    tidyr::pivot_longer(
+      cols = dplyr::all_of(samples),
+      names_to = "FileName",
+      names_prefix = "X",
+      values_to = "value"
+    ) %>%
+    tidyr::pivot_wider(id_cols = FileName,
+                names_from = Name,
+                values_from = value) %>%
+    tibble::column_to_rownames("FileName")
+}
+
 # Join histotypes to codeset and keep or discard the common ids and average
 # the duplicate samples
 join_avg <- function(cs, hist, id, type = c("keep", "discard")) {

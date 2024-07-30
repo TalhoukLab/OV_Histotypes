@@ -83,105 +83,29 @@ cs3_samples_all_X <- cohorts %>%
 
 # Reference Datasets
 # CS1: 5 samples by 256 genes
-cs1_R <- cs1_norm %>%
-  pivot_longer(
-    cols = all_of(cs1_samples_R),
-    names_to = "FileName",
-    names_prefix = "X",
-    values_to = "value"
-  ) %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
-  column_to_rownames("FileName")
+cs1_R <- select_samples(cs1_norm, cs1_samples_R)
 
 # CS2: 5 samples by 365 genes
-cs2_R <- cs2_norm %>%
-  pivot_longer(
-    cols = all_of(cs2_samples_R),
-    names_to = "FileName",
-    names_prefix = "X",
-    values_to = "value"
-  ) %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
-  column_to_rownames("FileName")
+cs2_R <- select_samples(cs2_norm, cs2_samples_R)
 
 # CS3: 5 samples by 513 genes
-cs3_R <- cs3_norm %>%
-  pivot_longer(
-    cols = all_of(cs3_samples_R),
-    names_to = "FileName",
-    names_prefix = "X",
-    values_to = "value"
-  ) %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
-  column_to_rownames("FileName")
+cs3_R <- select_samples(cs3_norm, cs3_samples_R)
 
 # Expression Datasets
 # CS1: 263 samples by 256 genes
-cs1_X <- cs1_norm %>%
-  pivot_longer(
-    cols = all_of(cs1_samples_X),
-    names_to = "FileName",
-    names_prefix = "X",
-    values_to = "value"
-  ) %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
-  column_to_rownames("FileName")
+cs1_X <- select_samples(cs1_norm, cs1_samples_X)
 
 # CS1 with duplicates: 279 samples by 256 genes
-cs1_all_X <- cs1_norm %>%
-  pivot_longer(
-    cols = all_of(cs1_samples_all_X),
-    names_to = "FileName",
-    names_prefix = "X",
-    values_to = "value"
-  ) %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
-  column_to_rownames("FileName")
+cs1_all_X <- select_samples(cs1_norm, cs1_samples_all_X)
 
 # CS2: 827 samples by 365 genes
-cs2_X <- cs2_norm %>%
-  pivot_longer(
-    cols = all_of(cs2_samples_X),
-    names_to = "FileName",
-    names_prefix = "X",
-    values_to = "value"
-  ) %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
-  column_to_rownames("FileName")
+cs2_X <- select_samples(cs2_norm, cs2_samples_X)
 
 # CS2 with duplicates: 876 samples by 365 genes
-cs2_all_X <- cs2_norm %>%
-  pivot_longer(cols = all_of(cs2_samples_all_X),
-               names_to = "FileName",
-               names_prefix = "X",
-               values_to = "value") %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
-  column_to_rownames("FileName")
+cs2_all_X <- select_samples(cs2_norm, cs2_samples_all_X)
 
 # CS3: 2094 samples by 513 genes
-cs3_X <- cs3_norm %>%
-  pivot_longer(cols = all_of(cs3_samples_X),
-               names_to = "FileName",
-               names_prefix = "X",
-               values_to = "value") %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
-  column_to_rownames("FileName")
+cs3_X <- select_samples(cs3_norm, cs3_samples_X)
 
 # Normalized by Reference Method
 # Normalizing CS1 to CS3 uses n=79 common genes
