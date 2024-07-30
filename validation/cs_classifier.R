@@ -2,11 +2,6 @@
 source(here::here("validation/cs_process_cohorts.R"))
 source(here::here("src/funs.R"))
 
-# CS3-VAN site mapping used for ensuring CS3 samples are from Vancouver
-hist_cs3_van <- hist %>%
-  filter(site == "Vancouver") %>%
-  mutate(col_name = paste0("X", FileName), .keep = "none")
-
 # Reference Samples
 # CS1: n=5
 cs1_samples_R <- cohorts %>%

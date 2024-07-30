@@ -342,6 +342,11 @@ hist_rand1 <- hist %>%
   slice_sample(n = 1) %>%
   ungroup()
 
+# CS3-VAN site mapping used for ensuring CS3 samples are from Vancouver
+hist_cs3_van <- hist %>%
+  filter(site == "Vancouver") %>%
+  mutate(col_name = paste0("X", FileName), .keep = "none")
+
 # Find summaryID common to all site
 common_site <- annot_cs123 %>%
   count(site, summaryID) %>%
