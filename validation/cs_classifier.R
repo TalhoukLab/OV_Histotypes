@@ -285,9 +285,11 @@ saveRDS(cs2_all_data, here::here("data/cs2_all_data.rds"))
 saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 
 # Confirmation set, n=673-30=643 (TNCO - other histotypes)
-conf_ref <- cs3_X %>%
-  rownames_to_column("col_name") %>%
-  mutate(col_name = paste0("X", col_name)) %>%
+conf_ref <-
+  list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
+  map(rownames_to_column, "FileName") %>%
+  list_rbind() %>%
+  mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   filter(cohort == "TNCO") %>%
   mutate(col_name = gsub("^X", "", col_name)) %>%
@@ -302,10 +304,12 @@ conf_class <- conf_ref[["revHist"]]
 saveRDS(conf_data, here::here("data/conf_data.rds"))
 saveRDS(conf_class, here::here("data/conf_class.rds"))
 
-# Validation set, n=923-29=895 (DOVE - other histotypes)
-val_ref <- cs3_X %>%
-  rownames_to_column("col_name") %>%
-  mutate(col_name = paste0("X", col_name)) %>%
+# Validation set, n=929-29=900 (DOVE - other histotypes)
+val_ref <-
+  list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
+  map(rownames_to_column, "FileName") %>%
+  list_rbind() %>%
+  mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   filter(cohort == "DOVE4") %>%
   mutate(col_name = gsub("^X", "", col_name)) %>%
