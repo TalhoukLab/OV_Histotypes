@@ -11,8 +11,8 @@ select_samples <- function(cs_norm, samples) {
       values_to = "value"
     ) %>%
     tidyr::pivot_wider(id_cols = FileName,
-                names_from = Name,
-                values_from = value) %>%
+                       names_from = Name,
+                       values_from = value) %>%
     tibble::column_to_rownames("FileName")
 }
 
