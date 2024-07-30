@@ -2,7 +2,9 @@
 source(here::here("validation/cs_process_cohorts.R"))
 source(here::here("src/funs.R"))
 
-# Reference Samples
+
+# Reference Samples -------------------------------------------------------
+
 # CS1: n=5
 cs1_samples_R <- cohorts %>%
   semi_join(hist_rand1, by = "ottaID") %>%
@@ -28,7 +30,9 @@ cs3_samples_R <- cohorts %>%
   arrange(ottaID) %>%
   pull(col_name)
 
-# Expression Samples
+
+# Expression Samples ------------------------------------------------------
+
 # CS1: n=263
 cs1_samples_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
@@ -69,7 +73,9 @@ cs3_samples_all_X <- cohorts %>%
   filter(col_name %in% cs3_samples) %>%
   pull(col_name)
 
-# Reference Datasets
+
+# Reference Datasets ------------------------------------------------------
+
 # CS1: 5 samples by 256 genes
 cs1_R <- select_samples(cs1_norm, cs1_samples_R)
 
@@ -79,7 +85,9 @@ cs2_R <- select_samples(cs2_norm, cs2_samples_R)
 # CS3: 5 samples by 513 genes
 cs3_R <- select_samples(cs3_norm, cs3_samples_R)
 
-# Expression Datasets
+
+# Expression Datasets -----------------------------------------------------
+
 # CS1: 263 samples by 256 genes
 cs1_X <- select_samples(cs1_norm, cs1_samples_X)
 
@@ -95,7 +103,9 @@ cs2_all_X <- select_samples(cs2_norm, cs2_samples_all_X)
 # CS3: 2094 samples by 513 genes
 cs3_X <- select_samples(cs3_norm, cs3_samples_X)
 
-# Normalized by Reference Method
+
+# Normalization by Reference Method ---------------------------------------
+
 # Normalizing CS1 to CS3 uses n=79 common genes
 cs13_genes <- intersect(names(cs3_R), names(cs1_R))
 cs1_train <- refMethod(Y = cs1_X[cs13_genes],
@@ -124,66 +134,75 @@ cs2_all_train <- refMethod(Y = cs2_all_X[cs23_genes],
                            R2 = cs2_R[cs23_genes]) %>%
   as.data.frame()
 
-# Normalize by Pools
+
+# Normalization by Pools --------------------------------------------------
+
 # CS3-VAN reference pools setup
 weights <- c("Pool1", "Pool2", "Pool3") %>%
-  purrr::set_names() %>%
-  purrr::map_dbl(~ ncol(dplyr::select(ref_pools, dplyr::matches(.))) /
-                   ncol(ref_pools))
+  set_names() %>%
+  map_dbl(~ ncol(select(ref_pools, matches(.))) / ncol(ref_pools))
 
 ref_mean_gx <-
   rowMeans(ref_pools) %>%
-  tibble::enframe(name = "Name", value = "ref_exp")
+  enframe(name = "Name", value = "ref_exp")
 
 # CS3-USC normalized to CS3-VAN by pools
 cs3_usc_R_mean_gx <-
   weights %>%
-  purrr::imap( ~ {
-    df <- dplyr::select(cs3_usc_R, Name, dplyr::matches(.y)) %>%
-      tibble::column_to_rownames("Name")
-    tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
+  imap(~ {
+    df <- select(cs3_usc_R, Name, matches(.y)) %>%
+      column_to_rownames("Name")
+    enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
   })  %>%
-  purrr::reduce(dplyr::inner_join, by = "Name") %>%
-  dplyr::transmute(Name, norm_exp = rowSums(dplyr::select(., dplyr::contains("Pool"))))
+  reduce(inner_join, by = "Name") %>%
+  transmute(Name, norm_exp = rowSums(select(., contains("Pool"))))
 
-merged_usc <- dplyr::inner_join(ref_mean_gx, cs3_usc_R_mean_gx, by = "Name") %>%
-  dplyr::transmute(Name, be = ref_exp - norm_exp) %>%
-  dplyr::inner_join(cs3_usc_X, by = "Name")
+merged_usc <- inner_join(ref_mean_gx, cs3_usc_R_mean_gx, by = "Name") %>%
+  transmute(Name, be = ref_exp - norm_exp) %>%
+  inner_join(cs3_usc_X, by = "Name")
 
 cs3_usc_norm <- merged_usc %>%
-  as.data.frame() %>%
-  tibble::column_to_rownames("Name") %>%
-  dplyr::select(-c(be, Code.Class, Accession)) %>%
-  dplyr::rename_with(~ gsub("^X", "", .)) %>%
-  apply(2, `+`, merged_usc[["be"]]) %>%
-  t() %>%
-  as.data.frame()
+  pivot_longer(
+    cols = starts_with("X"),
+    names_to = "FileName",
+    names_prefix = "X",
+    values_to = "value"
+  ) %>%
+  mutate(value = value + be) %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
+  column_to_rownames("FileName")
 
 # CS3-USC normalized to CS3-VAN by pools
 cs3_aoc_R_mean_gx <-
   weights %>%
-  purrr::imap( ~ {
-    df <- dplyr::select(cs3_aoc_R, Name, dplyr::matches(.y)) %>%
-      tibble::column_to_rownames("Name")
-    tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
+  imap(~ {
+    df <- select(cs3_aoc_R, Name, matches(.y)) %>%
+      column_to_rownames("Name")
+    enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
   })  %>%
-  purrr::reduce(dplyr::inner_join, by = "Name") %>%
-  dplyr::transmute(Name, norm_exp = rowSums(dplyr::select(., dplyr::contains("Pool"))))
+  reduce(inner_join, by = "Name") %>%
+  transmute(Name, norm_exp = rowSums(select(., contains("Pool"))))
 
-merged_aoc <- dplyr::inner_join(ref_mean_gx, cs3_aoc_R_mean_gx, by = "Name") %>%
-  dplyr::transmute(Name, be = ref_exp - norm_exp) %>%
-  dplyr::inner_join(cs3_aoc_X, by = "Name")
+merged_aoc <- inner_join(ref_mean_gx, cs3_aoc_R_mean_gx, by = "Name") %>%
+  transmute(Name, be = ref_exp - norm_exp) %>%
+  inner_join(cs3_aoc_X, by = "Name")
 
 cs3_aoc_norm <- merged_aoc %>%
-  as.data.frame() %>%
-  tibble::column_to_rownames("Name") %>%
-  dplyr::select(-c(be, Code.Class, Accession)) %>%
-  dplyr::rename_with(~ gsub("^X", "", .)) %>%
-  apply(2, `+`, merged_aoc[["be"]]) %>%
-  t() %>%
-  as.data.frame()
+  pivot_longer(
+    cols = starts_with("X"),
+    names_to = "FileName",
+    names_prefix = "X",
+    values_to = "value"
+  ) %>%
+  mutate(value = value + be) %>%
+  pivot_wider(id_cols = FileName,
+              names_from = Name,
+              values_from = value) %>%
+  column_to_rownames("FileName")
 
-# Combine CS3-VAN with normalized CS3-USC and CS3-AOC and remove duplicates
+# Combine CS3-VAN with normalized CS3-USC and CS3-AOC and remove test sets and pool samples
 cs3_train <-
   list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
   map(rownames_to_column, "FileName") %>%
