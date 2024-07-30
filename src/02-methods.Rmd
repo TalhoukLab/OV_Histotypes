@@ -97,6 +97,7 @@ grViz(
     "digraph processing {
 
     # layout
+    # fontname = 'times-italic'
     graph [layout = dot overlap = FALSE splines = FALSE]
 
     # node definitions
@@ -601,3 +602,4 @@ The area under the receiver operating curve (AUC) is calculated by adding up the
 We did not use AUC to measure class-specific training set performance because combining predicted probabilities in a one-vs-all fashion might be potentially misleading. The sum of probabilities that add up to the "other" class is not equivalent to the predicted probability of the "other" class when using a multiclass classifier.
 
 Instead, we only reported ROC curves and their associated AUCs for the test set performance of the sequential and two-step algorithms.
+
