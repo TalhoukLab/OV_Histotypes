@@ -3,30 +3,42 @@ source(here::here("validation/cs_process_cohorts.R"))
 source(here::here("src/funs.R"))
 
 
+# Remove Duplicates -------------------------------------------------------
+
+# CS1: n=268
+cs1_dedup <- cohorts %>%
+  filter(col_name %in% cs1_samples) %>%
+  filter(!duplicated(ottaID, fromLast = TRUE))
+
+# CS2: n=832
+cs2_dedup <- cohorts %>%
+  filter(col_name %in% cs2_samples) %>%
+  filter(!duplicated(ottaID, fromLast = TRUE))
+
+# CS3: n=2077 (Vancouver site only and removed pools)
+cs3_dedup <- cohorts %>%
+  semi_join(hist_cs3_van, by = "col_name") %>%
+  filter(col_name %in% cs3_samples) %>%
+  filter(!cohort %in% c("POOL-1", "POOL-2", "POOL-3")) %>%
+  filter(!duplicated(ottaID, fromLast = TRUE))
+
 # Reference Samples -------------------------------------------------------
 
 # CS1: n=5
-cs1_samples_R <- cohorts %>%
+cs1_samples_R <- cs1_dedup %>%
   semi_join(hist_rand1, by = "ottaID") %>%
-  filter(col_name %in% cs1_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
   arrange(ottaID) %>%
   pull(col_name)
 
 # CS2: n=5
-cs2_samples_R <- cohorts %>%
+cs2_samples_R <- cs2_dedup %>%
   semi_join(hist_rand1, by = "ottaID") %>%
-  filter(col_name %in% cs2_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
   arrange(ottaID) %>%
   pull(col_name)
 
-# CS3: n=5 (ensure Vancouver site)
-cs3_samples_R <- cohorts %>%
+# CS3: n=5
+cs3_samples_R <- cs3_dedup %>%
   semi_join(hist_rand1, by = "ottaID") %>%
-  semi_join(hist_cs3_van, by = "col_name") %>%
-  filter(col_name %in% cs3_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
   arrange(ottaID) %>%
   pull(col_name)
 
@@ -34,10 +46,8 @@ cs3_samples_R <- cohorts %>%
 # Expression Samples ------------------------------------------------------
 
 # CS1: n=263
-cs1_samples_X <- cohorts %>%
+cs1_samples_X <- cs1_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
-  filter(col_name %in% cs1_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
   pull(col_name)
 
 # CS1 with duplicates: n=279
@@ -47,10 +57,8 @@ cs1_samples_all_X <- cohorts %>%
   pull(col_name)
 
 # CS2: n=827
-cs2_samples_X <- cohorts %>%
+cs2_samples_X <- cs2_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
-  filter(col_name %in% cs2_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
   pull(col_name)
 
 # CS2 with duplicates: n=876
@@ -59,12 +67,9 @@ cs2_samples_all_X <- cohorts %>%
   filter(col_name %in% cs2_samples) %>%
   pull(col_name)
 
-# CS3: n=2094 (ensure Vancouver site)
-cs3_samples_X <- cohorts %>%
+# CS3: n=2072
+cs3_samples_X <- cs3_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
-  semi_join(hist_cs3_van, by = "col_name") %>%
-  filter(col_name %in% cs3_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE)) %>%
   pull(col_name)
 
 # CS3 with duplicates: n=2264
@@ -100,7 +105,7 @@ cs2_X <- select_samples(cs2_norm, cs2_samples_X)
 # CS2 with duplicates: 876 samples by 365 genes
 cs2_all_X <- select_samples(cs2_norm, cs2_samples_all_X)
 
-# CS3: 2094 samples by 513 genes
+# CS3: 2072 samples by 513 genes
 cs3_X <- select_samples(cs3_norm, cs3_samples_X)
 
 
@@ -202,11 +207,9 @@ cs3_aoc_norm <- merged_aoc %>%
               values_from = value) %>%
   column_to_rownames("FileName")
 
-# Combine CS3-VAN with normalized CS3-USC and CS3-AOC and remove test sets and pool samples
-cs3_train <-
-  list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
-  map(rownames_to_column, "FileName") %>%
-  list_rbind() %>%
+# Remove test sets and pool samples from CS3-VAN
+cs3_train <- cs3_X %>%
+  rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   filter(!cohort %in% c("TNCO", "DOVE4", "POOL-1", "POOL-2", "POOL-3")) %>%
@@ -216,19 +219,23 @@ cs3_train <-
 
 # Construct Training Set --------------------------------------------------
 
-# Training set, n=263+827+520-75-292=1243 (CS1 + CS2 + CS3 excluding TNCO and DOVE
-# - other histotypes - duplicates), common genes n=72
-train_ref_all <-
+# Combined Training Set (CS1 + CS2 + CS3), n=263+827+476=1566
+# Common genes n=72
+train_ref_comb <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
   rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
-  select(FileName, all_of(common_genes123), cohort) %>%
+  select(FileName, all_of(common_genes123), cohort)
+
+# Training set removed other histotypes, n=1566-75=1491
+train_ref_all <-
+  train_ref_comb %>%
   inner_join(hist, by = "FileName") %>%
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
 
-# Replicates processing: keep Vancouver > AOC > USC; CS3 > CS2 > CS1
+# Training set removed replicates (CS3 > CS2 > CS1), n=1491-248=1243
 train_ref <- train_ref_all %>%
   mutate(site = factor(site, levels = c("USC", "AOC", "Vancouver"))) %>%
   slice_max(n = 1, order_by = site, by = ottaID) %>%
@@ -287,10 +294,8 @@ saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 # Construct Test Sets -----------------------------------------------------
 
 # Confirmation set, n=673-30=643 (TNCO - other histotypes)
-conf_ref <-
-  list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
-  map(rownames_to_column, "FileName") %>%
-  list_rbind() %>%
+conf_ref <- cs3_X %>%
+  rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   select(FileName, all_of(common_genes123), cohort) %>%
@@ -305,11 +310,9 @@ conf_class <- conf_ref[["revHist"]]
 saveRDS(conf_data, here::here("data/conf_data.rds"))
 saveRDS(conf_class, here::here("data/conf_class.rds"))
 
-# Validation set, n=929-29=900 (DOVE - other histotypes)
-val_ref <-
-  list(cs3_X, cs3_usc_norm, cs3_aoc_norm) %>%
-  map(rownames_to_column, "FileName") %>%
-  list_rbind() %>%
+# Validation set, n=923-29=894 (DOVE - other histotypes)
+val_ref <- cs3_X %>%
+  rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   select(FileName, all_of(common_genes123), cohort) %>%

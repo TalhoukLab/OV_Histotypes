@@ -92,98 +92,84 @@ Duplicate cases (two samples with the same ottaID) were removed before generatin
 The final training set used only genes that were common across all three CodeSets.
 
 ```{r processing, fig.cap='Processing Stages of Training Data', fig.height=10, out.width='100%'}
+# Nodes: RColorBrewer::brewer.pal(n = 8, name = "Pastel2")
+# Edges: RColorBrewer::brewer.pal(n = 8, name = "Set1")
+
 grViz(
   paste0(
     "digraph processing {
 
     # layout
     # fontname = 'times-italic'
-    graph [layout = dot overlap = FALSE splines = FALSE]
+    graph [layout = dot overlap = FALSE splines = FALSE ranksep = '0.8']
 
     # node definitions
     node [shape = box, style = 'filled', fillcolor = 'white']
-    a [shape = ellipse, label = 'Selected Cohorts from all CodeSets\nN = 3674', fillcolor = '#F4CAE4']
-    b [shape = ellipse, label = 'Samples Passed QC\nN = 3441', fillcolor = '#F4CAE4']
+    a [shape = ellipse, label = 'Selected Cohorts for Training Set = 3674', fillcolor = '#F4CAE4']
+    b [shape = ellipse, label = 'Training = 3441', fillcolor = '#F4CAE4']
+
     c1 [label = 'CS1 = 286', fillcolor = '#B3E2CD']
     c2 [label = 'CS2 = 882', fillcolor = '#FDCDAC']
     c3 [label = 'CS3 = 2273', fillcolor = '#CBD5E8']
 
-    d1r [label = <CS1<sub><font point-size='10'>R</font></sub> = 7>, fillcolor = '#B3E2CD']
-    d1x [label = <CS1<sub><font point-size='10'>X</font></sub> = 279>, fillcolor = '#B3E2CD']
-    d2r [label = <CS2<sub><font point-size='10'>R</font></sub> = 6>, fillcolor = '#FDCDAC']
-    d2x [label = <CS2<sub><font point-size='10'>X</font></sub> = 876>, fillcolor = '#FDCDAC']
-    d3r [label = <CS3<sub><font point-size='10'>R</font></sub> = 9>, fillcolor = '#CBD5E8']
-    d3x [label = <CS3<sub><font point-size='10'>X</font></sub> = 2264>, fillcolor = '#CBD5E8']
+    d1 [label = 'CS1 = 268', fillcolor = '#B3E2CD']
+    d2 [label = 'CS2 = 832', fillcolor = '#FDCDAC']
+    d3 [label = 'CS3 = 2077', fillcolor = '#CBD5E8']
 
-    e3van [label = <CS3-VAN<sub><font point-size='10'>X</font></sub> = 2178>, fillcolor = '#E6F5C9']
-    e3usc [label = <CS3-USC<sub><font point-size='10'>X</font></sub> = 45>, fillcolor = '#FFF2AE']
-    e3aoc [label = <CS3-AOC<sub><font point-size='10'>X</font></sub> = 41>, fillcolor = '#F1E2CC']
+    e1r [label = <CS1<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#B3E2CD']
+    e1x [label = <CS1<sub><font point-size='10'>X</font></sub> = 263>, fillcolor = '#B3E2CD']
+    e2r [label = <CS2<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#FDCDAC']
+    e2x [label = <CS2<sub><font point-size='10'>X</font></sub> = 827>, fillcolor = '#FDCDAC']
+    e3r [label = <CS3<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#CBD5E8']
+    e3x [label = <CS3<sub><font point-size='10'>X</font></sub> = 2072>, fillcolor = '#CBD5E8']
 
-    f1r [label = <CS1<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#B3E2CD']
-    f1x [label = <CS1<sub><font point-size='10'>X</font></sub> = 263>, fillcolor = '#B3E2CD']
-    f2r [label = <CS2<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#FDCDAC']
-    f2x [label = <CS2<sub><font point-size='10'>X</font></sub> = 827>, fillcolor = '#FDCDAC']
-    f3r [label = <CS3<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#CBD5E8']
+    f1 [label = <CS1<sub><font point-size='10'>N</font></sub> = 263>, fillcolor = '#B3E2CD']
+    f2 [label = <CS2<sub><font point-size='10'>N</font></sub> = 827>, fillcolor = '#FDCDAC']
+    f3 [label = <CS3<sub><font point-size='10'>N</font></sub> = 476>, fillcolor = '#CBD5E8']
 
-    f3van [label = <CS3-VAN<sub><font point-size='10'>X</font></sub> = 2094>, fillcolor = '#E6F5C9']
-    f3usc [label = <CS3-USC<sub><font point-size='10'>X</font></sub> = 28>, fillcolor = '#FFF2AE']
-    f3usc_pools [label = <CS3-USC<sub><font point-size='10'>R</font></sub> = 17>, fillcolor = '#FFF2AE']
-    f3aoc [label = <CS3-AOC<sub><font point-size='10'>X</font></sub> = 22>, fillcolor = '#F1E2CC']
-    f3aoc_pools [label = <CS3-AOC<sub><font point-size='10'>R</font></sub> = 19>, fillcolor = '#F1E2CC']
+    g_conf [shape = ellipse, label = 'Confirmation = 673', fillcolor = '#E6F5C9']
+    g_val [shape = ellipse, label = 'Validation = 923', fillcolor = '#FFF2AE']
 
-    g3usc [label = <CS3-USC<sub><font point-size='10'>N</font></sub> = 28>, fillcolor = '#FFF2AE']
-    g3aoc [label = <CS3-AOC<sub><font point-size='10'>N</font></sub> = 22>, fillcolor = '#F1E2CC']
+    h_conf [shape = ellipse, label = 'Confirmation = 643', fillcolor = '#E6F5C9']
+    h_val [shape = ellipse, label = 'Validation = 894', fillcolor = '#FFF2AE']
 
-    h1 [label = <CS1<sub><font point-size='10'>N</font></sub> = 263>, fillcolor = '#B3E2CD']
-    h2 [label = <CS2<sub><font point-size='10'>N</font></sub> = 827>, fillcolor = '#FDCDAC']
-    h3 [label = <CS3<sub><font point-size='10'>N</font></sub> = 520>, fillcolor = '#CBD5E8']
-
-    train_all [shape = ellipse, label = 'Normalized Expression from all CodeSets\nN = 1610', fillcolor = '#F4CAE4']
-    train_hist [shape = ellipse, label = 'Major Histotypes\nN = 1535', fillcolor = '#F4CAE4']
-    train_uniq [shape = ellipse, label = 'Final Training\nN = 1243', fillcolor = '#F4CAE4']
+    train_comb [shape = ellipse, label = 'Training = 1566', fillcolor = '#F4CAE4']
+    train_hist [shape = ellipse, label = 'Training = 1491', fillcolor = '#F4CAE4']
+    train_uniq [shape = ellipse, label = 'Training = 1243', fillcolor = '#F4CAE4']
 
     # edge definitions
     edge [penwidth = 2, arrowsize = 0.5]
     a -> b [label = '  Quality Control']
     b -> {c1 c2} [tailport = 's', color = '#FF7F00']
     b -> c3 [label = 'Split by CodeSets', tailport = 's', color = '#FF7F00', fontcolor = '#FF7F00']
-    c1 -> {d1x d1r} [tailport = 's', color = '#984EA3']
-    c2 -> {d2x d2r} [tailport = 's', color = '#984EA3']
-    c3 -> d3x [label = 'Split into Expression and Reference Samples', tailport = 's', color = '#984EA3', fontcolor = '#984EA3']
-    c3 -> d3r [color = '#984EA3']
-    d1x -> f1x [color = '#377EB8']
-    d1r -> f1r [color = '#377EB8']
-    d2x -> f2x [color = '#377EB8']
-    d2r -> f2r [color = '#377EB8']
-    d3x -> {e3van e3usc} [tailport = 's', color = '#A65628']
-    d3x -> e3aoc [label = '  Split by site', tailport = 's', color = '#A65628', fontcolor = '#A65628']
-    d3r -> f3r [color = '#377EB8']
-    e3van -> f3van [tailport = 's', color = '#377EB8']
-    e3usc -> {f3usc f3usc_pools} [tailport = 's', color = '#377EB8']
-    e3aoc -> f3aoc [tailport = 's', color = '#377EB8']
-    e3aoc -> f3aoc_pools [tailport = 's', color = '#377EB8', label = 'Remove duplicates and separate pools', fontcolor = '#377EB8']
-    f1r -> h1 [headport = 'n', xlabel = 'Normalization by Random1                 ', color = '#E41A1C', fontcolor = '#E41A1C']
-    {f1x f3r} -> h1 [headport = 'n', color = '#E41A1C']
-    {f2x f2r f3r} -> h2 [headport = 'n', color = '#E41A1C']
-    {f3usc f3usc_pools} -> g3usc [headport = 'n', color = '#4DAF4A']
-    f3aoc -> g3aoc [headport = 'n', color = '#4DAF4A']
-    f3aoc_pools -> g3aoc [headport = 'n', color = '#4DAF4A', label = 'Normalization by Pools', fontcolor = '#4DAF4A']
-    {f3van g3usc} -> h3 [color = '#A65628']
-    g3aoc -> h3 [label = 'Recombine sites\nRemove test sets and pools', color = '#A65628', fontcolor = '#A65628']
-    {h1 h2} -> train_all [color = '#FF7F00']
-    h3 -> train_all [label = '  Recombine CodeSets', color = '#FF7F00', fontcolor = '#FF7F00']
-    train_all -> train_hist [label = '  Remove other Histotypes']
-    train_hist -> train_uniq [label = '  Remove cross CodeSet and cross site replicates']
+    c1 -> d1 [tailport = 's', color = '#377EB8']
+    c2 -> d2 [tailport = 's', color = '#377EB8']
+    c3 -> d3 [label = '  Remove duplicates and pools', tailport = 's', color = '#377EB8', fontcolor = '#377EB8']
+    d1 -> {e1r e1x} [tailport = 's', color = '#984EA3']
+    d2 -> {e2r e2x} [tailport = 's', color = '#984EA3']
+    d3 -> e3r [tailport = 's', color = '#984EA3']
+    d3 -> e3x [label = 'Split into Expression and Reference Samples', tailport = 's', color = '#984EA3', fontcolor = '#984EA3']
+    e1r -> f1 [headport = 'n', xlabel = 'Normalization by Random1            ', color = '#E41A1C', fontcolor = '#E41A1C']
+    {e1x e3r} -> f1 [headport = 'n', color = '#E41A1C']
+    {e2x e2r e3r} -> f2 [headport = 'n', color = '#E41A1C']
+    e3x -> {f3 g_conf} [color = '#A65628']
+    e3x -> g_val [label = '    Split into training and test sets', color = '#A65628', fontcolor = '#A65628']
+    f1 -> train_comb [xlabel = 'Recombine CodeSets        ', color = '#FF7F00', fontcolor = '#FF7F00']
+    {f2 f3} -> train_comb [color = '#FF7F00']
+    g_conf -> h_conf [color = '#4DAF4A']
+    g_val -> h_val [color = '#4DAF4A']
+    train_comb -> train_hist [xlabel = '  Remove other Histotypes', color = '#4DAF4A', fontcolor = '#4DAF4A']
+    train_hist -> train_uniq [xlabel = '  Remove cross CodeSet replicates']
 
     c1 -> c2 -> c3 [style = invis]
+    e1r -> e1x -> e2r -> e2x -> e3r -> e3x [style = invis]
 
     # subgraph definitions
     subgraph {rank = same; c1; c2; c3}
-    subgraph {rank = same; d1r; d1x; d2r; d2x; d3r; d3x}
-    subgraph {rank = same; e3van; e3usc; e3aoc}
-    subgraph {rank = same; f1x; f1r; f2x; f2r; f3r; f3usc; f3usc_pools; f3aoc; f3aoc_pools}
-    subgraph {rank = same; f3van; g3usc; g3aoc}
-    subgraph {rank = same; h1; h2; h3}
+    subgraph {rank = same; d1; d2; d3}
+    subgraph {rank = same; e1r; e1x; e2r; e2x; e3r; e3x}
+    subgraph {rank = same; f1; f2; f3}
+    subgraph {rank = same; train_comb; g_conf; g_val}
     }
     "
   )
