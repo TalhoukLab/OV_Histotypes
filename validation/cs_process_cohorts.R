@@ -202,7 +202,7 @@ cs2_norm <- HKnorm(cs2_coh_qc)
 cs3_norm <- HKnorm(cs3_coh_qc)
 
 # Histotypes for CS1/CS2/CS3 samples
-hist <- hist_all %>%
+hist <- hist_main %>%
   filter(FileName %in% cs123_samples) %>%
   droplevels()
 
