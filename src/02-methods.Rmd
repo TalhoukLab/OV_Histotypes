@@ -105,43 +105,41 @@ grViz(
 
     # node definitions
     node [shape = box, style = 'filled', fillcolor = 'white']
-    a [shape = ellipse, label = 'Selected Cohorts for Training Set = 3674', fillcolor = '#F4CAE4']
-    b [shape = ellipse, label = 'Training = 3441', fillcolor = '#F4CAE4']
+    train_coh [shape = ellipse, label = 'Selected Cohorts for Training Set = 3674', fillcolor = '#F4CAE4']
+    train_qc [shape = ellipse, label = 'Training = 3441', fillcolor = '#F4CAE4']
+    train_hist [shape = ellipse, label = 'Training = 3229', fillcolor = '#F4CAE4']
 
-    c1 [label = 'CS1 = 286', fillcolor = '#B3E2CD']
-    c2 [label = 'CS2 = 882', fillcolor = '#FDCDAC']
-    c3 [label = 'CS3 = 2273', fillcolor = '#CBD5E8']
+    c1 [label = 'CS1 = 267', fillcolor = '#B3E2CD']
+    c2 [label = 'CS2 = 815', fillcolor = '#FDCDAC']
+    c3 [label = 'CS3 = 2147', fillcolor = '#CBD5E8']
 
-    d1 [label = 'CS1 = 268', fillcolor = '#B3E2CD']
-    d2 [label = 'CS2 = 832', fillcolor = '#FDCDAC']
-    d3 [label = 'CS3 = 2077', fillcolor = '#CBD5E8']
+    d1 [label = 'CS1 = 249', fillcolor = '#B3E2CD']
+    d2 [label = 'CS2 = 784', fillcolor = '#FDCDAC']
+    d3 [label = 'CS3 = 2010', fillcolor = '#CBD5E8']
 
     e1r [label = <CS1<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#B3E2CD']
-    e1x [label = <CS1<sub><font point-size='10'>X</font></sub> = 263>, fillcolor = '#B3E2CD']
+    e1x [label = <CS1<sub><font point-size='10'>X</font></sub> = 244>, fillcolor = '#B3E2CD']
     e2r [label = <CS2<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#FDCDAC']
-    e2x [label = <CS2<sub><font point-size='10'>X</font></sub> = 827>, fillcolor = '#FDCDAC']
+    e2x [label = <CS2<sub><font point-size='10'>X</font></sub> = 779>, fillcolor = '#FDCDAC']
     e3r [label = <CS3<sub><font point-size='10'>R</font></sub> = 5>, fillcolor = '#CBD5E8']
-    e3x [label = <CS3<sub><font point-size='10'>X</font></sub> = 2072>, fillcolor = '#CBD5E8']
+    e3x [label = <CS3<sub><font point-size='10'>X</font></sub> = 2005>, fillcolor = '#CBD5E8']
 
-    f1 [label = <CS1<sub><font point-size='10'>N</font></sub> = 263>, fillcolor = '#B3E2CD']
-    f2 [label = <CS2<sub><font point-size='10'>N</font></sub> = 827>, fillcolor = '#FDCDAC']
-    f3 [label = <CS3<sub><font point-size='10'>N</font></sub> = 476>, fillcolor = '#CBD5E8']
+    f1 [label = <CS1<sub><font point-size='10'>N</font></sub> = 244>, fillcolor = '#B3E2CD']
+    f2 [label = <CS2<sub><font point-size='10'>N</font></sub> = 779>, fillcolor = '#FDCDAC']
+    f3 [label = <CS3<sub><font point-size='10'>X</font></sub> = 468>, fillcolor = '#CBD5E8']
 
-    g_conf [shape = ellipse, label = 'Confirmation = 673', fillcolor = '#E6F5C9']
-    g_val [shape = ellipse, label = 'Validation = 923', fillcolor = '#FFF2AE']
+    conf [shape = ellipse, label = 'Confirmation = 643', fillcolor = '#E6F5C9']
+    val [shape = ellipse, label = 'Validation = 894', fillcolor = '#FFF2AE']
 
-    h_conf [shape = ellipse, label = 'Confirmation = 643', fillcolor = '#E6F5C9']
-    h_val [shape = ellipse, label = 'Validation = 894', fillcolor = '#FFF2AE']
-
-    train_comb [shape = ellipse, label = 'Training = 1566', fillcolor = '#F4CAE4']
-    train_hist [shape = ellipse, label = 'Training = 1491', fillcolor = '#F4CAE4']
+    train_comb [shape = ellipse, label = 'Training = 1491', fillcolor = '#F4CAE4']
     train_uniq [shape = ellipse, label = 'Training = 1243', fillcolor = '#F4CAE4']
 
     # edge definitions
     edge [penwidth = 2, arrowsize = 0.5]
-    a -> b [label = '  Quality Control']
-    b -> {c1 c2} [tailport = 's', color = '#FF7F00']
-    b -> c3 [label = 'Split by CodeSets', tailport = 's', color = '#FF7F00', fontcolor = '#FF7F00']
+    train_coh -> train_qc [label = '  Quality Control']
+    train_qc -> train_hist [label = '  Remove other histotypes']
+    train_hist -> {c1 c2} [tailport = 's', color = '#FF7F00']
+    train_hist -> c3 [label = 'Split by CodeSets', tailport = 's', color = '#FF7F00', fontcolor = '#FF7F00']
     c1 -> d1 [tailport = 's', color = '#377EB8']
     c2 -> d2 [tailport = 's', color = '#377EB8']
     c3 -> d3 [label = '  Remove duplicates and pools', tailport = 's', color = '#377EB8', fontcolor = '#377EB8']
@@ -152,14 +150,11 @@ grViz(
     e1r -> f1 [headport = 'n', xlabel = 'Normalization by Random1            ', color = '#E41A1C', fontcolor = '#E41A1C']
     {e1x e3r} -> f1 [headport = 'n', color = '#E41A1C']
     {e2x e2r e3r} -> f2 [headport = 'n', color = '#E41A1C']
-    e3x -> {f3 g_conf} [color = '#A65628']
-    e3x -> g_val [label = '    Split into training and test sets', color = '#A65628', fontcolor = '#A65628']
+    e3x -> {f3 conf} [color = '#A65628']
+    e3x -> val [label = '    Split into training and test sets', color = '#A65628', fontcolor = '#A65628']
     f1 -> train_comb [xlabel = 'Recombine CodeSets        ', color = '#FF7F00', fontcolor = '#FF7F00']
     {f2 f3} -> train_comb [color = '#FF7F00']
-    g_conf -> h_conf [color = '#4DAF4A']
-    g_val -> h_val [color = '#4DAF4A']
-    train_comb -> train_hist [xlabel = '  Remove other Histotypes', color = '#4DAF4A', fontcolor = '#4DAF4A']
-    train_hist -> train_uniq [xlabel = '  Remove cross CodeSet replicates']
+    train_comb -> train_uniq [xlabel = '  Remove cross CodeSet replicates']
 
     c1 -> c2 -> c3 [style = invis]
     e1r -> e1x -> e2r -> e2x -> e3r -> e3x [style = invis]
@@ -169,7 +164,7 @@ grViz(
     subgraph {rank = same; d1; d2; d3}
     subgraph {rank = same; e1r; e1x; e2r; e2x; e3r; e3x}
     subgraph {rank = same; f1; f2; f3}
-    subgraph {rank = same; train_comb; g_conf; g_val}
+    subgraph {rank = same; train_uniq; conf; val}
     }
     "
   )
@@ -588,4 +583,3 @@ The area under the receiver operating curve (AUC) is calculated by adding up the
 We did not use AUC to measure class-specific training set performance because combining predicted probabilities in a one-vs-all fashion might be potentially misleading. The sum of probabilities that add up to the "other" class is not equivalent to the predicted probability of the "other" class when using a multiclass classifier.
 
 Instead, we only reported ROC curves and their associated AUCs for the test set performance of the sequential and two-step algorithms.
-

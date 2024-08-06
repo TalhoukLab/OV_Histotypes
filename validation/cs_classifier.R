@@ -5,17 +5,17 @@ source(here::here("src/funs.R"))
 
 # Remove Duplicates -------------------------------------------------------
 
-# CS1: n=268
+# CS1: n=249
 cs1_dedup <- cohorts %>%
   filter(col_name %in% cs1_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE))
 
-# CS2: n=832
+# CS2: n=784
 cs2_dedup <- cohorts %>%
   filter(col_name %in% cs2_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE))
 
-# CS3: n=2077 (Vancouver site only and removed pools)
+# CS3: n=2010 (Vancouver site only and removed pools)
 cs3_dedup <- cohorts %>%
   semi_join(hist_cs3_van, by = "col_name") %>%
   filter(col_name %in% cs3_samples) %>%
@@ -45,34 +45,34 @@ cs3_samples_R <- cs3_dedup %>%
 
 # Expression Samples ------------------------------------------------------
 
-# CS1: n=263
+# CS1: n=244
 cs1_samples_X <- cs1_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   pull(col_name)
 
-# CS1 with duplicates: n=279
+# CS1 with duplicates: n=260
 cs1_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
   pull(col_name)
 
-# CS2: n=827
+# CS2: n=779
 cs2_samples_X <- cs2_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   pull(col_name)
 
-# CS2 with duplicates: n=876
+# CS2 with duplicates: n=809
 cs2_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
   pull(col_name)
 
-# CS3: n=2072
+# CS3: n=2005
 cs3_samples_X <- cs3_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   pull(col_name)
 
-# CS3 with duplicates: n=2264
+# CS3 with duplicates: n=2138
 cs3_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs3_samples) %>%
@@ -93,19 +93,19 @@ cs3_R <- select_samples(cs3_norm, cs3_samples_R)
 
 # Expression Datasets -----------------------------------------------------
 
-# CS1: 263 samples by 256 genes
+# CS1: 244 samples by 256 genes
 cs1_X <- select_samples(cs1_norm, cs1_samples_X)
 
-# CS1 with duplicates: 279 samples by 256 genes
+# CS1 with duplicates: 260 samples by 256 genes
 cs1_all_X <- select_samples(cs1_norm, cs1_samples_all_X)
 
-# CS2: 827 samples by 365 genes
+# CS2: 779 samples by 365 genes
 cs2_X <- select_samples(cs2_norm, cs2_samples_X)
 
-# CS2 with duplicates: 876 samples by 365 genes
+# CS2 with duplicates: 809 samples by 365 genes
 cs2_all_X <- select_samples(cs2_norm, cs2_samples_all_X)
 
-# CS3: 2072 samples by 513 genes
+# CS3: 2005 samples by 513 genes
 cs3_X <- select_samples(cs3_norm, cs3_samples_X)
 
 
@@ -212,14 +212,14 @@ cs3_train <- cs3_X %>%
   rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
-  filter(!cohort %in% c("TNCO", "DOVE4", "POOL-1", "POOL-2", "POOL-3")) %>%
+  filter(!cohort %in% c("TNCO", "DOVE4")) %>%
   column_to_rownames("FileName") %>%
   select(all_of(common_genes123))
 
 
 # Construct Training Set --------------------------------------------------
 
-# Combined Training Set (CS1 + CS2 + CS3), n=263+827+476=1566
+# Combined Training Set (CS1 + CS2 + CS3), n=244+779+468=1491
 # Common genes n=72
 train_ref_comb <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
@@ -228,17 +228,10 @@ train_ref_comb <-
   inner_join(cohorts, by = "col_name") %>%
   select(FileName, all_of(common_genes123), cohort)
 
-# Training set removed other histotypes, n=1566-75=1491
-train_ref_all <-
-  train_ref_comb %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
-  column_to_rownames("FileName")
-
 # Training set removed replicates (CS3 > CS2 > CS1), n=1491-248=1243
-train_ref <- train_ref_all %>%
-  mutate(site = factor(site, levels = c("USC", "AOC", "Vancouver"))) %>%
-  slice_max(n = 1, order_by = site, by = ottaID) %>%
+train_ref <- train_ref_comb %>%
+  inner_join(hist, by = "FileName") %>%
+  column_to_rownames("FileName") %>%
   slice_tail(n = 1, by = ottaID)
 
 train_data <- select(train_ref, where(is.double))
@@ -293,15 +286,14 @@ saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 
 # Construct Test Sets -----------------------------------------------------
 
-# Confirmation set, n=673-30=643 (TNCO - other histotypes)
+# Confirmation set, n=643 (TNCO)
 conf_ref <- cs3_X %>%
   rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   select(FileName, all_of(common_genes123), cohort) %>%
   inner_join(hist, by = "FileName") %>%
-  filter(cohort == "TNCO",
-         revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  filter(cohort == "TNCO") %>%
   column_to_rownames("FileName")
 
 conf_data <- select(conf_ref, where(is.double))
@@ -310,15 +302,14 @@ conf_class <- conf_ref[["revHist"]]
 saveRDS(conf_data, here::here("data/conf_data.rds"))
 saveRDS(conf_class, here::here("data/conf_class.rds"))
 
-# Validation set, n=923-29=894 (DOVE - other histotypes)
+# Validation set, n=894 (DOVE)
 val_ref <- cs3_X %>%
   rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
   select(FileName, all_of(common_genes123), cohort) %>%
   inner_join(hist, by = "FileName") %>%
-  filter(cohort == "DOVE4",
-         revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  filter(cohort == "DOVE4") %>%
   column_to_rownames("FileName")
 
 val_data <- select(val_ref, where(is.double))

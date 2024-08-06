@@ -55,6 +55,42 @@ annot_all <- annot %>%
   rename_with(~ gsub("^RCC\\.", "", .)) %>%
   rename(FileName = File.Name, site = nanostring.site)
 
+# Gold standard histotypes for OVAR3 and ICON7 cohorts
+hist_stan <- od.otta %>%
+  filter(cohort %in% c("OVAR3", "ICON7")) %>%
+  transmute(
+    ottaID = as.character(otta_id),
+    cohort,
+    hist_rev = case_when(
+      hist_rev == "high-grade serous" ~ "HGSC",
+      hist_rev == "low-grade serous" ~ "LGSC",
+      hist_rev == "mucinous" ~ "MUC",
+      hist_rev == "endometrioid" ~ "ENOC",
+      hist_rev == "clear cell" ~ "CCOC",
+      hist_rev == "serous borderline tumour" ~ "SBOT",
+      TRUE ~ NA_character_
+    )
+  )
+
+# Main Histotypes: "CCOC", "ENOC", "HGSC", "LGSC", "MUC"
+hist_main <- annot_all %>%
+  left_join(hist_stan, by = "ottaID") %>%
+  transmute(
+    FileName,
+    ottaID,
+    CodeSet,
+    revHist = case_when(
+      !is.na(cohort) ~ hist_rev,
+      is.na(cohort) & revHist == "CCC" ~ "CCOC",
+      is.na(cohort) & revHist == "ENOCa" ~ "ENOC",
+      revHist %in% c("", "UNK") ~ NA_character_,
+      TRUE ~ revHist
+    ),
+    hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
+    site
+  ) %>%
+  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC"))
+
 # CS1/2/3 annotations
 cs1_exp <- filter(annot_all, CodeSet == "CS1")
 cs2_exp <- filter(annot_all, CodeSet == "CS2")
@@ -133,9 +169,22 @@ cs3_qc_failed <-
   pull(FileName) %>%
   paste0("X", .)
 
-cs1_samples <- setdiff(cs1_samples_coh, cs1_qc_failed)
-cs2_samples <- setdiff(cs2_samples_coh, cs2_qc_failed)
-cs3_samples <- setdiff(cs3_samples_coh, cs3_qc_failed)
+cs1_samples_coh_qc <- setdiff(cs1_samples_coh, cs1_qc_failed)
+cs2_samples_coh_qc <- setdiff(cs2_samples_coh, cs2_qc_failed)
+cs3_samples_coh_qc <- setdiff(cs3_samples_coh, cs3_qc_failed)
+
+cs1_samples <- hist_main %>%
+  mutate(FileName = paste0("X", FileName)) %>%
+  filter(FileName %in% cs1_samples_coh_qc) %>%
+  pull(FileName)
+cs2_samples <- hist_main %>%
+  mutate(FileName = paste0("X", FileName)) %>%
+  filter(FileName %in% cs2_samples_coh_qc) %>%
+  pull(FileName)
+cs3_samples <- hist_main %>%
+  mutate(FileName = paste0("X", FileName)) %>%
+  filter(FileName %in% cs3_samples_coh_qc) %>%
+  pull(FileName)
 
 cs123_samples <- gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))
 
@@ -151,46 +200,6 @@ cs3_coh_qc <- cs3_coh %>%
 cs1_norm <- HKnorm(cs1_coh_qc)
 cs2_norm <- HKnorm(cs2_coh_qc)
 cs3_norm <- HKnorm(cs3_coh_qc)
-
-# Filter annotations for CS1/CS2/CS3 samples
-annot_cs123 <- annot_all %>%
-  filter(FileName %in% cs123_samples) %>%
-  droplevels()
-
-# Gold standard histotypes for OVAR3 and ICON7 cohorts
-hist_stan <- od.otta %>%
-  filter(cohort %in% c("OVAR3", "ICON7")) %>%
-  transmute(
-    ottaID = as.character(otta_id),
-    cohort,
-    hist_rev = case_when(
-      hist_rev == "high-grade serous" ~ "HGSC",
-      hist_rev == "low-grade serous" ~ "LGSC",
-      hist_rev == "mucinous" ~ "MUC",
-      hist_rev == "endometrioid" ~ "ENOC",
-      hist_rev == "clear cell" ~ "CCOC",
-      hist_rev == "serous borderline tumour" ~ "SBOT",
-      TRUE ~ NA_character_
-    )
-  )
-
-# Histotypes
-hist_all <- annot_all %>%
-  left_join(hist_stan, by = "ottaID") %>%
-  transmute(
-    FileName,
-    ottaID,
-    CodeSet,
-    revHist = case_when(
-      !is.na(cohort) ~ hist_rev,
-      is.na(cohort) & revHist == "CCC" ~ "CCOC",
-      is.na(cohort) & revHist == "ENOCa" ~ "ENOC",
-      revHist %in% c("", "UNK") ~ NA_character_,
-      TRUE ~ revHist
-    ),
-    hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
-    site
-  )
 
 # Histotypes for CS1/CS2/CS3 samples
 hist <- hist_all %>%
@@ -226,6 +235,10 @@ cs5_qc_failed <- filter(cs5_qc, QCFlag == "Failed", !grepl("POOL", File.Name))[[
 cs5_dat <- HKnorm(cs5) %>% select(-any_of(cs5_qc_failed))
 
 # Common samples amongst all 5 CodeSets
+annot_cs123 <- annot_all %>%
+  filter(FileName %in% cs123_samples) %>%
+  droplevels()
+
 annot_cs45 <- annotNEW %>%
   filter(CodeSet %in% c("CS4", "CS5"),
          !File.Name %in% c(cs4_qc_failed, cs5_qc_failed))
