@@ -11,35 +11,6 @@ library(here)
 source(here("validation/cs_classifier.R"))
 ```
 
-## CodeSet Counts
-
-```{r codeset-counts}
-n_coh <-
-  lengths(list(cs1_samples_coh, cs2_samples_coh, cs3_samples_coh))
-n_qc <- lengths(list(cs1_samples, cs2_samples, cs3_samples))
-n_ref_norm <- lengths(list(cs1_samples_X, cs2_samples_X, cs3_samples_X))
-n_train <- map_int(list(cs1_train, cs2_train, cs3_train), nrow)
-n_train_hist <- train_ref_all %>% count(CodeSet) %>% deframe()
-n_train_uniq <- train_ref %>% count(CodeSet) %>% deframe()
-
-codeset_counts <- list(
-  `Selected Cohorts` = n_coh,
-  QC = n_qc,
-  `Normalized to Reference` = n_ref_norm,
-  `Combine CS3 Training with AOC/USC sites` = n_train,
-  `Major Histotypes` = n_train_hist,
-  `Deduplicated` = n_train_uniq
-) %>%
-  map(set_names, c("CS1", "CS2", "CS3")) %>%
-  bind_rows(.id = "Processing Stage") %>%
-  rowwise() %>%
-  mutate(Total = sum(c_across(CS1:CS3))) %>%
-  ungroup()
-
-codeset_counts %>% 
-  kbl(caption = "Training Set Counts by CodeSet and Processing Stage")
-```
-
 ## Histotype Distribution
 
 ```{r train-cohort-codeset}
