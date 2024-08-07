@@ -73,7 +73,7 @@ hist_stan <- od.otta %>%
   )
 
 # All Histotypes
-hist_main <- annot_all %>%
+hist_all <- annot_all %>%
   left_join(hist_stan, by = "ottaID") %>%
   transmute(
     FileName,
