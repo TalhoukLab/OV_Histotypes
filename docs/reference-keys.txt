@@ -14,7 +14,6 @@ eq:f1-macro
 eq:kappa
 eq:bal-accuracy
 eq:gmean
-tab:codeset-counts
 tab:hist-codeset
 tab:hist-conf-val
 tab:cohorts-dist
@@ -96,7 +95,6 @@ balanced-accuracy
 geometric-mean
 auc
 distributions
-codeset-counts
 histotype-distribution
 cohort-distribution
 quality-control-1
