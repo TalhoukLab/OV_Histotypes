@@ -226,12 +226,12 @@ train_ref_comb <-
   rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
   inner_join(cohorts, by = "col_name") %>%
-  select(FileName, all_of(common_genes123), cohort)
+  select(FileName, all_of(common_genes123), cohort) %>%
+  inner_join(hist, by = "FileName") %>%
+  column_to_rownames("FileName")
 
 # Training set removed replicates (CS3 > CS2 > CS1), n=1491-248=1243
 train_ref <- train_ref_comb %>%
-  inner_join(hist, by = "FileName") %>%
-  column_to_rownames("FileName") %>%
   slice_tail(n = 1, by = ottaID)
 
 train_data <- select(train_ref, where(is.double))

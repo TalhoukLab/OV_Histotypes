@@ -14,10 +14,32 @@ source(here("validation/cs_classifier.R"))
 ## Histotype Distribution
 
 ```{r train-cohort-codeset}
-train_cohort_codeset <- hist_main %>%
+train_cohort_codeset <- hist_all %>%
   filter(FileName %in% gsub("^X", "", c(
     cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
-  ))) %>% 
+  ))) %>%
+  mutate(revHist = revHist %>%
+           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
+           fct_na_value_to_level(level = "Other")) %>%
+  droplevels() %>%
+  describeBy(
+    var.names = "revHist",
+    var.labels = "Histotype",
+    by1 = "CodeSet",
+    test = FALSE,
+    total = "bottom",
+    bold_var = FALSE,
+    fill = TRUE
+  )
+```
+
+```{r train-qc-codeset}
+train_qc_codeset <- hist_all %>%
+  filter(FileName %in% gsub(
+    "^X",
+    "",
+    c(cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc)
+  )) %>% 
   mutate(revHist = revHist %>%
            factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
            fct_na_value_to_level(level = "Other")) %>%
@@ -33,8 +55,8 @@ train_cohort_codeset <- hist_main %>%
   )
 ```
 
-```{r train-qc-codeset}
-train_qc_codeset <- hist %>%
+```{r train-hist-codeset}
+train_hist_codeset <- hist %>%
   filter(FileName %in% gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))) %>%
   mutate(revHist = revHist %>%
            factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
@@ -50,9 +72,9 @@ train_qc_codeset <- hist %>%
   )
 ```
 
-```{r train-norm-codeset}
-train_norm_codeset <- hist %>%
-  filter(FileName %in% gsub("^X", "", c(cs1_samples_X, cs2_samples_X, cs3_samples_X))) %>%
+```{r train-dedup-codeset}
+train_dedup_codeset <- hist %>%
+  filter(FileName %in% gsub("^X", "", c(cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name))) %>%
   mutate(revHist = revHist %>%
            factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
            fct_na_value_to_level(level = "Other")) %>%
@@ -67,27 +89,8 @@ train_norm_codeset <- hist %>%
   )
 ```
 
-```{r train-cs3-processing-codeset}
-train_cs3_processing_codeset <- 
-  bind_rows(cs1_train, cs2_train, cs3_train) %>%
-  rownames_to_column("FileName") %>%
-  inner_join(hist, by = "FileName") %>% 
-  mutate(revHist = revHist %>%
-           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
-           fct_na_value_to_level(level = "Other")) %>%
-  describeBy(
-    var.names = "revHist",
-    var.labels = "Histotype",
-    by1 = "CodeSet",
-    test = FALSE,
-    total = "bottom",
-    bold_var = FALSE,
-    fill = TRUE
-  )
-```
-
-```{r train-all-hist-codeset}
-train_all_hist_codeset <- train_ref_all %>% 
+```{r train-comb-codeset}
+train_comb_codeset <- train_ref_comb %>% 
   mutate(revHist = fct_infreq(revHist)) %>% 
   describeBy(
     var.names = "revHist",
@@ -100,8 +103,8 @@ train_all_hist_codeset <- train_ref_all %>%
   )
 ```
 
-```{r train-dedup-codeset}
-train_dedup_codeset <- train_ref %>% 
+```{r train-derep-codeset}
+train_derep_codeset <- train_ref %>% 
   mutate(revHist = fct_infreq(revHist)) %>% 
   describeBy(
     var.names = "revHist",
@@ -119,23 +122,23 @@ hist_codeset <-
   bind_rows(
     train_cohort_codeset,
     train_qc_codeset,
-    train_norm_codeset,
-    train_cs3_processing_codeset,
-    train_all_hist_codeset,
-    train_dedup_codeset
+    train_hist_codeset,
+    train_dedup_codeset,
+    train_comb_codeset,
+    train_derep_codeset
   )
 
 hist_codeset %>%
-  kbl(caption = "Histotype Distribution by CodeSet and Processing Stage") %>%
+  kbl(caption = "Histotype Distribution in Training Set by Processing Stage") %>%
   kable_styling() %>%
   pack_rows(
     index = c(
       "Selected Cohorts" = 7,
       "QC" = 7,
-      "Normalized to Reference" = 7,
-      "Combine CS3 Training with AOC/USC sites" = 7,
-      "Major Histotypes" = 6,
-      "Deduplicated" = 6
+      "Main Histotypes" = 6,
+      "Removed Duplicates" = 6,
+      "Normalized and Recombined" = 6,
+      "Removed Replicates" = 6
     )
   ) %>%
   collapse_rows(columns = 1)
@@ -153,12 +156,15 @@ hist_conf_val <- list(Confirmation = conf_ref,
     by1 = "Data",
     total = "bottom",
     test = FALSE,
-    bold_var = FALSE
+    bold_var = FALSE,
+    fill = TRUE
   ) %>% 
   select(-Total)
 
-knitr::kable(hist_conf_val,
-             caption = "Histotype Distribution in Confirmation and Validation Sets")
+hist_conf_val %>% 
+  kbl(caption = "Histotype Distribution in Confirmation and Validation Sets") %>% 
+  kable_styling() %>% 
+  collapse_rows(columns = 1)
 ```
 
 ## Cohort Distribution
@@ -266,7 +272,7 @@ print(p_gd_snr_zoomed)
 ## Pairwise Gene Expression
 
 ```{r genes-cs13-rand1, fig.height=10, fig.width=11, out.width='100%', fig.cap='Random1-Normalized CS1 vs. CS3 Gene Expression'}
-genes_cs13_rand1 <- train_ref_all %>%
+genes_cs13_rand1 <- train_ref_comb %>%
   rownames_to_column("FileName") %>%
   group_by(ottaID) %>%
   mutate(n_codeset = n_distinct(CodeSet)) %>%
@@ -319,7 +325,7 @@ print(p_genes_cs13_rand1)
 ```
 
 ```{r genes-cs23-rand1, fig.height=10, fig.width=11, out.width='100%', fig.cap='Random1-Normalized CS2 vs. CS3 Gene Expression'}
-genes_cs23_rand1 <- train_ref_all %>%
+genes_cs23_rand1 <- train_ref_comb %>%
   rownames_to_column("FileName") %>%
   group_by(ottaID) %>%
   mutate(n_codeset = n_distinct(CodeSet)) %>%

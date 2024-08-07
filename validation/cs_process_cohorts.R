@@ -72,7 +72,7 @@ hist_stan <- od.otta %>%
     )
   )
 
-# Main Histotypes: "CCOC", "ENOC", "HGSC", "LGSC", "MUC"
+# All Histotypes
 hist_main <- annot_all %>%
   left_join(hist_stan, by = "ottaID") %>%
   transmute(
@@ -88,7 +88,10 @@ hist_main <- annot_all %>%
     ),
     hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
     site
-  ) %>%
+  )
+
+# Main Histotypes: "CCOC", "ENOC", "HGSC", "LGSC", "MUC"
+hist_main <- hist_all %>%
   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC"))
 
 # CS1/2/3 annotations
