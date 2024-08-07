@@ -14,7 +14,7 @@ source(here("validation/cs_classifier.R"))
 ## Histotype Distribution
 
 ```{r train-cohort-codeset}
-train_cohort_codeset <- hist_all %>%
+train_cohort_codeset <- hist_main %>%
   filter(FileName %in% gsub("^X", "", c(
     cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
   ))) %>% 
