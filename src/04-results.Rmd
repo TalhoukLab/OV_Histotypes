@@ -751,7 +751,7 @@ p_gene_seq <-
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq)
 
-n_genes_seq <- 12
+n_genes_seq <- 11
 genes_add_seq <- gene_seq_names %>%
   slice_min(order_by = Genes, n = n_genes_seq) %>% 
   pull(Name)
@@ -791,16 +791,14 @@ p_gene_2s <-
        title = "Gene Optimziation for Two-Step Classifier")
 ggplotly(p_gene_2s)
 
-n_genes_2s <- 11
+n_genes_2s <- 12
 genes_add_2s <- gene_2s_names %>%
   slice_min(order_by = Genes, n = n_genes_2s) %>% 
   pull(Name)
 opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
-Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.84 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
-
-
+Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.80 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
 
 ## Test Set Performance
 
@@ -808,14 +806,14 @@ Now we'd like to see how our best methods perform in the confirmation and valida
 
 The top 2 methods are:
 
-- **sequential**: sequential algorithm with hybrid subsampling at every step. The sequence of algorithms used are:
+- **sequential**: sequential algorithm with SMOTE subsampling at every step. The sequence of algorithms used are:
   - HGSC vs. non-HGSC using random forest
-  - CCOC vs. non-CCOC using XGBoost
+  - CCOC vs. non-CCOC using random forest
   - ENOC vs. non-ENOC using support vector machine
-  - LGSC vs. MUC using support vector machine
-- **two_step**: two-step algorithm with hybrid subsampling at both steps. The sequence of algorithms used are:
-  - HGSC vs. non-HGSC using random forest
-  - CCOC vs. ENOC vs. MUC vs. LGSC support vector machine
+  - LGSC vs. MUC using random forest
+- **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
+  - HGSC vs. non-HGSC using SMOTE subsampling and random forest
+  - CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
   
 We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these methods.
 
