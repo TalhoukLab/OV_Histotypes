@@ -2,6 +2,8 @@
 # next sequence. Set `dataset` to one of the following:
 # c("train", "retrain_4", "retrain_3", "retrain_2")
 
+# Note: run after `make retrain` for the same `dataset`
+
 # Read in multiclass data, class, and IV summary
 library(dplyr)
 library(purrr)
