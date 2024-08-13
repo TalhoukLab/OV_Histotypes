@@ -729,7 +729,11 @@ gene_seq_names <- all_vi_seq %>%
 
 dat_gene_seq <- gene_opt_all_metrics_seq %>% 
   filter(.metric == "f_meas") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
+  mutate(
+    min_estimate = min(.estimate),
+    max_estimate = max(.estimate),
+    .by = c(Sequence, Genes)
+  ) %>%
   mutate(
     label = paste0(
       "Sequence: ",
@@ -742,9 +746,14 @@ dat_gene_seq <- gene_opt_all_metrics_seq %>%
   inner_join(gene_seq_names, by = "Genes")
 
 p_gene_seq <-
-  ggplot(dat_gene_seq, aes(x = Genes, y = mean_estimate, text = Name)) +
+  ggplot(dat_gene_seq, aes(text = Name)) +
+  geom_pointrange(aes(
+    x = Genes,
+    y = mean_estimate,
+    ymin = min_estimate,
+    ymax = max_estimate
+  )) +
   facet_wrap(~ label, ncol = 1) +
-  geom_point() +
   theme_bw() +
   labs(x = "Genes Added",
        y = "F1-Score",
@@ -769,7 +778,11 @@ gene_2s_names <- all_vi_two_step %>%
 
 dat_gene_2s <- gene_opt_all_metrics_two_step %>% 
   filter(.metric == "f_meas") %>% 
-  distinct(pick(-fold_id, -.estimate)) %>% 
+  mutate(
+    min_estimate = min(.estimate),
+    max_estimate = max(.estimate),
+    .by = c(Sequence, Genes)
+  ) %>%
   mutate(
     label = paste0(
       "Sequence: ",
@@ -782,9 +795,14 @@ dat_gene_2s <- gene_opt_all_metrics_two_step %>%
   inner_join(gene_2s_names, by = "Genes")
 
 p_gene_2s <-
-  ggplot(dat_gene_2s, aes(x = Genes, y = mean_estimate, text = Name)) +
+  ggplot(dat_gene_2s, aes(text = Name)) +
+  geom_pointrange(aes(
+    x = Genes,
+    y = mean_estimate,
+    ymin = min_estimate,
+    ymax = max_estimate
+  )) +
   facet_wrap(~ label, ncol = 1) +
-  geom_point() +
   theme_bw() +
   labs(x = "Genes Added",
        y = "F1-Score",
