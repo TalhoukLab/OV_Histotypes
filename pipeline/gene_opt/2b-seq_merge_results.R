@@ -81,6 +81,30 @@ overall_metrics <- test_preds %>%
   add_column(class_group = "Overall") %>%
   arrange(fold_id, .metric)
 
+# Calculate average of per-class metrics across folds using one-vs-all predictions
+per_class_metrics <- test_preds %>%
+  nest(.by = fold_id) %>%
+  mutate(metrics = map(
+    data,
+    ~ ova_metrics(
+      x = .x,
+      truth = class,
+      estimate = .pred_class,
+      metric_set = per_class_mset
+    )
+  ),
+  .keep = "unused") %>%
+  unnest(cols = metrics) %>%
+  mutate(
+    mean_estimate = mean(.estimate, na.rm = TRUE),
+    .by = c(.metric, .estimator, class_group)
+  )
+
+# Combine all metrics
+all_metrics <-
+  bind_rows(overall_metrics, per_class_metrics) %>%
+  arrange(fold_id, .metric)
+
 # Write all metrics to file
 metrics_file <- file.path(
   outputDir,
@@ -90,4 +114,4 @@ metrics_file <- file.path(
   dataset,
   paste0(seq_wflow, "_add", ngene, "_metrics_", dataset, ".rds")
 )
-saveRDS(overall_metrics, metrics_file)
+saveRDS(all_metrics, metrics_file)
