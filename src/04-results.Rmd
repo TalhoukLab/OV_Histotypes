@@ -728,7 +728,7 @@ gene_seq_names <- all_vi_seq %>%
   rowid_to_column("Genes")
 
 dat_gene_seq <- gene_opt_all_metrics_seq %>% 
-  filter(.metric == "f_meas") %>% 
+  filter(.metric == "f_meas", class_group == "Overall") %>% 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
@@ -777,7 +777,7 @@ gene_2s_names <- all_vi_two_step %>%
   rowid_to_column("Genes")
 
 dat_gene_2s <- gene_opt_all_metrics_two_step %>% 
-  filter(.metric == "f_meas") %>% 
+  filter(.metric == "f_meas", class_group == "Overall") %>% 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
@@ -817,6 +817,52 @@ opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
 Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.80 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
+
+```{r gene-2s-per-class, fig.cap='Gene Optimization for Step 2 of Two-Step Classifier'}
+f1_threshold <- 0.75
+
+dat_gene_2s_per_class <- gene_opt_all_metrics_two_step %>%
+  filter(.metric == "f_meas", Sequence == 2, class_group != "Overall") %>% 
+  mutate(
+    min_estimate = min(.estimate),
+    max_estimate = max(.estimate),
+    .by = c(class_group, Genes)
+  ) %>%
+  mutate(
+    label = paste0(
+      "Sequence: ",
+      Sequence,
+      ", Workflow: ",
+      wflow,
+      ", Measure: ",
+      .metric)
+  ) %>% 
+  inner_join(gene_2s_names, by = "Genes") %>%
+  group_by(class_group) %>%
+  mutate(min_genes = ifelse(Genes == min(Genes[mean_estimate >= f1_threshold]), "Yes", "No")) %>%
+  ungroup()
+  
+p_gene_2s_per_class <- ggplot(dat_gene_2s_per_class, aes(text = Name)) +
+  geom_pointrange(aes(
+    x = Genes,
+    y = mean_estimate,
+    ymin = min_estimate,
+    ymax = max_estimate,
+    color = min_genes
+  )) +
+  scale_color_brewer(palette = "Dark2") +
+  facet_wrap(~ class_group, ncol = 1, scales = "free") +
+  theme_bw() +
+  labs(
+    x = "Genes Added",
+    y = "Per-Class F1-Score",
+    title = "Gene Optimziation for Step 2 of Two-Step Classifier",
+    subtitle = "Threshold: Fewest genes required for mean per-class F1-score >= 0.75",
+    color = "Minimum Genes"
+  )
+
+ggplotly(p_gene_2s_per_class)
+```
 
 ## Test Set Performance
 
