@@ -17,7 +17,7 @@ for dataset in "${seqData[@]}"; do
 
     for nseq in $(seq 1 $nseq); do
         for v in $(seq -f "%0${#n_folds}g" 1 $n_folds); do
-            for ng in $(seq 1 $ngenes); do
+            for ng in $(seq 0 $ngenes); do
                 # Content of R file
                 R_file=$RSubDir/$dataset/$dataset"_s"$nseq"_"$v"_add"$ng.R
                 echo 'dataset <- "'$dataset'"' > $R_file
