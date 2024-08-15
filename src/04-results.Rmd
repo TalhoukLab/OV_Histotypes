@@ -816,7 +816,7 @@ genes_add_2s <- gene_2s_names %>%
 opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
-Since the second step of the classifier fits a multinomial model, we use the macro F1-score as the measure to analyze gene entry. In the two-step classifier, we see that in Step 2, the F1-score stabilizes at around 0.80 when we reach `r n_genes_2s` added. The optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
+The second step of the classifier fits a multinomial model, so we can use the macro F1-score as the metric to analyze gene entry. In the two-step classifier, we see that in Step 2, the macro F1-score stabilizes at around 0.80 when we reach `r n_genes_2s` added.
 
 ```{r gene-2s-per-class, fig.cap='Gene Optimization for Step 2 of Two-Step Classifier'}
 f1_threshold <- 0.75
@@ -862,7 +862,15 @@ p_gene_2s_per_class <- ggplot(dat_gene_2s_per_class, aes(text = Name)) +
   )
 
 ggplotly(p_gene_2s_per_class)
+
+n_genes_2s <- 10
+genes_add_2s <- gene_2s_names %>%
+  slice_min(order_by = Genes, n = n_genes_2s) %>% 
+  pull(Name)
+opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
+
+Alternatively, we can analyze the per-class F1-scores in the second step of the classifier to see whether all of the non-HGSC classes have relatively good performance at the same number of genes. The threshold condition that we consider is the fewest genes required such that the mean per-class F1 score is at least 0.75. We see that `r n_genes_2s` genes are required to reach that threshold for ENOC. Hence, the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
 
 ## Test Set Performance
 
