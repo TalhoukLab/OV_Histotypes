@@ -16,7 +16,7 @@ for dataset in "${seqData[@]}"; do
     mkdir -p $outputDir/$subDir/$dataset
 
     for nseq in $(seq 1 $nseq); do
-        for ng in $(seq 1 $ngenes); do
+        for ng in $(seq 0 $ngenes); do
             # Content of R file
             R_file=$RSubDir/$dataset/"merge_results_"$dataset"_s"$nseq"_add"$ng.R
             echo 'dataset <- "'$dataset'"' > $R_file
