@@ -56,6 +56,7 @@ fig:metrics-top4
 fig:metrics-f1-top4
 fig:gene-seq
 fig:gene-2s
+fig:gene-2s-per-class
 tab:conf-eval-overall
 fig:conf-conf-mat
 tab:conf-eval-per-class
