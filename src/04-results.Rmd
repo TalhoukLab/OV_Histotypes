@@ -724,8 +724,9 @@ Misclassified cases from a previous step of the sequence of classifiers are not 
 
 ```{r gene-seq, fig.height=8, fig.cap='Gene Optimization for Sequential Classifier'}
 gene_seq_names <- all_vi_seq %>% 
-  select(Name = Variable) %>% 
-  rowid_to_column("Genes")
+  rename(Name = Variable) %>% 
+  rowid_to_column("Genes") %>% 
+  add_row(Genes = 0L, Name = "Base", .before = 1)
 
 dat_gene_seq <- gene_opt_all_metrics_seq %>% 
   filter(.metric == "f_meas", class_group == "Overall") %>% 
@@ -762,6 +763,7 @@ ggplotly(p_gene_seq)
 
 n_genes_seq <- 11
 genes_add_seq <- gene_seq_names %>%
+  filter(Genes > 0L) %>% 
   slice_min(order_by = Genes, n = n_genes_seq) %>% 
   pull(Name)
 opt_genes_seq <- c(overlap_all, genes_add_seq)
@@ -773,8 +775,9 @@ In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average 
 
 ```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
 gene_2s_names <- all_vi_two_step %>% 
-  select(Name = Variable) %>% 
-  rowid_to_column("Genes")
+  rename(Name = Variable) %>% 
+  rowid_to_column("Genes") %>% 
+  add_row(Genes = 0L, Name = "Base", .before = 1)
 
 dat_gene_2s <- gene_opt_all_metrics_two_step %>% 
   filter(.metric == "f_meas", class_group == "Overall") %>% 
@@ -811,6 +814,7 @@ ggplotly(p_gene_2s)
 
 n_genes_2s <- 12
 genes_add_2s <- gene_2s_names %>%
+  filter(Genes > 0L) %>% 
   slice_min(order_by = Genes, n = n_genes_2s) %>% 
   pull(Name)
 opt_genes_2s <- c(overlap_all, genes_add_2s)
