@@ -869,6 +869,7 @@ ggplotly(p_gene_2s_per_class)
 
 n_genes_2s <- 10
 genes_add_2s <- gene_2s_names %>%
+  filter(Genes > 0L) %>% 
   slice_min(order_by = Genes, n = n_genes_2s) %>% 
   pull(Name)
 opt_genes_2s <- c(overlap_all, genes_add_2s)
