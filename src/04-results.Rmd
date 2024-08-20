@@ -822,7 +822,7 @@ opt_genes_2s <- c(overlap_all, genes_add_2s)
 
 The second step of the classifier fits a multinomial model, so we can use the macro F1-score as the metric to analyze gene entry. In the two-step classifier, we see that in Step 2, the macro F1-score stabilizes at around 0.80 when we reach `r n_genes_2s` added.
 
-```{r gene-2s-per-class, fig.cap='Gene Optimization for Step 2 of Two-Step Classifier'}
+```{r gene-2s-per-class, fig.height=8, fig.cap='Gene Optimization for Step 2 of Two-Step Classifier'}
 f1_threshold <- 0.75
 
 dat_gene_2s_per_class <- gene_opt_all_metrics_two_step %>%
