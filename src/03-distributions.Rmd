@@ -144,12 +144,14 @@ hist_codeset %>%
   collapse_rows(columns = 1)
 ```
 
-```{r hist-conf-val}
-hist_conf_val <- list(Confirmation = conf_ref,
-                      Validation = val_ref) %>% 
-  map_dfr(~ select(., revHist), .id = "Data") %>%
-  mutate(Data = factor(Data, levels = c("Confirmation", "Validation")),
-         revHist = factor(revHist, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) %>%
+```{r hist-train-conf-val}
+hist_train_conf_val <-
+  list(Training = train_ref,
+       Confirmation = conf_ref,
+       Validation = val_ref) %>%
+  map_dfr( ~ select(., revHist), .id = "Data") %>%
+  mutate(Data = factor(Data, levels = c("Training", "Confirmation", "Validation")),
+         revHist = factor(revHist, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
   describeBy(
     var.names = "revHist",
     var.labels = "Histotype",
@@ -158,12 +160,12 @@ hist_conf_val <- list(Confirmation = conf_ref,
     test = FALSE,
     bold_var = FALSE,
     fill = TRUE
-  ) %>% 
+  ) %>%
   select(-Total)
 
-hist_conf_val %>% 
-  kbl(caption = "Histotype Distribution in Confirmation and Validation Sets") %>% 
-  kable_styling() %>% 
+hist_train_conf_val %>%
+  kbl(caption = "Histotype Distribution in Training, Confirmation, and Validation Sets") %>%
+  kable_styling() %>%
   collapse_rows(columns = 1)
 ```
 
