@@ -307,8 +307,6 @@ grViz(
 )
 ```
 
-Although the class imbalance problem is mostly eliminated in Step 2 after removing the HGSC cases, we still use the same subsampling method in Step 2 as was used in Step 1 to keep the algorithm consistent.
-
 ### Aggregating Predictions
 
 The aggregation for two-step predictions is quite straightforward:
