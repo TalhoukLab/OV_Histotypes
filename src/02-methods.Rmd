@@ -545,6 +545,15 @@ $$ where each ${F_1}_{i}$ is the F1-score computed frrom recoding classes into $
 
 In situations where there is not at least one predicted case for each of the classes (e.g. for a poor classifier), ${F_1}_{i}$ is undefined because the per-class precision of class $i$ is undefined. Those ${F_1}_{i}$ terms are removed from the ${F_1}_{macro}$ equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.
 
+#### Balanced Accuracy
+
+Balanced accuracy is the arithmetic mean of sensitivity and specificity.
+
+$$
+\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2}
+(\#eq:bal-accuracy)
+$$
+
 #### Kappa
 
 Kappa is the defined as:
@@ -555,24 +564,6 @@ $$
 $$
 
 where $p_0$ is the observed agreement among raters and $p_e$ is the hypothetical probability of agreement due to random chance.
-
-#### Balanced Accuracy
-
-Balanced accuracy is the arithmetic mean of sensitivity and specificity.
-
-$$
-\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2}
-(\#eq:bal-accuracy)
-$$
-
-#### Geometric Mean
-
-The geometric mean (G-mean) is the $k^{th}$ root of the product of class-specific sensitivities for $k$ classes:
-
-$$
-\text{G-mean} = \sqrt[k]{\prod_{i=1}^{k}{\text{Sensitivity}_k}}
-(\#eq:gmean)
-$$ The G-mean generalizes easily for the multiclass scenario.
 
 ### AUC
 
