@@ -590,6 +590,17 @@ kable(class_gmean_train,
 
 ## Rank Aggregation
 
+Multi-step methods:
+
+- **sequential**: sequential algorithm with SMOTE subsampling at every step. The sequence of algorithms used are:
+  - HGSC vs. non-HGSC using random forest
+  - CCOC vs. non-CCOC using random forest
+  - ENOC vs. non-ENOC using support vector machine
+  - LGSC vs. MUC using random forest
+- **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
+  - HGSC vs. non-HGSC using SMOTE subsampling and random forest
+  - CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
+
 ```{r per-class-metrics}
 # Combine per-class metrics
 per_class_metrics <- bind_rows(
@@ -881,18 +892,7 @@ Alternatively, we can analyze the per-class F1-scores in the second step of the 
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
-The top 2 methods are:
-
-- **sequential**: sequential algorithm with SMOTE subsampling at every step. The sequence of algorithms used are:
-  - HGSC vs. non-HGSC using random forest
-  - CCOC vs. non-CCOC using random forest
-  - ENOC vs. non-ENOC using support vector machine
-  - LGSC vs. MUC using random forest
-- **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
-  - HGSC vs. non-HGSC using SMOTE subsampling and random forest
-  - CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
-  
-We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these methods.
+The top 2 methods are the sequential and two-step algorithms. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these algorithms.
 
 ```{r top-models}
 # Two-step data
