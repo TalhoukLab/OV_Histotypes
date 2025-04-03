@@ -695,8 +695,8 @@ datatable(
   plugins = c("ellipsis", "natural")
 )
 
-# Look at Top 4 workflows
-wflow_top <- head(wflow_rank_agg, 4)
+# Look at Top 5 workflows
+wflow_top <- head(wflow_rank_agg, 5)
 ```
 
 The `r ncol(wflow_ranks)` workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
