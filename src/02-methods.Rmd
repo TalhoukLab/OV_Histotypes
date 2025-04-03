@@ -424,16 +424,16 @@ grViz(
     # node definitions
     node [fontname = Helvetica, shape = box]
     
-    a [label = 'Predict HGSC vs. non-HGSC']
+    a [label = 'Predicted HGSC vs. non-HGSC']
     b1 [label = 'HGSC']
     b2 [label = 'non-HGSC']
-    c [label = 'Predict CCOC vs. non-CCOC']
+    c [label = 'Predicted CCOC vs. non-CCOC']
     d1 [label = 'CCOC']
     d2 [label = 'non-CCOC']
-    e [label = 'Predict LGSC vs. non-LGSC']
+    e [label = 'Predicted LGSC vs. non-LGSC']
     f1 [label = 'LGSC']
     f2 [label = 'non-LGSC']
-    g [label = 'Predict MUC vs. ENOC']
+    g [label = 'Predicted MUC vs. ENOC']
     h1 [label = 'MUC']
     h2 [label = 'ENOC']
     
