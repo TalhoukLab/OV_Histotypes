@@ -602,17 +602,35 @@ Multi-step methods:
   - CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
 
 ```{r per-class-metrics}
-# Combine per-class metrics
-per_class_metrics <- bind_rows(
-  all_metrics_train,
-  per_class_metrics_seq %>%
-    add_column(wflow = "sequential", .before = 1),
-  per_class_metrics_two_step %>%
-    add_column(wflow = "two_step", .before = 1)
-) %>% 
-  filter(class_group != "Overall") %>% 
-  mutate(class_group = factor(class_group,
-                              levels = c("HGSC", "CCOC", "LGSC", "ENOC", "MUC")))
+# Add lower, upper, undefined columns for per-class sequential, two_step
+per_class_metrics_seq <- per_class_metrics_seq |>
+  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  mutate(
+    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
+    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
+    .by = c(class_group, .metric)
+  ) |>
+  mutate(undefined = case_when(any(is.nan(mean_estimate)) ~ "all", any(is.na(.estimate)) ~ "some", .default = "none"),
+         .by = .metric) |>
+  add_column(wflow = "sequential", .before = 1)
+
+per_class_metrics_two_step <- per_class_metrics_two_step |>
+  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  mutate(
+    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
+    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
+    .by = c(class_group, .metric)
+  ) |>
+  mutate(undefined = case_when(any(is.nan(mean_estimate)) ~ "all", any(is.na(.estimate)) ~ "some", .default = "none"),
+         .by = .metric) |>
+  add_column(wflow = "two_step", .before = 1)
+
+# Combine all per-class metrics
+per_class_metrics <- bind_rows(all_metrics_train,
+                                per_class_metrics_seq,
+                                per_class_metrics_two_step) |>
+  filter(class_group != "Overall") |>
+  droplevels()
 
 # Keep only workflows that predicted at least one case in each class
 per_class_f1 <- per_class_metrics %>%
@@ -637,7 +655,7 @@ wflow_ranks <- per_class_f1 %>%
   as.matrix()
 
 # Rank aggregation using genetic algorithm
-wflow_top <- splendid:::sink_output(RankAggreg(
+wflow_rank_agg <- splendid:::sink_output(RankAggreg(
   x = wflow_ranks,
   k = ncol(wflow_ranks),
   method = "GA",
@@ -651,10 +669,11 @@ wflow_top <- splendid:::sink_output(RankAggreg(
 f1_summary <- per_class_f1 %>% 
   pivot_wider(names_from = class_group, values_from = mean_estimate) %>% 
   mutate(across(where(is.numeric), ~ round(.x, digits = 3))) %>% 
-  inner_join(wflow_top, by = "wflow") %>% 
+  inner_join(wflow_rank_agg, by = "wflow") %>% 
   arrange(rank) %>% 
   rename(Workflow = wflow, Rank = rank)
 
+# Interactive table showing F1-scores used in rank aggregation
 datatable(
   f1_summary,
   options = list(
@@ -675,54 +694,79 @@ datatable(
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
 )
+
+# Look at Top 4 workflows
+wflow_top <- head(wflow_rank_agg, 4)
 ```
 
 The `r ncol(wflow_ranks)` workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
 
 ### Top Workflows
 
-We look at the per-class evaluation metrics of the top 4 workflows.
+We look at the per-class evaluation metrics of the top `r nrow(wflow_top)` workflows.
 
-```{r metrics-top4, fig.cap='Top 4 Workflow Per-Class Evaluation Metrics'}
-wflow_top4 <- wflow_top %>% 
-  head(4)
-
-metrics_top4 <- per_class_metrics %>% 
+```{r metrics-top-by-class, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Class')}
+metrics_top <- per_class_metrics %>% 
   distinct(pick(-fold_id, -.estimate)) %>% 
-  inner_join(wflow_top4, by = "wflow") %>% 
+  inner_join(wflow_top, by = "wflow") %>% 
   mutate(wflow = fct_reorder(wflow, rank)) %>% 
   arrange(rank)
 
-p <- 
-  ggplot(metrics_top4, aes(x = wflow, y = mean_estimate, color = .metric)) +
-  geom_point(position = position_jitter(width = 0.1)) +
+p <-
+  ggplot(metrics_top) +
+  geom_pointrange(
+    aes(
+      x = wflow,
+      y = mean_estimate,
+      ymin = lower,
+      ymax = upper,
+      color = .metric
+    ),
+    position = position_jitter(width = 0.3),
+    fatten = 1
+  ) +
   facet_wrap(vars(class_group), ncol = 2) +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
   labs(
     x = "Workflow",
-    y = "Average Metric",
+    y = "Metric Value",
     color = "Metric",
-    title = "Top 4 Workflow Per-Class Evaluation Metrics"
+    title = paste("Top", nrow(wflow_top), "Workflow Per-Class Evaluation Metrics by Class")
   )
 print(p)
 ```
 
-```{r metrics-f1-top4, fig.cap='Top 4 Workflow Per-Class F1-Scores'}
-metrics_f1_top4 <- metrics_top4 %>% 
-  filter(.metric == "f_meas")
-
-p <- 
-  ggplot(metrics_f1_top4,
-         aes(x = class_group, y = mean_estimate, color = wflow)) +
-  geom_point(position = position_jitter(width = 0.1)) +
+```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Metric')}
+p <-
+  ggplot(metrics_top) +
+  geom_pointrange(
+    aes(
+      x = wflow,
+      y = mean_estimate,
+      ymin = lower,
+      ymax = upper,
+      color = class_group
+    ),
+    position = position_jitter(width = 0.3),
+    fatten = 1
+  ) +
+  facet_wrap(vars(.metric), ncol = 2, scales = "free_y") +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold")) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
   labs(
-    x = "Class",
-    y = "Average Metric",
-    color = "Workflow",
-    title = "Top 4 Workflow Per-Class F1-Scores"
+    x = "Workflow",
+    y = "Metric Value",
+    color = "Class",
+    title = paste("Top", nrow(wflow_top), "Workflow Per-Class Evaluation Metrics by Metric")
   )
 print(p)
 ```
