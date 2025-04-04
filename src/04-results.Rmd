@@ -516,6 +516,80 @@ kable(class_kappa_train,
   add_header_above(c(" " = 2, "Algorithms" = 4))
 ```
 
+### G-mean
+
+**DEPRECATED**
+
+```{r train-gmean, fig.cap='Training Set Mean G-mean'}
+p <- ggplot(
+  all_metrics_train %>%
+    filter(class_group == "Overall", .metric == "gmean"),
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
+    y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
+    color = Algorithms,
+    shape = Subsampling
+  )
+) +
+  geom_pointrange() +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Workflow",
+       y = "G-mean",
+       title = "Training Set Mean G-mean")
+print(p)
+```
+
+```{r train-gmean-table}
+overall_gmean_train <- summarize_metrics(all_metrics_train,
+                                         metric = "gmean",
+                                         per_class = FALSE)
+kable(overall_gmean_train,
+      caption = "Training Set Mean G-mean",
+      escape = FALSE) %>%
+  kable_styling() %>% 
+  add_header_above(c(" " = 1, "Algorithms" = 4))
+```
+
+```{r train-gmean-class, fig.cap='Training Set Class-Specific Mean G-mean', fig.height=8}
+p <- ggplot(
+  all_metrics_train %>%
+    filter(class_group != "Overall", .metric == "gmean"),
+  aes(
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    y = mean_estimate,
+    ymin = lower,
+    ymax = upper,
+    color = Algorithms,
+    shape = Subsampling
+  )
+) +
+  geom_pointrange() +
+  facet_wrap(~ class_group, ncol = 1) +
+  theme_bw() +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Workflow",
+       y = "Kappa",
+       title = "Training Set Class-Specific Mean G-mean")
+print(p)
+```
+
+```{r train-gmean-class-table}
+class_gmean_train <- summarize_metrics(all_metrics_train,
+                                       metric = "gmean",
+                                       per_class = TRUE)
+kable(class_gmean_train,
+      caption = "Training Set Class-Specific Mean G-mean",
+      escape = FALSE) %>%
+  kable_styling() %>% 
+  collapse_rows(columns = 1) %>% 
+  add_header_above(c(" " = 2, "Algorithms" = 4))
+```
+
 ## Rank Aggregation
 
 Multi-step methods:
