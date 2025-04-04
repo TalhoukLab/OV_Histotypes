@@ -707,7 +707,7 @@ The `r ncol(wflow_ranks)` workflows are ordered in the table by their aggregated
 
 We look at the per-class evaluation metrics of the top `r nrow(wflow_top)` workflows.
 
-```{r metrics-top-by-class, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Class')}
+```{r metrics-top-by-class, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Class'), fig.height=7, out.width='100%'}
 metrics_top <- per_class_metrics %>%
   distinct(pick(-fold_id, -.estimate)) %>%
   inner_join(wflow_top, by = "wflow") %>%
@@ -750,7 +750,7 @@ p <-
     fatten = 1
   ) +
   scale_color_brewer(palette = "Dark2") +
-  facet_wrap(vars(class_group), ncol = 2) +
+  facet_wrap(vars(class_group), ncol = 1) +
   theme_bw() +
   theme(
     plot.title = element_text(face = "bold"),
@@ -766,7 +766,7 @@ p <-
 print(p)
 ```
 
-```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Metric')}
+```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
 p <-
   ggplot(metrics_top) +
   geom_pointrange(
@@ -780,7 +780,7 @@ p <-
     position = position_jitter(width = 0.3),
     fatten = 1
   ) +
-  facet_wrap(vars(.metric), ncol = 2, scales = "free_y") +
+  facet_wrap(vars(.metric), ncol = 1, scales = "free_y") +
   theme_bw() +
   theme(
     plot.title = element_text(face = "bold"),
