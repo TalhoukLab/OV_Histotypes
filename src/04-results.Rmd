@@ -602,6 +602,8 @@ Multi-step methods:
 - **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
   - HGSC vs. non-HGSC using SMOTE subsampling and random forest
   - CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
+  
+The primary metric we use for rank aggregation is F1-score.
 
 ```{r per-class-metrics}
 # Add lower, upper, undefined columns for per-class sequential, two_step
@@ -629,26 +631,30 @@ per_class_metrics_two_step <- per_class_metrics_two_step |>
 
 # Combine all per-class metrics
 per_class_metrics <- bind_rows(all_metrics_train,
-                                per_class_metrics_seq,
-                                per_class_metrics_two_step) |>
+                               per_class_metrics_seq,
+                               per_class_metrics_two_step) |>
   filter(class_group != "Overall") |>
   droplevels()
 
 # Keep only workflows that predicted at least one case in each class
-per_class_f1 <- per_class_metrics %>%
-  filter(.metric == "f_meas") %>%
-  distinct(pick(-fold_id, -.estimate)) %>% 
-  select(wflow, class_group, mean_estimate) %>%
-  arrange(class_group) %>% 
+per_class_metrics_comp <- per_class_metrics %>%
+  distinct(pick(-fold_id, -.estimate)) %>%
+  select(wflow, .metric, class_group, mean_estimate) %>%
+  arrange(class_group) %>%
   pivot_wider(names_from = "class_group", values_from = "mean_estimate") %>%
   drop_na() %>%
-  pivot_longer(-wflow, names_to = "class_group", values_to = "mean_estimate")
+  pivot_longer(cols = where(is.numeric),
+               names_to = "class_group",
+               values_to = "mean_estimate")
+```
 
-# Rank F1-measures
-wflow_ranks <- per_class_f1 %>%
-  group_by(class_group) %>%
-  mutate(rank = factor(row_number(-mean_estimate))) %>%
-  ungroup() %>%
+```{r rank-agg-f1}
+# Select ranking metric
+per_class_f1 <- filter(per_class_metrics_comp, .metric == "f_meas")
+
+# Rank metric
+wflow_ranks_f1 <- per_class_f1 %>%
+  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) %>%
   arrange(rank) %>%
   pivot_wider(id_cols = class_group,
               names_from = "rank",
@@ -656,26 +662,28 @@ wflow_ranks <- per_class_f1 %>%
   column_to_rownames("class_group") %>%
   as.matrix()
 
-# Rank aggregation using genetic algorithm
-wflow_rank_agg <- splendid:::sink_output(RankAggreg(
-  x = wflow_ranks,
-  k = ncol(wflow_ranks),
+# Rank aggregation of metrics using genetic algorithm
+wflow_rank_agg_f1 <- splendid:::sink_output(RankAggreg(
+  x = wflow_ranks_f1,
+  k = ncol(wflow_ranks_f1),
   method = "GA",
   seed = 2022,
   verbose = FALSE
 )) %>% 
   pluck("top.list") %>% 
-  enframe(name = "rank", value = "wflow")
+  enframe(name = "Rank", value = "Workflow")
 
-# F1-score summary
-f1_summary <- per_class_f1 %>% 
-  pivot_wider(names_from = class_group, values_from = mean_estimate) %>% 
-  mutate(across(where(is.numeric), ~ round(.x, digits = 3))) %>% 
-  inner_join(wflow_rank_agg, by = "wflow") %>% 
-  arrange(rank) %>% 
-  rename(Workflow = wflow, Rank = rank)
+# Metric summary with rank aggregation
+f1_summary <- per_class_f1 |>
+  rename(Workflow = wflow) |>
+  mutate(mean_estimate = round(mean_estimate, digits = 3)) |>
+  inner_join(wflow_rank_agg_f1, by = "Workflow") |>
+  pivot_wider(id_cols = c(Workflow, Rank),
+              names_from = class_group,
+              values_from = mean_estimate) |> 
+  arrange(Rank)
 
-# Interactive table showing F1-scores used in rank aggregation
+# Interactive table showing metrics used in rank aggregation
 datatable(
   f1_summary,
   options = list(
@@ -691,28 +699,158 @@ datatable(
     pageLength = 50
   ), 
   rownames = FALSE,
-  caption = "F1-Score Summary by Workflow and Class",
+  caption = "F1-Score Rank Aggregation Summary",
   filter = "top",
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
 )
 
 # Look at Top 5 workflows
-wflow_top <- head(wflow_rank_agg, 5)
+wflow_top <- head(wflow_rank_agg_f1, 5)
 ```
 
-The `r ncol(wflow_ranks)` workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
+The `r ncol(wflow_ranks_f1)` workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
+
+We can also investigate rank aggregation using other metrics like balanced accuracy and kappa.
+
+```{r rank-agg-bal-acc}
+# Select ranking metric
+per_class_bal_acc <- filter(per_class_metrics_comp, .metric == "bal_accuracy")
+
+# Rank metric
+wflow_ranks_bal_acc <- per_class_bal_acc %>%
+  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) %>%
+  arrange(rank) %>%
+  pivot_wider(id_cols = class_group,
+              names_from = "rank",
+              values_from = "wflow") %>%
+  column_to_rownames("class_group") %>%
+  as.matrix()
+
+# Rank aggregation of metrics using genetic algorithm
+wflow_rank_agg_bal_acc <- splendid:::sink_output(RankAggreg(
+  x = wflow_ranks_bal_acc,
+  k = ncol(wflow_ranks_bal_acc),
+  method = "GA",
+  seed = 2022,
+  verbose = FALSE
+)) %>% 
+  pluck("top.list") %>% 
+  enframe(name = "Rank", value = "Workflow")
+
+# Metric summary with rank aggregation
+bal_acc_summary <- per_class_bal_acc |>
+  rename(Workflow = wflow) |>
+  mutate(mean_estimate = round(mean_estimate, digits = 3)) |>
+  inner_join(wflow_rank_agg_bal_acc, by = "Workflow") |>
+  pivot_wider(id_cols = c(Workflow, Rank),
+              names_from = class_group,
+              values_from = mean_estimate) |> 
+  arrange(Rank)
+
+# Interactive table showing metrics used in rank aggregation
+datatable(
+  bal_acc_summary,
+  options = list(
+    scrollX = TRUE,
+    fixedColumns = TRUE,
+    columnDefs = list(
+      list(
+        targets = 1,
+        render = JS("$.fn.dataTable.render.ellipsis( 10 )")
+      ),
+      list(type = "natural", targets = 0)
+    ),
+    pageLength = 50
+  ), 
+  rownames = FALSE,
+  caption = "Balanced Accuracy Rank Aggregation Summary",
+  filter = "top",
+  extensions = "FixedColumns",
+  plugins = c("ellipsis", "natural")
+)
+```
+
+```{r rank-agg-kap}
+# Select ranking metric
+per_class_kap <- filter(per_class_metrics_comp, .metric == "kap")
+
+# Rank metric
+wflow_ranks_kap <- per_class_kap %>%
+  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) %>%
+  arrange(rank) %>%
+  pivot_wider(id_cols = class_group,
+              names_from = "rank",
+              values_from = "wflow") %>%
+  column_to_rownames("class_group") %>%
+  as.matrix()
+
+# Rank aggregation of metrics using genetic algorithm
+wflow_rank_agg_kap <- splendid:::sink_output(RankAggreg(
+  x = wflow_ranks_kap,
+  k = ncol(wflow_ranks_kap),
+  method = "GA",
+  seed = 2022,
+  verbose = FALSE
+)) %>% 
+  pluck("top.list") %>% 
+  enframe(name = "Rank", value = "Workflow")
+
+# Metric summary with rank aggregation
+kap_summary <- per_class_kap |>
+  rename(Workflow = wflow) |>
+  mutate(mean_estimate = round(mean_estimate, digits = 3)) |>
+  inner_join(wflow_rank_agg_kap, by = "Workflow") |>
+  pivot_wider(id_cols = c(Workflow, Rank),
+              names_from = class_group,
+              values_from = mean_estimate) |> 
+  arrange(Rank)
+
+# Interactive table showing metrics used in rank aggregation
+datatable(
+  kap_summary,
+  options = list(
+    scrollX = TRUE,
+    fixedColumns = TRUE,
+    columnDefs = list(
+      list(
+        targets = 1,
+        render = JS("$.fn.dataTable.render.ellipsis( 10 )")
+      ),
+      list(type = "natural", targets = 0)
+    ),
+    pageLength = 50
+  ), 
+  rownames = FALSE,
+  caption = "Kappa Rank Aggregation Summary",
+  filter = "top",
+  extensions = "FixedColumns",
+  plugins = c("ellipsis", "natural")
+)
+```
+
+```{r rank-agg-comp}
+rank_agg_comp <- list(F1 = wflow_rank_agg_f1,
+                      `Balanced Accuracy` = wflow_rank_agg_bal_acc,
+                      Kappa = wflow_rank_agg_kap) |>
+  bind_rows(.id = "Metric") |>
+  pivot_wider(names_from = "Metric", values_from = "Workflow")
+
+rank_agg_comp |> 
+  kbl(caption = "Rank Aggregation Comparison of Metrics Used")
+```
 
 ### Top Workflows
 
-We look at the per-class evaluation metrics of the top `r nrow(wflow_top)` workflows.
+We look at the per-class evaluation metrics of the top `r nrow(wflow_top)` workflows using **F1-score** as the ranked metric.
 
 ```{r metrics-top-by-class, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Class'), fig.height=7, out.width='100%'}
 metrics_top <- per_class_metrics %>%
   distinct(pick(-fold_id, -.estimate)) %>%
-  inner_join(wflow_top, by = "wflow") %>%
+  rename(Workflow = wflow) |> 
+  inner_join(wflow_top, by = "Workflow") %>%
   mutate(
-    wflow = fct_reorder(wflow, rank),
+    Workflow = fct_reorder(Workflow, Rank),
     .metric = case_match(
       .metric,
       "accuracy" ~ "Accuracy",
@@ -734,13 +872,13 @@ metrics_top <- per_class_metrics %>%
     )
   ) |> 
   drop_na(.metric) |> 
-  arrange(rank)
+  arrange(Rank)
   
 p <-
   ggplot(metrics_top) +
   geom_pointrange(
     aes(
-      x = wflow,
+      x = Workflow,
       y = mean_estimate,
       ymin = lower,
       ymax = upper,
@@ -771,7 +909,7 @@ p <-
   ggplot(metrics_top) +
   geom_pointrange(
     aes(
-      x = wflow,
+      x = Workflow,
       y = mean_estimate,
       ymin = lower,
       ymax = upper,
