@@ -171,6 +171,114 @@ grViz(
 )
 ```
 
+```{r processing-v2, fig.cap='Cohorts Selection', fig.height=10, out.width='100%'}
+# Training Cohort
+train_coh <- cohorts |>
+  filter(cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL", "OVAR3", "ICON7", "JAPAN"))
+
+train1 <- train_coh |>
+  count(cohort) |>
+  deframe() |>
+  imap_chr(~ paste0(.y, "\nn = ", .x))
+
+train2 <- train_coh |>
+  filter(col_name %in% c(cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc))
+
+train3 <- train_coh |>
+  filter(col_name %in% c(cs1_samples, cs2_samples, cs3_samples))
+
+train4 <- train_coh |>
+  filter(col_name %in% c(cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name))
+
+train4_cs <- train4 |>
+  mutate(CodeSet = toupper(file_source)) |>
+  count(CodeSet) |>
+  mutate(Nx = n - 5, Nr = 5, .keep = "unused") |>
+  pmap_chr(~ paste0(..1, "\nNx = ", ..2, "\nNr = ", ..3))
+
+train5 <- train_ref
+
+# Confirmation Cohort
+tnco <- cohorts |> filter(cohort == "TNCO")
+conf1 <- paste0(unique(tnco$cohort), "\nn = ", nrow(tnco))
+conf2 <- tnco |> filter(col_name %in% cs3_samples_coh_qc)
+conf3 <- tnco |> filter(col_name %in% cs3_samples)
+conf4 <- tnco |> filter(col_name %in% cs3_dedup$col_name)
+
+# Validation Cohort
+dove4 <- cohorts |> filter(cohort == "DOVE4")
+val1 <- paste0(unique(dove4$cohort), "\nn = ", nrow(dove4))
+val2 <- dove4 |> filter(col_name %in% cs3_samples_coh_qc)
+val3 <- dove4 |> filter(col_name %in% cs3_samples)
+val4 <- dove4 |> filter(col_name %in% cs3_dedup$col_name)
+
+grViz(
+  paste0(
+    "digraph processing {
+
+    # layout
+    # fontname = 'times-italic'
+    graph [layout = dot, overlap = FALSE, ranksep = '0.1']
+
+    # node definitions
+    node [shape = box, style = 'filled, rounded', color = 'white', fillcolor = 'white']
+
+    MAYO [label = '", train1[["MAYO"]], "', color = 'black']
+    OOU [label = '", train1[["OOU"]], "', color = 'black']
+    OOUE [label = '", train1[["OOUE"]], "', color = 'black']
+    VOA [label = '", train1[["VOA"]], "', color = 'black']
+    MTL [label = '", train1[["MTL"]], "', color = 'black']
+    OVAR3 [label = '", train1[["OVAR3"]], "', color = 'black']
+    ICON7 [label = '", train1[["ICON7"]], "', color = 'black']
+    JAPAN [label = '", train1[["JAPAN"]], "', color = 'black']
+    intermediate_1 [shape = point, width = 0.01, height = 0.01]
+    train_1 [label = 'n = ", nrow(train_coh), "', style = 'filled', fillcolor = 'grey90']
+    train_2 [label = 'Training Cohort\nn = ", nrow(train2),"', style = 'filled', fillcolor = '#7BB369']
+    train_3 [label = 'n = ", nrow(train3), "', style = 'filled', fillcolor = 'grey90']
+    train_cs1 [label = '", train4_cs[1], "', fillcolor = '#607C8E']
+    train_cs2 [label = '", train4_cs[2], "', fillcolor = '#FFA756']
+    train_cs3 [label = '", train4_cs[3], "', fillcolor = '#259FED']
+    train_5 [label = 'Training Cohort\nn = ", nrow(train_ref), "', style = 'filled', fillcolor = '#7BB369']
+
+    conf1 [label = '", conf1, "', color = 'black']
+    conf2 [label = 'Confirmation\nCohort\nn = ", nrow(conf2), "', style = 'filled', fillcolor = '#B19CD7']
+    conf3 [label = 'Confirmation\nCohort\nn = ", nrow(conf3), "', style = 'filled', fillcolor = '#B19CD7']
+    conf4 [label = 'Confirmation\nCohort\nn = ", nrow(conf4), "', style = 'filled', fillcolor = '#B19CD7']
+
+    val1 [label = '", val1, "', color = 'black']
+    val2 [label = 'Validation\nCohort\nn = ", nrow(val2), "', style = 'filled', fillcolor = '#04D9FF']
+    val3 [label = 'Validation\nCohort\nn = ", nrow(val3), "', style = 'filled', fillcolor = '#04D9FF']
+    val4 [label = 'Validation\nCohort\nn = ", nrow(val4), "', style = 'filled', fillcolor = '#04D9FF']
+
+    # edge definitions
+    edge [minlen = 4, arrowsize = 0.75]
+    {MAYO OOU OOUE VOA MTL OVAR3 ICON7 JAPAN} -> intermediate_1 [dir = none]
+    intermediate_1 -> train_1
+    train_1 -> train_2 [xlabel = 'Exclude QC Fails: ", nrow(train_coh) - nrow(train2), "', fontcolor = '#7BB369']
+    train_2 -> train_3 [xlabel = 'Exclude Other Histotypes: ", nrow(train2) - nrow(train3), "', fontcolor = '#7BB369']
+    train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]
+    train_cs1 -> train_5 [xlabel = 'Exclude Duplicates: ", nrow(train4) - 15 - nrow(train5), "', fontcolor = '#7BB369']
+    {train_cs2 train_cs3} -> train_5
+
+    conf1 -> conf2 [xlabel = 'Exclude QC\nFails: ", nrow(tnco) - nrow(conf2), "', fontcolor = '#7BB369']
+    conf2 -> conf3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(conf2) - nrow(conf3), "', fontcolor = '#7BB369']
+    conf3 -> conf4 [xlabel = 'Exclude\nDuplicates: ", nrow(conf3) - nrow(conf4), "', fontcolor = '#7BB369', minlen = 7]
+
+    val1 -> val2 [xlabel = 'Exclude QC\nFails: ", nrow(dove4) - nrow(val2), "', fontcolor = '#7BB369']
+    val2 -> val3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(val2) - nrow(val3), "', fontcolor = '#7BB369']
+    val3 -> val4 [xlabel = 'Exclude\nDuplicates: ", nrow(val3) - nrow(val4), "', fontcolor = '#7BB369', minlen = 7]
+
+    # subgraph definitions
+    subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; ICON7; JAPAN; conf1; val1}
+    subgraph {rank = same; train_2; conf2; val2}
+    subgraph {rank = same; train_cs1; train_cs2; train_cs3; conf3; val3}
+    subgraph {rank = same; train_5; conf4; val4}
+    }
+    "
+  )
+)
+```
+
 ## Classifiers
 
 We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the `tidymodels` suite of packages. The classifiers we used are:
