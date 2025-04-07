@@ -16,11 +16,13 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $outputDir/$subDir/$dataset
 
     for alg in "${algs[@]}"; do
+        for samp in "${samps[@]}"; do
         # Content of R file
-        R_file=$RSubDir/$dataset/$alg.R
+        R_file=$RSubDir/$dataset/$samp"_"$alg.R
         echo 'dataset <- "'$dataset'"' > $R_file
         echo "n_folds <- $n_folds" >> $R_file
         echo 'alg <- "'$alg'"' >> $R_file
+        echo 'samp <- "'$samp'"' >> $R_file
         echo 'rank_metric <- "'$rank_metric'"' >> $R_file
         echo 'inputDir <- "'$inputDir'"' >> $R_file
         echo 'outputDir <- "'$outputDir'"' >> $R_file
@@ -28,7 +30,7 @@ for dataset in "${dataSets[@]}"; do
         echo 'source("pipeline/retrain/2-merge_results.R")' >> $R_file
 
         # Content of sh file
-        job_file=$shSubDir/$dataset/$alg.sh
+        job_file=$shSubDir/$dataset/$samp"_"$alg.sh
         cat ./assets/sbatch_params.sh > $job_file
         echo "cd $projDir" >> $job_file
         echo "Rscript $R_file" >> $job_file
