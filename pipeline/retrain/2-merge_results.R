@@ -11,8 +11,8 @@ source(here("src/funs.R"))
 source(here("pipeline/0-setup_data.R"))
 
 # Best sampling method from classification of full training set
-seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
-samp <- gsub("(.*)_.*", "\\1", seq_top[["wflow"]])
+# seq_top <- readRDS(file.path(inputDir, "seq_top_c5.rds"))
+# samp <- gsub("(.*)_.*", "\\1", seq_top[["wflow"]])
 
 # Combine tuned workflows across folds
 wflow <- paste(samp, alg, sep = "_")
