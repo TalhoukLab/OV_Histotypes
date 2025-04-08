@@ -13,8 +13,8 @@ ranked_vi <- readRDS(file.path(
   outputDir,
   "sequential",
   "summarize_results",
-  dataset,
-  paste0("all_vi_", dataset, ".rds")
+  seq_data,
+  paste0("all_vi_", seq_data, ".rds")
 ))
 
 # Order of candidate genes for sequence
