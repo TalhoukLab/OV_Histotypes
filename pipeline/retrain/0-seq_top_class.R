@@ -25,7 +25,6 @@ metrics <- readRDS(file.path(
   dataset,
   paste0("all_metrics_", dataset, ".rds")
 ))
-n_class <- n_distinct(class)
 
 # Top workflow by per-class F1-score out of n_class
 seq_top <- metrics %>%
