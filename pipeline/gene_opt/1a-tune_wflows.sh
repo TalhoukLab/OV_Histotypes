@@ -16,7 +16,7 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $outputDir/$subDir/$dataset
 
     for v in $(seq -f "%0${#n_folds}g" 1 $n_folds); do
-        for ng in $(seq 1 $ngenes); do
+        for ng in $(seq 0 $ngenes); do
             # Content of R file
             R_file=$RSubDir/$dataset/"top_wflow_add"$ng"_"$v.R
             echo 'dataset <- "'$dataset'"' > $R_file
