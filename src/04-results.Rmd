@@ -598,11 +598,11 @@ kable(class_gmean_train,
 
 Multi-step methods:
 
-- **sequential**: sequential algorithm with SMOTE subsampling at every step. The sequence of algorithms used are:
-  - HGSC vs. non-HGSC using random forest
-  - CCOC vs. non-CCOC using random forest
-  - ENOC vs. non-ENOC using support vector machine
-  - LGSC vs. MUC using random forest
+- **sequential**: sequential algorithm sequence of subsampling methods and algorithms used are:
+  - HGSC vs. non-HGSC using SMOTE subsampling and random forest
+  - CCOC vs. non-CCOC using hybrid subsampling and XGBoost
+  - ENOC vs. non-ENOC using upsampling and support vector machine
+  - LGSC vs. MUC using hybrid subsampling and regularized multinomial regression
 - **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
   - HGSC vs. non-HGSC using SMOTE subsampling and random forest
   - CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
