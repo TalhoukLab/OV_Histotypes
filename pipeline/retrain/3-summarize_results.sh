@@ -21,6 +21,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'outputDir <- "'$outputDir'"' >> $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo "n_folds <- $n_folds" >> $R_file
+    echo 'rank_metric <- "'$rank_metric'"' >> $R_file
     echo 'source("pipeline/retrain/3-summarize_results.R")' >> $R_file
 
     # Content of sh file
