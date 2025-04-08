@@ -9,12 +9,7 @@ base_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
                 "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9")
 
 # Import ranked variable importance for trained workflows
-ranked_vi <- readRDS(file.path(
-  outputDir,
-  "summarize_results",
-  dataset,
-  paste0("all_vi_", dataset, ".rds")
-))
+ranked_vi <- readRDS(file.path(outputDir, "summarize_results", "train", "all_vi_train.rds"))
 
 # Order of candidate genes for top workflow
 top_wflow <- readRDS(here("data/seq_top_c5.rds"))[["wflow"]]
