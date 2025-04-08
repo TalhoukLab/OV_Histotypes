@@ -607,7 +607,14 @@ Multi-step methods:
   - HGSC vs. non-HGSC using SMOTE subsampling and random forest
   - CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
   
-The primary metric we use for rank aggregation is F1-score.
+
+We conduct rank aggregation using a two-stage nested appraoch:
+
+1. First we rank aggregate the per-class metrics for F1-score, balanced accuracy and kappa.
+2. Then we take the aggregated lists from the three metrics and perform a final rank aggregation.
+3. The top workflows from the final rank aggregation are used for gene optimization in the confirmation set 
+  
+### Across Classes
 
 ```{r per-class-metrics}
 # Add lower, upper, undefined columns for per-class sequential, two_step
@@ -671,8 +678,9 @@ wflow_rank_agg_f1 <- splendid:::sink_output(RankAggreg(
   x = wflow_ranks_f1,
   k = ncol(wflow_ranks_f1),
   method = "GA",
-  seed = 2022,
-  verbose = FALSE
+  seed = 2025,
+  verbose = FALSE,
+  maxIter = 1e4
 )) %>% 
   pluck("top.list") %>% 
   enframe(name = "Rank", value = "Workflow")
@@ -708,14 +716,7 @@ datatable(
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
 )
-
-# Look at Top 5 workflows
-wflow_top <- head(wflow_rank_agg_f1, 5)
 ```
-
-The `r ncol(wflow_ranks_f1)` workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
-
-We can also investigate rank aggregation using other metrics like balanced accuracy and kappa.
 
 ```{r rank-agg-bal-acc}
 # Select ranking metric
@@ -736,8 +737,9 @@ wflow_rank_agg_bal_acc <- splendid:::sink_output(RankAggreg(
   x = wflow_ranks_bal_acc,
   k = ncol(wflow_ranks_bal_acc),
   method = "GA",
-  seed = 2022,
-  verbose = FALSE
+  seed = 2025,
+  verbose = FALSE,
+  maxIter = 1e5
 )) %>% 
   pluck("top.list") %>% 
   enframe(name = "Rank", value = "Workflow")
@@ -794,8 +796,9 @@ wflow_rank_agg_kap <- splendid:::sink_output(RankAggreg(
   x = wflow_ranks_kap,
   k = ncol(wflow_ranks_kap),
   method = "GA",
-  seed = 2022,
-  verbose = FALSE
+  seed = 2025,
+  verbose = FALSE,
+  maxIter = 1e4
 )) %>% 
   pluck("top.list") %>% 
   enframe(name = "Rank", value = "Workflow")
@@ -833,6 +836,8 @@ datatable(
 )
 ```
 
+### Across Metrics
+
 ```{r rank-agg-comp}
 rank_agg_comp <- list(F1 = wflow_rank_agg_f1,
                       `Balanced Accuracy` = wflow_rank_agg_bal_acc,
@@ -844,15 +849,36 @@ rank_agg_comp |>
   kbl(caption = "Rank Aggregation Comparison of Metrics Used")
 ```
 
+```{r rank-agg-metrics}
+# Rank aggregation of aggregated metrics using GA
+wflow_ranks_comp <- rank_agg_comp |> 
+  drop_na() |> 
+  pivot_longer(cols = where(is.character), names_to = "Metric", values_to = "Workflow") |> 
+  pivot_wider(names_from = Rank, values_from = Workflow) |> 
+  column_to_rownames("Metric") |> 
+  as.matrix()
+
+# Take top 5 workflows
+wflow_rank_agg_comp <- splendid:::sink_output(RankAggreg(
+  x = wflow_ranks_comp,
+  k = 5,
+  method = "GA",
+  seed = 2025,
+  verbose = FALSE
+)) |>
+  pluck("top.list") %>%
+  enframe(name = "Rank", value = "Workflow")
+```
+
 ### Top Workflows
 
-We look at the per-class evaluation metrics of the top `r nrow(wflow_top)` workflows using **F1-score** as the ranked metric.
+We look at the per-class evaluation metrics of the top `r nrow(wflow_rank_agg_comp)` workflows.
 
-```{r metrics-top-by-class, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Class'), fig.height=7, out.width='100%'}
+```{r metrics-top-by-class, fig.cap=paste('Top', nrow(wflow_rank_agg_comp), 'Workflow Per-Class Evaluation Metrics by Class'), fig.height=7, out.width='100%'}
 metrics_top <- per_class_metrics %>%
   distinct(pick(-fold_id, -.estimate)) %>%
   rename(Workflow = wflow) |> 
-  inner_join(wflow_top, by = "Workflow") %>%
+  inner_join(wflow_rank_agg_comp, by = "Workflow") %>%
   mutate(
     Workflow = fct_reorder(Workflow, Rank),
     .metric = case_match(
@@ -903,12 +929,12 @@ p <-
     x = "Workflow",
     y = "Metric Value",
     color = "Metric",
-    title = paste("Top", nrow(wflow_top), "Workflow Per-Class Evaluation Metrics by Class")
+    title = paste("Top", nrow(wflow_rank_agg_comp), "Workflow Per-Class Evaluation Metrics by Class")
   )
 print(p)
 ```
 
-```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
+```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_rank_agg_comp), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
 p <-
   ggplot(metrics_top) +
   geom_pointrange(
@@ -933,7 +959,7 @@ p <-
     x = "Workflow",
     y = "Metric Value",
     color = "Class",
-    title = paste("Top", nrow(wflow_top), "Workflow Per-Class Evaluation Metrics by Metric")
+    title = paste("Top", nrow(wflow_rank_agg_comp), "Workflow Per-Class Evaluation Metrics by Metric")
   )
 print(p)
 ```
