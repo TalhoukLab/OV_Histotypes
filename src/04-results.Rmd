@@ -42,10 +42,14 @@ all_vi_seq <- readRDS(here("data/all_vi_seq.rds"))
 all_vi_two_step <- readRDS(here("data/all_vi_two_step.rds"))
 
 # Gene Optimization
-gene_opt_all_metrics_seq <-
-  readRDS(here("data/gene_opt_all_metrics_seq.rds"))
-gene_opt_all_metrics_two_step <- 
-  readRDS(here("data/gene_opt_all_metrics_two_step.rds"))
+# gene_opt_all_metrics_seq <-
+#   readRDS(here("data/gene_opt_all_metrics_seq.rds"))
+# gene_opt_all_metrics_two_step <- 
+#   readRDS(here("data/gene_opt_all_metrics_two_step.rds"))
+gene_opt_all_metrics_conf_seq <-
+  readRDS(here("data/gene_opt_all_metrics_conf_seq.rds"))
+gene_opt_all_metrics_conf_two_step <-
+  readRDS(here("data/gene_opt_all_metrics_conf_two_step.rds"))
 
 # PrOTYPE and SPOT genes
 coefmat <- readRDS(here("data/coefmat.rds"))
@@ -946,7 +950,7 @@ gene_seq_names <- all_vi_seq %>%
   rowid_to_column("Genes") %>% 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_seq <- gene_opt_all_metrics_seq %>% 
+dat_gene_seq <- gene_opt_all_metrics_conf_seq %>% 
   filter(.metric == "f_meas", class_group == "Overall") %>% 
   mutate(
     min_estimate = min(.estimate),
@@ -979,7 +983,7 @@ p_gene_seq <-
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq)
 
-n_genes_seq <- 11
+n_genes_seq <- 7
 genes_add_seq <- gene_seq_names %>%
   filter(Genes > 0L) %>% 
   slice_min(order_by = Genes, n = n_genes_seq) %>% 
@@ -987,7 +991,7 @@ genes_add_seq <- gene_seq_names %>%
 opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
 
-In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.91 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
+In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.88 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ### Two-Step Algorithm
 
@@ -997,7 +1001,7 @@ gene_2s_names <- all_vi_two_step %>%
   rowid_to_column("Genes") %>% 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_2s <- gene_opt_all_metrics_two_step %>% 
+dat_gene_2s <- gene_opt_all_metrics_conf_two_step %>% 
   filter(.metric == "f_meas", class_group == "Overall") %>% 
   mutate(
     min_estimate = min(.estimate),
@@ -1038,12 +1042,12 @@ genes_add_2s <- gene_2s_names %>%
 opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
-The second step of the classifier fits a multinomial model, so we can use the macro F1-score as the metric to analyze gene entry. In the two-step classifier, we see that in Step 2, the macro F1-score stabilizes at around 0.80 when we reach `r n_genes_2s` added.
+The second step of the classifier fits a multinomial model, so we can use the macro F1-score as the metric to analyze gene entry. In the two-step classifier, we see that in Step 2, the macro F1-score stabilizes at around 0.75 when we reach `r n_genes_2s` added.
 
 ```{r gene-2s-per-class, fig.height=8, fig.cap='Gene Optimization for Step 2 of Two-Step Classifier'}
-f1_threshold <- 0.75
+f1_threshold <- 0.6
 
-dat_gene_2s_per_class <- gene_opt_all_metrics_two_step %>%
+dat_gene_2s_per_class <- gene_opt_all_metrics_conf_two_step %>%
   filter(.metric == "f_meas", Sequence == 2, class_group != "Overall") %>% 
   mutate(
     min_estimate = min(.estimate),
@@ -1085,7 +1089,7 @@ p_gene_2s_per_class <- ggplot(dat_gene_2s_per_class, aes(text = Name)) +
 
 ggplotly(p_gene_2s_per_class)
 
-n_genes_2s <- 10
+n_genes_2s <- 23
 genes_add_2s <- gene_2s_names %>%
   filter(Genes > 0L) %>% 
   slice_min(order_by = Genes, n = n_genes_2s) %>% 
@@ -1093,7 +1097,7 @@ genes_add_2s <- gene_2s_names %>%
 opt_genes_2s <- c(overlap_all, genes_add_2s)
 ```
 
-Alternatively, we can analyze the per-class F1-scores in the second step of the classifier to see whether all of the non-HGSC classes have relatively good performance at the same number of genes. The threshold condition that we consider is the fewest genes required such that the mean per-class F1 score is at least 0.75. We see that `r n_genes_2s` genes are required to reach that threshold for ENOC. Hence, the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
+Alternatively, we can analyze the per-class F1-scores in the second step of the classifier to see whether all of the non-HGSC classes have relatively good performance at the same number of genes. The threshold condition that we consider is the fewest genes required such that the mean per-class F1 score is at least 0.50. We see that `r n_genes_2s` genes are required to reach that threshold for ENOC. Hence, the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
 
 ## Test Set Performance
 
