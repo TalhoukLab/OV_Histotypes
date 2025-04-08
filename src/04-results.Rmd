@@ -1219,18 +1219,27 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
     values_to = "Prediction"
   ) %>% 
   mutate(across(c(Truth, Prediction),
-         ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))))
+                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))) |> 
+  mutate(
+    Method = case_match(
+      Method,
+      "sequential_full" ~ "Sequential, Full Set",
+      "sequential_optimal" ~ "Sequential, Optimal Set",
+      "two_step_full" ~ "Two-Step, Full Set",
+      "two_step_optimal" ~ "Two-Step, Optimal Set"
+    )
+  )
 
 # Confirmation set overall metrics
 conf_eval_overall <- conf_pred_overall %>%
   group_by(Method) %>%
   summarize(
-    accuracy = accuracy_vec(Truth, Prediction),
-    sensitivity = sensitivity_vec(Truth, Prediction),
-    specificity = specificity_vec(Truth, Prediction),
-    f1 = f_meas_vec(Truth, Prediction),
-    bal_accuracy = bal_accuracy_vec(Truth, Prediction),
-    kappa = kap_vec(Truth, Prediction)
+    Accuracy = accuracy_vec(Truth, Prediction),
+    Sensitivity = sensitivity_vec(Truth, Prediction),
+    Specificity = specificity_vec(Truth, Prediction),
+    `F1-Score` = f_meas_vec(Truth, Prediction),
+    `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
+    Kappa = kap_vec(Truth, Prediction)
   )
 
 kable(conf_eval_overall,
@@ -1258,11 +1267,20 @@ print(conf_conf_mat)
 ```{r conf-eval-per-class}
 conf_eval_per_class <- conf_pred_overall %>%
   nest(.by = Method) %>%
-  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction,
-                                        per_class_mset))) %>%
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) %>%
   unnest(data) %>%
-  mutate(Metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
-         .keep = "unused") %>%
+  mutate(
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa"
+    ),
+    .keep = "unused"
+  ) %>%
   pivot_wider(
     id_cols = c(Method, Metric),
     names_from = class_group,
@@ -1315,7 +1333,7 @@ roc_curve_seq_full <- mod_seq_full %>%
   imap(~ .x + labs(title = .y)) %>% 
   wrap_plots(widths = c(1, 1)) +
   plot_annotation(
-    title = "ROC Curves for Sequential Full Model in Confirmation Set",
+    title = "ROC Curves for Sequential, Full Set Model in Confirmation Set",
     tag_levels = "A"
   )
 print(roc_curve_seq_full)
@@ -1347,7 +1365,7 @@ roc_curve_seq_opt <- mod_seq_opt %>%
   imap(~ .x + labs(title = .y)) %>% 
   wrap_plots(widths = c(1, 1)) +
   plot_annotation(
-    title = "ROC Curves for Sequential Optimal Model in Confirmation Set",
+    title = "ROC Curves for Sequential, Optimal Set Model in Confirmation Set",
     tag_levels = "A"
   )
 print(roc_curve_seq_opt)
@@ -1388,7 +1406,7 @@ roc_curve_two_step_full <- mod_two_step_full %>%
   imap(~ .x + labs(title = .y)) %>% 
   wrap_plots(widths = c(1, 2)) +
   plot_annotation(
-    title = "ROC Curves for Two-Step Full Model in Confirmation Set",
+    title = "ROC Curves for Two-Step, Full Set Model in Confirmation Set",
     tag_levels = "A"
   )
 print(roc_curve_two_step_full)
@@ -1422,7 +1440,7 @@ roc_curve_two_step_opt <- mod_two_step_opt %>%
   imap(~ .x + labs(title = .y)) %>% 
   wrap_plots(widths = c(1, 2)) +
   plot_annotation(
-    title = "ROC Curves for Two-Step Optimal Model in Confirmation Set",
+    title = "ROC Curves for Two-Step, Optimal Set Model in Confirmation Set",
     tag_levels = "A"
   )
 print(roc_curve_two_step_opt)
@@ -1461,18 +1479,27 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     values_to = "Prediction"
   ) %>% 
   mutate(across(c(Truth, Prediction),
-         ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))))
+         ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))) |> 
+  mutate(
+    Method = case_match(
+      Method,
+      "sequential_full" ~ "Sequential, Full Set",
+      "sequential_optimal" ~ "Sequential, Optimal Set",
+      "two_step_full" ~ "Two-Step, Full Set",
+      "two_step_optimal" ~ "Two-Step, Optimal Set"
+    )
+  )
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall %>%
   group_by(Method) %>%
   summarize(
-    accuracy = accuracy_vec(Truth, Prediction),
-    sensitivity = sensitivity_vec(Truth, Prediction),
-    specificity = specificity_vec(Truth, Prediction),
-    f1 = f_meas_vec(Truth, Prediction),
-    bal_accuracy = bal_accuracy_vec(Truth, Prediction),
-    kappa = kap_vec(Truth, Prediction)
+    Accuracy = accuracy_vec(Truth, Prediction),
+    Sensitivity = sensitivity_vec(Truth, Prediction),
+    Specificity = specificity_vec(Truth, Prediction),
+    `F1-Score` = f_meas_vec(Truth, Prediction),
+    `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
+    Kappa = kap_vec(Truth, Prediction)
   )
 
 kable(val_eval_overall,
@@ -1497,11 +1524,20 @@ print(val_conf_mat)
 ```{r val-eval-per-class}
 val_eval_per_class <- val_pred_overall %>%
   nest(.by = Method) %>%
-  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction,
-                                        per_class_mset))) %>%
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) %>%
   unnest(data) %>%
-  mutate(Metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
-         .keep = "unused") %>%
+  mutate(
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa"
+    ),
+    .keep = "unused"
+  ) |>
   pivot_wider(
     id_cols = c(Method, Metric),
     names_from = class_group,
