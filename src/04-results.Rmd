@@ -18,6 +18,9 @@ library(plotly)
 library(patchwork)
 library(tidymodels)
 library(themis)
+library(RColorBrewer)
+library(ggh4x)
+library(ggtext)
 library(here)
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
@@ -44,10 +47,6 @@ all_vi_seq <- readRDS(here("data/all_vi_seq.rds"))
 all_vi_two_step <- readRDS(here("data/all_vi_two_step.rds"))
 
 # Gene Optimization
-# gene_opt_all_metrics_seq <-
-#   readRDS(here("data/gene_opt_all_metrics_seq.rds"))
-# gene_opt_all_metrics_two_step <- 
-#   readRDS(here("data/gene_opt_all_metrics_two_step.rds"))
 gene_opt_all_metrics_conf <- 
   readRDS(here("data/gene_opt_all_metrics_conf.rds"))
 gene_opt_all_metrics_conf_seq <-
@@ -60,6 +59,9 @@ coefmat <- readRDS(here("data/coefmat.rds"))
 overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
 overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
 overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+
+# Histotypes colour palette
+class_palette <- brewer.pal(n = 5, name = "Dark2")
 ```
 
 We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, and kappa, are the metrics of interest. Workflows are ordered by their mean estimates across the outer folds of the nested CV for each metric.
@@ -1212,7 +1214,7 @@ kable(conf_eval_per_class,
   add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
 
-```{r roc-curve-seq-full, fig.cap='ROC Curves for Sequential Full Model in Confirmation Set', fig.width=8, out.width='100%'}
+```{r roc-curve-setup}
 conf_data_seq <- list(conf_data,
                       conf_data[conf_class != "HGSC",],
                       conf_data[!conf_class %in% c("HGSC", "CCOC"),],
@@ -1225,8 +1227,21 @@ conf_class_seq <- list(
   factor(conf_class[!conf_class %in% c("HGSC", "CCOC", "ENOC")])
 )
 
+class_groups <-
+  set_names(class_palette, paste0("(?<!non_)", c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  imap_chr(~ paste0(
+    "<span style = 'color:",
+    .x,
+    ";'>",
+    gsub("(?<!non_)", "", .y, fixed = TRUE),
+    "</span>"
+  )) |>
+  str_replace_all(string = map_chr(map(conf_class_seq, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
+```
+
+```{r roc-curve-seq-full, fig.cap='ROC Curves for Sequential Full Model in Confirmation Set', fig.width=10, out.width='100%'}
 roc_curve_seq_full <- mod_seq_full %>% 
-  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
+  set_names(class_groups) |> 
   list(conf_data_seq, conf_class_seq) %>% 
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")%>% 
@@ -1245,10 +1260,13 @@ roc_curve_seq_full <- mod_seq_full %>%
         vjust = 0,
         label = auc,
         size = 3
-      )
+      ) +
+      theme(panel.grid = element_blank())
   }) %>% 
-  imap(~ .x + labs(title = .y)) %>% 
-  wrap_plots(widths = c(1, 1)) +
+  imap(~ .x +
+         labs(title = .y) +
+         theme(plot.title = element_markdown(face = "bold"))) %>% 
+  wrap_plots(widths = c(1, -1)) +
   plot_annotation(
     title = "ROC Curves for Sequential, Full Set Model in Confirmation Set",
     tag_levels = "A"
@@ -1256,9 +1274,9 @@ roc_curve_seq_full <- mod_seq_full %>%
 print(roc_curve_seq_full)
 ```
 
-```{r roc-curve-seq-opt, fig.cap='ROC Curves for Sequential Optimal Model in Confirmation Set', fig.width=8, out.width='100%'}
+```{r roc-curve-seq-opt, fig.cap='ROC Curves for Sequential Optimal Model in Confirmation Set', fig.width=10, out.width='100%'}
 roc_curve_seq_opt <- mod_seq_opt %>% 
-  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
+  set_names(class_groups) |> 
   list(conf_data_seq, conf_class_seq) %>% 
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")%>% 
@@ -1277,10 +1295,13 @@ roc_curve_seq_opt <- mod_seq_opt %>%
         vjust = 0,
         label = auc,
         size = 3
-      )
+      ) +
+      theme(panel.grid = element_blank())
   }) %>% 
-  imap(~ .x + labs(title = .y)) %>% 
-  wrap_plots(widths = c(1, 1)) +
+  imap(~ .x +
+         labs(title = .y) +
+         theme(plot.title = element_markdown(face = "bold"))) %>% 
+  wrap_plots(widths = c(1, -1)) +
   plot_annotation(
     title = "ROC Curves for Sequential, Optimal Set Model in Confirmation Set",
     tag_levels = "A"
@@ -1301,7 +1322,10 @@ auc <- preds %>%
 roc_curve_smote_rf_full <-
   autoplot(roc_df) +
   labs(title = "ROC Curve for SMOTE-Random Forest, Full Set Model in Confirmation Set",
-       subtitle = auc)
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(panel.grid = element_blank(),
+        strip.text = element_text(face = "bold"))
 print(roc_curve_smote_rf_full)
 ```
 
@@ -1318,7 +1342,10 @@ auc <- preds %>%
 roc_curve_smote_rf_opt <- 
   autoplot(roc_df) +
   labs(title = "ROC Curve for SMOTE-Random Forest, Optimal Set Model in Confirmation Set",
-       subtitle = auc)
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(panel.grid = element_blank(),
+        strip.text = element_text(face = "bold"))
 print(roc_curve_smote_rf_opt)
 ```
 
