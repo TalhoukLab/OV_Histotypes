@@ -879,6 +879,35 @@ wflow_rank_agg_comp <- splendid:::sink_output(RankAggreg(
 We look at the per-class evaluation metrics of the top `r nrow(wflow_rank_agg_comp)` workflows.
 
 ```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_rank_agg_comp), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
+metrics_top <- per_class_metrics %>%
+  distinct(pick(-fold_id, -.estimate)) %>%
+  rename(Workflow = wflow) |> 
+  inner_join(wflow_rank_agg_comp, by = "Workflow") %>%
+  mutate(
+    Workflow = fct_reorder(Workflow, Rank),
+    .metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa",
+      .ptype = factor(
+        levels = c(
+          "Accuracy",
+          "Sensitivity",
+          "Specificity",
+          "F1-Score",
+          "Balanced Accuracy",
+          "Kappa"
+        )
+      )
+    )
+  ) |> 
+  drop_na(.metric) |> 
+  arrange(Rank)
+
 p <-
   ggplot(metrics_top) +
   geom_pointrange(
