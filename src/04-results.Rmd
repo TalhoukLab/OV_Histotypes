@@ -878,66 +878,6 @@ wflow_rank_agg_comp <- splendid:::sink_output(RankAggreg(
 
 We look at the per-class evaluation metrics of the top `r nrow(wflow_rank_agg_comp)` workflows.
 
-```{r metrics-top-by-class, fig.cap=paste('Top', nrow(wflow_rank_agg_comp), 'Workflow Per-Class Evaluation Metrics by Class'), fig.height=7, out.width='100%'}
-metrics_top <- per_class_metrics %>%
-  distinct(pick(-fold_id, -.estimate)) %>%
-  rename(Workflow = wflow) |> 
-  inner_join(wflow_rank_agg_comp, by = "Workflow") %>%
-  mutate(
-    Workflow = fct_reorder(Workflow, Rank),
-    .metric = case_match(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa",
-      .ptype = factor(
-        levels = c(
-          "Accuracy",
-          "Sensitivity",
-          "Specificity",
-          "F1-Score",
-          "Balanced Accuracy",
-          "Kappa"
-        )
-      )
-    )
-  ) |> 
-  drop_na(.metric) |> 
-  arrange(Rank)
-  
-p <-
-  ggplot(metrics_top) +
-  geom_pointrange(
-    aes(
-      x = Workflow,
-      y = mean_estimate,
-      ymin = lower,
-      ymax = upper,
-      color = .metric
-    ),
-    position = position_jitter(width = 0.3),
-    fatten = 1
-  ) +
-  scale_color_brewer(palette = "Dark2") +
-  facet_wrap(vars(class_group), ncol = 1) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank()
-  ) +
-  labs(
-    x = "Workflow",
-    y = "Metric Value",
-    color = "Metric",
-    title = paste("Top", nrow(wflow_rank_agg_comp), "Workflow Per-Class Evaluation Metrics by Class")
-  )
-print(p)
-```
-
 ```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_rank_agg_comp), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
 p <-
   ggplot(metrics_top) +
@@ -952,6 +892,7 @@ p <-
     position = position_jitter(width = 0.3),
     fatten = 1
   ) +
+  scale_color_brewer(palette = "Dark2") + 
   facet_wrap(vars(.metric), ncol = 1, scales = "free_y") +
   theme_bw() +
   theme(
