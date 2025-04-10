@@ -1362,7 +1362,7 @@ val_class <- readRDS(here("data", "val_class.rds"))
 val_data <- readRDS(here("data", "val_data.rds"))
 ```
 
-```{r val-eval-overall}
+```{r val-eval}
 # Validation set overall predictions
 val_pred_overall <- data.frame(FileName = rownames(val_data),
                                Truth = val_class) %>%
@@ -1382,7 +1382,6 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall %>%
-  group_by(Method) %>%
   summarize(
     Accuracy = accuracy_vec(Truth, Prediction),
     Sensitivity = sensitivity_vec(Truth, Prediction),
@@ -1390,12 +1389,42 @@ val_eval_overall <- val_pred_overall %>%
     `F1-Score` = f_meas_vec(Truth, Prediction),
     `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
     Kappa = kap_vec(Truth, Prediction)
+  ) |> 
+  pivot_longer(
+    cols = where(is.numeric),
+    names_to = "Metric",
+    values_to = "Overall"
   )
 
-kable(val_eval_overall,
-      caption = "Overall Evaluation Metrics on Validation Set Model",
-      digits = 3) %>% 
-  kable_styling()
+# Validation set per-class metrics
+val_eval_per_class <- val_pred_overall |>
+  ova_metrics(Truth, Prediction, per_class_mset) |>
+  mutate(
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa"
+    ),
+    .keep = "unused"
+  ) |>
+  pivot_wider(id_cols = Metric,
+              names_from = class_group,
+              values_from = .estimate)
+
+# Combined all metrics
+val_eval <-
+  inner_join(val_eval_overall, val_eval_per_class, by = "Metric")
+
+kbl(val_eval,
+    caption = "Evaluation Metrics on Validation Set Model, SMOTE-Random Forest, Optimal Set",
+    digits = 3) |>
+  kable_styling() %>%
+  collapse_rows(columns = 1) %>%
+  add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
 
 ```{r val-conf-mat, fig.cap='Confusion Matrix for Validation Set Model'}
@@ -1417,37 +1446,6 @@ val_conf_mat <- val_pred_overall %>%
   plot_annotation(title = "Confusion Matrix for Validation Set Model")
 
 print(val_conf_mat)
-```
-
-```{r val-eval-per-class}
-val_eval_per_class <- val_pred_overall %>%
-  nest(.by = Method) %>%
-  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) %>%
-  unnest(data) %>%
-  mutate(
-    Metric = case_match(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa"
-    ),
-    .keep = "unused"
-  ) |>
-  pivot_wider(
-    id_cols = c(Method, Metric),
-    names_from = class_group,
-    values_from = .estimate
-  )
-
-kable(val_eval_per_class,
-      caption = "Per-Class Eevaluation Metrics on Validation Set Model",
-      digits = 3) %>% 
-  kable_styling() %>% 
-  collapse_rows(columns = 1) %>% 
-  add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
 
 ```{r val-roc-curve-smote-rf-opt, fig.cap='ROC Curves for SMOTE-Random Forest, Optimal Set Model in Validation Set', fig.width=8, out.width='100%'}
