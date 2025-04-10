@@ -1165,7 +1165,7 @@ kable(conf_eval_overall,
   kable_styling()
 ```
 
-```{r conf-conf-mat, fig.cap='Confusion Matrices for Confirmation Set Models'}
+```{r conf-conf-mat, fig.width=8, fig.cap='Confusion Matrices for Confirmation Set Models'}
 conf_conf_mat <- conf_pred_overall %>% 
   nest(.by = Method) %>% 
   deframe() %>%
@@ -1289,10 +1289,11 @@ print(roc_curve_seq_opt)
 ```
 
 ```{r roc-curve-smote-rf-full, fig.cap='ROC Curves for SMOTE-Random Forest, Full Set Model in Confirmation Set', fig.width=8, out.width='100%'}
-preds <- predict(mod_smote_rf_full, conf_data, type = "prob") %>% 
+preds <- predict(mod_smote_rf_full, conf_data, type = "prob") %>%
   add_column(truth = factor(conf_class))
 roc_df <- preds %>%
-  roc_curve(truth, matches(".pred"))
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 auc <- preds %>%
   roc_auc(truth, matches(".pred")) %>% 
   pull(.estimate) %>% 
@@ -1308,7 +1309,8 @@ print(roc_curve_smote_rf_full)
 preds <- predict(mod_smote_rf_opt, conf_data, type = "prob") %>% 
   add_column(truth = factor(conf_class))
 roc_df <- preds %>%
-  roc_curve(truth, matches(".pred"))
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 auc <- preds %>%
   roc_auc(truth, matches(".pred")) %>% 
   pull(.estimate) %>% 
