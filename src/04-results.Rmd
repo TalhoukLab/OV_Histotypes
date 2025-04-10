@@ -1168,17 +1168,22 @@ kable(conf_eval_overall,
 ```
 
 ```{r conf-conf-mat, fig.width=8, fig.cap='Confusion Matrices for Confirmation Set Models'}
-conf_conf_mat <- conf_pred_overall %>% 
-  nest(.by = Method) %>% 
+conf_conf_mat <- conf_pred_overall %>%
+  nest(.by = Method) %>%
   deframe() %>%
-  imap(~ conf_mat(.x, Truth, Prediction) %>%
-         autoplot(type = "heatmap") +
-         labs(title = .y)) %>% 
+  imap(
+    ~ conf_mat(.x, Truth, Prediction) %>%
+      autoplot(type = "heatmap") +
+      scale_fill_distiller(palette = "YlOrBr", direction = 1) +
+      labs(title = .y) +
+      theme(
+        axis.ticks = element_blank(),
+        axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
+        axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
+      )
+  ) %>%
   wrap_plots() +
-  plot_annotation(
-    title = "Confusion Matrices for Confirmation Set Models",
-    tag_levels = "A"
-  )
+  plot_annotation(title = "Confusion Matrices for Confirmation Set Models", tag_levels = "A")
 
 print(conf_conf_mat)
 ```
@@ -1397,9 +1402,17 @@ kable(val_eval_overall,
 val_conf_mat <- val_pred_overall %>%
   nest(.by = Method) %>%
   deframe() %>%
-  imap(~ conf_mat(.x, Truth, Prediction) %>%
-         autoplot(type = "heatmap") +
-         labs(title = .y)) %>% 
+  imap(
+    ~ conf_mat(.x, Truth, Prediction) %>%
+      autoplot(type = "heatmap") +
+      scale_fill_distiller(palette = "YlOrBr", direction = 1) +
+      labs(title = .y) +
+      theme(
+        axis.ticks = element_blank(),
+        axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
+        axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
+      )
+  ) %>% 
   wrap_plots() +
   plot_annotation(title = "Confusion Matrix for Validation Set Model")
 
