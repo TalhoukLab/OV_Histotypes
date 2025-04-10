@@ -565,26 +565,36 @@ grViz(
 
 ## Gene Optimization
 
-We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of `r ncol(train_data)` genes are used in the classifier training set.
-
-```{r overlap-protype}
-overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
+```{r gene-opt}
+genes_all <- names(train_data)
+overlap_PrOTYPE <- intersect(genes_all, cs5$Name)
+overlap_SPOT <- intersect(genes_all, coefmat[["Symbol"]])
+overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+candidates <- setdiff(genes_all, overlap_all)
 ```
+
+We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of `r length(genes_all)` genes are used in the classifier training set.
 
 There are `r length(overlap_PrOTYPE)` genes in the classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`.
 
-```{r overlap-SPOT}
-overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
-```
-
 There are also `r length(overlap_SPOT)` genes in the classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
 
-```{r overlap-all}
-overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
-candidates <- setdiff(names(train_data), overlap_all)
-```
-
 We obtain a total of `r length(overlap_all)` genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining `r length(candidates)` candidate genes based on an overall variable importance rank to the set of `r length(overlap_all)` base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
+
+Here is the breakdown of genes used and whether they belong to the PrOTYPE and/or SPOT sets:
+
+```{r gene-dist}
+gene_dist <-
+  data.frame(Genes = genes_all) %>%
+  mutate(
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, "")
+  ) %>% 
+  arrange(desc(PrOTYPE), desc(SPOT))
+
+gene_dist %>% 
+  kbl(caption = "Gene Distribution")
+```
 
 ### Variable Importance
 
