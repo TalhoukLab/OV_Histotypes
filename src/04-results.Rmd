@@ -1436,3 +1436,23 @@ kable(val_eval_per_class,
   collapse_rows(columns = 1) %>% 
   add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
+
+```{r val-roc-curve-smote-rf-opt, fig.cap='ROC Curves for SMOTE-Random Forest, Optimal Set Model in Validation Set', fig.width=8, out.width='100%'}
+preds <- predict(mod_smote_rf_opt, val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+roc_df <- preds %>%
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+auc <- preds %>%
+  roc_auc(truth, matches(".pred")) %>% 
+  pull(.estimate) %>% 
+  number(accuracy = 0.001, prefix = "AUC = ")
+val_roc_curve_smote_rf_opt <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for SMOTE-Random Forest, Optimal Set Model in Validation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(panel.grid = element_blank(),
+        strip.text = element_text(face = "bold"))
+print(val_roc_curve_smote_rf_opt)
+```
