@@ -34,6 +34,7 @@ per_class_metrics_two_step <-
   readRDS(here("data/per_class_metrics_two_step.rds"))
 
 # Models
+smote_rf_model <- readRDS(here("data/wflow_smote_rf_model_train.rds"))
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
 
@@ -1073,34 +1074,6 @@ Now we'd like to see how our best methods perform in the confirmation and valida
 The top 2 methods are the sequential and SMOTE-Random Forest classifiers. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these classifiers.
 
 ```{r top-models}
-# Two-step data
-two_step_data <- readRDS(here("data", "two_step_data.rds"))
-two_step_class <- readRDS(here("data", "two_step_class.rds"))
-
-# Two-step full model
-set.seed(2024)
-mod_two_step_full <- list(all_models_two_step,
-                          two_step_data,
-                          two_step_class) %>% 
-  pmap(~ {
-    data = cbind(..2, class = ..3)
-    ..1 %>% fit(data = data)
-  })
-
-# Two-step optimal gene list model
-set.seed(2024)
-mod_two_step_opt <- list(all_models_two_step,
-                         two_step_data,
-                         two_step_class) %>% 
-  pmap(~ {
-    data = cbind(..2, class = ..3)
-    ..1 %>%
-      update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
-                      step_select(c(all_of(!!opt_genes_2s), class),
-                                  skip = TRUE)) %>%
-      fit(data = data)
-  })
-
 # sequential data
 seq_data <- readRDS(here("data", "seq_data.rds"))
 seq_class <- readRDS(here("data", "seq_class.rds"))
@@ -1130,6 +1103,19 @@ mod_seq_opt <- list(all_models_seq,
       fit(data = data)
   })
 
+# smote_rf full model
+set.seed(2024)
+train_ref <- cbind(train_data, class = train_class)
+mod_smote_rf_full <- smote_rf_model %>% fit(data = train_ref)
+
+# smote_rf optimal gene list model
+set.seed(2024)
+mod_smote_rf_opt <- smote_rf_model %>% 
+  update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
+                  step_select(c(all_of(!!opt_genes_smote_rf), class),
+                              skip = TRUE)) %>%
+  fit(data = train_ref)
+
 # Per-class metric set
 per_class_mset <-
   metric_set(accuracy, sensitivity, specificity, f_meas, bal_accuracy, kap)
@@ -1148,22 +1134,14 @@ conf_data <- readRDS(here("data", "conf_data.rds"))
 conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                                 Truth = conf_class) %>%
   mutate(
-    c(
-      p_2s_full = mod_two_step_full,
-      p_2s_opt = mod_two_step_opt,
-      p_seq_full = mod_seq_full,
-      p_seq_opt = mod_seq_opt
-    ) %>%
+    c(p_seq_full = mod_seq_full,
+      p_seq_opt = mod_seq_opt) %>%
       map(~ predict(., conf_data)[[".pred_class"]]) %>%
       bind_cols()
-  ) %>% 
+  ) %>%
   rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) %>% 
   mutate(
     across(matches("p"), as.character),
-    Prediction_two_step_full = ifelse(!grepl("non", p_2s_full_s1),
-                                      p_2s_full_s1, p_2s_full_s2),
-    Prediction_two_step_optimal = ifelse(!grepl("non", p_2s_opt_s1),
-                                         p_2s_opt_s1, p_2s_opt_s2), 
     Prediction_sequential_full = case_when(
       !grepl("non", p_seq_full_s1) ~ p_seq_full_s1,
       !grepl("non", p_seq_full_s2) ~ p_seq_full_s2,
@@ -1176,6 +1154,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       !grepl("non", p_seq_opt_s3) ~ p_seq_opt_s3,
       .default = p_seq_opt_s4
     ),
+    Prediction_smote_rf_full = predict(mod_smote_rf_full, conf_data)[[".pred_class"]],
+    Prediction_smote_rf_opt = predict(mod_smote_rf_opt, conf_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) %>%
   select(-starts_with("p", ignore.case = FALSE)) %>%
@@ -1187,15 +1167,15 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   ) %>% 
   mutate(across(c(Truth, Prediction),
                 ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))) |> 
-  mutate(
-    Method = case_match(
+  mutate(Method = factor(
+    case_match(
       Method,
       "sequential_full" ~ "Sequential, Full Set",
       "sequential_optimal" ~ "Sequential, Optimal Set",
-      "two_step_full" ~ "Two-Step, Full Set",
-      "two_step_optimal" ~ "Two-Step, Optimal Set"
+      "smote_rf_full" ~ "SMOTE-Random Forest, Full Set",
+      "smote_rf_opt" ~ "SMOTE-Random Forest, Optimal Set"
     )
-  )
+  ))
 
 # Confirmation set overall metrics
 conf_eval_overall <- conf_pred_overall %>%
@@ -1338,79 +1318,36 @@ roc_curve_seq_opt <- mod_seq_opt %>%
 print(roc_curve_seq_opt)
 ```
 
-```{r roc-curve-two-step-full, fig.cap='ROC Curves for Two-Step Full Model in Confirmation Set', fig.width=10, out.width='100%'}
-conf_data_two_step <- list(conf_data,
-                           conf_data[conf_class != "HGSC", ])
-
-conf_class_two_step <-
-  list(factor(ifelse(conf_class == "HGSC", "HGSC", "non-HGSC")),
-       factor(conf_class[conf_class != "HGSC"]))
-
-roc_curve_two_step_full <- mod_two_step_full %>% 
-  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
-  list(conf_data_two_step, conf_class_two_step) %>% 
-  pmap(~ {
-    preds <- predict(..1, ..2, type = "prob")
-    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds <- preds %>% 
-      add_column(truth = ..3)
-    roc_df <- preds %>% 
-      roc_curve(truth, all_of(prob_cols))
-    auc <- preds %>% 
-      roc_auc(truth, all_of(prob_cols)) %>% 
-      pull(.estimate) %>% 
-      number(accuracy = 0.001, prefix = "AUC = ")
-    autoplot(roc_df) +
-      geom_label(
-        x = 1,
-        y = 0,
-        hjust = 1,
-        vjust = 0,
-        label = auc,
-        size = 3
-      )
-  }) %>% 
-  imap(~ .x + labs(title = .y)) %>% 
-  wrap_plots(widths = c(1, 2)) +
-  plot_annotation(
-    title = "ROC Curves for Two-Step, Full Set Model in Confirmation Set",
-    tag_levels = "A"
-  )
-print(roc_curve_two_step_full)
+```{r roc-curve-smote-rf-full, fig.cap='ROC Curves for SMOTE-Random Forest, Full Set Model in Confirmation Set', fig.width=8, out.width='100%'}
+preds <- predict(mod_smote_rf_full, conf_data, type = "prob") %>% 
+  add_column(truth = factor(conf_class))
+roc_df <- preds %>%
+  roc_curve(truth, matches(".pred"))
+auc <- preds %>%
+  roc_auc(truth, matches(".pred")) %>% 
+  pull(.estimate) %>% 
+  number(accuracy = 0.001, prefix = "AUC = ")
+roc_curve_smote_rf_full <-
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for SMOTE-Random Forest, Full Set Model in Confirmation Set",
+       subtitle = auc)
+print(roc_curve_smote_rf_full)
 ```
 
-```{r roc-curve-two-step-opt, fig.cap='ROC Curves for Two-Step Optimal Model in Confirmation Set', fig.width=10, out.width='100%'}
-roc_curve_two_step_opt <- mod_two_step_opt %>% 
-  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
-  list(conf_data_two_step, conf_class_two_step) %>% 
-  pmap(~ {
-    preds <- predict(..1, ..2, type = "prob")
-    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds <- preds %>% 
-      add_column(truth = ..3)
-    roc_df <- preds %>% 
-      roc_curve(truth, all_of(prob_cols))
-    auc <- preds %>% 
-      roc_auc(truth, all_of(prob_cols)) %>% 
-      pull(.estimate) %>% 
-      number(accuracy = 0.001, prefix = "AUC = ")
-    autoplot(roc_df) +
-      geom_label(
-        x = 1,
-        y = 0,
-        hjust = 1,
-        vjust = 0,
-        label = auc,
-        size = 3
-      )
-  }) %>% 
-  imap(~ .x + labs(title = .y)) %>% 
-  wrap_plots(widths = c(1, 2)) +
-  plot_annotation(
-    title = "ROC Curves for Two-Step, Optimal Set Model in Confirmation Set",
-    tag_levels = "A"
-  )
-print(roc_curve_two_step_opt)
+```{r roc-curve-smote-rf-opt, fig.cap='ROC Curves for SMOTE-Random Forest, Optimal Set Model in Confirmation Set', fig.width=8, out.width='100%'}
+preds <- predict(mod_smote_rf_opt, conf_data, type = "prob") %>% 
+  add_column(truth = factor(conf_class))
+roc_df <- preds %>%
+  roc_curve(truth, matches(".pred"))
+auc <- preds %>%
+  roc_auc(truth, matches(".pred")) %>% 
+  pull(.estimate) %>% 
+  number(accuracy = 0.001, prefix = "AUC = ")
+roc_curve_smote_rf_opt <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for SMOTE-Random Forest, Optimal Set Model in Confirmation Set",
+       subtitle = auc)
+print(roc_curve_smote_rf_opt)
 ```
 
 ### Validation Set
@@ -1426,19 +1363,9 @@ val_data <- readRDS(here("data", "val_data.rds"))
 val_pred_overall <- data.frame(FileName = rownames(val_data),
                                Truth = val_class) %>%
   mutate(
-    c(p_2s_opt = mod_two_step_opt) %>%
-      map(~ predict(., val_data)[[".pred_class"]]) %>%
-      bind_cols()
-  ) %>% 
-  rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) %>% 
-  
-  mutate(
-    across(matches("p"), as.character),
-    Prediction_two_step_optimal = ifelse(!grepl("non", p_2s_opt_s1),
-                                         p_2s_opt_s1, p_2s_opt_s2),
+    Prediction_smote_rf_opt = predict(mod_smote_rf_opt, val_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
-  ) %>%
-  select(-starts_with("p", ignore.case = FALSE)) %>%
+  ) %>% 
   pivot_longer(
     cols = matches("Prediction"),
     names_to = "Method",
@@ -1446,16 +1373,8 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     values_to = "Prediction"
   ) %>% 
   mutate(across(c(Truth, Prediction),
-         ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))) |> 
-  mutate(
-    Method = case_match(
-      Method,
-      "sequential_full" ~ "Sequential, Full Set",
-      "sequential_optimal" ~ "Sequential, Optimal Set",
-      "two_step_full" ~ "Two-Step, Full Set",
-      "two_step_optimal" ~ "Two-Step, Optimal Set"
-    )
-  )
+                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))),
+         Method = "SMOTE-Random Forest, Optimal Set")
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall %>%
