@@ -1101,7 +1101,7 @@ conf_class <- readRDS(here("data", "conf_class.rds"))
 conf_data <- readRDS(here("data", "conf_data.rds"))
 ```
 
-```{r conf-eval-overall}
+```{r conf-eval}
 # Confirmation set overall predictions
 conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                                 Truth = conf_class) %>%
@@ -1159,36 +1159,14 @@ conf_eval_overall <- conf_pred_overall %>%
     `F1-Score` = f_meas_vec(Truth, Prediction),
     `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
     Kappa = kap_vec(Truth, Prediction)
+  ) |> 
+  pivot_longer(
+    cols = where(is.numeric),
+    names_to = "Metric",
+    values_to = "Overall"
   )
 
-kable(conf_eval_overall,
-      caption = "Overall Evaluation Metrics on Confirmation Set Models",
-      digits = 3) %>%
-  kable_styling()
-```
-
-```{r conf-conf-mat, fig.width=8, fig.cap='Confusion Matrices for Confirmation Set Models'}
-conf_conf_mat <- conf_pred_overall %>%
-  nest(.by = Method) %>%
-  deframe() %>%
-  imap(
-    ~ conf_mat(.x, Truth, Prediction) %>%
-      autoplot(type = "heatmap") +
-      scale_fill_distiller(palette = "YlOrBr", direction = 1) +
-      labs(title = .y) +
-      theme(
-        axis.ticks = element_blank(),
-        axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
-        axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
-      )
-  ) %>%
-  wrap_plots() +
-  plot_annotation(title = "Confusion Matrices for Confirmation Set Models", tag_levels = "A")
-
-print(conf_conf_mat)
-```
-
-```{r conf-eval-per-class}
+# Confirmation set per-class metrics
 conf_eval_per_class <- conf_pred_overall %>%
   nest(.by = Method) %>%
   mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) %>%
@@ -1211,12 +1189,39 @@ conf_eval_per_class <- conf_pred_overall %>%
     values_from = .estimate
   )
 
-kable(conf_eval_per_class,
-      caption = "Per-Class Evaluation Metrics on Confirmation Set Model",
+# Combined all metrics
+conf_eval <-
+  inner_join(conf_eval_overall,
+             conf_eval_per_class,
+             by = c("Method", "Metric"))
+  
+kable(conf_eval,
+      caption = "Evaluation Metrics on Confirmation Set Models",
       digits = 3) %>% 
   kable_styling() %>% 
   collapse_rows(columns = 1) %>% 
-  add_header_above(c(" " = 2, "Histotypes" = 5))
+  add_header_above(c(" " = 3, "Histotypes" = 5))
+```
+
+```{r conf-conf-mat, fig.width=8, fig.cap='Confusion Matrices for Confirmation Set Models'}
+conf_conf_mat <- conf_pred_overall %>%
+  nest(.by = Method) %>%
+  deframe() %>%
+  imap(
+    ~ conf_mat(.x, Truth, Prediction) %>%
+      autoplot(type = "heatmap") +
+      scale_fill_distiller(palette = "YlOrBr", direction = 1) +
+      labs(title = .y) +
+      theme(
+        axis.ticks = element_blank(),
+        axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
+        axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
+      )
+  ) %>%
+  wrap_plots() +
+  plot_annotation(title = "Confusion Matrices for Confirmation Set Models", tag_levels = "A")
+
+print(conf_conf_mat)
 ```
 
 ```{r roc-curve-setup}
