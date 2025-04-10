@@ -254,19 +254,19 @@ grViz(
     edge [minlen = 4, arrowsize = 0.75]
     {MAYO OOU OOUE VOA MTL OVAR3 ICON7 JAPAN} -> intermediate_1 [dir = none]
     intermediate_1 -> train_1
-    train_1 -> train_2 [xlabel = 'Exclude QC Fails: ", nrow(train_coh) - nrow(train2), "', fontcolor = '#7BB369']
-    train_2 -> train_3 [xlabel = 'Exclude Other Histotypes: ", nrow(train2) - nrow(train3), "', fontcolor = '#7BB369']
+    train_1 -> train_2 [xlabel = 'Exclude QC Fails: ", nrow(train_coh) - nrow(train2), "']
+    train_2 -> train_3 [xlabel = 'Exclude Other Histotypes: ", nrow(train2) - nrow(train3), "']
     train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]
-    train_cs1 -> train_5 [xlabel = 'Exclude Duplicates: ", nrow(train4) - 15 - nrow(train5), "', fontcolor = '#7BB369']
+    train_cs1 -> train_5 [xlabel = 'Exclude Duplicates: ", nrow(train4) - 15 - nrow(train5), "']
     {train_cs2 train_cs3} -> train_5
 
-    conf1 -> conf2 [xlabel = 'Exclude QC\nFails: ", nrow(tnco) - nrow(conf2), "', fontcolor = '#7BB369']
-    conf2 -> conf3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(conf2) - nrow(conf3), "', fontcolor = '#7BB369']
-    conf3 -> conf4 [xlabel = 'Exclude\nDuplicates: ", nrow(conf3) - nrow(conf4), "', fontcolor = '#7BB369', minlen = 7]
+    conf1 -> conf2 [xlabel = 'Exclude QC\nFails: ", nrow(tnco) - nrow(conf2), "']
+    conf2 -> conf3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(conf2) - nrow(conf3), "']
+    conf3 -> conf4 [xlabel = 'Exclude\nDuplicates: ", nrow(conf3) - nrow(conf4), "', minlen = 7]
 
-    val1 -> val2 [xlabel = 'Exclude QC\nFails: ", nrow(dove4) - nrow(val2), "', fontcolor = '#7BB369']
-    val2 -> val3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(val2) - nrow(val3), "', fontcolor = '#7BB369']
-    val3 -> val4 [xlabel = 'Exclude\nDuplicates: ", nrow(val3) - nrow(val4), "', fontcolor = '#7BB369', minlen = 7]
+    val1 -> val2 [xlabel = 'Exclude QC\nFails: ", nrow(dove4) - nrow(val2), "']
+    val2 -> val3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(val2) - nrow(val3), "']
+    val3 -> val4 [xlabel = 'Exclude\nDuplicates: ", nrow(val3) - nrow(val4), "', minlen = 7]
 
     # subgraph definitions
     subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; ICON7; JAPAN; conf1; val1}
@@ -277,6 +277,7 @@ grViz(
     "
   )
 )
+
 ```
 
 ## Classifiers
