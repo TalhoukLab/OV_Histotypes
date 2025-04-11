@@ -150,6 +150,15 @@ candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
 vi_ranked_candidates <- vi_ranked %>%
   filter(Variable %in% candidates)
 
+# Write best models to file
+model_file <- file.path(
+  outputDir,
+  "merge_results",
+  dataset,
+  paste0("wflow_", wflow, "_model_", dataset, ".rds")
+)
+saveRDS(best_model, model_file)
+
 # Write all metrics to file
 metrics_file <- file.path(
   outputDir,

@@ -15,7 +15,7 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
-    for ng in $(seq 1 $ngenes); do
+    for ng in $(seq 0 $ngenes); do
         # Content of R file
         R_file=$RSubDir/$dataset/"merge_results_add"$ng.R
         echo 'dataset <- "'$dataset'"' > $R_file

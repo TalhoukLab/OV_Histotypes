@@ -9,7 +9,7 @@ subDir=gene_opt/sequential/merge_results
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 
-for dataset in "${seqData[@]}"; do
+for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
     mkdir -p $RSubDir/$dataset
     mkdir -p $shSubDir/$dataset
@@ -24,6 +24,7 @@ for dataset in "${seqData[@]}"; do
             echo "ngene <- '$ng'" >> $R_file
             echo 'nseq <- '$nseq >> $R_file
             echo 'rank_metric <- "'$rank_metric'"' >> $R_file
+            echo 'seq_data <- "'$seqData'"' >> $R_file
             echo 'inputDir <- "'$inputDir'"' >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file
             echo 'source("pipeline/gene_opt/2b-seq_merge_results.R")' >> $R_file

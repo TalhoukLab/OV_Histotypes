@@ -18,6 +18,9 @@ library(plotly)
 library(patchwork)
 library(tidymodels)
 library(themis)
+library(RColorBrewer)
+library(ggh4x)
+library(ggtext)
 library(here)
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
@@ -34,24 +37,31 @@ per_class_metrics_two_step <-
   readRDS(here("data/per_class_metrics_two_step.rds"))
 
 # Models
+smote_rf_model <- readRDS(here("data/wflow_smote_rf_model_train.rds"))
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
 
 # Overall Variable Importance
+all_vi_train <- readRDS(here("data/all_vi_train.rds"))
 all_vi_seq <- readRDS(here("data/all_vi_seq.rds"))
 all_vi_two_step <- readRDS(here("data/all_vi_two_step.rds"))
 
 # Gene Optimization
-gene_opt_all_metrics_seq <-
-  readRDS(here("data/gene_opt_all_metrics_seq.rds"))
-gene_opt_all_metrics_two_step <- 
-  readRDS(here("data/gene_opt_all_metrics_two_step.rds"))
+gene_opt_all_metrics_conf <- 
+  readRDS(here("data/gene_opt_all_metrics_conf.rds"))
+gene_opt_all_metrics_conf_seq <-
+  readRDS(here("data/gene_opt_all_metrics_conf_seq.rds"))
+gene_opt_all_metrics_conf_two_step <-
+  readRDS(here("data/gene_opt_all_metrics_conf_two_step.rds"))
 
 # PrOTYPE and SPOT genes
 coefmat <- readRDS(here("data/coefmat.rds"))
 overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
 overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
 overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+
+# Histotypes colour palette
+class_palette <- brewer.pal(n = 5, name = "Dark2")
 ```
 
 We summarize cross-validated training performance of class metrics in the training set. The accuracy, F1-score, and kappa, are the metrics of interest. Workflows are ordered by their mean estimates across the outer folds of the nested CV for each metric.
@@ -594,16 +604,23 @@ kable(class_gmean_train,
 
 Multi-step methods:
 
-- **sequential**: sequential algorithm with SMOTE subsampling at every step. The sequence of algorithms used are:
-  - HGSC vs. non-HGSC using random forest
-  - CCOC vs. non-CCOC using random forest
-  - ENOC vs. non-ENOC using support vector machine
-  - LGSC vs. MUC using random forest
+- **sequential**: sequential algorithm sequence of subsampling methods and algorithms used are:
+  - HGSC vs. non-HGSC using SMOTE subsampling and random forest
+  - CCOC vs. non-CCOC using hybrid subsampling and XGBoost
+  - ENOC vs. non-ENOC using upsampling and support vector machine
+  - LGSC vs. MUC using hybrid subsampling and regularized multinomial regression
 - **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
   - HGSC vs. non-HGSC using SMOTE subsampling and random forest
   - CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
   
-The primary metric we use for rank aggregation is F1-score.
+
+We conduct rank aggregation using a two-stage nested appraoch:
+
+1. First we rank aggregate the per-class metrics for F1-score, balanced accuracy and kappa.
+2. Then we take the aggregated lists from the three metrics and perform a final rank aggregation.
+3. The top workflows from the final rank aggregation are used for gene optimization in the confirmation set 
+  
+### Across Classes
 
 ```{r per-class-metrics}
 # Add lower, upper, undefined columns for per-class sequential, two_step
@@ -667,8 +684,9 @@ wflow_rank_agg_f1 <- splendid:::sink_output(RankAggreg(
   x = wflow_ranks_f1,
   k = ncol(wflow_ranks_f1),
   method = "GA",
-  seed = 2022,
-  verbose = FALSE
+  seed = 2025,
+  verbose = FALSE,
+  maxIter = 1e4
 )) %>% 
   pluck("top.list") %>% 
   enframe(name = "Rank", value = "Workflow")
@@ -704,14 +722,7 @@ datatable(
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
 )
-
-# Look at Top 5 workflows
-wflow_top <- head(wflow_rank_agg_f1, 5)
 ```
-
-The `r ncol(wflow_ranks_f1)` workflows are ordered in the table by their aggregated ranks using the Genetic Algorithm. We see that the best performing methods involve the sequential and two-step algorithms.
-
-We can also investigate rank aggregation using other metrics like balanced accuracy and kappa.
 
 ```{r rank-agg-bal-acc}
 # Select ranking metric
@@ -732,8 +743,9 @@ wflow_rank_agg_bal_acc <- splendid:::sink_output(RankAggreg(
   x = wflow_ranks_bal_acc,
   k = ncol(wflow_ranks_bal_acc),
   method = "GA",
-  seed = 2022,
-  verbose = FALSE
+  seed = 2025,
+  verbose = FALSE,
+  maxIter = 1e5
 )) %>% 
   pluck("top.list") %>% 
   enframe(name = "Rank", value = "Workflow")
@@ -790,8 +802,9 @@ wflow_rank_agg_kap <- splendid:::sink_output(RankAggreg(
   x = wflow_ranks_kap,
   k = ncol(wflow_ranks_kap),
   method = "GA",
-  seed = 2022,
-  verbose = FALSE
+  seed = 2025,
+  verbose = FALSE,
+  maxIter = 1e4
 )) %>% 
   pluck("top.list") %>% 
   enframe(name = "Rank", value = "Workflow")
@@ -829,26 +842,52 @@ datatable(
 )
 ```
 
-```{r rank-agg-comp}
-rank_agg_comp <- list(F1 = wflow_rank_agg_f1,
+### Across Metrics
+
+```{r rank-agg-comp-metrics}
+rank_agg_metrics <- list(F1 = wflow_rank_agg_f1,
                       `Balanced Accuracy` = wflow_rank_agg_bal_acc,
                       Kappa = wflow_rank_agg_kap) |>
   bind_rows(.id = "Metric") |>
   pivot_wider(names_from = "Metric", values_from = "Workflow")
 
-rank_agg_comp |> 
+rank_agg_metrics |> 
   kbl(caption = "Rank Aggregation Comparison of Metrics Used")
+```
+
+```{r rank-agg-final}
+# Rank aggregation of aggregated metrics using GA
+wflow_ranks_metrics <- rank_agg_metrics |> 
+  drop_na() |> 
+  pivot_longer(cols = where(is.character), names_to = "Metric", values_to = "Workflow") |> 
+  pivot_wider(names_from = Rank, values_from = Workflow) |> 
+  column_to_rownames("Metric") |> 
+  as.matrix()
+
+# Take top 5 workflows
+wflow_rank_agg_metrics <- splendid:::sink_output(RankAggreg(
+  x = wflow_ranks_metrics,
+  k = 5,
+  method = "GA",
+  seed = 2025,
+  verbose = FALSE
+)) |>
+  pluck("top.list") %>%
+  enframe(name = "Rank", value = "Workflow")
+
+wflow_rank_agg_metrics |> 
+  kbl(caption = "Top 5 Workflows from Final Rank Aggregation")
 ```
 
 ### Top Workflows
 
-We look at the per-class evaluation metrics of the top `r nrow(wflow_top)` workflows using **F1-score** as the ranked metric.
+We look at the per-class evaluation metrics of the top `r nrow(wflow_rank_agg_metrics)` workflows.
 
-```{r metrics-top-by-class, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Class'), fig.height=7, out.width='100%'}
+```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_rank_agg_metrics), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
 metrics_top <- per_class_metrics %>%
   distinct(pick(-fold_id, -.estimate)) %>%
   rename(Workflow = wflow) |> 
-  inner_join(wflow_top, by = "Workflow") %>%
+  inner_join(wflow_rank_agg_metrics, by = "Workflow") %>%
   mutate(
     Workflow = fct_reorder(Workflow, Rank),
     .metric = case_match(
@@ -873,38 +912,7 @@ metrics_top <- per_class_metrics %>%
   ) |> 
   drop_na(.metric) |> 
   arrange(Rank)
-  
-p <-
-  ggplot(metrics_top) +
-  geom_pointrange(
-    aes(
-      x = Workflow,
-      y = mean_estimate,
-      ymin = lower,
-      ymax = upper,
-      color = .metric
-    ),
-    position = position_jitter(width = 0.3),
-    fatten = 1
-  ) +
-  scale_color_brewer(palette = "Dark2") +
-  facet_wrap(vars(class_group), ncol = 1) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank()
-  ) +
-  labs(
-    x = "Workflow",
-    y = "Metric Value",
-    color = "Metric",
-    title = paste("Top", nrow(wflow_top), "Workflow Per-Class Evaluation Metrics by Class")
-  )
-print(p)
-```
 
-```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_top), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
 p <-
   ggplot(metrics_top) +
   geom_pointrange(
@@ -918,6 +926,7 @@ p <-
     position = position_jitter(width = 0.3),
     fatten = 1
   ) +
+  scale_color_brewer(palette = "Dark2") + 
   facet_wrap(vars(.metric), ncol = 1, scales = "free_y") +
   theme_bw() +
   theme(
@@ -929,7 +938,7 @@ p <-
     x = "Workflow",
     y = "Metric Value",
     color = "Class",
-    title = paste("Top", nrow(wflow_top), "Workflow Per-Class Evaluation Metrics by Metric")
+    title = paste("Top", nrow(wflow_rank_agg_metrics), "Workflow Per-Class Evaluation Metrics by Metric")
   )
 print(p)
 ```
@@ -946,7 +955,7 @@ gene_seq_names <- all_vi_seq %>%
   rowid_to_column("Genes") %>% 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_seq <- gene_opt_all_metrics_seq %>% 
+dat_gene_seq <- gene_opt_all_metrics_conf_seq %>% 
   filter(.metric == "f_meas", class_group == "Overall") %>% 
   mutate(
     min_estimate = min(.estimate),
@@ -979,7 +988,7 @@ p_gene_seq <-
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq)
 
-n_genes_seq <- 11
+n_genes_seq <- 7
 genes_add_seq <- gene_seq_names %>%
   filter(Genes > 0L) %>% 
   slice_min(order_by = Genes, n = n_genes_seq) %>% 
@@ -987,36 +996,29 @@ genes_add_seq <- gene_seq_names %>%
 opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
 
-In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.91 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
+In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.88 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
-### Two-Step Algorithm
+### SMOTE-Random Forest
 
-```{r gene-2s, fig.cap='Gene Optimization for Two-Step Classifier'}
-gene_2s_names <- all_vi_two_step %>% 
-  rename(Name = Variable) %>% 
+```{r gene-smote-rf, fig.cap='Gene Optimization for SMOTE-Random Forest Classifier'}
+gene_smote_rf_names <- all_vi_train %>% 
+  filter(wflow == "smote_rf") %>% 
   rowid_to_column("Genes") %>% 
+  select(Genes, Name = Variable) %>% 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_2s <- gene_opt_all_metrics_two_step %>% 
+dat_gene_smote_rf <- gene_opt_all_metrics_conf %>% 
   filter(.metric == "f_meas", class_group == "Overall") %>% 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
-    .by = c(Sequence, Genes)
+    .by = Genes
   ) %>%
-  mutate(
-    label = paste0(
-      "Sequence: ",
-      Sequence,
-      ", Workflow: ",
-      wflow,
-      ", Measure: ",
-      .metric)
-  ) %>% 
-  inner_join(gene_2s_names, by = "Genes")
+  mutate(label = paste0("Workflow: smote_rf, Measure: ", .metric)) %>% 
+  inner_join(gene_smote_rf_names, by = "Genes")
 
-p_gene_2s <-
-  ggplot(dat_gene_2s, aes(text = Name)) +
+p_gene_smote_rf <- 
+  ggplot(dat_gene_smote_rf, aes(text = Name)) +
   geom_pointrange(aes(
     x = Genes,
     y = mean_estimate,
@@ -1027,109 +1029,26 @@ p_gene_2s <-
   theme_bw() +
   labs(x = "Genes Added",
        y = "F1-Score",
-       title = "Gene Optimziation for Two-Step Classifier")
-ggplotly(p_gene_2s)
+       title = "Gene Optimziation for SMOTE-Random Forest Classifier")
+ggplotly(p_gene_smote_rf)
 
-n_genes_2s <- 12
-genes_add_2s <- gene_2s_names %>%
+n_genes_smote_rf <- 18
+genes_add_smote_rf <- gene_smote_rf_names %>% 
   filter(Genes > 0L) %>% 
-  slice_min(order_by = Genes, n = n_genes_2s) %>% 
+  slice_min(order_by = Genes, n = n_genes_smote_rf) %>% 
   pull(Name)
-opt_genes_2s <- c(overlap_all, genes_add_2s)
+opt_genes_smote_rf <- c(overlap_all, genes_add_smote_rf)
 ```
 
-The second step of the classifier fits a multinomial model, so we can use the macro F1-score as the metric to analyze gene entry. In the two-step classifier, we see that in Step 2, the macro F1-score stabilizes at around 0.80 when we reach `r n_genes_2s` added.
-
-```{r gene-2s-per-class, fig.height=8, fig.cap='Gene Optimization for Step 2 of Two-Step Classifier'}
-f1_threshold <- 0.75
-
-dat_gene_2s_per_class <- gene_opt_all_metrics_two_step %>%
-  filter(.metric == "f_meas", Sequence == 2, class_group != "Overall") %>% 
-  mutate(
-    min_estimate = min(.estimate),
-    max_estimate = max(.estimate),
-    .by = c(class_group, Genes)
-  ) %>%
-  mutate(
-    label = paste0(
-      "Sequence: ",
-      Sequence,
-      ", Workflow: ",
-      wflow,
-      ", Measure: ",
-      .metric)
-  ) %>% 
-  inner_join(gene_2s_names, by = "Genes") %>%
-  group_by(class_group) %>%
-  mutate(min_genes = ifelse(Genes == min(Genes[mean_estimate >= f1_threshold]), "Yes", "No")) %>%
-  ungroup()
-  
-p_gene_2s_per_class <- ggplot(dat_gene_2s_per_class, aes(text = Name)) +
-  geom_pointrange(aes(
-    x = Genes,
-    y = mean_estimate,
-    ymin = min_estimate,
-    ymax = max_estimate,
-    color = min_genes
-  )) +
-  scale_color_brewer(palette = "Dark2") +
-  facet_wrap(~ class_group, ncol = 1, scales = "free") +
-  theme_bw() +
-  labs(
-    x = "Genes Added",
-    y = "Per-Class F1-Score",
-    title = "Gene Optimziation for Step 2 of Two-Step Classifier",
-    subtitle = "Threshold: Fewest genes required for mean per-class F1-score >= 0.75",
-    color = "Minimum Genes"
-  )
-
-ggplotly(p_gene_2s_per_class)
-
-n_genes_2s <- 10
-genes_add_2s <- gene_2s_names %>%
-  filter(Genes > 0L) %>% 
-  slice_min(order_by = Genes, n = n_genes_2s) %>% 
-  pull(Name)
-opt_genes_2s <- c(overlap_all, genes_add_2s)
-```
-
-Alternatively, we can analyze the per-class F1-scores in the second step of the classifier to see whether all of the non-HGSC classes have relatively good performance at the same number of genes. The threshold condition that we consider is the fewest genes required such that the mean per-class F1 score is at least 0.75. We see that `r n_genes_2s` genes are required to reach that threshold for ENOC. Hence, the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_2s`=`r length(opt_genes_2s)`. The added genes are: `r str_flatten_comma(genes_add_2s, last = " and ")`.
+In the SMOTE-Random Forest classifier, the F1-score stabilizes at around 0.7 when we reach `r n_genes_smote_rf` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_rf`=`r length(opt_genes_smote_rf)` The added genes are: `r str_flatten_comma(genes_add_smote_rf, last = " and ")`.
 
 ## Test Set Performance
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
-The top 2 methods are the sequential and two-step algorithms. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these algorithms.
+The top 2 methods are the sequential and SMOTE-Random Forest classifiers. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these classifiers.
 
 ```{r top-models}
-# Two-step data
-two_step_data <- readRDS(here("data", "two_step_data.rds"))
-two_step_class <- readRDS(here("data", "two_step_class.rds"))
-
-# Two-step full model
-set.seed(2024)
-mod_two_step_full <- list(all_models_two_step,
-                          two_step_data,
-                          two_step_class) %>% 
-  pmap(~ {
-    data = cbind(..2, class = ..3)
-    ..1 %>% fit(data = data)
-  })
-
-# Two-step optimal gene list model
-set.seed(2024)
-mod_two_step_opt <- list(all_models_two_step,
-                         two_step_data,
-                         two_step_class) %>% 
-  pmap(~ {
-    data = cbind(..2, class = ..3)
-    ..1 %>%
-      update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
-                      step_select(c(all_of(!!opt_genes_2s), class),
-                                  skip = TRUE)) %>%
-      fit(data = data)
-  })
-
 # sequential data
 seq_data <- readRDS(here("data", "seq_data.rds"))
 seq_class <- readRDS(here("data", "seq_class.rds"))
@@ -1159,6 +1078,19 @@ mod_seq_opt <- list(all_models_seq,
       fit(data = data)
   })
 
+# smote_rf full model
+set.seed(2024)
+train_ref <- cbind(train_data, class = train_class)
+mod_smote_rf_full <- smote_rf_model %>% fit(data = train_ref)
+
+# smote_rf optimal gene list model
+set.seed(2024)
+mod_smote_rf_opt <- smote_rf_model %>% 
+  update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
+                  step_select(c(all_of(!!opt_genes_smote_rf), class),
+                              skip = TRUE)) %>%
+  fit(data = train_ref)
+
 # Per-class metric set
 per_class_mset <-
   metric_set(accuracy, sensitivity, specificity, f_meas, bal_accuracy, kap)
@@ -1172,27 +1104,19 @@ conf_class <- readRDS(here("data", "conf_class.rds"))
 conf_data <- readRDS(here("data", "conf_data.rds"))
 ```
 
-```{r conf-eval-overall}
+```{r conf-eval}
 # Confirmation set overall predictions
 conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                                 Truth = conf_class) %>%
   mutate(
-    c(
-      p_2s_full = mod_two_step_full,
-      p_2s_opt = mod_two_step_opt,
-      p_seq_full = mod_seq_full,
-      p_seq_opt = mod_seq_opt
-    ) %>%
+    c(p_seq_full = mod_seq_full,
+      p_seq_opt = mod_seq_opt) %>%
       map(~ predict(., conf_data)[[".pred_class"]]) %>%
       bind_cols()
-  ) %>% 
+  ) %>%
   rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) %>% 
   mutate(
     across(matches("p"), as.character),
-    Prediction_two_step_full = ifelse(!grepl("non", p_2s_full_s1),
-                                      p_2s_full_s1, p_2s_full_s2),
-    Prediction_two_step_optimal = ifelse(!grepl("non", p_2s_opt_s1),
-                                         p_2s_opt_s1, p_2s_opt_s2), 
     Prediction_sequential_full = case_when(
       !grepl("non", p_seq_full_s1) ~ p_seq_full_s1,
       !grepl("non", p_seq_full_s2) ~ p_seq_full_s2,
@@ -1205,6 +1129,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       !grepl("non", p_seq_opt_s3) ~ p_seq_opt_s3,
       .default = p_seq_opt_s4
     ),
+    Prediction_smote_rf_full = predict(mod_smote_rf_full, conf_data)[[".pred_class"]],
+    Prediction_smote_rf_opt = predict(mod_smote_rf_opt, conf_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) %>%
   select(-starts_with("p", ignore.case = FALSE)) %>%
@@ -1215,65 +1141,93 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
     values_to = "Prediction"
   ) %>% 
   mutate(across(c(Truth, Prediction),
-         ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))))
+                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))) |> 
+  mutate(Method = factor(
+    case_match(
+      Method,
+      "sequential_full" ~ "Sequential, Full Set",
+      "sequential_optimal" ~ "Sequential, Optimal Set",
+      "smote_rf_full" ~ "SMOTE-Random Forest, Full Set",
+      "smote_rf_opt" ~ "SMOTE-Random Forest, Optimal Set"
+    )
+  ))
 
 # Confirmation set overall metrics
 conf_eval_overall <- conf_pred_overall %>%
   group_by(Method) %>%
   summarize(
-    accuracy = accuracy_vec(Truth, Prediction),
-    sensitivity = sensitivity_vec(Truth, Prediction),
-    specificity = specificity_vec(Truth, Prediction),
-    f1 = f_meas_vec(Truth, Prediction),
-    bal_accuracy = bal_accuracy_vec(Truth, Prediction),
-    kappa = kap_vec(Truth, Prediction)
+    Accuracy = accuracy_vec(Truth, Prediction),
+    Sensitivity = sensitivity_vec(Truth, Prediction),
+    Specificity = specificity_vec(Truth, Prediction),
+    `F1-Score` = f_meas_vec(Truth, Prediction),
+    `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
+    Kappa = kap_vec(Truth, Prediction)
+  ) |> 
+  pivot_longer(
+    cols = where(is.numeric),
+    names_to = "Metric",
+    values_to = "Overall"
   )
 
-kable(conf_eval_overall,
-      caption = "Overall Evaluation Metrics on Confirmation Set Models",
-      digits = 3) %>%
-  kable_styling()
-```
-
-```{r conf-conf-mat, fig.cap='Confusion Matrices for Confirmation Set Models'}
-conf_conf_mat <- conf_pred_overall %>% 
-  nest(.by = Method) %>% 
-  deframe() %>%
-  imap(~ conf_mat(.x, Truth, Prediction) %>%
-         autoplot(type = "heatmap") +
-         labs(title = .y)) %>% 
-  wrap_plots() +
-  plot_annotation(
-    title = "Confusion Matrices for Confirmation Set Models",
-    tag_levels = "A"
-  )
-
-print(conf_conf_mat)
-```
-
-```{r conf-eval-per-class}
+# Confirmation set per-class metrics
 conf_eval_per_class <- conf_pred_overall %>%
   nest(.by = Method) %>%
-  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction,
-                                        per_class_mset))) %>%
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) %>%
   unnest(data) %>%
-  mutate(Metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
-         .keep = "unused") %>%
+  mutate(
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa"
+    ),
+    .keep = "unused"
+  ) %>%
   pivot_wider(
     id_cols = c(Method, Metric),
     names_from = class_group,
     values_from = .estimate
   )
 
-kable(conf_eval_per_class,
-      caption = "Per-Class Evaluation Metrics on Confirmation Set Model",
+# Combined all metrics
+conf_eval <-
+  inner_join(conf_eval_overall,
+             conf_eval_per_class,
+             by = c("Method", "Metric"))
+  
+kable(conf_eval,
+      caption = "Evaluation Metrics on Confirmation Set Models",
       digits = 3) %>% 
   kable_styling() %>% 
   collapse_rows(columns = 1) %>% 
-  add_header_above(c(" " = 2, "Histotypes" = 5))
+  add_header_above(c(" " = 3, "Histotypes" = 5))
 ```
 
-```{r roc-curve-seq-full, fig.cap='ROC Curves for Sequential Full Model in Confirmation Set', fig.width=8, out.width='100%'}
+```{r conf-conf-mat, fig.width=8, fig.cap='Confusion Matrices for Confirmation Set Models', out.width='100%'}
+conf_conf_mat <- conf_pred_overall %>%
+  nest(.by = Method) %>%
+  deframe() %>%
+  imap(
+    ~ conf_mat(.x, Truth, Prediction) %>%
+      autoplot(type = "heatmap") +
+      scale_fill_distiller(palette = "YlOrBr", direction = 1) +
+      labs(title = .y) +
+      theme(
+        axis.ticks = element_blank(),
+        axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
+        axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
+      )
+  ) %>%
+  wrap_plots() +
+  plot_annotation(title = "Confusion Matrices for Confirmation Set Models", tag_levels = "A")
+
+print(conf_conf_mat)
+```
+
+```{r roc-curve-setup}
 conf_data_seq <- list(conf_data,
                       conf_data[conf_class != "HGSC",],
                       conf_data[!conf_class %in% c("HGSC", "CCOC"),],
@@ -1286,8 +1240,21 @@ conf_class_seq <- list(
   factor(conf_class[!conf_class %in% c("HGSC", "CCOC", "ENOC")])
 )
 
+class_groups <-
+  set_names(class_palette, paste0("(?<!non_)", c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  imap_chr(~ paste0(
+    "<span style = 'color:",
+    .x,
+    ";'>",
+    gsub("(?<!non_)", "", .y, fixed = TRUE),
+    "</span>"
+  )) |>
+  str_replace_all(string = map_chr(map(conf_class_seq, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
+```
+
+```{r roc-curve-seq-full, fig.cap='ROC Curves for Sequential Full Model in Confirmation Set', fig.height=7, fig.width=7, out.width='100%'}
 roc_curve_seq_full <- mod_seq_full %>% 
-  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
+  set_names(class_groups) |> 
   list(conf_data_seq, conf_class_seq) %>% 
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")%>% 
@@ -1306,20 +1273,23 @@ roc_curve_seq_full <- mod_seq_full %>%
         vjust = 0,
         label = auc,
         size = 3
-      )
+      ) +
+      theme(panel.grid = element_blank())
   }) %>% 
-  imap(~ .x + labs(title = .y)) %>% 
-  wrap_plots(widths = c(1, 1)) +
+  imap(~ .x +
+         labs(title = .y) +
+         theme(plot.title = element_markdown(face = "bold"))) %>% 
+  wrap_plots(widths = c(1, -1)) +
   plot_annotation(
-    title = "ROC Curves for Sequential Full Model in Confirmation Set",
+    title = "ROC Curves for Sequential, Full Set Model in Confirmation Set",
     tag_levels = "A"
   )
 print(roc_curve_seq_full)
 ```
 
-```{r roc-curve-seq-opt, fig.cap='ROC Curves for Sequential Optimal Model in Confirmation Set', fig.width=8, out.width='100%'}
+```{r roc-curve-seq-opt, fig.cap='ROC Curves for Sequential Optimal Model in Confirmation Set', fig.height=7, fig.width=7, out.width='100%'}
 roc_curve_seq_opt <- mod_seq_opt %>% 
-  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
+  set_names(class_groups) |> 
   list(conf_data_seq, conf_class_seq) %>% 
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")%>% 
@@ -1338,90 +1308,58 @@ roc_curve_seq_opt <- mod_seq_opt %>%
         vjust = 0,
         label = auc,
         size = 3
-      )
+      ) +
+      theme(panel.grid = element_blank())
   }) %>% 
-  imap(~ .x + labs(title = .y)) %>% 
-  wrap_plots(widths = c(1, 1)) +
+  imap(~ .x +
+         labs(title = .y) +
+         theme(plot.title = element_markdown(face = "bold"))) %>% 
+  wrap_plots(widths = c(1, -1)) +
   plot_annotation(
-    title = "ROC Curves for Sequential Optimal Model in Confirmation Set",
+    title = "ROC Curves for Sequential, Optimal Set Model in Confirmation Set",
     tag_levels = "A"
   )
 print(roc_curve_seq_opt)
 ```
 
-```{r roc-curve-two-step-full, fig.cap='ROC Curves for Two-Step Full Model in Confirmation Set', fig.width=10, out.width='100%'}
-conf_data_two_step <- list(conf_data,
-                           conf_data[conf_class != "HGSC", ])
-
-conf_class_two_step <-
-  list(factor(ifelse(conf_class == "HGSC", "HGSC", "non-HGSC")),
-       factor(conf_class[conf_class != "HGSC"]))
-
-roc_curve_two_step_full <- mod_two_step_full %>% 
-  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
-  list(conf_data_two_step, conf_class_two_step) %>% 
-  pmap(~ {
-    preds <- predict(..1, ..2, type = "prob")
-    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds <- preds %>% 
-      add_column(truth = ..3)
-    roc_df <- preds %>% 
-      roc_curve(truth, all_of(prob_cols))
-    auc <- preds %>% 
-      roc_auc(truth, all_of(prob_cols)) %>% 
-      pull(.estimate) %>% 
-      number(accuracy = 0.001, prefix = "AUC = ")
-    autoplot(roc_df) +
-      geom_label(
-        x = 1,
-        y = 0,
-        hjust = 1,
-        vjust = 0,
-        label = auc,
-        size = 3
-      )
-  }) %>% 
-  imap(~ .x + labs(title = .y)) %>% 
-  wrap_plots(widths = c(1, 2)) +
-  plot_annotation(
-    title = "ROC Curves for Two-Step Full Model in Confirmation Set",
-    tag_levels = "A"
-  )
-print(roc_curve_two_step_full)
+```{r roc-curve-smote-rf-full, fig.cap='ROC Curves for SMOTE-Random Forest, Full Set Model in Confirmation Set', fig.width=9, out.width='100%'}
+preds <- predict(mod_smote_rf_full, conf_data, type = "prob") %>%
+  add_column(truth = factor(conf_class))
+roc_df <- preds %>%
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+auc <- preds %>%
+  roc_auc(truth, matches(".pred")) %>% 
+  pull(.estimate) %>% 
+  number(accuracy = 0.001, prefix = "AUC = ")
+roc_curve_smote_rf_full <-
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for SMOTE-Random Forest, Full Set Model in Confirmation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(panel.grid = element_blank(),
+        strip.text = element_text(face = "bold"))
+print(roc_curve_smote_rf_full)
 ```
 
-```{r roc-curve-two-step-opt, fig.cap='ROC Curves for Two-Step Optimal Model in Confirmation Set', fig.width=10, out.width='100%'}
-roc_curve_two_step_opt <- mod_two_step_opt %>% 
-  set_names(map_chr(., ~ paste(pluck(.x, "fit", "fit", "lvl"), collapse = " vs. "))) %>% 
-  list(conf_data_two_step, conf_class_two_step) %>% 
-  pmap(~ {
-    preds <- predict(..1, ..2, type = "prob")
-    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds <- preds %>% 
-      add_column(truth = ..3)
-    roc_df <- preds %>% 
-      roc_curve(truth, all_of(prob_cols))
-    auc <- preds %>% 
-      roc_auc(truth, all_of(prob_cols)) %>% 
-      pull(.estimate) %>% 
-      number(accuracy = 0.001, prefix = "AUC = ")
-    autoplot(roc_df) +
-      geom_label(
-        x = 1,
-        y = 0,
-        hjust = 1,
-        vjust = 0,
-        label = auc,
-        size = 3
-      )
-  }) %>% 
-  imap(~ .x + labs(title = .y)) %>% 
-  wrap_plots(widths = c(1, 2)) +
-  plot_annotation(
-    title = "ROC Curves for Two-Step Optimal Model in Confirmation Set",
-    tag_levels = "A"
-  )
-print(roc_curve_two_step_opt)
+```{r roc-curve-smote-rf-opt, fig.cap='ROC Curves for SMOTE-Random Forest, Optimal Set Model in Confirmation Set', fig.width=9, out.width='100%'}
+preds <- predict(mod_smote_rf_opt, conf_data, type = "prob") %>% 
+  add_column(truth = factor(conf_class))
+roc_df <- preds %>%
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+auc <- preds %>%
+  roc_auc(truth, matches(".pred")) %>% 
+  pull(.estimate) %>% 
+  number(accuracy = 0.001, prefix = "AUC = ")
+roc_curve_smote_rf_opt <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for SMOTE-Random Forest, Optimal Set Model in Confirmation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(panel.grid = element_blank(),
+        strip.text = element_text(face = "bold"))
+print(roc_curve_smote_rf_opt)
 ```
 
 ### Validation Set
@@ -1432,24 +1370,14 @@ val_class <- readRDS(here("data", "val_class.rds"))
 val_data <- readRDS(here("data", "val_data.rds"))
 ```
 
-```{r val-eval-overall}
+```{r val-eval}
 # Validation set overall predictions
 val_pred_overall <- data.frame(FileName = rownames(val_data),
                                Truth = val_class) %>%
   mutate(
-    c(p_2s_opt = mod_two_step_opt) %>%
-      map(~ predict(., val_data)[[".pred_class"]]) %>%
-      bind_cols()
-  ) %>% 
-  rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) %>% 
-  
-  mutate(
-    across(matches("p"), as.character),
-    Prediction_two_step_optimal = ifelse(!grepl("non", p_2s_opt_s1),
-                                         p_2s_opt_s1, p_2s_opt_s2),
+    Prediction_smote_rf_opt = predict(mod_smote_rf_opt, val_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
-  ) %>%
-  select(-starts_with("p", ignore.case = FALSE)) %>%
+  ) %>% 
   pivot_longer(
     cols = matches("Prediction"),
     names_to = "Method",
@@ -1457,57 +1385,93 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     values_to = "Prediction"
   ) %>% 
   mutate(across(c(Truth, Prediction),
-         ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))))
+                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))),
+         Method = "SMOTE-Random Forest, Optimal Set")
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall %>%
-  group_by(Method) %>%
   summarize(
-    accuracy = accuracy_vec(Truth, Prediction),
-    sensitivity = sensitivity_vec(Truth, Prediction),
-    specificity = specificity_vec(Truth, Prediction),
-    f1 = f_meas_vec(Truth, Prediction),
-    bal_accuracy = bal_accuracy_vec(Truth, Prediction),
-    kappa = kap_vec(Truth, Prediction)
+    Accuracy = accuracy_vec(Truth, Prediction),
+    Sensitivity = sensitivity_vec(Truth, Prediction),
+    Specificity = specificity_vec(Truth, Prediction),
+    `F1-Score` = f_meas_vec(Truth, Prediction),
+    `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
+    Kappa = kap_vec(Truth, Prediction)
+  ) |> 
+  pivot_longer(
+    cols = where(is.numeric),
+    names_to = "Metric",
+    values_to = "Overall"
   )
 
-kable(val_eval_overall,
-      caption = "Overall Evaluation Metrics on Validation Set Model",
-      digits = 3) %>% 
-  kable_styling()
+# Validation set per-class metrics
+val_eval_per_class <- val_pred_overall |>
+  ova_metrics(Truth, Prediction, per_class_mset) |>
+  mutate(
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa"
+    ),
+    .keep = "unused"
+  ) |>
+  pivot_wider(id_cols = Metric,
+              names_from = class_group,
+              values_from = .estimate)
+
+# Combined all metrics
+val_eval <-
+  inner_join(val_eval_overall, val_eval_per_class, by = "Metric")
+
+kbl(val_eval,
+    caption = "Evaluation Metrics on Validation Set Model, SMOTE-Random Forest, Optimal Set",
+    digits = 3) |>
+  kable_styling() %>%
+  collapse_rows(columns = 1) %>%
+  add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
 
 ```{r val-conf-mat, fig.cap='Confusion Matrix for Validation Set Model'}
 val_conf_mat <- val_pred_overall %>%
   nest(.by = Method) %>%
   deframe() %>%
-  imap(~ conf_mat(.x, Truth, Prediction) %>%
-         autoplot(type = "heatmap") +
-         labs(title = .y)) %>% 
+  imap(
+    ~ conf_mat(.x, Truth, Prediction) %>%
+      autoplot(type = "heatmap") +
+      scale_fill_distiller(palette = "YlOrBr", direction = 1) +
+      labs(title = .y) +
+      theme(
+        axis.ticks = element_blank(),
+        axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
+        axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
+      )
+  ) %>% 
   wrap_plots() +
   plot_annotation(title = "Confusion Matrix for Validation Set Model")
 
 print(val_conf_mat)
 ```
 
-```{r val-eval-per-class}
-val_eval_per_class <- val_pred_overall %>%
-  nest(.by = Method) %>%
-  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction,
-                                        per_class_mset))) %>%
-  unnest(data) %>%
-  mutate(Metric = fct_recode(.metric, f1 = "f_meas", kappa = "kap"),
-         .keep = "unused") %>%
-  pivot_wider(
-    id_cols = c(Method, Metric),
-    names_from = class_group,
-    values_from = .estimate
-  )
-
-kable(val_eval_per_class,
-      caption = "Per-Class Eevaluation Metrics on Validation Set Model",
-      digits = 3) %>% 
-  kable_styling() %>% 
-  collapse_rows(columns = 1) %>% 
-  add_header_above(c(" " = 2, "Histotypes" = 5))
+```{r val-roc-curve-smote-rf-opt, fig.cap='ROC Curves for SMOTE-Random Forest, Optimal Set Model in Validation Set', fig.width=8, out.width='100%'}
+preds <- predict(mod_smote_rf_opt, val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+roc_df <- preds %>%
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+auc <- preds %>%
+  roc_auc(truth, matches(".pred")) %>% 
+  pull(.estimate) %>% 
+  number(accuracy = 0.001, prefix = "AUC = ")
+val_roc_curve_smote_rf_opt <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for SMOTE-Random Forest, Optimal Set Model in Validation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(panel.grid = element_blank(),
+        strip.text = element_text(face = "bold"))
+print(val_roc_curve_smote_rf_opt)
 ```

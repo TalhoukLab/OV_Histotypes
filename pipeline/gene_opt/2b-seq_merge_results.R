@@ -13,7 +13,7 @@ source(here("src/funs.R"))
 source(here("pipeline/gene_opt/0b-setup_seq_data.R"))
 
 # Combined tuned sequential workflows across folds
-seq_wflows <- readRDS(file.path(inputDir, paste0(dataset, "_wflows.rds")))
+seq_wflows <- readRDS(file.path(inputDir, paste0(seq_data, "_wflows.rds")))
 seq_wflow <- paste0(seq_wflows[nseq], "_s", nseq)
 
 tune_wflows_files <- list.files(

@@ -9,7 +9,7 @@ subDir=gene_opt/sequential/summarize_results
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 
-for dataset in "${seqData[@]}"; do
+for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
     mkdir -p $RSubDir/$dataset
     mkdir -p $shSubDir/$dataset
@@ -20,6 +20,7 @@ for dataset in "${seqData[@]}"; do
     echo 'inputDir <- "'$inputDir'"' > $R_file
     echo 'outputDir <- "'$outputDir'"' >> $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
+    echo 'seq_data <- "'$seqData'"' >> $R_file
     echo "n_folds <- $n_folds" >> $R_file
     echo 'source("pipeline/gene_opt/3b-seq_summarize_results.R")' >> $R_file
 
