@@ -519,6 +519,7 @@ per_class_metrics_comp <- per_class_metrics %>%
 
 ```{r}
 #| label: tbl-rank-agg-f1
+#| tbl-cap: 'F1-Score Rank Aggregation Summary'
 
 # Select ranking metric
 per_class_f1 <- filter(per_class_metrics_comp, .metric == "f_meas")
@@ -571,7 +572,6 @@ datatable(
     pageLength = 50
   ), 
   rownames = FALSE,
-  caption = "F1-Score Rank Aggregation Summary",
   filter = "top",
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
@@ -580,6 +580,7 @@ datatable(
 
 ```{r}
 #| label: tbl-rank-agg-bal-acc
+#| tbl-cap: 'Balanced Accuracy Rank Aggregation Summary'
 
 # Select ranking metric
 per_class_bal_acc <- filter(per_class_metrics_comp, .metric == "bal_accuracy")
@@ -632,7 +633,6 @@ datatable(
     pageLength = 50
   ), 
   rownames = FALSE,
-  caption = "Balanced Accuracy Rank Aggregation Summary",
   filter = "top",
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
@@ -641,6 +641,7 @@ datatable(
 
 ```{r}
 #| label: tbl-rank-agg-kap
+#| tbl-cap: 'Kappa Rank Aggregation Summary'
 
 # Select ranking metric
 per_class_kap <- filter(per_class_metrics_comp, .metric == "kap")
@@ -693,7 +694,6 @@ datatable(
     pageLength = 50
   ), 
   rownames = FALSE,
-  caption = "Kappa Rank Aggregation Summary",
   filter = "top",
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
