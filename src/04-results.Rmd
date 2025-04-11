@@ -1203,7 +1203,7 @@ kable(conf_eval,
   add_header_above(c(" " = 3, "Histotypes" = 5))
 ```
 
-```{r conf-conf-mat, fig.width=8, fig.cap='Confusion Matrices for Confirmation Set Models'}
+```{r conf-conf-mat, fig.width=8, fig.cap='Confusion Matrices for Confirmation Set Models', out.width='100%'}
 conf_conf_mat <- conf_pred_overall %>%
   nest(.by = Method) %>%
   deframe() %>%
@@ -1249,7 +1249,7 @@ class_groups <-
   str_replace_all(string = map_chr(map(conf_class_seq, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
 ```
 
-```{r roc-curve-seq-full, fig.cap='ROC Curves for Sequential Full Model in Confirmation Set', fig.width=10, out.width='100%'}
+```{r roc-curve-seq-full, fig.cap='ROC Curves for Sequential Full Model in Confirmation Set', fig.height=7, fig.width=7, out.width='100%'}
 roc_curve_seq_full <- mod_seq_full %>% 
   set_names(class_groups) |> 
   list(conf_data_seq, conf_class_seq) %>% 
@@ -1284,7 +1284,7 @@ roc_curve_seq_full <- mod_seq_full %>%
 print(roc_curve_seq_full)
 ```
 
-```{r roc-curve-seq-opt, fig.cap='ROC Curves for Sequential Optimal Model in Confirmation Set', fig.width=10, out.width='100%'}
+```{r roc-curve-seq-opt, fig.cap='ROC Curves for Sequential Optimal Model in Confirmation Set', fig.height=7, fig.width=7, out.width='100%'}
 roc_curve_seq_opt <- mod_seq_opt %>% 
   set_names(class_groups) |> 
   list(conf_data_seq, conf_class_seq) %>% 
@@ -1319,7 +1319,7 @@ roc_curve_seq_opt <- mod_seq_opt %>%
 print(roc_curve_seq_opt)
 ```
 
-```{r roc-curve-smote-rf-full, fig.cap='ROC Curves for SMOTE-Random Forest, Full Set Model in Confirmation Set', fig.width=8, out.width='100%'}
+```{r roc-curve-smote-rf-full, fig.cap='ROC Curves for SMOTE-Random Forest, Full Set Model in Confirmation Set', fig.width=9, out.width='100%'}
 preds <- predict(mod_smote_rf_full, conf_data, type = "prob") %>%
   add_column(truth = factor(conf_class))
 roc_df <- preds %>%
@@ -1339,7 +1339,7 @@ roc_curve_smote_rf_full <-
 print(roc_curve_smote_rf_full)
 ```
 
-```{r roc-curve-smote-rf-opt, fig.cap='ROC Curves for SMOTE-Random Forest, Optimal Set Model in Confirmation Set', fig.width=8, out.width='100%'}
+```{r roc-curve-smote-rf-opt, fig.cap='ROC Curves for SMOTE-Random Forest, Optimal Set Model in Confirmation Set', fig.width=9, out.width='100%'}
 preds <- predict(mod_smote_rf_opt, conf_data, type = "prob") %>% 
   add_column(truth = factor(conf_class))
 roc_df <- preds %>%
