@@ -53,7 +53,8 @@ fig:train-gmean
 tab:train-gmean-table
 fig:train-gmean-class
 tab:train-gmean-class-table
-tab:rank-agg-comp
+tab:rank-agg-comp-metrics
+tab:rank-agg-final
 fig:metrics-top-by-metric
 fig:gene-seq
 fig:gene-smote-rf

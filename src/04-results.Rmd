@@ -844,20 +844,20 @@ datatable(
 
 ### Across Metrics
 
-```{r rank-agg-comp}
-rank_agg_comp <- list(F1 = wflow_rank_agg_f1,
+```{r rank-agg-comp-metrics}
+rank_agg_metrics <- list(F1 = wflow_rank_agg_f1,
                       `Balanced Accuracy` = wflow_rank_agg_bal_acc,
                       Kappa = wflow_rank_agg_kap) |>
   bind_rows(.id = "Metric") |>
   pivot_wider(names_from = "Metric", values_from = "Workflow")
 
-rank_agg_comp |> 
+rank_agg_metrics |> 
   kbl(caption = "Rank Aggregation Comparison of Metrics Used")
 ```
 
-```{r rank-agg-metrics}
+```{r rank-agg-final}
 # Rank aggregation of aggregated metrics using GA
-wflow_ranks_comp <- rank_agg_comp |> 
+wflow_ranks_metrics <- rank_agg_metrics |> 
   drop_na() |> 
   pivot_longer(cols = where(is.character), names_to = "Metric", values_to = "Workflow") |> 
   pivot_wider(names_from = Rank, values_from = Workflow) |> 
@@ -865,8 +865,8 @@ wflow_ranks_comp <- rank_agg_comp |>
   as.matrix()
 
 # Take top 5 workflows
-wflow_rank_agg_comp <- splendid:::sink_output(RankAggreg(
-  x = wflow_ranks_comp,
+wflow_rank_agg_metrics <- splendid:::sink_output(RankAggreg(
+  x = wflow_ranks_metrics,
   k = 5,
   method = "GA",
   seed = 2025,
@@ -874,17 +874,20 @@ wflow_rank_agg_comp <- splendid:::sink_output(RankAggreg(
 )) |>
   pluck("top.list") %>%
   enframe(name = "Rank", value = "Workflow")
+
+wflow_rank_agg_metrics |> 
+  kbl(caption = "Top 5 Workflows from Final Rank Aggregation")
 ```
 
 ### Top Workflows
 
-We look at the per-class evaluation metrics of the top `r nrow(wflow_rank_agg_comp)` workflows.
+We look at the per-class evaluation metrics of the top `r nrow(wflow_rank_agg_metrics)` workflows.
 
-```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_rank_agg_comp), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
+```{r metrics-top-by-metric, fig.cap=paste('Top', nrow(wflow_rank_agg_metrics), 'Workflow Per-Class Evaluation Metrics by Metric'), fig.height=7, out.width='100%'}
 metrics_top <- per_class_metrics %>%
   distinct(pick(-fold_id, -.estimate)) %>%
   rename(Workflow = wflow) |> 
-  inner_join(wflow_rank_agg_comp, by = "Workflow") %>%
+  inner_join(wflow_rank_agg_metrics, by = "Workflow") %>%
   mutate(
     Workflow = fct_reorder(Workflow, Rank),
     .metric = case_match(
@@ -935,7 +938,7 @@ p <-
     x = "Workflow",
     y = "Metric Value",
     color = "Class",
-    title = paste("Top", nrow(wflow_rank_agg_comp), "Workflow Per-Class Evaluation Metrics by Metric")
+    title = paste("Top", nrow(wflow_rank_agg_metrics), "Workflow Per-Class Evaluation Metrics by Metric")
   )
 print(p)
 ```
