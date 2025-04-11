@@ -100,6 +100,19 @@ all_metrics_train <- all_metrics_train %>%
 ### Accuracy
 
 ```{r}
+#| label: tbl-train-accuracy
+#| tbl-cap: 'Training Set Mean Accuracy'
+
+all_metrics_train |>
+  summarize_metrics(metric = "accuracy") |>
+  kbl(escape = FALSE) |>
+  kable_styling() |>
+  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
+  column_spec(column = 3, border_right = TRUE) |>
+  collapse_rows(columns = 1)
+```
+
+```{r}
 #| label: fig-train-accuracy
 #| fig-cap: 'Training Set Mean Accuracy'
 
@@ -123,17 +136,6 @@ p <- ggplot(
        y = "Accuracy",
        title = "Training Set Mean Accuracy")
 print(p)
-```
-
-```{r}
-#| label: tbl-train-accuracy
-#| tbl-cap: 'Training Set Mean Accuracy'
-
-all_metrics_train |> 
-  summarize_metrics(metric = "accuracy", per_class = FALSE) |> 
-  kbl(escape = FALSE) |> 
-  kable_styling() |> 
-  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r}
@@ -164,19 +166,19 @@ p <- ggplot(
 print(p)
 ```
 
-```{r}
-#| label: tbl-train-accuracy-class
-#| tbl-cap: 'Training Set Class-Specific Mean Accuracy'
-
-all_metrics_train |> 
-  summarize_metrics(metric = "accuracy", per_class = TRUE) |> 
-  kbl(escape = FALSE) |> 
-  kable_styling() |> 
-  collapse_rows(columns = 1) |> 
-  add_header_above(c(" " = 2, "Algorithms" = 4))
-```
-
 ### Sensitivity
+
+```{r}
+#| label: tbl-train-sens
+#| tbl-cap: 'Training Set Mean Sensitivity'
+all_metrics_train |>
+  summarize_metrics(metric = "sensitivity") |>
+  kbl(escape = FALSE) |>
+  kable_styling() |>
+  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
+  column_spec(column = 3, border_right = TRUE) |>
+  collapse_rows(columns = 1)
+```
 
 ```{r}
 #| label: fig-train-sens
@@ -202,17 +204,6 @@ p <- ggplot(
        y = "Sensitivity",
        title = "Training Set Mean Sensitivity")
 print(p)
-```
-
-```{r}
-#| label: tbl-train-sens
-#| tbl-cap: 'Training Set Mean Sensitivity'
-
-all_metrics_train |>
-  summarize_metrics(metric = "sensitivity", per_class = FALSE) |>
-  kbl(escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r}
@@ -243,18 +234,19 @@ p <- ggplot(
 print(p)
 ```
 
-```{r}
-#| label: tbl-train-sens-class
-#| tbl-cap: 'Cross-Validated Training Set Class-Specific Mean Sensitivity'
+### Specificity
 
+```{r}
+#| label: tbl-train-spec
+#| tbl-cap: 'Training Set Mean Specificity'
 all_metrics_train |>
-  summarize_metrics(metric = "sensitivity", per_class = TRUE) |>
+  summarize_metrics(metric = "specificity") |>
   kbl(escape = FALSE) |>
   kable_styling() |>
-  add_header_above(c(" " = 2, "Algorithms" = 4))
+  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
+  column_spec(column = 3, border_right = TRUE) |>
+  collapse_rows(columns = 1)
 ```
-
-### Specificity
 
 ```{r}
 #| label: fig-train-spec
@@ -280,17 +272,6 @@ p <- ggplot(
        y = "Specificity",
        title = "Training Set Mean Specificity")
 print(p)
-```
-
-```{r}
-#| label: tbl-train-spec
-#| tbl-cap: 'Training Set Mean Specificity'
-
-all_metrics_train |>
-  summarize_metrics(metric = "specificity", per_class = FALSE) |>
-  kbl(escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r}
@@ -321,18 +302,19 @@ p <- ggplot(
 print(p)
 ```
 
-```{r}
-#| label: tbl-train-spec-class
-#| tbl-cap: 'Training Set Class-Specific Mean Specificity'
+### F1-Score
 
+```{r}
+#| label: tbl-train-f1
+#| tbl-cap: 'Training Set Mean F1-Score'
 all_metrics_train |>
-  summarize_metrics(metric = "specificity", per_class = TRUE) |>
+  summarize_metrics(metric = "f_meas") |>
   kbl(escape = FALSE) |>
   kable_styling() |>
-  add_header_above(c(" " = 2, "Algorithms" = 4))
+  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
+  column_spec(column = 3, border_right = TRUE) |>
+  collapse_rows(columns = 1)
 ```
-
-### F1-Score
 
 ```{r}
 #| label: fig-train-f1
@@ -358,17 +340,6 @@ p <- ggplot(
        y = "F1-Score",
        title = "Training Set Mean F1-Score")
 print(p)
-```
-
-```{r}
-#| label: tbl-train-f1
-#| tbl-cap: 'Training Set Mean F1-Score'
-
-all_metrics_train |>
-  summarize_metrics(metric = "f_meas", per_class = FALSE) |>
-  kbl(escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r}
@@ -399,18 +370,19 @@ p <- ggplot(
 print(p)
 ```
 
-```{r}
-#| label: tbl-train-f1-class
-#| tbl-cap: 'Training Set Class-Specific Mean F1-Score'
+### Balanced Accuracy
 
+```{r}
+#| label: tbl-train-bal-accuracy
+#| tbl-cap: 'Training Set Mean Balanced Accuracy'
 all_metrics_train |>
-  summarize_metrics(metric = "f_meas", per_class = TRUE) |>
+  summarize_metrics(metric = "bal_accuracy") |>
   kbl(escape = FALSE) |>
   kable_styling() |>
-  add_header_above(c(" " = 2, "Algorithms" = 4))
+  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
+  column_spec(column = 3, border_right = TRUE) |>
+  collapse_rows(columns = 1)
 ```
-
-### Balanced Accuracy
 
 ```{r}
 #| label: fig-train-bal-accuracy
@@ -436,17 +408,6 @@ p <- ggplot(
        y = "Balanced Accuracy",
        title = "Training Set Mean Balanced Accuracy")
 print(p)
-```
-
-```{r}
-#| label: tbl-train-bal-accuracy
-#| tbl-cap: 'Training Set Mean Balanced Accuracy'
-
-all_metrics_train |>
-  summarize_metrics(metric = "bal_accuracy", per_class = FALSE) |>
-  kbl(escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r}
@@ -477,18 +438,19 @@ p <- ggplot(
 print(p)
 ```
 
-```{r}
-#| label: tbl-train-bal-accuracy-class
-#| tbl-cap: 'Training Set Class-Specific Mean Balanced Accuracy'
+### Kappa
 
+```{r}
+#| label: tbl-train-kappa
+#| tbl-cap: 'Training Set Mean Kappa'
 all_metrics_train |>
-  summarize_metrics(metric = "bal_accuracy", per_class = TRUE) |>
+  summarize_metrics(metric = "kap") |>
   kbl(escape = FALSE) |>
   kable_styling() |>
-  add_header_above(c(" " = 2, "Algorithms" = 4))
+  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
+  column_spec(column = 3, border_right = TRUE) |>
+  collapse_rows(columns = 1)
 ```
-
-### Kappa
 
 ```{r}
 #| label: fig-train-kappa
@@ -514,17 +476,6 @@ p <- ggplot(
        y = "Kappa",
        title = "Training Set Mean Kappa")
 print(p)
-```
-
-```{r}
-#| label: tbl-train-kappa
-#| tbl-cap: 'Training Set Mean Kappa'
-
-all_metrics_train |>
-  summarize_metrics(metric = "kap", per_class = FALSE) |>
-  kbl(escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 1, "Algorithms" = 4))
 ```
 
 ```{r}
@@ -555,20 +506,21 @@ p <- ggplot(
 print(p)
 ```
 
-```{r}
-#| label: tbl-train-kappa-class
-#| tbl-cap: 'Training Set Class-Specific Mean Kappa'
-
-all_metrics_train |>
-  summarize_metrics(metric = "kap", per_class = TRUE) |>
-  kbl(escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 2, "Algorithms" = 4))
-```
-
 ### G-mean
 
 **DEPRECATED**
+
+```{r}
+#| label: tbl-train-gmean
+#| tbl-cap: 'Training Set Mean G-mean'
+all_metrics_train |>
+  summarize_metrics(metric = "gmean") |>
+  kbl(escape = FALSE) |>
+  kable_styling() |>
+  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
+  column_spec(column = 3, border_right = TRUE) |>
+  collapse_rows(columns = 1)
+```
 
 ```{r}
 #| label: fig-train-gmean
@@ -597,17 +549,6 @@ print(p)
 ```
 
 ```{r}
-#| label: tbl-train-gmean
-#| tbl-cap: 'Training Set Mean G-mean'
-
-all_metrics_train |>
-  summarize_metrics(metric = "gmean", per_class = FALSE) |>
-  kbl(escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 1, "Algorithms" = 4))
-```
-
-```{r}
 #| label: fig-train-gmean-class
 #| fig-cap: 'Training Set Class-Specific Mean G-mean'
 #| fig-height: 8
@@ -633,17 +574,6 @@ p <- ggplot(
        y = "Kappa",
        title = "Training Set Class-Specific Mean G-mean")
 print(p)
-```
-
-```{r}
-#| label: tbl-train-gmean-class
-#| tbl-cap: 'Training Set Class-Specific Mean G-mean'
-
-all_metrics_train |>
-  summarize_metrics(metric = "gmean", per_class = TRUE) |>
-  kbl(escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 2, "Algorithms" = 4))
 ```
 :::
 
