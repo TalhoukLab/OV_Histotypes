@@ -997,7 +997,7 @@ In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average 
 
 ### SMOTE-Random Forest
 
-```{r gene-smote-rf, fig.height=8, fig.cap='Gene Optimization for SMOTE-Random Forest Classifier'}
+```{r gene-smote-rf, fig.cap='Gene Optimization for SMOTE-Random Forest Classifier'}
 gene_smote_rf_names <- all_vi_train %>% 
   filter(wflow == "smote_rf") %>% 
   rowid_to_column("Genes") %>% 
