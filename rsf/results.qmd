@@ -115,37 +115,10 @@ all_metrics_train |>
 ```{r}
 #| label: fig-train-accuracy
 #| fig-cap: 'Training Set Mean Accuracy'
-
-p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group == "Overall", .metric == "accuracy"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Workflow",
-       y = "Accuracy",
-       title = "Training Set Mean Accuracy")
-print(p)
-```
-
-```{r}
-#| label: fig-train-accuracy-class
-#| fig-cap: 'Training Set Class-Specific Mean Accuracy'
 #| fig-height: 8
 
 p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group != "Overall", .metric == "accuracy"),
+  all_metrics_train %>% filter(.metric == "accuracy"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -156,13 +129,22 @@ p <- ggplot(
   )
 ) +
   geom_pointrange() +
-  facet_wrap(~ class_group, ncol = 1) +
+  scale_colour_viridis_d(begin = 0,
+                         end = 0.9,
+                         option = "plasma") +
+  facet_wrap2(~ class_group,
+              ncol = 1,
+              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
   labs(x = "Workflow",
        y = "Accuracy",
-       title = "Training Set Class-Specific Mean Accuracy")
+       title = "Training Set Mean Accuracy")
 print(p)
 ```
 
@@ -183,39 +165,12 @@ all_metrics_train |>
 ```{r}
 #| label: fig-train-sens
 #| fig-cap: 'Training Set Mean Sensitivity'
-
-p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group == "Overall", .metric == "sensitivity"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Workflow",
-       y = "Sensitivity",
-       title = "Training Set Mean Sensitivity")
-print(p)
-```
-
-```{r}
-#| label: fig-train-sens-class
-#| fig-cap: 'Training Set Class-Specific Mean Sensitivity'
 #| fig-height: 8
 
 p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group != "Overall", .metric == "sensitivity"),
+  all_metrics_train %>% filter(.metric == "sensitivity"),
   aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
     ymin = lower,
     ymax = upper,
@@ -224,13 +179,22 @@ p <- ggplot(
   )
 ) +
   geom_pointrange() +
-  facet_wrap(~ class_group, ncol = 1) +
+  scale_colour_viridis_d(begin = 0,
+                         end = 0.9,
+                         option = "plasma") +
+  facet_wrap2(~ class_group,
+              ncol = 1,
+              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
   labs(x = "Workflow",
        y = "Sensitivity",
-       title = "Training Set Class-Specific Mean Sensitivity")
+       title = "Training Set Mean Sensitivity")
 print(p)
 ```
 
@@ -251,39 +215,12 @@ all_metrics_train |>
 ```{r}
 #| label: fig-train-spec
 #| fig-cap: 'Training Set Mean Specificity'
-
-p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group == "Overall", .metric == "specificity"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Workflow",
-       y = "Specificity",
-       title = "Training Set Mean Specificity")
-print(p)
-```
-
-```{r}
-#| label: fig-train-spec-class
-#| fig-cap: 'Training Set Class-Specific Mean Specificity'
 #| fig-height: 8
 
 p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group != "Overall", .metric == "specificity"),
+  all_metrics_train %>% filter(.metric == "specificity"),
   aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
     ymin = lower,
     ymax = upper,
@@ -292,13 +229,22 @@ p <- ggplot(
   )
 ) +
   geom_pointrange() +
-  facet_wrap(~ class_group, ncol = 1) +
+  scale_colour_viridis_d(begin = 0,
+                         end = 0.9,
+                         option = "plasma") +
+  facet_wrap2(~ class_group,
+              ncol = 1,
+              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
   labs(x = "Workflow",
        y = "Specificity",
-       title = "Training Set Class-Specific Mean Specificity")
+       title = "Training Set Mean Specificity")
 print(p)
 ```
 
@@ -319,39 +265,12 @@ all_metrics_train |>
 ```{r}
 #| label: fig-train-f1
 #| fig-cap: 'Training Set Mean F1-Score'
-
-p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group == "Overall", .metric == "f_meas"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Workflow",
-       y = "F1-Score",
-       title = "Training Set Mean F1-Score")
-print(p)
-```
-
-```{r}
-#| label: fig-train-f1-class
-#| fig-cap: 'Training Set Class-Specific Mean F1-Score'
 #| fig-height: 8
 
 p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group != "Overall", .metric == "f_meas"),
+  all_metrics_train %>% filter(.metric == "f_meas"),
   aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
+    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
     ymin = lower,
     ymax = upper,
@@ -360,13 +279,22 @@ p <- ggplot(
   )
 ) +
   geom_pointrange() +
-  facet_wrap(~ class_group, ncol = 1) +
+  scale_colour_viridis_d(begin = 0,
+                         end = 0.9,
+                         option = "plasma") +
+  facet_wrap2(~ class_group,
+              ncol = 1,
+              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
   labs(x = "Workflow",
        y = "F1-Score",
-       title = "Training Set Class-Specific Mean F1-Score")
+       title = "Training Set Mean F1-Score")
 print(p)
 ```
 
@@ -387,37 +315,10 @@ all_metrics_train |>
 ```{r}
 #| label: fig-train-bal-accuracy
 #| fig-cap: 'Training Set Mean Balanced Accuracy'
-
-p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group == "Overall", .metric == "bal_accuracy"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Workflow",
-       y = "Balanced Accuracy",
-       title = "Training Set Mean Balanced Accuracy")
-print(p)
-```
-
-```{r}
-#| label: fig-train-bal-accuracy-class
-#| fig-cap: 'Training Set Class-Specific Mean Balanced Accuracy'
 #| fig-height: 8
 
 p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group != "Overall", .metric == "bal_accuracy"),
+  all_metrics_train %>% filter(.metric == "bal_accuracy"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -428,13 +329,22 @@ p <- ggplot(
   )
 ) +
   geom_pointrange() +
-  facet_wrap(~ class_group, ncol = 1) +
+  scale_colour_viridis_d(begin = 0,
+                         end = 0.9,
+                         option = "plasma") +
+  facet_wrap2(~ class_group,
+              ncol = 1,
+              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
   labs(x = "Workflow",
        y = "Balanced Accuracy",
-       title = "Training Set Class-Specific Mean Balanced Accuracy")
+       title = "Training Set Mean Balanced Accuracy")
 print(p)
 ```
 
@@ -455,10 +365,10 @@ all_metrics_train |>
 ```{r}
 #| label: fig-train-kappa
 #| fig-cap: 'Training Set Mean Kappa'
+#| fig-height: 8
 
 p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group == "Overall", .metric == "kap"),
+  all_metrics_train %>% filter(.metric == "kap"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -469,40 +379,22 @@ p <- ggplot(
   )
 ) +
   geom_pointrange() +
+  scale_colour_viridis_d(begin = 0,
+                         end = 0.9,
+                         option = "plasma") +
+  facet_wrap2(~ class_group,
+              ncol = 1,
+              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
   labs(x = "Workflow",
        y = "Kappa",
        title = "Training Set Mean Kappa")
-print(p)
-```
-
-```{r}
-#| label: fig-train-kappa-class
-#| fig-cap: 'Training Set Class-Specific Mean Kappa'
-#| fig-height: 8
-
-p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group != "Overall", .metric == "kap"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  facet_wrap(~ class_group, ncol = 1) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Workflow",
-       y = "Kappa",
-       title = "Training Set Class-Specific Mean Kappa")
 print(p)
 ```
 
@@ -525,10 +417,10 @@ all_metrics_train |>
 ```{r}
 #| label: fig-train-gmean
 #| fig-cap: 'Training Set Mean G-mean'
+#| fig-height: 8
 
 p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group == "Overall", .metric == "gmean"),
+  all_metrics_train %>% filter(.metric == "gmean"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -539,40 +431,22 @@ p <- ggplot(
   )
 ) +
   geom_pointrange() +
+  scale_colour_viridis_d(begin = 0,
+                         end = 0.9,
+                         option = "plasma") +
+  facet_wrap2(~ class_group,
+              ncol = 1,
+              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
   theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
   labs(x = "Workflow",
        y = "G-mean",
        title = "Training Set Mean G-mean")
-print(p)
-```
-
-```{r}
-#| label: fig-train-gmean-class
-#| fig-cap: 'Training Set Class-Specific Mean G-mean'
-#| fig-height: 8
-
-p <- ggplot(
-  all_metrics_train %>%
-    filter(class_group != "Overall", .metric == "gmean"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE, .na_rm = FALSE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  facet_wrap(~ class_group, ncol = 1) +
-  theme_bw() +
-  theme(plot.title = element_text(face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Workflow",
-       y = "Kappa",
-       title = "Training Set Class-Specific Mean G-mean")
 print(p)
 ```
 :::
