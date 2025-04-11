@@ -1,0 +1,638 @@
+# Methods
+
+```{r}
+#| label: setup-methods
+
+library(recipes)
+library(themis)
+library(ggplot2)
+library(dplyr)
+library(rlang)
+library(purrr)
+library(forcats)
+library(DiagrammeR)
+library(VennDiagram)
+library(futile.logger)
+library(kableExtra)
+library(here)
+source(here("validation/cs_classifier.R"))
+data("rawOTTA3", package = "otta")
+cs5 <- rawOTTA3
+train_data <- readRDS(here("data/train_data.rds"))
+train_class <- readRDS(here("data/train_class.rds"))
+coefmat <- readRDS(here("data/coefmat.rds"))
+```
+
+## Pre-Processing
+
+### Case Selection
+
+Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples from these sets of cohorts:
+
+-   Training
+    -   CS1: MAYO, OOU, OOUE, VOA, MTL
+    -   CS2: MAYO, OOU, OOUE, OVAR3, VOA, ICON7, JAPAN, MTL, POOL-CTRL
+    -   CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
+-   Confirmation:
+    -   CS3: TNCO
+-   Validation:
+    -   CS3: DOVE4
+
+### Quality Control
+
+Samples that failed any of the following NanoString quality control conditions were removed:
+
+-   `linFlag`: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown
+-   `imagingFlag`: percent of field of view is less than 75%
+-   `spcFlag`: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero
+-   `normFlag`: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the \[%GD vs. SNR\] relationship below.
+
+### Normalization
+
+The full training set (n=`r nrow(train_data)`) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.
+
+CS1 was normalized to CS3 using five "Random1" reference samples. These reference samples are randomly selected from CS1 among all samples in the three CodeSets that share common otta IDs, such that we obtain one sample from each of the five histotypes. Then, we use the reference-based method to normalize CS1 to CS3 across their common genes, for the remaining expression samples @talhouk2016.
+
+Similarly, CS2 was normalized to CS3 using the same "Random1" reference samples, now taken from CS2. Normalization was performed across common genes between CS2 and CS3.
+
+For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a "reference standard", and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a "Random1" reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.
+
+```{r}
+#| label: fig-venn-genes
+#| fig-cap: 'Venn diagram of common and unique gene targets covered by each CodeSet'
+#| fig-width: 6
+#| fig-height: 6
+#| out-width: '100%'
+
+invisible(flog.threshold(ERROR, name = "VennDiagramLogger"))
+venn_genes <- venn.diagram(
+  x = list(cs1_norm$Name, cs2_norm$Name, cs3_norm$Name),
+  category.names = c("CodeSet1", "CodeSet2", "CodeSet3"),
+  filename = NULL,
+  output = TRUE,
+  imagetype = "png",
+  height = 400, 
+  width = 400, 
+  resolution = 300,
+  compression = "lzw",
+  lwd = 1,
+  col = c("#440154ff", "#21908dff", "#fde725ff"), 
+  fill = c(alpha("#440154ff", 0.3),
+           alpha("#21908dff", 0.3),
+           alpha("#fde725ff", 0.3)), 
+  cex = 2,
+  fontfamily = "sans",
+  cat.cex = 1.5,
+  cat.default.pos = "outer",
+  cat.pos = c(-27, 27, 135),
+  cat.dist = c(0.055, 0.055, 0.085),
+  cat.fontfamily = "sans",
+  rotation = 1
+) 
+grid.draw(venn_genes)
+```
+
+### Final Processing
+
+We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian carcinoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).
+
+Duplicate cases (two samples with the same ottaID) were removed before generating the final training set to use for fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC when selecting duplicates.
+
+The final training set used only genes that were common across all three CodeSets.
+
+```{r}
+#| label: fig-processing
+#| fig-cap: 'Cohorts Selection'
+#| fig-height: 10
+#| out-width: '100%'
+
+# Training Cohort
+train_coh <- cohorts |>
+  filter(cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL", "OVAR3", "ICON7", "JAPAN"))
+
+train1 <- train_coh |>
+  count(cohort) |>
+  deframe() |>
+  imap_chr(~ paste0(.y, "\nn = ", .x))
+
+train2 <- train_coh |>
+  filter(col_name %in% c(cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc))
+
+train3 <- train_coh |>
+  filter(col_name %in% c(cs1_samples, cs2_samples, cs3_samples))
+
+train4 <- train_coh |>
+  filter(col_name %in% c(cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name))
+
+train4_cs <- train4 |>
+  mutate(CodeSet = toupper(file_source)) |>
+  count(CodeSet) |>
+  mutate(Nx = n - 5, Nr = 5, .keep = "unused") |>
+  pmap_chr(~ paste0(..1, "\nNx = ", ..2, "\nNr = ", ..3))
+
+train5 <- train_ref
+
+# Confirmation Cohort
+tnco <- cohorts |> filter(cohort == "TNCO")
+conf1 <- paste0(unique(tnco$cohort), "\nn = ", nrow(tnco))
+conf2 <- tnco |> filter(col_name %in% cs3_samples_coh_qc)
+conf3 <- tnco |> filter(col_name %in% cs3_samples)
+conf4 <- tnco |> filter(col_name %in% cs3_dedup$col_name)
+
+# Validation Cohort
+dove4 <- cohorts |> filter(cohort == "DOVE4")
+val1 <- paste0(unique(dove4$cohort), "\nn = ", nrow(dove4))
+val2 <- dove4 |> filter(col_name %in% cs3_samples_coh_qc)
+val3 <- dove4 |> filter(col_name %in% cs3_samples)
+val4 <- dove4 |> filter(col_name %in% cs3_dedup$col_name)
+
+grViz(
+  paste0(
+    "digraph processing {
+
+    # layout
+    # fontname = 'times-italic'
+    graph [layout = dot, overlap = FALSE, ranksep = '0.1']
+
+    # node definitions
+    node [shape = box, style = 'filled, rounded', color = 'white', fillcolor = 'white']
+
+    MAYO [label = '", train1[["MAYO"]], "', color = 'black']
+    OOU [label = '", train1[["OOU"]], "', color = 'black']
+    OOUE [label = '", train1[["OOUE"]], "', color = 'black']
+    VOA [label = '", train1[["VOA"]], "', color = 'black']
+    MTL [label = '", train1[["MTL"]], "', color = 'black']
+    OVAR3 [label = '", train1[["OVAR3"]], "', color = 'black']
+    ICON7 [label = '", train1[["ICON7"]], "', color = 'black']
+    JAPAN [label = '", train1[["JAPAN"]], "', color = 'black']
+    intermediate_1 [shape = point, width = 0.01, height = 0.01]
+    train_1 [label = 'n = ", nrow(train_coh), "', style = 'filled', fillcolor = 'grey90']
+    train_2 [label = 'Training Cohort\nn = ", nrow(train2),"', style = 'filled', fillcolor = '#7BB369']
+    train_3 [label = 'n = ", nrow(train3), "', style = 'filled', fillcolor = 'grey90']
+    train_cs1 [label = '", train4_cs[1], "', fillcolor = '#607C8E']
+    train_cs2 [label = '", train4_cs[2], "', fillcolor = '#FFA756']
+    train_cs3 [label = '", train4_cs[3], "', fillcolor = '#259FED']
+    train_5 [label = 'Training Cohort\nn = ", nrow(train_ref), "', style = 'filled', fillcolor = '#7BB369']
+
+    conf1 [label = '", conf1, "', color = 'black']
+    conf2 [label = 'Confirmation\nCohort\nn = ", nrow(conf2), "', style = 'filled', fillcolor = '#B19CD7']
+    conf3 [label = 'Confirmation\nCohort\nn = ", nrow(conf3), "', style = 'filled', fillcolor = '#B19CD7']
+    conf4 [label = 'Confirmation\nCohort\nn = ", nrow(conf4), "', style = 'filled', fillcolor = '#B19CD7']
+
+    val1 [label = '", val1, "', color = 'black']
+    val2 [label = 'Validation\nCohort\nn = ", nrow(val2), "', style = 'filled', fillcolor = '#04D9FF']
+    val3 [label = 'Validation\nCohort\nn = ", nrow(val3), "', style = 'filled', fillcolor = '#04D9FF']
+    val4 [label = 'Validation\nCohort\nn = ", nrow(val4), "', style = 'filled', fillcolor = '#04D9FF']
+
+    # edge definitions
+    edge [minlen = 4, arrowsize = 0.75]
+    {MAYO OOU OOUE VOA MTL OVAR3 ICON7 JAPAN} -> intermediate_1 [dir = none]
+    intermediate_1 -> train_1
+    train_1 -> train_2 [xlabel = 'Exclude QC Fails: ", nrow(train_coh) - nrow(train2), "']
+    train_2 -> train_3 [xlabel = 'Exclude Other Histotypes: ", nrow(train2) - nrow(train3), "']
+    train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]
+    train_cs1 -> train_5 [xlabel = 'Exclude Duplicates: ", nrow(train4) - 15 - nrow(train5), "']
+    {train_cs2 train_cs3} -> train_5
+
+    conf1 -> conf2 [xlabel = 'Exclude QC\nFails: ", nrow(tnco) - nrow(conf2), "']
+    conf2 -> conf3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(conf2) - nrow(conf3), "']
+    conf3 -> conf4 [xlabel = 'Exclude\nDuplicates: ", nrow(conf3) - nrow(conf4), "', minlen = 7]
+
+    val1 -> val2 [xlabel = 'Exclude QC\nFails: ", nrow(dove4) - nrow(val2), "']
+    val2 -> val3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(val2) - nrow(val3), "']
+    val3 -> val4 [xlabel = 'Exclude\nDuplicates: ", nrow(val3) - nrow(val4), "', minlen = 7]
+
+    # subgraph definitions
+    subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; ICON7; JAPAN; conf1; val1}
+    subgraph {rank = same; train_2; conf2; val2}
+    subgraph {rank = same; train_cs1; train_cs2; train_cs3; conf3; val3}
+    subgraph {rank = same; train_5; conf4; val4}
+    }
+    "
+  )
+)
+```
+
+## Classifiers
+
+We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the `tidymodels` suite of packages. The classifiers we used are:
+
+-   Random Forest (`rf`)
+-   Support Vector Machine (`svm`)
+-   XGBoost (`xgb`)
+-   Regularized Multinomial Regression (`mr`)
+
+### Resampling of Training Set
+
+We used a nested cross-validation design to assess each classifier while also performing hyperparameter tuning. An outer 5-fold CV stratified by histotype was used together with an inner 5-fold CV with 2 repeats stratified by histotype. This design was chosen such that the test sets of the inner resamples would still have a reasonable number of samples belonging to the smallest minority class.
+
+The outer resampling method cannot be the bootstrap, because the inner training and inner test sets will likely contain the same samples as a result of sampling with replacement in the outer training set. This phenomenon might result in inflated performance as some observations are used both to train and evaluate the hyperparameter tuning in the inner loop.
+
+### Hyperparameter Tuning
+
+The following specifications for each classifier were used for tuning hyperparameters:
+
+-   `rf` and `xgb`: The number of trees were fixed at 500. Other hyperparameters were tuned across 10 randomly selected points in a latin hypercube design.
+-   `svm`: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design. We tuned the cost parameter in the range \[1, 8\]. The range for tuning the sigma parameter was obtained from the 10% and 90% quantiles of the estimation using the `kernlab::sigest()` function.
+-   `mr`: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in \[0, 1\] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.
+
+The hyperparameter combination that resulted in the highest average F1-score across the inner training sets was selected for each classifier to use as the model for assessing prediction performance in the outer training loop.
+
+### Subsampling
+
+Here are the specifications of the subsampling methods used to handle class imbalance:
+
+-   None: No subsampling is performed
+-   Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class
+-   Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class
+-   SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class
+-   Hybrid: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.
+
+The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
+
+```{r}
+#| label: fig-sampling
+#| fig-cap: 'Visualization of Subsampling Techniques'
+
+train_ref <- cbind(train_data, class = train_class)
+rec <- recipe(class ~ ., train_ref)
+
+preproc_none <- rec
+preproc_down <- step_downsample(rec, class, seed = 2024)
+preproc_up <- step_upsample(rec, class, seed = 2024)
+preproc_smote <- step_smote(rec, class, seed = 2024)
+preproc_hybrid <- rec %>%
+  step_smote(class, over_ratio = 0.5, seed = 2024) %>%
+  step_downsample(class, under_ratio = 1, seed = 2024)
+preproc <- list(
+  none = preproc_none,
+  down = preproc_down,
+  up = preproc_up,
+  smote = preproc_smote,
+  hybrid = preproc_hybrid
+)
+
+sampling_df <- map(preproc, ~ {
+  exec(prep, .x) %>%
+    pluck("template") %>%
+    count(class)
+}) %>%
+  list_rbind(names_to = "Sampling") %>%
+  mutate(Sampling = factor(Sampling, levels = c("none", "down", "up", "smote", "hybrid")),
+         class = fct_reorder(class, n, .desc = TRUE))
+
+p_sampling <-
+  ggplot(sampling_df, aes(x = Sampling, y = n, fill = class)) +
+  geom_col(position = "dodge") +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(y = "Count", title = "Visualization of Subsampling Techniques") +
+  theme_bw()
+
+print(p_sampling)
+```
+
+### Workflows
+
+The 4 **algorithms** and 5 **subsampling** methods are crossed to create 20 different classification **workflows**. For example, the `hybrid_xgb` workflow is a classifier that first pre-processes a training set by applying a hybrid subsampling method, and then proceeds to use the XGBoost algorithm to classify ovarian histotypes.
+
+## Two-Step Algorithm
+
+The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. We can implement a two-step algorithm as such:
+
+-   Step 1: use binary classification for HGSC vs. non-HGSC
+-   Step 2: use multinomial classification for the remaining non-HGSC classes
+
+Let
+
+$$
+\begin{aligned}
+& X_k = \text{Training data with k classes}  \\
+& C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
+& W_k = \text{Workflow associated with}\;C_k
+\end{aligned}
+$$ {#eq-sequential}
+
+@fig-two-step-flowchart shows how the two-step algorithm works:
+
+```{r}
+#| label: fig-two-step-flowchart
+#| fig-cap: 'Two-Step Algorithm'
+grViz(
+  paste0(
+    "digraph sequential_algorithm {
+
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    a [label = 'X@_{5}']
+    b1 [label = 'Store HGSC predictions']
+    b2 [label = 'Select W@_{5} for HGSC']
+    c [label = 'X@_{4}']
+    d1 [label = 'Store remaining predictions']
+    d2 [label = 'Select best workflow with highest overall F1-score']
+
+    # edge definitions
+    a -> b1 [xlabel = '  Train HGSC vs. all using W@_{5}']
+    a -> b2 [label = 'Train multinomial classes']
+
+    b1 -> c [xlabel = '  Remove HGSC cases from X@_{5}']
+    c -> d1 [xlabel = 'Train multinomial classes with best workflow']
+    c -> d2 [label = 'Retrain multinomial classes']
+
+    j [label = 'Aggregate all predictions']
+
+    {b1 d1} -> j
+
+    # subgraph definitions
+    subgraph {rank = same; b1; b2}
+    subgraph {rank = same; d1; d2}
+    }"
+  )
+)
+```
+
+### Aggregating Predictions
+
+The aggregation for two-step predictions is quite straightforward:
+
+1.  Predict HGSC vs. non-HGSC
+2.  Among all non-HGSC cases, predict CCOC vs. LGSC vs. MUC vs. ENOC
+
+```{r}
+#| label: fig-two-step-predictions
+#| fig-cap: 'Aggregating Predictions for Two-Step Algorithm'
+
+grViz(
+  paste0(
+    "digraph two_step_predictions {
+    
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    
+    a [label = 'Predict HGSC vs. non-HGSC']
+    b1 [label = 'HGSC']
+    b2 [label = 'non-HGSC']
+    c [label = 'Predict CCOC vs. LGSC vs. MUC vs. ENOC']
+    d1 [label = 'CCOC']
+    f1 [label = 'LGSC']
+    h1 [label = 'MUC']
+    h2 [label = 'ENOC']
+    
+    # edge definitions
+    a -> {b1 b2}
+    b2 -> c
+    c -> {d1 f1 h1 h2}
+    
+     # subgraph definitions
+    subgraph {rank = same; b2; c}
+    }"
+  )
+)
+```
+
+## Sequential Algorithm
+
+Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the "other" class are those not equal to the current "one" class and excluding all "one" classes from previous steps. For example, if the "one" class in step 1 was HGSC, the "other" classes would include CCOC, ENOC, LGSC, and MUC. If the "one" class in step 2 was CCOC, the "other" classes include ENOC, LGSC, and MUC.
+
+The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).
+
+@fig-sequential-flowchart illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
+
+```{r}
+#| label: fig-sequential-flowchart
+#| fig-cap: 'Sequential Algorithm'
+
+grViz(
+  paste0(
+    "digraph sequential_algorithm {
+
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    a [label = 'X@_{5}']
+    b1 [label = 'Store X@_{5}  predictions']
+    b2 [label = 'Select W@_{5}  and C@_{5}']
+    c [label = 'X@_{4}']
+    d1 [label = 'Store X@_{4}  predictions']
+    d2 [label = 'Select W@_{4}  and C@_{4}']
+    f [label = 'X@_{3}']
+    g1 [label = 'Store X@_{3}  predictions']
+    g2 [label = 'Select W@_{3}  and C@_{3}']
+    h [label = 'X@_{2}']
+    i1 [label = 'Store X@_{2}  predictions']
+    i2 [label = 'Select W@_{2}  and C@_{2}']
+    j [label = 'Aggregate all predictions']
+
+    # edge definitions
+    a -> b1 [xlabel = '  Train C@_{5}  vs. all using W@_{5}']
+    a -> b2 [label = 'Train multinomial classes']
+    #b2 -> b1
+    b1 -> c [label = '  Remove C@_{5}  cases from X@_{5}']
+    c -> d1 [xlabel = '  Train C@_{4}  vs. all using W@_{4}']
+    c -> d2 [label = 'Retrain multinomial classes']
+    #d2 -> d1
+    d1 -> f [label = '  Remove C@_{4}  cases from X@_{4}']
+    f -> g1 [xlabel = '  Train C@_{3}  vs. all using W@_{3}']
+    f -> g2 [label = 'Retrain multinomial classes']
+    #g2 -> g1
+    g1 -> h [label = '  Remove C@_{3}  cases from X@_{3}']
+    h -> i1 [xlabel = '  Train C@_{2}  vs. all using W@_{2}']
+    h -> i2 [label = 'Retrain multinomial classes']
+
+    {b1 d1 g1 i1} -> j
+
+    # subgraph definitions
+    subgraph {rank = same; b1; b2}
+    subgraph {rank = same; d1; d2}
+    subgraph {rank = same; g1; g2}
+    subgraph {rank = same; i1; i2}
+    subgraph {rank = same; }
+    }"
+  )
+)
+```
+
+The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.
+
+### Aggregating Predictions
+
+We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the "all" class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSC vs. non-HGSC, CCOC vs. non-CCOC, LGSC vs. non-LGSC, and then MUC vs. ENOC. @fig-sequential-predictions illustrates how the final predictions are assigned:
+
+```{r}
+#| label: fig-sequential-predictions
+#| fig-cap: 'Aggregating Predictions for Sequential Algorithm'
+
+grViz(
+  paste0(
+    "digraph sequential_predictions {
+    
+    # layout
+    graph [layout = dot overlap = TRUE]
+
+    # node definitions
+    node [fontname = Helvetica, shape = box]
+    
+    a [label = 'Predicted HGSC vs. non-HGSC']
+    b1 [label = 'HGSC']
+    b2 [label = 'non-HGSC']
+    c [label = 'Predicted CCOC vs. non-CCOC']
+    d1 [label = 'CCOC']
+    d2 [label = 'non-CCOC']
+    e [label = 'Predicted LGSC vs. non-LGSC']
+    f1 [label = 'LGSC']
+    f2 [label = 'non-LGSC']
+    g [label = 'Predicted MUC vs. ENOC']
+    h1 [label = 'MUC']
+    h2 [label = 'ENOC']
+    
+    # edge definitions
+    a -> {b1 b2}
+    b2 -> c
+    c -> {d1 d2}
+    d2 -> e
+    e -> {f1 f2}
+    f2 -> g
+    g -> {h1 h2}
+    
+     # subgraph definitions
+    subgraph {rank = same; b2; c}
+    subgraph {rank = same; d2; e}
+    subgraph {rank = same; f2; g}
+    }"
+  )
+)
+```
+
+## Gene Optimization
+
+```{r}
+#| label: gene-opt
+genes_all <- names(train_data)
+overlap_PrOTYPE <- intersect(genes_all, cs5$Name)
+overlap_SPOT <- intersect(genes_all, coefmat[["Symbol"]])
+overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+candidates <- setdiff(genes_all, overlap_all)
+```
+
+We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of `r length(genes_all)` genes are used in the classifier training set.
+
+There are `r length(overlap_PrOTYPE)` genes in the classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`.
+
+There are also `r length(overlap_SPOT)` genes in the classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
+
+We obtain a total of `r length(overlap_all)` genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining `r length(candidates)` candidate genes based on an overall variable importance rank to the set of `r length(overlap_all)` base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
+
+Here is the breakdown of genes used and whether they belong to the PrOTYPE and/or SPOT sets:
+
+```{r}
+#| label: tbl-gene-dist
+
+gene_dist <-
+  data.frame(Genes = genes_all) |>
+  mutate(
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, "")
+  ) |>
+  arrange(desc(PrOTYPE), desc(SPOT))
+
+gene_dist |> 
+  kbl(caption = "Gene Distribution") |> 
+  kable_styling(full_width = FALSE)
+```
+
+### Variable Importance
+
+Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
+
+For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
+
+The variable importance measures are:
+
+-   Random Forest: impurity measure (Gini index)
+
+-   XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features's splits)
+
+-   SVM: permutation based p-values
+
+-   Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value
+
+## Performance Evaluation
+
+### Class Metrics
+
+We use the accuracy, sensitivity, specificity, F1-score, kappa, balanced accuracy, and geometric mean, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class.
+
+#### Accuracy
+
+The accuracy is defined as the proportion of correct predictions out of all cases:
+
+$$
+\text{accuracy} = \frac{TP}{TP + FP + FN + TN}
+$$ {#eq-accuracy}
+
+#### Sensitivity
+
+Sensitivity is the proportional of correctly predicted positive cases, out of all cases that were truly positive
+
+$$
+\text{sensitivity} = \frac{TP}{TP + FN}
+$$ {#eq-sens}
+
+#### Specificity
+
+Specificity is the proportional of correctly predicted negative cases, out of all cases that were truly negative.
+
+$$
+\text{specificity} = \frac{TN}{TN + FP}
+$$ {#eq-spec}
+
+#### F1-Score
+
+The F-measure can be thought of as a harmonic mean between precision and recall:
+
+$$
+F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times precision) + recall}
+$$ {#eq-f1}
+
+The $\beta$ value can be adjusted to place more weight upon precision or recall. The most common value is $\beta$ is 1, which is also commonly known as the F1-score. A multiclass extension doesn't exist for the F1-score, so we use macro-averaging to calculate this metric when there are more than two classes. For example, with $k$ classes, the macro-averaged F1-score is equal to:
+
+$$
+{F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}
+$$ {#eq-f1-macro}
+
+where each ${F_1}_{i}$ is the F1-score computed frrom recoding classes into $k=i$ vs. $k \neq i$.
+
+In situations where there is not at least one predicted case for each of the classes (e.g. for a poor classifier), ${F_1}_{i}$ is undefined because the per-class precision of class $i$ is undefined. Those ${F_1}_{i}$ terms are removed from the ${F_1}_{macro}$ equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.
+
+#### Balanced Accuracy
+
+Balanced accuracy is the arithmetic mean of sensitivity and specificity.
+
+$$
+\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2}
+$$ {#eq-bal-accuracy}
+
+#### Kappa
+
+Kappa is the defined as:
+
+$$
+\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
+$$ {#eq-kappa}
+
+where $p_0$ is the observed agreement among raters and $p_e$ is the hypothetical probability of agreement due to random chance.
+
+### AUC
+
+The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs. 1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.
+
+We did not use AUC to measure class-specific training set performance because combining predicted probabilities in a one-vs-all fashion might be potentially misleading. The sum of probabilities that add up to the "other" class is not equivalent to the predicted probability of the "other" class when using a multiclass classifier.
+
+Instead, we only reported ROC curves and their associated AUCs for the test set performance of the sequential and two-step algorithms.

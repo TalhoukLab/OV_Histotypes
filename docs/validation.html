@@ -1,0 +1,2498 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings</title>
+  <meta name="description" content="3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 Validation | Ovarian Cancer Histotypes: Report of Statistical Findings" />
+  
+  
+  
+
+<meta name="author" content="Derek Chiu" />
+
+
+<meta name="date" content="2021-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="methods.html"/>
+<link rel="next" href="results.html"/>
+<script src="assets/header-attrs-2.11/header-attrs.js"></script>
+<script src="assets/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="assets/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="assets/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="assets/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="assets/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="assets/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="assets/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="assets/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="assets/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="assets/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="assets/kePrint-0.0.1/kePrint.js"></script>
+<link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<script src="assets/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="assets/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="assets/datatables-binding-0.20/datatables.js"></script>
+<link href="assets/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="assets/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="assets/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
+<link href="assets/dt-ext-fixedcolumns-1.11.3/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
+<script src="assets/dt-ext-fixedcolumns-1.11.3/js/dataTables.fixedColumns.min.js"></script>
+<link href="assets/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="assets/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="assets/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="assets/selectize-0.12.0/selectize.min.js"></script>
+<script src="assets/dt-plugin-ellipsis-1.11.3/source.js"></script>
+<script src="assets/dt-plugin-natural-1.11.3/source.js"></script>
+<link href="assets/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="assets/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+
+
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>2</b> Methods</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="methods.html"><a href="methods.html#data-processing"><i class="fa fa-check"></i><b>2.1</b> Data Processing</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="methods.html"><a href="methods.html#raw-data"><i class="fa fa-check"></i><b>2.1.1</b> Raw Data</a></li>
+<li class="chapter" data-level="2.1.2" data-path="methods.html"><a href="methods.html#housekeeping-genes"><i class="fa fa-check"></i><b>2.1.2</b> Housekeeping Genes</a></li>
+<li class="chapter" data-level="2.1.3" data-path="methods.html"><a href="methods.html#common-samples-and-genes"><i class="fa fa-check"></i><b>2.1.3</b> Common Samples and Genes</a></li>
+<li class="chapter" data-level="2.1.4" data-path="methods.html"><a href="methods.html#cs1-training-set-generation"><i class="fa fa-check"></i><b>2.1.4</b> CS1 Training Set Generation</a></li>
+<li class="chapter" data-level="2.1.5" data-path="methods.html"><a href="methods.html#cs2-training-set-generation"><i class="fa fa-check"></i><b>2.1.5</b> CS2 Training Set Generation</a></li>
+<li class="chapter" data-level="2.1.6" data-path="methods.html"><a href="methods.html#cohort-distribution"><i class="fa fa-check"></i><b>2.1.6</b> Cohort Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="methods.html"><a href="methods.html#normalization-between-codesets"><i class="fa fa-check"></i><b>2.2</b> Normalization Between CodeSets</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="methods.html"><a href="methods.html#common-samples-method"><i class="fa fa-check"></i><b>2.2.1</b> Common Samples Method</a></li>
+<li class="chapter" data-level="2.2.2" data-path="methods.html"><a href="methods.html#pools-method"><i class="fa fa-check"></i><b>2.2.2</b> Pools Method</a></li>
+<li class="chapter" data-level="2.2.3" data-path="methods.html"><a href="methods.html#concordance-comparison"><i class="fa fa-check"></i><b>2.2.3</b> Concordance Comparison</a></li>
+<li class="chapter" data-level="2.2.4" data-path="methods.html"><a href="methods.html#overlap-of-common-samples-in-all-codesets"><i class="fa fa-check"></i><b>2.2.4</b> Overlap of Common Samples in All CodeSets</a></li>
+<li class="chapter" data-level="2.2.5" data-path="methods.html"><a href="methods.html#overlap-of-common-genes-in-all-codesets"><i class="fa fa-check"></i><b>2.2.5</b> Overlap of Common Genes in All CodeSets</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="methods.html"><a href="methods.html#histotype-classification"><i class="fa fa-check"></i><b>2.3</b> Histotype Classification</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="validation.html"><a href="validation.html"><i class="fa fa-check"></i><b>3</b> Validation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="validation.html"><a href="validation.html#full-data-distributions"><i class="fa fa-check"></i><b>3.1</b> Full Data Distributions</a></li>
+<li class="chapter" data-level="3.2" data-path="validation.html"><a href="validation.html#training-set-distributions"><i class="fa fa-check"></i><b>3.2</b> Training Set Distributions</a></li>
+<li class="chapter" data-level="3.3" data-path="validation.html"><a href="validation.html#normalization"><i class="fa fa-check"></i><b>3.3</b> Normalization</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="validation.html"><a href="validation.html#common-samples-method-1"><i class="fa fa-check"></i><b>3.3.1</b> Common Samples Method</a></li>
+<li class="chapter" data-level="3.3.2" data-path="validation.html"><a href="validation.html#pools-method-1"><i class="fa fa-check"></i><b>3.3.2</b> Pools Method</a></li>
+<li class="chapter" data-level="3.3.3" data-path="validation.html"><a href="validation.html#common-samples-vs.-pools-comparison"><i class="fa fa-check"></i><b>3.3.3</b> Common Samples vs. Pools Comparison</a></li>
+<li class="chapter" data-level="3.3.4" data-path="validation.html"><a href="validation.html#codeset-chaining"><i class="fa fa-check"></i><b>3.3.4</b> CodeSet Chaining</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="validation.html"><a href="validation.html#common-sample-distributions"><i class="fa fa-check"></i><b>3.4</b> Common Sample Distributions</a></li>
+<li class="chapter" data-level="3.5" data-path="validation.html"><a href="validation.html#histotype-distribution-in-classifier-datasets"><i class="fa fa-check"></i><b>3.5</b> Histotype Distribution in Classifier Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#training-set"><i class="fa fa-check"></i><b>4.1</b> Training Set</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="results.html"><a href="results.html#accuracy"><i class="fa fa-check"></i><b>4.1.1</b> Accuracy</a></li>
+<li class="chapter" data-level="4.1.2" data-path="results.html"><a href="results.html#f1-score"><i class="fa fa-check"></i><b>4.1.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.1.3" data-path="results.html"><a href="results.html#kappa"><i class="fa fa-check"></i><b>4.1.3</b> Kappa</a></li>
+<li class="chapter" data-level="4.1.4" data-path="results.html"><a href="results.html#g-mean"><i class="fa fa-check"></i><b>4.1.4</b> G-mean</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="results.html"><a href="results.html#two-step-training-set"><i class="fa fa-check"></i><b>4.2</b> Two-Step Training Set</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="results.html"><a href="results.html#accuracy-1"><i class="fa fa-check"></i><b>4.2.1</b> Accuracy</a></li>
+<li class="chapter" data-level="4.2.2" data-path="results.html"><a href="results.html#f1-score-1"><i class="fa fa-check"></i><b>4.2.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.2.3" data-path="results.html"><a href="results.html#kappa-1"><i class="fa fa-check"></i><b>4.2.3</b> Kappa</a></li>
+<li class="chapter" data-level="4.2.4" data-path="results.html"><a href="results.html#g-mean-1"><i class="fa fa-check"></i><b>4.2.4</b> G-mean</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#cs1-set"><i class="fa fa-check"></i><b>4.3</b> CS1 Set</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="results.html"><a href="results.html#accuracy-2"><i class="fa fa-check"></i><b>4.3.1</b> Accuracy</a></li>
+<li class="chapter" data-level="4.3.2" data-path="results.html"><a href="results.html#f1-score-2"><i class="fa fa-check"></i><b>4.3.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.3.3" data-path="results.html"><a href="results.html#kappa-2"><i class="fa fa-check"></i><b>4.3.3</b> Kappa</a></li>
+<li class="chapter" data-level="4.3.4" data-path="results.html"><a href="results.html#g-mean-2"><i class="fa fa-check"></i><b>4.3.4</b> G-mean</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="results.html"><a href="results.html#cs2-set"><i class="fa fa-check"></i><b>4.4</b> CS2 Set</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="results.html"><a href="results.html#accuracy-3"><i class="fa fa-check"></i><b>4.4.1</b> Accuracy</a></li>
+<li class="chapter" data-level="4.4.2" data-path="results.html"><a href="results.html#f1-score-3"><i class="fa fa-check"></i><b>4.4.2</b> F1-Score</a></li>
+<li class="chapter" data-level="4.4.3" data-path="results.html"><a href="results.html#kappa-3"><i class="fa fa-check"></i><b>4.4.3</b> Kappa</a></li>
+<li class="chapter" data-level="4.4.4" data-path="results.html"><a href="results.html#g-mean-3"><i class="fa fa-check"></i><b>4.4.4</b> G-mean</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="results.html"><a href="results.html#smote-kappa-summary"><i class="fa fa-check"></i><b>4.5</b> SMOTE Kappa Summary</a></li>
+<li class="chapter" data-level="4.6" data-path="results.html"><a href="results.html#overlap-with-spot"><i class="fa fa-check"></i><b>4.6</b> Overlap with SPOT</a></li>
+<li class="chapter" data-level="4.7" data-path="results.html"><a href="results.html#rank-aggregation"><i class="fa fa-check"></i><b>4.7</b> Rank Aggregation</a></li>
+<li class="chapter" data-level="4.8" data-path="results.html"><a href="results.html#test-set-performance"><i class="fa fa-check"></i><b>4.8</b> Test Set Performance</a>
+<ul>
+<li class="chapter" data-level="4.8.1" data-path="results.html"><a href="results.html#confirmation-set"><i class="fa fa-check"></i><b>4.8.1</b> Confirmation Set</a></li>
+<li class="chapter" data-level="4.8.2" data-path="results.html"><a href="results.html#validation-set"><i class="fa fa-check"></i><b>4.8.2</b> Validation Set</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Ovarian Cancer Histotypes: Report of Statistical Findings</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="validation" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Validation</h1>
+<!--
+## Concordance
+
+First we validate the CS2 normalization process by looking at the distribution of CS3 non-normalized samples with:
+
+- CS2 non-normalized
+- CS2 pools-normalized
+- CS2 reference-normalized
+
+
+
+
+
+<div class="figure" style="text-align: center">
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-none-vs-cs3-1.png" alt="Gene Expression CS2 No Normalization vs. CS3" width="768" />
+<p class="caption">(\#fig:cs2-none-vs-cs3)Gene Expression CS2 No Normalization vs. CS3</p>
+</div>
+
+<div class="figure" style="text-align: center">
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-pools-vs-cs3-1.png" alt="Gene Expression CS2 Pools Normalization vs. CS3" width="768" />
+<p class="caption">(\#fig:cs2-pools-vs-cs3)Gene Expression CS2 Pools Normalization vs. CS3</p>
+</div>
+
+<div class="figure" style="text-align: center">
+<img src="OV_Histotypes_RSF_files/figure-html/cs2-reference-vs-cs3-1.png" alt="Gene Expression CS2 Reference Normalization vs. CS3" width="768" />
+<p class="caption">(\#fig:cs2-reference-vs-cs3)Gene Expression CS2 Reference Normalization vs. CS3</p>
+</div>
+
+<div class="figure" style="text-align: center">
+<img src="OV_Histotypes_RSF_files/figure-html/cc-hist-1.png" alt="Concordance Histograms" width="672" />
+<p class="caption">(\#fig:cc-hist)Concordance Histograms</p>
+</div>
+-->
+<div id="full-data-distributions" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Full Data Distributions</h2>
+<p>The histotype distributions on the full data are shown below.</p>
+<table>
+<caption><span id="tab:dist-all-gr">Table 3.1: </span>All CodeSet Histotype Groups</caption>
+<thead>
+<tr class="header">
+<th align="left">hist_gr</th>
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">169</td>
+<td align="right">757</td>
+<td align="right">2453</td>
+</tr>
+<tr class="even">
+<td align="left">non-HGSC</td>
+<td align="right">196</td>
+<td align="right">373</td>
+<td align="right">677</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:dist-all">Table 3.2: </span>All CodeSet Histotypes</caption>
+<colgroup>
+<col width="85%" />
+<col width="4%" />
+<col width="4%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CARCINOMA-NOS</td>
+<td align="right">0</td>
+<td align="right">61</td>
+<td align="right">23</td>
+</tr>
+<tr class="even">
+<td align="left">Carcinoma, NOS</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">57</td>
+<td align="right">68</td>
+<td align="right">182</td>
+</tr>
+<tr class="even">
+<td align="left">CCOC-MCT</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Cell-Line</td>
+<td align="right">17</td>
+<td align="right">48</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">CTRL</td>
+<td align="right">0</td>
+<td align="right">12</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">ENOC</td>
+<td align="right">61</td>
+<td align="right">30</td>
+<td align="right">272</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC-CCOC</td>
+<td align="right">0</td>
+<td align="right">7</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">ERROR</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">HGSC</td>
+<td align="right">169</td>
+<td align="right">757</td>
+<td align="right">2453</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC-MCT</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">22</td>
+<td align="right">29</td>
+<td align="right">50</td>
+</tr>
+<tr class="odd">
+<td align="left">MBOT</td>
+<td align="right">0</td>
+<td align="right">20</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">MET-NOP</td>
+<td align="right">0</td>
+<td align="right">21</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">MIXED (ENOC/CCOC)</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">MIXED (ENOC/LGSC)</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">MIXED (HGSC/CCOC)</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">mixed cell</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">MMMT</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">30</td>
+</tr>
+<tr class="even">
+<td align="left">MUC</td>
+<td align="right">20</td>
+<td align="right">61</td>
+<td align="right">77</td>
+</tr>
+<tr class="odd">
+<td align="left">Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Other/Exclude</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">SBOT</td>
+<td align="right">19</td>
+<td align="right">10</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">Serous</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">serous LMP</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">SQAMOUS</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:dist-common">Table 3.3: </span>Common Summary ID CodeSet Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">Cell-Line</td>
+<td align="right">4</td>
+<td align="right">5</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">ENOC</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">HGSC</td>
+<td align="right">68</td>
+<td align="right">64</td>
+<td align="right">98</td>
+</tr>
+<tr class="odd">
+<td align="left">LGSC</td>
+<td align="right">7</td>
+<td align="right">5</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">MUC</td>
+<td align="right">7</td>
+<td align="right">5</td>
+<td align="right">11</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:dist-major-hist">Table 3.4: </span>All CodeSet Major Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+<th align="right">CS1_percent</th>
+<th align="right">CS2_percent</th>
+<th align="right">CS3_percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">57</td>
+<td align="right">68</td>
+<td align="right">182</td>
+<td align="right">17.3</td>
+<td align="right">7.2</td>
+<td align="right">6.0</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">61</td>
+<td align="right">30</td>
+<td align="right">272</td>
+<td align="right">18.5</td>
+<td align="right">3.2</td>
+<td align="right">9.0</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">169</td>
+<td align="right">757</td>
+<td align="right">2453</td>
+<td align="right">51.4</td>
+<td align="right">80.1</td>
+<td align="right">80.9</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">22</td>
+<td align="right">29</td>
+<td align="right">50</td>
+<td align="right">6.7</td>
+<td align="right">3.1</td>
+<td align="right">1.6</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">20</td>
+<td align="right">61</td>
+<td align="right">77</td>
+<td align="right">6.1</td>
+<td align="right">6.5</td>
+<td align="right">2.5</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:dist-cs1">Table 3.5: </span>CS1 Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">CodeSet</th>
+<th align="left">revHist</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CS1</td>
+<td align="left">CCOC</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">CS1</td>
+<td align="left">Cell-Line</td>
+<td align="right">17</td>
+</tr>
+<tr class="odd">
+<td align="left">CS1</td>
+<td align="left">ENOC</td>
+<td align="right">61</td>
+</tr>
+<tr class="even">
+<td align="left">CS1</td>
+<td align="left">HGSC</td>
+<td align="right">169</td>
+</tr>
+<tr class="odd">
+<td align="left">CS1</td>
+<td align="left">LGSC</td>
+<td align="right">22</td>
+</tr>
+<tr class="even">
+<td align="left">CS1</td>
+<td align="left">MUC</td>
+<td align="right">20</td>
+</tr>
+<tr class="odd">
+<td align="left">CS1</td>
+<td align="left">SBOT</td>
+<td align="right">19</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:dist-cs2">Table 3.6: </span>CS2 Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">CodeSet</th>
+<th align="left">revHist</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CS2</td>
+<td align="left">CARCINOMA-NOS</td>
+<td align="right">61</td>
+</tr>
+<tr class="even">
+<td align="left">CS2</td>
+<td align="left">CCOC</td>
+<td align="right">68</td>
+</tr>
+<tr class="odd">
+<td align="left">CS2</td>
+<td align="left">CCOC-MCT</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">CS2</td>
+<td align="left">Cell-Line</td>
+<td align="right">48</td>
+</tr>
+<tr class="odd">
+<td align="left">CS2</td>
+<td align="left">CTRL</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">CS2</td>
+<td align="left">ENOC</td>
+<td align="right">30</td>
+</tr>
+<tr class="odd">
+<td align="left">CS2</td>
+<td align="left">ENOC-CCOC</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="left">CS2</td>
+<td align="left">ERROR</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">CS2</td>
+<td align="left">HGSC</td>
+<td align="right">757</td>
+</tr>
+<tr class="even">
+<td align="left">CS2</td>
+<td align="left">HGSC-MCT</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">CS2</td>
+<td align="left">LGSC</td>
+<td align="right">29</td>
+</tr>
+<tr class="even">
+<td align="left">CS2</td>
+<td align="left">MBOT</td>
+<td align="right">20</td>
+</tr>
+<tr class="odd">
+<td align="left">CS2</td>
+<td align="left">MET-NOP</td>
+<td align="right">21</td>
+</tr>
+<tr class="even">
+<td align="left">CS2</td>
+<td align="left">MUC</td>
+<td align="right">61</td>
+</tr>
+<tr class="odd">
+<td align="left">CS2</td>
+<td align="left">SBOT</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">CS2</td>
+<td align="left">SQAMOUS</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:dist-cs3">Table 3.7: </span>CS3 Histotypes</caption>
+<colgroup>
+<col width="9%" />
+<col width="85%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">CodeSet</th>
+<th align="left">revHist</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">CARCINOMA-NOS</td>
+<td align="right">23</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">Carcinoma, NOS</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">CCOC</td>
+<td align="right">182</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">Cell-Line</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">ENOC</td>
+<td align="right">272</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">HGSC</td>
+<td align="right">2453</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">LGSC</td>
+<td align="right">50</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">MBOT</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">MIXED (ENOC/CCOC)</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">MIXED (ENOC/LGSC)</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">MIXED (HGSC/CCOC)</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">mixed cell</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">MMMT</td>
+<td align="right">30</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">MUC</td>
+<td align="right">77</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">Other (use when 6, 7, or 9 is not distinguished) or unknown if epithelial</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">Other/Exclude</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">SBOT</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">CS3</td>
+<td align="left">Serous</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3</td>
+<td align="left">serous LMP</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="training-set-distributions" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Training Set Distributions</h2>
+<p>The training set distributions for CS1 and CS2 are shown below.</p>
+<table>
+<caption><span id="tab:training-dist-cs1">Table 3.8: </span>CS1 Training Set Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">histotype</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCC</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">ENOCa</td>
+<td align="right">59</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">156</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">16</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:training-dist-cs2">Table 3.9: </span>CS2 Training Set Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">histotype</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">68</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">30</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">757</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">29</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">61</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="normalization" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Normalization</h2>
+<p><img src="OV_Histotypes_RSF_files/figure-html/cc-raw-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="OV_Histotypes_RSF_files/figure-html/cc-hknorm-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="common-samples-method-1" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Common Samples Method</h3>
+<p>We employ a new normalization technique using randomly selected samples common to all three CodeSets with a uniform distribution of histotypes as the reference dataset. The number of randomly selected samples ranges from 1-3 per histotype. Hence, the reference dataset has either 5, 10, or 15 samples and we validate on the remaining. Note that ottaID duplicates are collapsed by mean averaging the gene expression. There are n=72 common samples.</p>
+<p>CodeSets 1 and 2 are calibrated to CodeSet3 as follows:</p>
+<ul>
+<li><code>X^1(norm) = X^1 - R^1 + R^3</code><br />
+</li>
+<li><code>X^2(norm) = X^2 - R^2 + R^3</code><br />
+</li>
+<li><code>X^3(norm) = X^3</code></li>
+</ul>
+<div id="random3" class="section level4" number="3.3.1.1">
+<h4><span class="header-section-number">3.3.1.1</span> Random3</h4>
+<p>Randomly choose 3 samples from each of the 5 histotypes as the reference set (n=15). The rest are validated.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-non3"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-non3-1.png" alt="Random3 Non-Normalized Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.1: Random3 Non-Normalized Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand3"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-rand3-1.png" alt="Random3 Normalized Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.2: Random3 Normalized Concordance Measure Distributions
+</p>
+</div>
+</div>
+<div id="random2" class="section level4" number="3.3.1.2">
+<h4><span class="header-section-number">3.3.1.2</span> Random2</h4>
+<p>Randomly choose 2 samples from each of the 5 histotypes as the reference set (n=10). The rest are validated.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-non2"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-non2-1.png" alt="Random2 Non-Normalized Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.3: Random2 Non-Normalized Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand2"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-rand2-1.png" alt="Random2 Normalized Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.4: Random2 Normalized Concordance Measure Distributions
+</p>
+</div>
+</div>
+<div id="random1" class="section level4" number="3.3.1.3">
+<h4><span class="header-section-number">3.3.1.3</span> Random1</h4>
+<p>Randomly choose 1 sample from each of the 5 histotypes as the reference set (n=5). The rest are validated.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-non1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-non1-1.png" alt="Random1 Non-Normalized Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.5: Random1 Non-Normalized Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-rand1-1.png" alt="Random1 Normalized Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.6: Random1 Normalized Concordance Measure Distributions
+</p>
+</div>
+<p>In Tables <a href="validation.html#tab:rand1-cs1-vs-cs3">3.10</a> and <a href="validation.html#tab:rand1-cs2-vs-cs3">3.11</a>, we calculate the concordance measures for CS1 vs. CS3 and CS2 cs. CS3, respectively. The measures are calculated for both non-normalized and normalized datasets (CS1, CS2), and split by histotype.</p>
+<table>
+<caption><span id="tab:rand1-cs1-vs-cs3">Table 3.10: </span>Random1 CS1 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Norm</th>
+<th align="right">Ca-Norm</th>
+<th align="right">Rc-Norm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">1.00</td>
+<td align="right">0.29</td>
+<td align="right">0.12</td>
+<td align="right">1.00</td>
+<td align="right">0.29</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">1.00</td>
+<td align="right">0.54</td>
+<td align="right">0.54</td>
+<td align="right">1.00</td>
+<td align="right">0.62</td>
+<td align="right">0.62</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.79</td>
+<td align="right">0.98</td>
+<td align="right">0.85</td>
+<td align="right">0.79</td>
+<td align="right">0.97</td>
+<td align="right">0.87</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.96</td>
+<td align="right">0.89</td>
+<td align="right">0.82</td>
+<td align="right">0.96</td>
+<td align="right">0.91</td>
+<td align="right">0.87</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.77</td>
+<td align="right">0.86</td>
+<td align="right">0.68</td>
+<td align="right">0.77</td>
+<td align="right">0.81</td>
+<td align="right">0.63</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:rand1-cs2-vs-cs3">Table 3.11: </span>Random1 CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Norm</th>
+<th align="right">Ca-Norm</th>
+<th align="right">Rc-Norm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">1.00</td>
+<td align="right">0.23</td>
+<td align="right">0.08</td>
+<td align="right">1.00</td>
+<td align="right">0.27</td>
+<td align="right">0.16</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">1.00</td>
+<td align="right">0.63</td>
+<td align="right">0.61</td>
+<td align="right">1.00</td>
+<td align="right">0.61</td>
+<td align="right">0.57</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.83</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+<td align="right">0.83</td>
+<td align="right">0.98</td>
+<td align="right">0.89</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.98</td>
+<td align="right">0.92</td>
+<td align="right">0.90</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.93</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.68</td>
+<td align="right">0.77</td>
+<td align="right">0.55</td>
+<td align="right">0.68</td>
+<td align="right">0.86</td>
+<td align="right">0.61</td>
+</tr>
+</tbody>
+</table>
+<p>Because Random1 is a random selection of reference samples, we want to assess the variability of the concordance measures by repeating Random1 on different selections and observing the distribution of the medians.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand1-cs23-meds"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-rand1-cs23-meds-1.png" alt="CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures" width="672" />
+<p class="caption">
+Figure 3.7: CS2 vs. CS3 Random1 Normalized 100 Runs of Median Concordance Measures
+</p>
+</div>
+<table>
+<caption><span id="tab:metrics-summ-cs23">Table 3.12: </span>CS2 vs CS3 Random1 Normalized 100 Runs of Summary Concordance Measures</caption>
+<thead>
+<tr class="header">
+<th align="left">Metric</th>
+<th align="right">Min</th>
+<th align="right">Median</th>
+<th align="right">Max</th>
+<th align="right">SD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Ca</td>
+<td align="right">0.956</td>
+<td align="right">0.981</td>
+<td align="right">0.989</td>
+<td align="right">0.007</td>
+</tr>
+<tr class="even">
+<td align="left">R2</td>
+<td align="right">0.830</td>
+<td align="right">0.847</td>
+<td align="right">0.870</td>
+<td align="right">0.007</td>
+</tr>
+<tr class="odd">
+<td align="left">Rc</td>
+<td align="right">0.867</td>
+<td align="right">0.891</td>
+<td align="right">0.907</td>
+<td align="right">0.008</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="random3-hgsc" class="section level4" number="3.3.1.4">
+<h4><span class="header-section-number">3.3.1.4</span> Random3 HGSC</h4>
+<p>Randomly choose n=3 HGSC samples as the reference set, and use the rest as validation. This was tried in lieu of the fact that some non-HGSC histotypes have at most n=3 samples in total, so using Random3 or even Random2 would leave no samples remaining in the validation set for these histotypes.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-rand"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-rand-1.png" alt="Random3 HGSC Normalized Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.8: Random3 HGSC Normalized Concordance Measure Distributions
+</p>
+</div>
+<p>In Tables <a href="validation.html#tab:rand3-hgsc-cs1-vs-cs3">3.13</a> and <a href="validation.html#tab:rand3-hgsc-cs2-vs-cs3">3.14</a>, we calculate the concordance measures for CS1 vs. CS3 and CS2 cs. CS3, respectively. The measures are calculated for both non-normalized and normalized datasets (CS1, CS2), and split by histotype.</p>
+<table>
+<caption><span id="tab:rand3-hgsc-cs1-vs-cs3">Table 3.13: </span>Random3 HGSC CS1 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Norm</th>
+<th align="right">Ca-Norm</th>
+<th align="right">Rc-Norm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">0.62</td>
+<td align="right">0.62</td>
+<td align="right">0.32</td>
+<td align="right">0.62</td>
+<td align="right">0.68</td>
+<td align="right">0.27</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">0.88</td>
+<td align="right">0.76</td>
+<td align="right">0.66</td>
+<td align="right">0.88</td>
+<td align="right">0.77</td>
+<td align="right">0.70</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.77</td>
+<td align="right">0.97</td>
+<td align="right">0.85</td>
+<td align="right">0.77</td>
+<td align="right">0.99</td>
+<td align="right">0.87</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.94</td>
+<td align="right">0.85</td>
+<td align="right">0.80</td>
+<td align="right">0.94</td>
+<td align="right">0.90</td>
+<td align="right">0.84</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.74</td>
+<td align="right">0.92</td>
+<td align="right">0.72</td>
+<td align="right">0.74</td>
+<td align="right">0.93</td>
+<td align="right">0.78</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:rand3-hgsc-cs2-vs-cs3">Table 3.14: </span>Random3 HGSC CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Norm</th>
+<th align="right">Ca-Norm</th>
+<th align="right">Rc-Norm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">0.66</td>
+<td align="right">0.56</td>
+<td align="right">0.35</td>
+<td align="right">0.66</td>
+<td align="right">0.59</td>
+<td align="right">0.42</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">0.85</td>
+<td align="right">0.76</td>
+<td align="right">0.66</td>
+<td align="right">0.85</td>
+<td align="right">0.85</td>
+<td align="right">0.76</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.82</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+<td align="right">0.82</td>
+<td align="right">0.99</td>
+<td align="right">0.90</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.97</td>
+<td align="right">0.95</td>
+<td align="right">0.92</td>
+<td align="right">0.97</td>
+<td align="right">0.92</td>
+<td align="right">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.74</td>
+<td align="right">0.89</td>
+<td align="right">0.72</td>
+<td align="right">0.74</td>
+<td align="right">0.93</td>
+<td align="right">0.72</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="random1-for-sites" class="section level4" number="3.3.1.5">
+<h4><span class="header-section-number">3.3.1.5</span> Random1 for Sites</h4>
+<p>We use the Random1 method to normalize CS3-USC and CS3-AOC to CS3-VAN. There aren’t enough samples in the USC and AOC cohorts to perform Random2 or Random3.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-site-non1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-site-non1-1.png" alt="Cross-Site Random1 Non-Normalized Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.9: Cross-Site Random1 Non-Normalized Concordance Measure Distributions
+</p>
+</div>
+<p><img src="OV_Histotypes_RSF_files/figure-html/cc-site-rand1-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="pools-method-1" class="section level3" number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Pools Method</h3>
+<div id="cs2-vs.-cs3" class="section level4" number="3.3.2.1">
+<h4><span class="header-section-number">3.3.2.1</span> CS2 vs. CS3</h4>
+<p>CodeSet2 contains 12 ref pool samples (Pool 1 = 4, Pool 2 = 4, Pool 3 = 4). CodeSet3 contains 22 ref pool samples (Pool 1 = 12, Pool 2 = 5, Pool 3 = 5). n=84 common samples.</p>
+<p>CodeSet2 is calibrated to CodeSet3 as follows:<br />
+<code>X^2(norm) = X^2 - R^2 + R^3</code><br />
+<code>X^3(norm) = X^3</code></p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-cs2non-vs-cs2pools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-cs2non-vs-cs2pools-1.png" alt="CS2Non vs. CS2Pools Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.10: CS2Non vs. CS2Pools Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-cs2non-vs-cs3"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-cs2non-vs-cs3-1.png" alt="CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.11: CS2 Non-Normalized Pools vs. CS3 Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-cs2pools-vs-cs3"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-cs2pools-vs-cs3-1.png" alt="CS2 Normalized Pools vs. CS3 Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.12: CS2 Normalized Pools vs. CS3 Concordance Measure Distributions
+</p>
+</div>
+<table>
+<caption><span id="tab:pools-cs2non-vs-cs3">Table 3.15: </span>Pools Non-Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2</th>
+<th align="right">Ca</th>
+<th align="right">Rc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">0.66</td>
+<td align="right">0.53</td>
+<td align="right">0.26</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">0.88</td>
+<td align="right">0.74</td>
+<td align="right">0.63</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.77</td>
+<td align="right">0.94</td>
+<td align="right">0.80</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.92</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.74</td>
+<td align="right">0.86</td>
+<td align="right">0.68</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:pools-cs2norm-vs-cs3">Table 3.16: </span>Pools Normalized CS2 vs. CS3 Median Concordance Measures by Histotypes</caption>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2</th>
+<th align="right">Ca</th>
+<th align="right">Rc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">0.66</td>
+<td align="right">0.60</td>
+<td align="right">0.32</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">0.88</td>
+<td align="right">0.76</td>
+<td align="right">0.68</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.77</td>
+<td align="right">0.94</td>
+<td align="right">0.81</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.93</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.74</td>
+<td align="right">0.91</td>
+<td align="right">0.71</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="usc-vs.-van" class="section level4" number="3.3.2.2">
+<h4><span class="header-section-number">3.3.2.2</span> USC vs. VAN</h4>
+<p>In CodeSet 3, we normalize the USC and AOC cohorts to the VAN cohort which is used as the reference dataset.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-uscnon-vs-uscpools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-uscnon-vs-uscpools-1.png" alt="USC-Non vs. USC-Pools Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.13: USC-Non vs. USC-Pools Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-uscnon-vs-vannon"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-uscnon-vs-vannon-1.png" alt="USC-Non vs. VAN-Non Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.14: USC-Non vs. VAN-Non Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-uscpools-vs-vannon"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-uscpools-vs-vannon-1.png" alt="USC-Pools vs. VAN-Non Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.15: USC-Pools vs. VAN-Non Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:usc-vs-van-comps"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/usc-vs-van-comps-1.png" alt="USC vs. VAN Comparisons of Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.16: USC vs. VAN Comparisons of Concordance Measure Distributions
+</p>
+</div>
+</div>
+<div id="aoc-vs.-van" class="section level4" number="3.3.2.3">
+<h4><span class="header-section-number">3.3.2.3</span> AOC vs. VAN</h4>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-aocnon-vs-aocpools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-aocnon-vs-aocpools-1.png" alt="AOC-Non vs. AOC-Pools Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.17: AOC-Non vs. AOC-Pools Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-aocnon-vs-vannon"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-aocnon-vs-vannon-1.png" alt="AOC-Non vs. VAN-Non Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.18: AOC-Non vs. VAN-Non Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cc-aocpools-vs-vannon"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cc-aocpools-vs-vannon-1.png" alt="AOC-Pools vs. VAN-Non Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.19: AOC-Pools vs. VAN-Non Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:aoc-vs-van-comps"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/aoc-vs-van-comps-1.png" alt="AOC vs. VAN Comparisons of Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.20: AOC vs. VAN Comparisons of Concordance Measure Distributions
+</p>
+</div>
+</div>
+</div>
+<div id="common-samples-vs.-pools-comparison" class="section level3" number="3.3.3">
+<h3><span class="header-section-number">3.3.3</span> Common Samples vs. Pools Comparison</h3>
+<p>Since only CS2 and CS3 have pools, we make three comparisons between these two CodeSets:</p>
+<ul>
+<li>Non-Normalized</li>
+<li>Common Samples Method</li>
+<li>Pools Method</li>
+</ul>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:rand3-vs-pools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/rand3-vs-pools-1.png" alt="Random3 Samples Comparisons of Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.21: Random3 Samples Comparisons of Concordance Measure Distributions
+</p>
+</div>
+<table>
+<caption><span id="tab:rand3-vs-pools-stats">Table 3.17: </span>Random3 Samples Comparisons Statistics by Histotypes</caption>
+<colgroup>
+<col width="6%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Common</th>
+<th align="right">Ca-Common</th>
+<th align="right">Rc-Common</th>
+<th align="right">R2-Pools</th>
+<th align="right">Ca-Pools</th>
+<th align="right">Rc-Pools</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.84</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+<td align="right">0.84</td>
+<td align="right">0.99</td>
+<td align="right">0.90</td>
+<td align="right">0.84</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">1.00</td>
+<td align="right">0.49</td>
+<td align="right">0.44</td>
+<td align="right">1.00</td>
+<td align="right">0.62</td>
+<td align="right">0.52</td>
+<td align="right">1.00</td>
+<td align="right">0.46</td>
+<td align="right">0.42</td>
+</tr>
+</tbody>
+</table>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:rand2-vs-pools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/rand2-vs-pools-1.png" alt="Random2 Samples Comparisons of Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.22: Random2 Samples Comparisons of Concordance Measure Distributions
+</p>
+</div>
+<table>
+<caption><span id="tab:rand2-vs-pools-stats">Table 3.18: </span>Random2 Samples Comparisons Statistics by Histotypes</caption>
+<colgroup>
+<col width="6%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Common</th>
+<th align="right">Ca-Common</th>
+<th align="right">Rc-Common</th>
+<th align="right">R2-Pools</th>
+<th align="right">Ca-Pools</th>
+<th align="right">Rc-Pools</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.84</td>
+<td align="right">0.96</td>
+<td align="right">0.87</td>
+<td align="right">0.84</td>
+<td align="right">0.98</td>
+<td align="right">0.89</td>
+<td align="right">0.84</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">1.00</td>
+<td align="right">0.88</td>
+<td align="right">0.87</td>
+<td align="right">1.00</td>
+<td align="right">0.88</td>
+<td align="right">0.88</td>
+<td align="right">1.00</td>
+<td align="right">0.85</td>
+<td align="right">0.85</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.97</td>
+<td align="right">0.95</td>
+<td align="right">0.91</td>
+<td align="right">0.97</td>
+<td align="right">0.94</td>
+<td align="right">0.90</td>
+<td align="right">0.97</td>
+<td align="right">0.96</td>
+<td align="right">0.92</td>
+</tr>
+</tbody>
+</table>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:rand1-vs-pools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/rand1-vs-pools-1.png" alt="Random1 Samples Comparisons of Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.23: Random1 Samples Comparisons of Concordance Measure Distributions
+</p>
+</div>
+<table>
+<caption><span id="tab:rand1-vs-pools-stats">Table 3.19: </span>Random1 Samples Comparisons Statistics by Histotypes</caption>
+<colgroup>
+<col width="6%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">hist</th>
+<th align="right">R2-Non</th>
+<th align="right">Ca-Non</th>
+<th align="right">Rc-Non</th>
+<th align="right">R2-Common</th>
+<th align="right">Ca-Common</th>
+<th align="right">Rc-Common</th>
+<th align="right">R2-Pools</th>
+<th align="right">Ca-Pools</th>
+<th align="right">Rc-Pools</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">1.00</td>
+<td align="right">0.23</td>
+<td align="right">0.08</td>
+<td align="right">1.00</td>
+<td align="right">0.27</td>
+<td align="right">0.16</td>
+<td align="right">1.00</td>
+<td align="right">0.15</td>
+<td align="right">0.09</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">1.00</td>
+<td align="right">0.63</td>
+<td align="right">0.61</td>
+<td align="right">1.00</td>
+<td align="right">0.61</td>
+<td align="right">0.57</td>
+<td align="right">1.00</td>
+<td align="right">0.61</td>
+<td align="right">0.61</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">0.83</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+<td align="right">0.83</td>
+<td align="right">0.98</td>
+<td align="right">0.89</td>
+<td align="right">0.83</td>
+<td align="right">0.96</td>
+<td align="right">0.86</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">0.98</td>
+<td align="right">0.92</td>
+<td align="right">0.90</td>
+<td align="right">0.98</td>
+<td align="right">0.95</td>
+<td align="right">0.93</td>
+<td align="right">0.98</td>
+<td align="right">0.92</td>
+<td align="right">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">0.68</td>
+<td align="right">0.77</td>
+<td align="right">0.55</td>
+<td align="right">0.68</td>
+<td align="right">0.86</td>
+<td align="right">0.61</td>
+<td align="right">0.68</td>
+<td align="right">0.78</td>
+<td align="right">0.51</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:cs23-dsc">Table 3.20: </span>DSC for CS2 vs CS3 Comparisons</caption>
+<thead>
+<tr class="header">
+<th align="left">Comparison</th>
+<th align="right">DSC</th>
+<th align="right">pval</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CS2-None vs CS3</td>
+<td align="right">0.126</td>
+<td align="right">0.032</td>
+</tr>
+<tr class="even">
+<td align="left">CS2-Random1 vs CS3</td>
+<td align="right">0.084</td>
+<td align="right">0.475</td>
+</tr>
+<tr class="odd">
+<td align="left">CS2-Pools vs CS3</td>
+<td align="right">0.159</td>
+<td align="right">0.005</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="codeset-chaining" class="section level3" number="3.3.4">
+<h3><span class="header-section-number">3.3.4</span> CodeSet Chaining</h3>
+<div id="cs1-cs2-cs3" class="section level4" number="3.3.4.1">
+<h4><span class="header-section-number">3.3.4.1</span> CS1, CS2, CS3</h4>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-1.png" alt="Random1 Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.24: Random1 Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1-cs2pools"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs2pools-1.png" alt="Random1 + Pools Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.25: Random1 + Pools Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1-cs1v3"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs1v3-1.png" alt="CS1 CodeSet Chaining Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.26: CS1 CodeSet Chaining Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1-cs1v3-2"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs1v3-2-1.png" alt="CS1 CodeSet Chaining Concordance Measure Distributions 2" width="672" />
+<p class="caption">
+Figure 3.27: CS1 CodeSet Chaining Concordance Measure Distributions 2
+</p>
+</div>
+<table>
+<caption><span id="tab:cs13-dsc">Table 3.21: </span>DSC for CS1 vs CS3 Comparisons</caption>
+<thead>
+<tr class="header">
+<th align="left">Comparison</th>
+<th align="right">DSC</th>
+<th align="right">pval</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CS1-None vs CS3</td>
+<td align="right">0.265</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">CS1-Random1+Pools vs CS3</td>
+<td align="right">0.351</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">CS1-Random1 vs CS3</td>
+<td align="right">0.229</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs13-genes-pairwise"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs13-genes-pairwise-1.png" alt="Pairwise Genes by Top/Bottom 3 Rc for CS1 vs. CS3" width="672" />
+<p class="caption">
+Figure 3.28: Pairwise Genes by Top/Bottom 3 Rc for CS1 vs. CS3
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-rand1-cs2v3"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-rand1-cs2v3-1.png" alt="CS2 CodeSet Chaining Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.29: CS2 CodeSet Chaining Concordance Measure Distributions
+</p>
+</div>
+</div>
+<div id="cs3-cs4-cs5-using-set-ba" class="section level4" number="3.3.4.2">
+<h4><span class="header-section-number">3.3.4.2</span> CS3, CS4, CS5 using Set B/A</h4>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setBA"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-1.png" alt="CS5 Set B/A Chaining Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.30: CS5 Set B/A Chaining Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setBA-2"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setBA-2-1.png" alt="CS5 Set B/A Chaining Concordance Measure Distributions 2" width="672" />
+<p class="caption">
+Figure 3.31: CS5 Set B/A Chaining Concordance Measure Distributions 2
+</p>
+</div>
+<table>
+<caption><span id="tab:cs35-BA-dsc">Table 3.22: </span>DSC for CS3 vs CS5 Set B/A Comparisons</caption>
+<thead>
+<tr class="header">
+<th align="left">Comparisons</th>
+<th align="right">DSC</th>
+<th align="right">pval</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CS3 vs CS5-None</td>
+<td align="right">0.118</td>
+<td align="right">0.425</td>
+</tr>
+<tr class="even">
+<td align="left">CS3 vs CS5-NormBA</td>
+<td align="right">0.081</td>
+<td align="right">0.712</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3 vs CS5-NormA</td>
+<td align="right">0.149</td>
+<td align="right">0.250</td>
+</tr>
+</tbody>
+</table>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs4-setA"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs4-setA-1.png" alt="CS4 Set A Chaining Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.32: CS4 Set A Chaining Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-cs4-B"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-cs4-B-1.png" alt="CS4 and CS5 using Set B Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.33: CS4 and CS5 using Set B Concordance Measure Distributions
+</p>
+</div>
+</div>
+<div id="cs3-cs4-cs5-using-set-ca" class="section level4" number="3.3.4.3">
+<h4><span class="header-section-number">3.3.4.3</span> CS3, CS4, CS5 using Set C/A</h4>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setCA"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setCA-1.png" alt="CS5 Set C/A Chaining Concordance  Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.34: CS5 Set C/A Chaining Concordance Measure Distributions
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-setCA-2"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-setCA-2-1.png" alt="CS5 Set C/A Chaining Concordance  Measure Distributions 2" width="672" />
+<p class="caption">
+Figure 3.35: CS5 Set C/A Chaining Concordance Measure Distributions 2
+</p>
+</div>
+<table>
+<caption><span id="tab:cs35-CA-dsc">Table 3.23: </span>DSC for CS3 vs CS5 Set C/A Comparisons</caption>
+<thead>
+<tr class="header">
+<th align="left">Comparisons</th>
+<th align="right">DSC</th>
+<th align="right">pval</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CS3 vs CS5-None</td>
+<td align="right">0.118</td>
+<td align="right">0.425</td>
+</tr>
+<tr class="even">
+<td align="left">CS3 vs CS5-NormCA</td>
+<td align="right">0.385</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">CS3 vs CS5-NormA</td>
+<td align="right">0.149</td>
+<td align="right">0.250</td>
+</tr>
+</tbody>
+</table>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:cs-chain-cs5-cs4-C"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/cs-chain-cs5-cs4-C-1.png" alt="CS4 and CS5 using Set C Concordance Measure Distributions" width="672" />
+<p class="caption">
+Figure 3.36: CS4 and CS5 using Set C Concordance Measure Distributions
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="common-sample-distributions" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Common Sample Distributions</h2>
+<table>
+<caption><span id="tab:common-dist-all">Table 3.24: </span>All Common Samples Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">59</td>
+<td align="right">62</td>
+<td align="right">75</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">7</td>
+<td align="right">5</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">7</td>
+<td align="right">5</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:common-dist-distinct">Table 3.25: </span>Distinct Common Samples Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">CS1</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">57</td>
+<td align="right">57</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:common-cs2-cs3-dist-distinct">Table 3.26: </span>Distinct Common CS2 and CS3 Samples Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">CS2</th>
+<th align="right">CS3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">71</td>
+<td align="right">71</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">5</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:common-dist-sites">Table 3.27: </span>Common Samples Across Sites Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">AOC</th>
+<th align="right">USC</th>
+<th align="right">Vancouver</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">27</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:common-dist-sites-distinct">Table 3.28: </span>Distinct Common Samples Across Sites Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">AOC</th>
+<th align="right">USC</th>
+<th align="right">Vancouver</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:cs345-overlap">Table 3.29: </span>CS3/CS4/CS5 Common Samples Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">CS3</th>
+<th align="right">CS4</th>
+<th align="right">CS5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">46</td>
+<td align="right">46</td>
+<td align="right">46</td>
+</tr>
+<tr class="even">
+<td align="left">NA</td>
+<td align="right">26</td>
+<td align="right">26</td>
+<td align="right">26</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:cs345-pools">Table 3.30: </span>CS3/CS4/CS5 Pools Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">Pool</th>
+<th align="right">CS3</th>
+<th align="right">CS4</th>
+<th align="right">CS5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Pool1</td>
+<td align="right">12</td>
+<td align="right">5</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Pool2</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">Pool3</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Pool4</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Pool5</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Pool6</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Pool7</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Pool8</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Pool9</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Pool10</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Pool11</td>
+<td align="right">NA</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="histotype-distribution-in-classifier-datasets" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Histotype Distribution in Classifier Datasets</h2>
+<table>
+<caption><span id="tab:train-hist">Table 3.31: </span>Full Training Set Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">n</th>
+<th align="left">freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">1227</td>
+<td align="left">79%</td>
+</tr>
+<tr class="even">
+<td align="left">CCOC</td>
+<td align="right">106</td>
+<td align="left">7%</td>
+</tr>
+<tr class="odd">
+<td align="left">ENOC</td>
+<td align="right">91</td>
+<td align="left">6%</td>
+</tr>
+<tr class="even">
+<td align="left">MUC</td>
+<td align="right">84</td>
+<td align="left">5%</td>
+</tr>
+<tr class="odd">
+<td align="left">LGSC</td>
+<td align="right">39</td>
+<td align="left">3%</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:train-hist-codeset">Table 3.32: </span>Full Training Set Histotype Distribution by CodeSet</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Levels</th>
+<th align="left">CS1</th>
+<th align="left">CS2</th>
+<th align="left">CS3</th>
+<th align="left">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Histotype</td>
+<td align="left">HGSC</td>
+<td align="left">122 (49%)</td>
+<td align="left">629 (80%)</td>
+<td align="left">476 (94%)</td>
+<td align="left">1227 (79%)</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">CCOC</td>
+<td align="left">44 (18%)</td>
+<td align="left">54 (7%)</td>
+<td align="left">8 (2%)</td>
+<td align="left">106 (7%)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">ENOC</td>
+<td align="left">55 (22%)</td>
+<td align="left">28 (4%)</td>
+<td align="left">8 (2%)</td>
+<td align="left">91 (6%)</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">MUC</td>
+<td align="left">16 (6%)</td>
+<td align="left">59 (7%)</td>
+<td align="left">9 (2%)</td>
+<td align="left">84 (5%)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">LGSC</td>
+<td align="left">14 (6%)</td>
+<td align="left">19 (2%)</td>
+<td align="left">6 (1%)</td>
+<td align="left">39 (3%)</td>
+</tr>
+<tr class="even">
+<td align="left">Total</td>
+<td align="left">N (%)</td>
+<td align="left">251 (16%)</td>
+<td align="left">789 (51%)</td>
+<td align="left">507 (33%)</td>
+<td align="left">1547 (100%)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:cs1-all-hist">Table 3.33: </span>CS1 All Training Set Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">n</th>
+<th align="left">freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">125</td>
+<td align="left">47%</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">58</td>
+<td align="left">22%</td>
+</tr>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">47</td>
+<td align="left">18%</td>
+</tr>
+<tr class="even">
+<td align="left">LGSC</td>
+<td align="right">19</td>
+<td align="left">7%</td>
+</tr>
+<tr class="odd">
+<td align="left">MUC</td>
+<td align="right">19</td>
+<td align="left">7%</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:cs2-all-hist">Table 3.34: </span>CS2 All Training Set Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">n</th>
+<th align="left">freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">654</td>
+<td align="left">79%</td>
+</tr>
+<tr class="even">
+<td align="left">MUC</td>
+<td align="right">61</td>
+<td align="left">7%</td>
+</tr>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">60</td>
+<td align="left">7%</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">32</td>
+<td align="left">4%</td>
+</tr>
+<tr class="odd">
+<td align="left">LGSC</td>
+<td align="right">20</td>
+<td align="left">2%</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:conf-hist">Table 3.35: </span>Confirmation Set Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">n</th>
+<th align="left">freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">423</td>
+<td align="left">66%</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">106</td>
+<td align="left">16%</td>
+</tr>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">75</td>
+<td align="left">12%</td>
+</tr>
+<tr class="even">
+<td align="left">MUC</td>
+<td align="right">27</td>
+<td align="left">4%</td>
+</tr>
+<tr class="odd">
+<td align="left">LGSC</td>
+<td align="right">13</td>
+<td align="left">2%</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:val-hist">Table 3.36: </span>Validation Set Histotype Distribution</caption>
+<thead>
+<tr class="header">
+<th align="left">revHist</th>
+<th align="right">n</th>
+<th align="left">freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">HGSC</td>
+<td align="right">781</td>
+<td align="left">74%</td>
+</tr>
+<tr class="even">
+<td align="left">ENOC</td>
+<td align="right">140</td>
+<td align="left">13%</td>
+</tr>
+<tr class="odd">
+<td align="left">CCOC</td>
+<td align="right">86</td>
+<td align="left">8%</td>
+</tr>
+<tr class="even">
+<td align="left">MUC</td>
+<td align="right">34</td>
+<td align="left">3%</td>
+</tr>
+<tr class="odd">
+<td align="left">LGSC</td>
+<td align="right">20</td>
+<td align="left">2%</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="results.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="assets/gitbook-2.6.7/js/app.min.js"></script>
+<script src="assets/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="assets/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="assets/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="assets/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="assets/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="assets/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="assets/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["OV_Histotypes_RSF.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

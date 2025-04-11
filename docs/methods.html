@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>2 Methods | Ovarian Cancer Histotypes: Report of Statistical Findings</title>
+<meta name="author" content="Derek Chiu">
+<meta name="description" content="2.1 Pre-Processing  2.1.1 Case Selection Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples...">
+<meta name="generator" content="bookdown 0.39 with bs4_book()">
+<meta property="og:title" content="2 Methods | Ovarian Cancer Histotypes: Report of Statistical Findings">
+<meta property="og:type" content="book">
+<meta property="og:description" content="2.1 Pre-Processing  2.1.1 Case Selection Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2 Methods | Ovarian Cancer Histotypes: Report of Statistical Findings">
+<meta name="twitter:description" content="2.1 Pre-Processing  2.1.1 Case Selection Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="assets/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="assets/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="assets/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="assets/bs3compat-0.4.2/transition.js"></script><script src="assets/bs3compat-0.4.2/tabs.js"></script><script src="assets/bs3compat-0.4.2/bs3compat.js"></script><link href="assets/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="assets/bs4_book-1.0.0/bs4_book.js"></script><script src="assets/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="assets/viz-1.8.2/viz.js"></script><link href="assets/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="assets/grViz-binding-1.0.11/grViz.js"></script><script src="assets/kePrint-0.0.1/kePrint.js"></script><link href="assets/lightable-0.0.1/lightable.css" rel="stylesheet">
+<link href="assets/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="assets/datatables-binding-0.20/datatables.js"></script><link href="assets/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="assets/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="assets/dt-core-1.11.3/js/jquery.dataTables.min.js"></script><link href="assets/dt-ext-fixedcolumns-1.11.3/css/fixedColumns.dataTables.min.css" rel="stylesheet">
+<script src="assets/dt-ext-fixedcolumns-1.11.3/js/dataTables.fixedColumns.min.js"></script><link href="assets/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+<script src="assets/nouislider-7.0.10/jquery.nouislider.min.js"></script><link href="assets/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+<script src="assets/selectize-0.12.0/selectize.min.js"></script><script src="assets/dt-plugin-ellipsis-1.11.3/source.js"></script><script src="assets/dt-plugin-natural-1.11.3/source.js"></script><link href="assets/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
+<script src="assets/crosstalk-1.2.0/js/crosstalk.min.js"></script><script src="assets/plotly-binding-4.10.4/plotly.js"></script><script src="assets/typedarray-0.1/typedarray.min.js"></script><link href="assets/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="assets/plotly-main-2.11.1/plotly-latest.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Ovarian Cancer Histotypes: Report of Statistical Findings</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Preface</a></li>
+<li><a class="" href="introduction.html"><span class="header-section-number">1</span> Introduction</a></li>
+<li><a class="active" href="methods.html"><span class="header-section-number">2</span> Methods</a></li>
+<li><a class="" href="distributions.html"><span class="header-section-number">3</span> Distributions</a></li>
+<li><a class="" href="results.html"><span class="header-section-number">4</span> Results</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/TalhoukLab/OV_Histotypes">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="methods" class="section level1" number="2">
+<h1>
+<span class="header-section-number">2</span> Methods<a class="anchor" aria-label="anchor" href="#methods"><i class="fas fa-link"></i></a>
+</h1>
+<div id="pre-processing" class="section level2" number="2.1">
+<h2>
+<span class="header-section-number">2.1</span> Pre-Processing<a class="anchor" aria-label="anchor" href="#pre-processing"><i class="fas fa-link"></i></a>
+</h2>
+<div id="case-selection" class="section level3" number="2.1.1">
+<h3>
+<span class="header-section-number">2.1.1</span> Case Selection<a class="anchor" aria-label="anchor" href="#case-selection"><i class="fas fa-link"></i></a>
+</h3>
+<p>Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples from these sets of cohorts:</p>
+<ul>
+<li>Training
+<ul>
+<li>CS1: MAYO, OOU, OOUE, VOA, MTL</li>
+<li>CS2: MAYO, OOU, OOUE, OVAR3, VOA, ICON7, JAPAN, MTL, POOL-CTRL</li>
+<li>CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3</li>
+</ul>
+</li>
+<li>Confirmation:
+<ul>
+<li>CS3: TNCO</li>
+</ul>
+</li>
+<li>Validation:
+<ul>
+<li>CS3: DOVE4</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="quality-control" class="section level3" number="2.1.2">
+<h3>
+<span class="header-section-number">2.1.2</span> Quality Control<a class="anchor" aria-label="anchor" href="#quality-control"><i class="fas fa-link"></i></a>
+</h3>
+<p>Samples that failed any of the following NanoString quality control conditions were removed:</p>
+<ul>
+<li>
+<code>linFlag</code>: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown</li>
+<li>
+<code>imagingFlag</code>: percent of field of view is less than 75%</li>
+<li>
+<code>spcFlag</code>: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero</li>
+<li>
+<code>normFlag</code>: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the <a href="distributions.html#gd-vs.-snr">%GD vs. SNR</a> relationship below.</li>
+</ul>
+</div>
+<div id="normalization" class="section level3" number="2.1.3">
+<h3>
+<span class="header-section-number">2.1.3</span> Normalization<a class="anchor" aria-label="anchor" href="#normalization"><i class="fas fa-link"></i></a>
+</h3>
+<p>The full training set (n=1243) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.</p>
+<p>CS1 was normalized to CS3 using five “Random1” reference samples. These reference samples are randomly selected from CS1 among all samples in the three CodeSets that share common otta IDs, such that we obtain one sample from each of the five histotypes. Then, we use the reference-based method to normalize CS1 to CS3 across their common genes, for the remaining expression samples <span class="citation">Talhouk et al. (<a href="references.html#ref-talhouk2016">2016</a>)</span>.</p>
+<p>Similarly, CS2 was normalized to CS3 using the same “Random1” reference samples, now taken from CS2. Normalization was performed across common genes between CS2 and CS3.</p>
+<p>For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a “reference standard”, and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a “Random1” reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:venn-genes"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/venn-genes-1.png" alt="Venn diagram of common and unique gene targets covered by each CodeSet" width="100%"><p class="caption">
+Figure 2.1: Venn diagram of common and unique gene targets covered by each CodeSet
+</p>
+</div>
+</div>
+<div id="final-processing" class="section level3" number="2.1.4">
+<h3>
+<span class="header-section-number">2.1.4</span> Final Processing<a class="anchor" aria-label="anchor" href="#final-processing"><i class="fas fa-link"></i></a>
+</h3>
+<p>We map ovarian histotypes to all remaining samples and keep the major histotypes for building the predictive model: high-grade serous carcinoma (HGSC), clear cell ovarian carcinoma (CCOC), endometrioid ovarian carcinoma (ENOC), low-grade serous carcinoma (LGSC), mucinous carcinoma (MUC).</p>
+<p>Duplicate cases (two samples with the same ottaID) were removed before generating the final training set to use for fitting the classification models. All CS3 cases were preferred over CS1 and CS2, and CS3-Vancouver cases were preferred over CS3-AOC and CS3-USC when selecting duplicates.</p>
+<p>The final training set used only genes that were common across all three CodeSets.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:processing"></span>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-a3a9c5b06c7f37c729f1" style="width:100%;height:960px;"></div>
+<script type="application/json" data-for="htmlwidget-a3a9c5b06c7f37c729f1">{"x":{"diagram":"digraph processing {\n\n    # layout\n    # fontname = \"times-italic\"\n    graph [layout = dot overlap = FALSE splines = FALSE ranksep = \"0.8\"]\n\n    # node definitions\n    node [shape = box, style = \"filled\", fillcolor = \"white\"]\n    train_coh [shape = ellipse, label = \"Selected Cohorts for Training Set = 3674\", fillcolor = \"#F4CAE4\"]\n    train_qc [shape = ellipse, label = \"Training = 3441\", fillcolor = \"#F4CAE4\"]\n    train_hist [shape = ellipse, label = \"Training = 3229\", fillcolor = \"#F4CAE4\"]\n\n    c1 [label = \"CS1 = 267\", fillcolor = \"#B3E2CD\"]\n    c2 [label = \"CS2 = 815\", fillcolor = \"#FDCDAC\"]\n    c3 [label = \"CS3 = 2147\", fillcolor = \"#CBD5E8\"]\n\n    d1 [label = \"CS1 = 249\", fillcolor = \"#B3E2CD\"]\n    d2 [label = \"CS2 = 784\", fillcolor = \"#FDCDAC\"]\n    d3 [label = \"CS3 = 2010\", fillcolor = \"#CBD5E8\"]\n\n    e1r [label = <CS1<sub><font point-size=\"10\">R<\/font><\/sub> = 5>, fillcolor = \"#B3E2CD\"]\n    e1x [label = <CS1<sub><font point-size=\"10\">X<\/font><\/sub> = 244>, fillcolor = \"#B3E2CD\"]\n    e2r [label = <CS2<sub><font point-size=\"10\">R<\/font><\/sub> = 5>, fillcolor = \"#FDCDAC\"]\n    e2x [label = <CS2<sub><font point-size=\"10\">X<\/font><\/sub> = 779>, fillcolor = \"#FDCDAC\"]\n    e3r [label = <CS3<sub><font point-size=\"10\">R<\/font><\/sub> = 5>, fillcolor = \"#CBD5E8\"]\n    e3x [label = <CS3<sub><font point-size=\"10\">X<\/font><\/sub> = 2005>, fillcolor = \"#CBD5E8\"]\n\n    f1 [label = <CS1<sub><font point-size=\"10\">N<\/font><\/sub> = 244>, fillcolor = \"#B3E2CD\"]\n    f2 [label = <CS2<sub><font point-size=\"10\">N<\/font><\/sub> = 779>, fillcolor = \"#FDCDAC\"]\n    f3 [label = <CS3<sub><font point-size=\"10\">X<\/font><\/sub> = 468>, fillcolor = \"#CBD5E8\"]\n\n    conf [shape = ellipse, label = \"Confirmation = 643\", fillcolor = \"#E6F5C9\"]\n    val [shape = ellipse, label = \"Validation = 894\", fillcolor = \"#FFF2AE\"]\n\n    train_comb [shape = ellipse, label = \"Training = 1491\", fillcolor = \"#F4CAE4\"]\n    train_uniq [shape = ellipse, label = \"Training = 1243\", fillcolor = \"#F4CAE4\"]\n\n    # edge definitions\n    edge [penwidth = 2, arrowsize = 0.5]\n    train_coh -> train_qc [label = \"  Quality Control\"]\n    train_qc -> train_hist [label = \"  Remove other histotypes\"]\n    train_hist -> {c1 c2} [tailport = \"s\", color = \"#FF7F00\"]\n    train_hist -> c3 [label = \"Split by CodeSets\", tailport = \"s\", color = \"#FF7F00\", fontcolor = \"#FF7F00\"]\n    c1 -> d1 [tailport = \"s\", color = \"#377EB8\"]\n    c2 -> d2 [tailport = \"s\", color = \"#377EB8\"]\n    c3 -> d3 [label = \"  Remove duplicates and pools\", tailport = \"s\", color = \"#377EB8\", fontcolor = \"#377EB8\"]\n    d1 -> {e1r e1x} [tailport = \"s\", color = \"#984EA3\"]\n    d2 -> {e2r e2x} [tailport = \"s\", color = \"#984EA3\"]\n    d3 -> e3r [tailport = \"s\", color = \"#984EA3\"]\n    d3 -> e3x [label = \"Split into Expression and Reference Samples\", tailport = \"s\", color = \"#984EA3\", fontcolor = \"#984EA3\"]\n    e1r -> f1 [headport = \"n\", xlabel = \"Normalization by Random1            \", color = \"#E41A1C\", fontcolor = \"#E41A1C\"]\n    {e1x e3r} -> f1 [headport = \"n\", color = \"#E41A1C\"]\n    {e2x e2r e3r} -> f2 [headport = \"n\", color = \"#E41A1C\"]\n    e3x -> {f3 conf} [color = \"#A65628\"]\n    e3x -> val [label = \"    Split into training and test sets\", color = \"#A65628\", fontcolor = \"#A65628\"]\n    f1 -> train_comb [xlabel = \"Recombine CodeSets        \", color = \"#FF7F00\", fontcolor = \"#FF7F00\"]\n    {f2 f3} -> train_comb [color = \"#FF7F00\"]\n    train_comb -> train_uniq [xlabel = \"  Remove cross CodeSet replicates\"]\n\n    c1 -> c2 -> c3 [style = invis]\n    e1r -> e1x -> e2r -> e2x -> e3r -> e3x [style = invis]\n\n    # subgraph definitions\n    subgraph {rank = same; c1; c2; c3}\n    subgraph {rank = same; d1; d2; d3}\n    subgraph {rank = same; e1r; e1x; e2r; e2x; e3r; e3x}\n    subgraph {rank = same; f1; f2; f3}\n    subgraph {rank = same; train_uniq; conf; val}\n    }\n    ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+Figure 2.2: Processing Stages of Training Data
+</p>
+</div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:processing-v2"></span>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-4ff51c61ef82415c77e7" style="width:100%;height:960px;"></div>
+<script type="application/json" data-for="htmlwidget-4ff51c61ef82415c77e7">{"x":{"diagram":"digraph processing {\n\n    # layout\n    # fontname = \"times-italic\"\n    graph [layout = dot, overlap = FALSE, ranksep = \"0.1\"]\n\n    # node definitions\n    node [shape = box, style = \"filled, rounded\", color = \"white\", fillcolor = \"white\"]\n\n    MAYO [label = \"MAYO\nn = 69\", color = \"black\"]\n    OOU [label = \"OOU\nn = 170\", color = \"black\"]\n    OOUE [label = \"OOUE\nn = 73\", color = \"black\"]\n    VOA [label = \"VOA\nn = 805\", color = \"black\"]\n    MTL [label = \"MTL\nn = 62\", color = \"black\"]\n    OVAR3 [label = \"OVAR3\nn = 150\", color = \"black\"]\n    ICON7 [label = \"ICON7\nn = 416\", color = \"black\"]\n    JAPAN [label = \"JAPAN\nn = 8\", color = \"black\"]\n    intermediate_1 [shape = point, width = 0.01, height = 0.01]\n    train_1 [label = \"n = 1753\", style = \"filled\", fillcolor = \"grey90\"]\n    train_2 [label = \"Training Cohort\nn = 1722\", style = \"filled\", fillcolor = \"#7BB369\"]\n    train_3 [label = \"n = 1640\", style = \"filled\", fillcolor = \"grey90\"]\n    train_cs1 [label = \"CS1\nNx = 244\nNr = 5\", fillcolor = \"#607C8E\"]\n    train_cs2 [label = \"CS2\nNx = 779\nNr = 5\", fillcolor = \"#FFA756\"]\n    train_cs3 [label = \"CS3\nNx = 468\nNr = 5\", fillcolor = \"#259FED\"]\n    train_5 [label = \"Training Cohort\nn = 1243\", style = \"filled\", fillcolor = \"#7BB369\"]\n\n    conf1 [label = \"TNCO\nn = 691\", color = \"black\"]\n    conf2 [label = \"Confirmation\nCohort\nn = 690\", style = \"filled\", fillcolor = \"#B19CD7\"]\n    conf3 [label = \"Confirmation\nCohort\nn = 660\", style = \"filled\", fillcolor = \"#B19CD7\"]\n    conf4 [label = \"Confirmation\nCohort\nn = 643\", style = \"filled\", fillcolor = \"#B19CD7\"]\n\n    val1 [label = \"DOVE4\nn = 1160\", color = \"black\"]\n    val2 [label = \"Validation\nCohort\nn = 959\", style = \"filled\", fillcolor = \"#04D9FF\"]\n    val3 [label = \"Validation\nCohort\nn = 929\", style = \"filled\", fillcolor = \"#04D9FF\"]\n    val4 [label = \"Validation\nCohort\nn = 894\", style = \"filled\", fillcolor = \"#04D9FF\"]\n\n    # edge definitions\n    edge [minlen = 4, arrowsize = 0.75]\n    {MAYO OOU OOUE VOA MTL OVAR3 ICON7 JAPAN} -> intermediate_1 [dir = none]\n    intermediate_1 -> train_1\n    train_1 -> train_2 [xlabel = \"Exclude QC Fails: 31\"]\n    train_2 -> train_3 [xlabel = \"Exclude Other Histotypes: 82\"]\n    train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]\n    train_cs1 -> train_5 [xlabel = \"Exclude Duplicates: 248\"]\n    {train_cs2 train_cs3} -> train_5\n\n    conf1 -> conf2 [xlabel = \"Exclude QC\nFails: 1\"]\n    conf2 -> conf3 [xlabel = \"Exclude Other\nHistotypes: 30\"]\n    conf3 -> conf4 [xlabel = \"Exclude\nDuplicates: 17\", minlen = 7]\n\n    val1 -> val2 [xlabel = \"Exclude QC\nFails: 201\"]\n    val2 -> val3 [xlabel = \"Exclude Other\nHistotypes: 30\"]\n    val3 -> val4 [xlabel = \"Exclude\nDuplicates: 35\", minlen = 7]\n\n    # subgraph definitions\n    subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; ICON7; JAPAN; conf1; val1}\n    subgraph {rank = same; train_2; conf2; val2}\n    subgraph {rank = same; train_cs1; train_cs2; train_cs3; conf3; val3}\n    subgraph {rank = same; train_5; conf4; val4}\n    }\n    ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+Figure 2.3: Cohorts Selection
+</p>
+</div>
+</div>
+</div>
+<div id="classifiers" class="section level2" number="2.2">
+<h2>
+<span class="header-section-number">2.2</span> Classifiers<a class="anchor" aria-label="anchor" href="#classifiers"><i class="fas fa-link"></i></a>
+</h2>
+<p>We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the <code>tidymodels</code> suite of packages. The classifiers we used are:</p>
+<ul>
+<li>Random Forest (<code>rf</code>)</li>
+<li>Support Vector Machine (<code>svm</code>)</li>
+<li>XGBoost (<code>xgb</code>)</li>
+<li>Regularized Multinomial Regression (<code>mr</code>)</li>
+</ul>
+<div id="resampling-of-training-set" class="section level3" number="2.2.1">
+<h3>
+<span class="header-section-number">2.2.1</span> Resampling of Training Set<a class="anchor" aria-label="anchor" href="#resampling-of-training-set"><i class="fas fa-link"></i></a>
+</h3>
+<p>We used a nested cross-validation design to assess each classifier while also performing hyperparameter tuning. An outer 5-fold CV stratified by histotype was used together with an inner 5-fold CV with 2 repeats stratified by histotype. This design was chosen such that the test sets of the inner resamples would still have a reasonable number of samples belonging to the smallest minority class.</p>
+<p>The outer resampling method cannot be the bootstrap, because the inner training and inner test sets will likely contain the same samples as a result of sampling with replacement in the outer training set. This phenomenon might result in inflated performance as some observations are used both to train and evaluate the hyperparameter tuning in the inner loop.</p>
+</div>
+<div id="hyperparameter-tuning" class="section level3" number="2.2.2">
+<h3>
+<span class="header-section-number">2.2.2</span> Hyperparameter Tuning<a class="anchor" aria-label="anchor" href="#hyperparameter-tuning"><i class="fas fa-link"></i></a>
+</h3>
+<p>The following specifications for each classifier were used for tuning hyperparameters:</p>
+<ul>
+<li>
+<code>rf</code> and <code>xgb</code>: The number of trees were fixed at 500. Other hyperparameters were tuned across 10 randomly selected points in a latin hypercube design.</li>
+<li>
+<code>svm</code>: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design. We tuned the cost parameter in the range [1, 8]. The range for tuning the sigma parameter was obtained from the 10% and 90% quantiles of the estimation using the <code><a href="https://rdrr.io/pkg/kernlab/man/sigest.html">kernlab::sigest()</a></code> function.</li>
+<li>
+<code>mr</code>: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in [0, 1] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.</li>
+</ul>
+<p>The hyperparameter combination that resulted in the highest average F1-score across the inner training sets was selected for each classifier to use as the model for assessing prediction performance in the outer training loop.</p>
+</div>
+<div id="subsampling" class="section level3" number="2.2.3">
+<h3>
+<span class="header-section-number">2.2.3</span> Subsampling<a class="anchor" aria-label="anchor" href="#subsampling"><i class="fas fa-link"></i></a>
+</h3>
+<p>Here are the specifications of the subsampling methods used to handle class imbalance:</p>
+<ul>
+<li>None: No subsampling is performed</li>
+<li>Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class</li>
+<li>Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class</li>
+<li>SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class</li>
+<li>Hybrid: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.</li>
+</ul>
+<p>The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sampling"></span>
+<img src="OV_Histotypes_RSF_files/figure-html/sampling-1.png" alt="Visualization of Subsampling Techniques" width="672"><p class="caption">
+Figure 2.4: Visualization of Subsampling Techniques
+</p>
+</div>
+</div>
+<div id="workflows" class="section level3" number="2.2.4">
+<h3>
+<span class="header-section-number">2.2.4</span> Workflows<a class="anchor" aria-label="anchor" href="#workflows"><i class="fas fa-link"></i></a>
+</h3>
+<p>The 4 <strong>algorithms</strong> and 5 <strong>subsampling</strong> methods are crossed to create 20 different classification <strong>workflows</strong>. For example, the <code>hybrid_xgb</code> workflow is a classifier that first pre-processes a training set by applying a hybrid subsampling method, and then proceeds to use the XGBoost algorithm to classify ovarian histotypes.</p>
+</div>
+</div>
+<div id="two-step-algorithm" class="section level2" number="2.3">
+<h2>
+<span class="header-section-number">2.3</span> Two-Step Algorithm<a class="anchor" aria-label="anchor" href="#two-step-algorithm"><i class="fas fa-link"></i></a>
+</h2>
+<p>The HGSC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, LGSC, and MUC histotypes. We can implement a two-step algorithm as such:</p>
+<ul>
+<li>Step 1: use binary classification for HGSC vs. non-HGSC</li>
+<li>Step 2: use multinomial classification for the remaining non-HGSC classes</li>
+</ul>
+<p>Let</p>
+<p><span class="math display" id="eq:sequential">\[
+\begin{aligned}
+&amp; X_k = \text{Training data with k classes}  \\
+&amp; C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
+&amp; W_k = \text{Workflow associated with}\;C_k
+\end{aligned}
+\tag{2.1}
+\]</span></p>
+<p>Figure <a href="methods.html#fig:two-step-flowchart">2.5</a> shows how the two-step algorithm works:</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:two-step-flowchart"></span>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-83714dcd4bafae4d06d3" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-83714dcd4bafae4d06d3">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = \"Store HGSC predictions\"]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT> for HGSC>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = \"Store remaining predictions\"]\n    d2 [label = \"Select best workflow with highest overall F1-score\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train HGSC vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n\n    b1 -> c [xlabel = <  Remove HGSC cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = \"Train multinomial classes with best workflow\"]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n\n    j [label = \"Aggregate all predictions\"]\n\n    {b1 d1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+Figure 2.5: Two-Step Algorithm
+</p>
+</div>
+<div id="aggregating-predictions" class="section level3" number="2.3.1">
+<h3>
+<span class="header-section-number">2.3.1</span> Aggregating Predictions<a class="anchor" aria-label="anchor" href="#aggregating-predictions"><i class="fas fa-link"></i></a>
+</h3>
+<p>The aggregation for two-step predictions is quite straightforward:</p>
+<ol style="list-style-type: decimal">
+<li>Predict HGSC vs. non-HGSC</li>
+<li>Among all non-HGSC cases, predict CCOC vs. LGSC vs. MUC vs. ENOC</li>
+</ol>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:two-step-predictions"></span>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-11f3d433af2b7af55189" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-11f3d433af2b7af55189">{"x":{"diagram":"digraph two_step_predictions {\n    \n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    \n    a [label = \"Predict HGSC vs. non-HGSC\"]\n    b1 [label = \"HGSC\"]\n    b2 [label = \"non-HGSC\"]\n    c [label = \"Predict CCOC vs. LGSC vs. MUC vs. ENOC\"]\n    d1 [label = \"CCOC\"]\n    f1 [label = \"LGSC\"]\n    h1 [label = \"MUC\"]\n    h2 [label = \"ENOC\"]\n    \n    # edge definitions\n    a -> {b1 b2}\n    b2 -> c\n    c -> {d1 f1 h1 h2}\n    \n     # subgraph definitions\n    subgraph {rank = same; b2; c}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+Figure 2.6: Aggregating Predictions for Two-Step Algorithm
+</p>
+</div>
+</div>
+</div>
+<div id="sequential-algorithm" class="section level2" number="2.4">
+<h2>
+<span class="header-section-number">2.4</span> Sequential Algorithm<a class="anchor" aria-label="anchor" href="#sequential-algorithm"><i class="fas fa-link"></i></a>
+</h2>
+<p>Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the “other” class are those not equal to the current “one” class and excluding all “one” classes from previous steps. For example, if the “one” class in step 1 was HGSC, the “other” classes would include CCOC, ENOC, LGSC, and MUC. If the “one” class in step 2 was CCOC, the “other” classes include ENOC, LGSC, and MUC.</p>
+<p>The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).</p>
+<p>Figure <a href="methods.html#fig:sequential-flowchart">2.7</a> illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sequential-flowchart"></span>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-5e456e2acc1f7b578cff" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-5e456e2acc1f7b578cff">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  predictions>]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  predictions>]\n    d2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f [label = <X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    g1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  predictions>]\n    g2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h [label = <X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    i1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  predictions>]\n    i2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    j [label = \"Aggregate all predictions\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n    #b2 -> b1\n    b1 -> c [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n    #d2 -> d1\n    d1 -> f [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f -> g1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    f -> g2 [label = \"Retrain multinomial classes\"]\n    #g2 -> g1\n    g1 -> h [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h -> i1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    h -> i2 [label = \"Retrain multinomial classes\"]\n\n    {b1 d1 g1 i1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    subgraph {rank = same; g1; g2}\n    subgraph {rank = same; i1; i2}\n    subgraph {rank = same; }\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+Figure 2.7: Sequential Algorithm
+</p>
+</div>
+<p>The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.</p>
+<div id="aggregating-predictions-1" class="section level3" number="2.4.1">
+<h3>
+<span class="header-section-number">2.4.1</span> Aggregating Predictions<a class="anchor" aria-label="anchor" href="#aggregating-predictions-1"><i class="fas fa-link"></i></a>
+</h3>
+<p>We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the “all” class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSC vs. non-HGSC, CCOC vs. non-CCOC, LGSC vs. non-LGSC, and then MUC vs. ENOC. Figure <a href="methods.html#fig:sequential-predictions">2.8</a> illustrates how the final predictions are assigned:</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sequential-predictions"></span>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-6c415e4f4c80a5021c18" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-6c415e4f4c80a5021c18">{"x":{"diagram":"digraph sequential_predictions {\n    \n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    \n    a [label = \"Predicted HGSC vs. non-HGSC\"]\n    b1 [label = \"HGSC\"]\n    b2 [label = \"non-HGSC\"]\n    c [label = \"Predicted CCOC vs. non-CCOC\"]\n    d1 [label = \"CCOC\"]\n    d2 [label = \"non-CCOC\"]\n    e [label = \"Predicted LGSC vs. non-LGSC\"]\n    f1 [label = \"LGSC\"]\n    f2 [label = \"non-LGSC\"]\n    g [label = \"Predicted MUC vs. ENOC\"]\n    h1 [label = \"MUC\"]\n    h2 [label = \"ENOC\"]\n    \n    # edge definitions\n    a -> {b1 b2}\n    b2 -> c\n    c -> {d1 d2}\n    d2 -> e\n    e -> {f1 f2}\n    f2 -> g\n    g -> {h1 h2}\n    \n     # subgraph definitions\n    subgraph {rank = same; b2; c}\n    subgraph {rank = same; d2; e}\n    subgraph {rank = same; f2; g}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+Figure 2.8: Aggregating Predictions for Sequential Algorithm
+</p>
+</div>
+</div>
+</div>
+<div id="gene-optimization" class="section level2" number="2.5">
+<h2>
+<span class="header-section-number">2.5</span> Gene Optimization<a class="anchor" aria-label="anchor" href="#gene-optimization"><i class="fas fa-link"></i></a>
+</h2>
+<p>We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of 72 genes are used in the classifier training set.</p>
+<p>There are 16 genes in the classifier set that overlap with the PrOTYPE classifier: COL11A1, CD74, CD2, TIMP3, LUM, CYTIP, COL3A1, THBS2, TCF7L1, HMGA2, FN1, POSTN, COL1A2, COL5A2, PDZK1IP1, FBN1.</p>
+<p>There are also 13 genes in the classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.</p>
+<p>We obtain a total of 28 genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining 44 candidate genes based on an overall variable importance rank to the set of 28 base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.</p>
+<p>Here is the breakdown of genes used and whether they belong to the PrOTYPE and/or SPOT sets:</p>
+<div class="inline-table"><table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:gene-dist">Table 2.1: </span>Gene Distribution
+</caption>
+<thead><tr>
+<th style="text-align:left;">
+Genes
+</th>
+<th style="text-align:left;">
+PrOTYPE
+</th>
+<th style="text-align:left;">
+SPOT
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+TCF7L1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COL11A1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CD74
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CD2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TIMP3
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LUM
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CYTIP
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COL3A1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+THBS2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HMGA2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FN1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POSTN
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COL1A2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COL5A2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PDZK1IP1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FBN1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HIF1A
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL10
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DUSP4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SOX17
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MITF
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CDKN3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BRCA2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CEACAM5
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ANXA4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINE1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CRABP2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DNAJC9
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C10orf116
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GAD1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TPX2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KGFLP2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EGFL6
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KLK7
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PBX1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LIN28B
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TFF3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MUC5B
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FUT3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STC1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BCL2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PAX8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GCNT3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GPR64
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ADCYAP1R1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IGKC
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BRCA1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IGJ
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TFF1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MET
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CYP2C18
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CYP4B1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SLC3A1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EPAS1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HNF1B
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL6
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ATP5G3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DKK4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SENP8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CAPN2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C1orf173
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CPNE8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IGFBP1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WT1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TP53
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SEMA6A
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINA5
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ZBED1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TSPAN8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SCGB1D2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LGALS4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MAP1LC3A
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+</tbody>
+</table></div>
+<div id="variable-importance" class="section level3" number="2.5.1">
+<h3>
+<span class="header-section-number">2.5.1</span> Variable Importance<a class="anchor" aria-label="anchor" href="#variable-importance"><i class="fas fa-link"></i></a>
+</h3>
+<p>Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.</p>
+<p>For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.</p>
+<p>The variable importance measures are:</p>
+<ul>
+<li><p>Random Forest: impurity measure (Gini index)</p></li>
+<li><p>XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features’s splits)</p></li>
+<li><p>SVM: permutation based p-values</p></li>
+<li><p>Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value</p></li>
+</ul>
+</div>
+</div>
+<div id="performance-evaluation" class="section level2" number="2.6">
+<h2>
+<span class="header-section-number">2.6</span> Performance Evaluation<a class="anchor" aria-label="anchor" href="#performance-evaluation"><i class="fas fa-link"></i></a>
+</h2>
+<div id="class-metrics" class="section level3" number="2.6.1">
+<h3>
+<span class="header-section-number">2.6.1</span> Class Metrics<a class="anchor" aria-label="anchor" href="#class-metrics"><i class="fas fa-link"></i></a>
+</h3>
+<p>We use the accuracy, sensitivity, specificity, F1-score, kappa, balanced accuracy, and geometric mean, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class.</p>
+<div id="accuracy" class="section level4" number="2.6.1.1">
+<h4>
+<span class="header-section-number">2.6.1.1</span> Accuracy<a class="anchor" aria-label="anchor" href="#accuracy"><i class="fas fa-link"></i></a>
+</h4>
+<p>The accuracy is defined as the proportion of correct predictions out of all cases:</p>
+<p><span class="math display" id="eq:accuracy">\[
+\text{accuracy} = \frac{TP}{TP + FP + FN + TN}
+\tag{2.2}
+\]</span></p>
+</div>
+<div id="sensitivity" class="section level4" number="2.6.1.2">
+<h4>
+<span class="header-section-number">2.6.1.2</span> Sensitivity<a class="anchor" aria-label="anchor" href="#sensitivity"><i class="fas fa-link"></i></a>
+</h4>
+<p>Sensitivity is the proportional of correctly predicted positive cases, out of all cases that were truly positive</p>
+<p><span class="math display" id="eq:sens">\[
+\text{sensitivity} = \frac{TP}{TP + FN}
+\tag{2.3}
+\]</span></p>
+</div>
+<div id="specificity" class="section level4" number="2.6.1.3">
+<h4>
+<span class="header-section-number">2.6.1.3</span> Specificity<a class="anchor" aria-label="anchor" href="#specificity"><i class="fas fa-link"></i></a>
+</h4>
+<p>Specificity is the proportional of correctly predicted negative cases, out of all cases that were truly negative.</p>
+<p><span class="math display" id="eq:spec">\[
+\text{specificity} = \frac{TN}{TN + FP}
+\tag{2.4}
+\]</span></p>
+</div>
+<div id="f1-score" class="section level4" number="2.6.1.4">
+<h4>
+<span class="header-section-number">2.6.1.4</span> F1-Score<a class="anchor" aria-label="anchor" href="#f1-score"><i class="fas fa-link"></i></a>
+</h4>
+<p>The F-measure can be thought of as a harmonic mean between precision and recall:</p>
+<p><span class="math display" id="eq:f1">\[
+F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times precision) + recall}
+\tag{2.5}
+\]</span></p>
+<p>The <span class="math inline">\(\beta\)</span> value can be adjusted to place more weight upon precision or recall. The most common value is <span class="math inline">\(\beta\)</span> is 1, which is also commonly known as the F1-score. A multiclass extension doesn’t exist for the F1-score, so we use macro-averaging to calculate this metric when there are more than two classes. For example, with <span class="math inline">\(k\)</span> classes, the macro-averaged F1-score is equal to:</p>
+<p><span class="math display" id="eq:f1-macro">\[
+{F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}
+\tag{2.6}
+\]</span> where each <span class="math inline">\({F_1}_{i}\)</span> is the F1-score computed frrom recoding classes into <span class="math inline">\(k=i\)</span> vs. <span class="math inline">\(k \neq i\)</span>.</p>
+<p>In situations where there is not at least one predicted case for each of the classes (e.g. for a poor classifier), <span class="math inline">\({F_1}_{i}\)</span> is undefined because the per-class precision of class <span class="math inline">\(i\)</span> is undefined. Those <span class="math inline">\({F_1}_{i}\)</span> terms are removed from the <span class="math inline">\({F_1}_{macro}\)</span> equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.</p>
+</div>
+<div id="balanced-accuracy" class="section level4" number="2.6.1.5">
+<h4>
+<span class="header-section-number">2.6.1.5</span> Balanced Accuracy<a class="anchor" aria-label="anchor" href="#balanced-accuracy"><i class="fas fa-link"></i></a>
+</h4>
+<p>Balanced accuracy is the arithmetic mean of sensitivity and specificity.</p>
+<p><span class="math display" id="eq:bal-accuracy">\[
+\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2}
+\tag{2.7}
+\]</span></p>
+</div>
+<div id="kappa" class="section level4" number="2.6.1.6">
+<h4>
+<span class="header-section-number">2.6.1.6</span> Kappa<a class="anchor" aria-label="anchor" href="#kappa"><i class="fas fa-link"></i></a>
+</h4>
+<p>Kappa is the defined as:</p>
+<p><span class="math display" id="eq:kappa">\[
+\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
+\tag{2.8}
+\]</span></p>
+<p>where <span class="math inline">\(p_0\)</span> is the observed agreement among raters and <span class="math inline">\(p_e\)</span> is the hypothetical probability of agreement due to random chance.</p>
+</div>
+</div>
+<div id="auc" class="section level3" number="2.6.2">
+<h3>
+<span class="header-section-number">2.6.2</span> AUC<a class="anchor" aria-label="anchor" href="#auc"><i class="fas fa-link"></i></a>
+</h3>
+<p>The area under the receiver operating curve (AUC) is calculated by adding up the area under the curve formed by plotting sensitivity vs. 1 - specificity. The Hand-till method is used as a multiclass extension for the AUC.</p>
+<p>We did not use AUC to measure class-specific training set performance because combining predicted probabilities in a one-vs-all fashion might be potentially misleading. The sum of probabilities that add up to the “other” class is not equivalent to the predicted probability of the “other” class when using a multiclass classifier.</p>
+<p>Instead, we only reported ROC curves and their associated AUCs for the test set performance of the sequential and two-step algorithms.</p>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="introduction.html"><span class="header-section-number">1</span> Introduction</a></div>
+<div class="next"><a href="distributions.html"><span class="header-section-number">3</span> Distributions</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#methods"><span class="header-section-number">2</span> Methods</a></li>
+<li>
+<a class="nav-link" href="#pre-processing"><span class="header-section-number">2.1</span> Pre-Processing</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#case-selection"><span class="header-section-number">2.1.1</span> Case Selection</a></li>
+<li><a class="nav-link" href="#quality-control"><span class="header-section-number">2.1.2</span> Quality Control</a></li>
+<li><a class="nav-link" href="#normalization"><span class="header-section-number">2.1.3</span> Normalization</a></li>
+<li><a class="nav-link" href="#final-processing"><span class="header-section-number">2.1.4</span> Final Processing</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#classifiers"><span class="header-section-number">2.2</span> Classifiers</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#resampling-of-training-set"><span class="header-section-number">2.2.1</span> Resampling of Training Set</a></li>
+<li><a class="nav-link" href="#hyperparameter-tuning"><span class="header-section-number">2.2.2</span> Hyperparameter Tuning</a></li>
+<li><a class="nav-link" href="#subsampling"><span class="header-section-number">2.2.3</span> Subsampling</a></li>
+<li><a class="nav-link" href="#workflows"><span class="header-section-number">2.2.4</span> Workflows</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#two-step-algorithm"><span class="header-section-number">2.3</span> Two-Step Algorithm</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#aggregating-predictions"><span class="header-section-number">2.3.1</span> Aggregating Predictions</a></li></ul>
+</li>
+<li>
+<a class="nav-link" href="#sequential-algorithm"><span class="header-section-number">2.4</span> Sequential Algorithm</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#aggregating-predictions-1"><span class="header-section-number">2.4.1</span> Aggregating Predictions</a></li></ul>
+</li>
+<li>
+<a class="nav-link" href="#gene-optimization"><span class="header-section-number">2.5</span> Gene Optimization</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#variable-importance"><span class="header-section-number">2.5.1</span> Variable Importance</a></li></ul>
+</li>
+<li>
+<a class="nav-link" href="#performance-evaluation"><span class="header-section-number">2.6</span> Performance Evaluation</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#class-metrics"><span class="header-section-number">2.6.1</span> Class Metrics</a></li>
+<li><a class="nav-link" href="#auc"><span class="header-section-number">2.6.2</span> AUC</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/TalhoukLab/OV_Histotypes/blob/master/src/02-methods.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/TalhoukLab/OV_Histotypes/edit/master/src/02-methods.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2025-04-10.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>
