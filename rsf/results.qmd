@@ -1184,6 +1184,7 @@ conf_data <- readRDS(here("data", "conf_data.rds"))
 
 ```{r}
 #| label: tbl-conf-eval
+#| tbl-cap: 'Evaluation Metrics on Confirmation Set Models'
 
 # Confirmation set overall predictions
 conf_pred_overall <- data.frame(FileName = rownames(conf_data),
@@ -1278,11 +1279,10 @@ conf_eval <-
              conf_eval_per_class,
              by = c("Method", "Metric"))
   
-kable(conf_eval,
-      caption = "Evaluation Metrics on Confirmation Set Models",
-      digits = 3) %>% 
-  kable_styling() %>% 
-  collapse_rows(columns = 1) %>% 
+conf_eval |> 
+  kbl(digits = 3) |> 
+  kable_styling() |> 
+  collapse_rows(columns = 1) |>  
   add_header_above(c(" " = 3, "Histotypes" = 5))
 ```
 
@@ -1483,6 +1483,7 @@ val_data <- readRDS(here("data", "val_data.rds"))
 
 ```{r}
 #| label: tbl-val-eval
+#| tbl-cap: 'Evaluation Metrics on Validation Set Model, SMOTE-Random Forest, Optimal Set'
 
 # Validation set overall predictions
 val_pred_overall <- data.frame(FileName = rownames(val_data),
@@ -1540,11 +1541,10 @@ val_eval_per_class <- val_pred_overall |>
 val_eval <-
   inner_join(val_eval_overall, val_eval_per_class, by = "Metric")
 
-kbl(val_eval,
-    caption = "Evaluation Metrics on Validation Set Model, SMOTE-Random Forest, Optimal Set",
-    digits = 3) |>
-  kable_styling() %>%
-  collapse_rows(columns = 1) %>%
+val_eval |> 
+  kbl(digits = 3) |>
+  kable_styling() |> 
+  collapse_rows(columns = 1) |> 
   add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
 

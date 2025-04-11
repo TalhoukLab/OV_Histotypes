@@ -533,6 +533,7 @@ Here is the breakdown of genes used and whether they belong to the PrOTYPE and/o
 
 ```{r}
 #| label: tbl-gene-dist
+#| tbl-cap: 'Gene Distribution'
 
 gene_dist <-
   data.frame(Genes = genes_all) |>
@@ -543,7 +544,7 @@ gene_dist <-
   arrange(desc(PrOTYPE), desc(SPOT))
 
 gene_dist |> 
-  kbl(caption = "Gene Distribution") |> 
+  kbl() |> 
   kable_styling(full_width = FALSE)
 ```
 
