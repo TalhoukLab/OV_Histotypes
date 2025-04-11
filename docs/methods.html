@@ -169,7 +169,7 @@ Figure 2.2: Processing Stages of Training Data
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:processing-v2"></span>
 <div class="grViz html-widget html-fill-item" id="htmlwidget-4ff51c61ef82415c77e7" style="width:100%;height:960px;"></div>
-<script type="application/json" data-for="htmlwidget-4ff51c61ef82415c77e7">{"x":{"diagram":"digraph processing {\n\n    # layout\n    # fontname = \"times-italic\"\n    graph [layout = dot, overlap = FALSE, ranksep = \"0.1\"]\n\n    # node definitions\n    node [shape = box, style = \"filled, rounded\", color = \"white\", fillcolor = \"white\"]\n\n    MAYO [label = \"MAYO\nn = 69\", color = \"black\"]\n    OOU [label = \"OOU\nn = 170\", color = \"black\"]\n    OOUE [label = \"OOUE\nn = 73\", color = \"black\"]\n    VOA [label = \"VOA\nn = 805\", color = \"black\"]\n    MTL [label = \"MTL\nn = 62\", color = \"black\"]\n    OVAR3 [label = \"OVAR3\nn = 150\", color = \"black\"]\n    ICON7 [label = \"ICON7\nn = 416\", color = \"black\"]\n    JAPAN [label = \"JAPAN\nn = 8\", color = \"black\"]\n    intermediate_1 [shape = point, width = 0.01, height = 0.01]\n    train_1 [label = \"n = 1753\", style = \"filled\", fillcolor = \"grey90\"]\n    train_2 [label = \"Training Cohort\nn = 1722\", style = \"filled\", fillcolor = \"#7BB369\"]\n    train_3 [label = \"n = 1640\", style = \"filled\", fillcolor = \"grey90\"]\n    train_cs1 [label = \"CS1\nNx = 244\nNr = 5\", fillcolor = \"#607C8E\"]\n    train_cs2 [label = \"CS2\nNx = 779\nNr = 5\", fillcolor = \"#FFA756\"]\n    train_cs3 [label = \"CS3\nNx = 468\nNr = 5\", fillcolor = \"#259FED\"]\n    train_5 [label = \"Training Cohort\nn = 1243\", style = \"filled\", fillcolor = \"#7BB369\"]\n\n    conf1 [label = \"TNCO\nn = 691\", color = \"black\"]\n    conf2 [label = \"Confirmation\nCohort\nn = 690\", style = \"filled\", fillcolor = \"#B19CD7\"]\n    conf3 [label = \"Confirmation\nCohort\nn = 660\", style = \"filled\", fillcolor = \"#B19CD7\"]\n    conf4 [label = \"Confirmation\nCohort\nn = 643\", style = \"filled\", fillcolor = \"#B19CD7\"]\n\n    val1 [label = \"DOVE4\nn = 1160\", color = \"black\"]\n    val2 [label = \"Validation\nCohort\nn = 959\", style = \"filled\", fillcolor = \"#04D9FF\"]\n    val3 [label = \"Validation\nCohort\nn = 929\", style = \"filled\", fillcolor = \"#04D9FF\"]\n    val4 [label = \"Validation\nCohort\nn = 894\", style = \"filled\", fillcolor = \"#04D9FF\"]\n\n    # edge definitions\n    edge [minlen = 4, arrowsize = 0.75]\n    {MAYO OOU OOUE VOA MTL OVAR3 ICON7 JAPAN} -> intermediate_1 [dir = none]\n    intermediate_1 -> train_1\n    train_1 -> train_2 [xlabel = \"Exclude QC Fails: 31\", fontcolor = \"#7BB369\"]\n    train_2 -> train_3 [xlabel = \"Exclude Other Histotypes: 82\", fontcolor = \"#7BB369\"]\n    train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]\n    train_cs1 -> train_5 [xlabel = \"Exclude Duplicates: 248\", fontcolor = \"#7BB369\"]\n    {train_cs2 train_cs3} -> train_5\n\n    conf1 -> conf2 [xlabel = \"Exclude QC\nFails: 1\", fontcolor = \"#7BB369\"]\n    conf2 -> conf3 [xlabel = \"Exclude Other\nHistotypes: 30\", fontcolor = \"#7BB369\"]\n    conf3 -> conf4 [xlabel = \"Exclude\nDuplicates: 17\", fontcolor = \"#7BB369\", minlen = 7]\n\n    val1 -> val2 [xlabel = \"Exclude QC\nFails: 201\", fontcolor = \"#7BB369\"]\n    val2 -> val3 [xlabel = \"Exclude Other\nHistotypes: 30\", fontcolor = \"#7BB369\"]\n    val3 -> val4 [xlabel = \"Exclude\nDuplicates: 35\", fontcolor = \"#7BB369\", minlen = 7]\n\n    # subgraph definitions\n    subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; ICON7; JAPAN; conf1; val1}\n    subgraph {rank = same; train_2; conf2; val2}\n    subgraph {rank = same; train_cs1; train_cs2; train_cs3; conf3; val3}\n    subgraph {rank = same; train_5; conf4; val4}\n    }\n    ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
+<script type="application/json" data-for="htmlwidget-4ff51c61ef82415c77e7">{"x":{"diagram":"digraph processing {\n\n    # layout\n    # fontname = \"times-italic\"\n    graph [layout = dot, overlap = FALSE, ranksep = \"0.1\"]\n\n    # node definitions\n    node [shape = box, style = \"filled, rounded\", color = \"white\", fillcolor = \"white\"]\n\n    MAYO [label = \"MAYO\nn = 69\", color = \"black\"]\n    OOU [label = \"OOU\nn = 170\", color = \"black\"]\n    OOUE [label = \"OOUE\nn = 73\", color = \"black\"]\n    VOA [label = \"VOA\nn = 805\", color = \"black\"]\n    MTL [label = \"MTL\nn = 62\", color = \"black\"]\n    OVAR3 [label = \"OVAR3\nn = 150\", color = \"black\"]\n    ICON7 [label = \"ICON7\nn = 416\", color = \"black\"]\n    JAPAN [label = \"JAPAN\nn = 8\", color = \"black\"]\n    intermediate_1 [shape = point, width = 0.01, height = 0.01]\n    train_1 [label = \"n = 1753\", style = \"filled\", fillcolor = \"grey90\"]\n    train_2 [label = \"Training Cohort\nn = 1722\", style = \"filled\", fillcolor = \"#7BB369\"]\n    train_3 [label = \"n = 1640\", style = \"filled\", fillcolor = \"grey90\"]\n    train_cs1 [label = \"CS1\nNx = 244\nNr = 5\", fillcolor = \"#607C8E\"]\n    train_cs2 [label = \"CS2\nNx = 779\nNr = 5\", fillcolor = \"#FFA756\"]\n    train_cs3 [label = \"CS3\nNx = 468\nNr = 5\", fillcolor = \"#259FED\"]\n    train_5 [label = \"Training Cohort\nn = 1243\", style = \"filled\", fillcolor = \"#7BB369\"]\n\n    conf1 [label = \"TNCO\nn = 691\", color = \"black\"]\n    conf2 [label = \"Confirmation\nCohort\nn = 690\", style = \"filled\", fillcolor = \"#B19CD7\"]\n    conf3 [label = \"Confirmation\nCohort\nn = 660\", style = \"filled\", fillcolor = \"#B19CD7\"]\n    conf4 [label = \"Confirmation\nCohort\nn = 643\", style = \"filled\", fillcolor = \"#B19CD7\"]\n\n    val1 [label = \"DOVE4\nn = 1160\", color = \"black\"]\n    val2 [label = \"Validation\nCohort\nn = 959\", style = \"filled\", fillcolor = \"#04D9FF\"]\n    val3 [label = \"Validation\nCohort\nn = 929\", style = \"filled\", fillcolor = \"#04D9FF\"]\n    val4 [label = \"Validation\nCohort\nn = 894\", style = \"filled\", fillcolor = \"#04D9FF\"]\n\n    # edge definitions\n    edge [minlen = 4, arrowsize = 0.75]\n    {MAYO OOU OOUE VOA MTL OVAR3 ICON7 JAPAN} -> intermediate_1 [dir = none]\n    intermediate_1 -> train_1\n    train_1 -> train_2 [xlabel = \"Exclude QC Fails: 31\"]\n    train_2 -> train_3 [xlabel = \"Exclude Other Histotypes: 82\"]\n    train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]\n    train_cs1 -> train_5 [xlabel = \"Exclude Duplicates: 248\"]\n    {train_cs2 train_cs3} -> train_5\n\n    conf1 -> conf2 [xlabel = \"Exclude QC\nFails: 1\"]\n    conf2 -> conf3 [xlabel = \"Exclude Other\nHistotypes: 30\"]\n    conf3 -> conf4 [xlabel = \"Exclude\nDuplicates: 17\", minlen = 7]\n\n    val1 -> val2 [xlabel = \"Exclude QC\nFails: 201\"]\n    val2 -> val3 [xlabel = \"Exclude Other\nHistotypes: 30\"]\n    val3 -> val4 [xlabel = \"Exclude\nDuplicates: 35\", minlen = 7]\n\n    # subgraph definitions\n    subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; ICON7; JAPAN; conf1; val1}\n    subgraph {rank = same; train_2; conf2; val2}\n    subgraph {rank = same; train_cs1; train_cs2; train_cs3; conf3; val3}\n    subgraph {rank = same; train_5; conf4; val4}\n    }\n    ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p class="caption">
 Figure 2.3: Cohorts Selection
 </p>
 </div>
@@ -316,6 +316,702 @@ Figure 2.8: Aggregating Predictions for Sequential Algorithm
 <p>There are 16 genes in the classifier set that overlap with the PrOTYPE classifier: COL11A1, CD74, CD2, TIMP3, LUM, CYTIP, COL3A1, THBS2, TCF7L1, HMGA2, FN1, POSTN, COL1A2, COL5A2, PDZK1IP1, FBN1.</p>
 <p>There are also 13 genes in the classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.</p>
 <p>We obtain a total of 28 genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining 44 candidate genes based on an overall variable importance rank to the set of 28 base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.</p>
+<p>Here is the breakdown of genes used and whether they belong to the PrOTYPE and/or SPOT sets:</p>
+<div class="inline-table"><table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:gene-dist">Table 2.1: </span>Gene Distribution
+</caption>
+<thead><tr>
+<th style="text-align:left;">
+Genes
+</th>
+<th style="text-align:left;">
+PrOTYPE
+</th>
+<th style="text-align:left;">
+SPOT
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+TCF7L1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COL11A1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CD74
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CD2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TIMP3
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LUM
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CYTIP
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COL3A1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+THBS2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HMGA2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FN1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POSTN
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COL1A2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COL5A2
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PDZK1IP1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FBN1
+</td>
+<td style="text-align:left;">
+✔
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HIF1A
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL10
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DUSP4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SOX17
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MITF
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CDKN3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BRCA2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CEACAM5
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ANXA4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINE1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CRABP2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DNAJC9
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+✔
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C10orf116
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GAD1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TPX2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KGFLP2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EGFL6
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KLK7
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PBX1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LIN28B
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TFF3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MUC5B
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FUT3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STC1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BCL2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PAX8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GCNT3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GPR64
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ADCYAP1R1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IGKC
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BRCA1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IGJ
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TFF1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MET
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CYP2C18
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CYP4B1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SLC3A1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EPAS1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HNF1B
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL6
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ATP5G3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DKK4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SENP8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CAPN2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C1orf173
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CPNE8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IGFBP1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WT1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TP53
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SEMA6A
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINA5
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ZBED1
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TSPAN8
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SCGB1D2
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LGALS4
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MAP1LC3A
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+</tbody>
+</table></div>
 <div id="variable-importance" class="section level3" number="2.5.1">
 <h3>
 <span class="header-section-number">2.5.1</span> Variable Importance<a class="anchor" aria-label="anchor" href="#variable-importance"><i class="fas fa-link"></i></a>
@@ -474,7 +1170,7 @@ F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times p
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2025-04-08.</p>
+    <p>"<strong>Ovarian Cancer Histotypes: Report of Statistical Findings</strong>" was written by Derek Chiu. It was last built on 2025-04-10.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
