@@ -517,6 +517,9 @@ per_class_metrics_comp <- per_class_metrics %>%
                values_to = "mean_estimate")
 ```
 
+::: {#rank-agg-metrics .panel-tabset .nav-pills}
+#### F1-Score
+
 ```{r}
 #| label: tbl-rank-agg-f1
 #| tbl-cap: 'F1-Score Rank Aggregation Summary'
@@ -577,6 +580,8 @@ datatable(
   plugins = c("ellipsis", "natural")
 )
 ```
+
+#### Balanced Accuracy
 
 ```{r}
 #| label: tbl-rank-agg-bal-acc
@@ -639,6 +644,8 @@ datatable(
 )
 ```
 
+#### Kappa
+
 ```{r}
 #| label: tbl-rank-agg-kap
 #| tbl-cap: 'Kappa Rank Aggregation Summary'
@@ -699,6 +706,7 @@ datatable(
   plugins = c("ellipsis", "natural")
 )
 ```
+:::
 
 ### Across Metrics
 
@@ -1196,6 +1204,7 @@ conf_conf_mat <- conf_pred_overall %>%
 print(conf_conf_mat)
 ```
 
+::: {#conf-roc-curves .panel-tabset .nav-pills}
 ```{r}
 #| label: roc-curve-setup
 
@@ -1222,6 +1231,8 @@ class_groups <-
   )) |>
   str_replace_all(string = map_chr(map(conf_class_seq, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
 ```
+
+#### Sequential, Full
 
 ```{r}
 #| label: fig-roc-curve-seq-full
@@ -1264,6 +1275,8 @@ roc_curve_seq_full <- mod_seq_full %>%
 print(roc_curve_seq_full)
 ```
 
+#### Sequential, Optimal
+
 ```{r}
 #| label: fig-roc-curve-seq-opt
 #| fig-cap: 'ROC Curves for Sequential, Optimal Model in Confirmation Set'
@@ -1305,6 +1318,8 @@ roc_curve_seq_opt <- mod_seq_opt %>%
 print(roc_curve_seq_opt)
 ```
 
+#### SMOTE-Random Forest, Full
+
 ```{r}
 #| label: fig-roc-curve-smote-rf-full
 #| fig-cap: 'ROC Curves for SMOTE-Random Forest, Full Set Model in Confirmation Set'
@@ -1330,6 +1345,8 @@ roc_curve_smote_rf_full <-
 print(roc_curve_smote_rf_full)
 ```
 
+#### SMOTE-Random Forest, Optimal
+
 ```{r}
 #| label: fig-roc-curve-smote-rf-opt
 #| fig-cap: 'ROC Curves for SMOTE-Random Forest, Optimal Set Model in Confirmation Set'
@@ -1354,6 +1371,7 @@ roc_curve_smote_rf_opt <-
         strip.text = element_text(face = "bold"))
 print(roc_curve_smote_rf_opt)
 ```
+:::
 
 ### Validation Set
 
