@@ -904,7 +904,7 @@ gene_dist <-
     SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, ""),
     `Optimal Set` = case_when(
       Genes %in% opt_genes_seq ~ cli::symbol$circle_filled,
-      Set == "Candidates" & !Genes %in% opt_genes_seq ~ cli::symbol$cross,
+      Set == "Candidates" & !Genes %in% opt_genes_seq ~ cli::symbol$circle_filled,
       .default = ""
     ),
     `Optimal Set` = cell_spec(`Optimal Set`,
@@ -991,7 +991,7 @@ gene_dist <-
     SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, ""),
     `Optimal Set` = case_when(
       Genes %in% opt_genes_smote_rf ~ cli::symbol$circle_filled,
-      Set == "Candidates" & !Genes %in% opt_genes_smote_rf ~ cli::symbol$cross,
+      Set == "Candidates" & !Genes %in% opt_genes_smote_rf ~ cli::symbol$circle_filled,
       .default = ""
     ),
     `Optimal Set` = cell_spec(`Optimal Set`,
