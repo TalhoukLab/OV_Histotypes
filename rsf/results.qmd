@@ -576,6 +576,7 @@ datatable(
   ), 
   rownames = FALSE,
   filter = "top",
+  autoHideNavigation = TRUE,
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
 )
@@ -639,6 +640,7 @@ datatable(
   ), 
   rownames = FALSE,
   filter = "top",
+  autoHideNavigation = TRUE,
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
 )
@@ -702,6 +704,7 @@ datatable(
   ), 
   rownames = FALSE,
   filter = "top",
+  autoHideNavigation = TRUE,
   extensions = "FixedColumns",
   plugins = c("ellipsis", "natural")
 )
@@ -1498,3 +1501,4 @@ val_roc_curve_smote_rf_opt <-
         strip.text = element_text(face = "bold"))
 print(val_roc_curve_smote_rf_opt)
 ```
+
