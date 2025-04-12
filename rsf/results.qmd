@@ -902,7 +902,7 @@ gene_dist <-
     `Optimal Set` = cell_spec(`Optimal Set`,
                               color = case_when(Genes %in% overlap_all ~ "green",
                                                 Genes %in% opt_genes_seq ~ "#8B8000",
-                                                .default = "red")),
+                                                .default = "#FF0000")),
     `Candidate Rank` = ifelse(Genes %in% overlap_all, "",
                               match(Genes, candidates_all))
   )
@@ -989,7 +989,7 @@ gene_dist <-
     `Optimal Set` = cell_spec(`Optimal Set`,
                               color = case_when(Genes %in% overlap_all ~ "green",
                                                 Genes %in% opt_genes_smote_rf ~ "#8B8000",
-                                                .default = "red")),
+                                                .default = "#FF0000")),
     `Candidate Rank` = ifelse(Genes %in% overlap_all, "",
                               match(Genes, candidates_all))
   )
