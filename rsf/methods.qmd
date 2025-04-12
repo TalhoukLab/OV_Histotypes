@@ -103,7 +103,7 @@ The final training set used only genes that were common across all three CodeSet
 ```{r}
 #| label: fig-processing
 #| fig-cap: 'Cohorts Selection'
-#| fig-height: 10
+#| out-height: '100%'
 #| out-width: '100%'
 
 # Training Cohort

@@ -873,6 +873,46 @@ opt_genes_seq <- c(overlap_all, genes_add_seq)
 
 In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.88 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
+```{r}
+#| label: tbl-gene-opt-seq
+#| tbl-cap: 'Gene Profile of Optimal Set in Sequential Algorithm'
+
+candidates_all <- gene_seq_names %>%
+  filter(Genes > 0L) %>% 
+  pull(Name)
+candidates_unused <- gene_seq_names %>%
+  filter(Genes > 0L) %>% 
+  slice_max(order_by = Genes, n = -n_genes_seq) |> 
+  arrange(Genes) |> 
+  pull(Name)
+gene_order <- c(opt_genes_seq, candidates_unused)
+
+gene_dist <-
+  data.frame(Genes = gene_order) |>
+  mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+         .before = Genes) |> 
+  mutate(
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, ""),
+    `Optimal Set` = case_when(
+      Genes %in% opt_genes_seq ~ cli::symbol$circle_filled,
+      Set == "Candidates" & !Genes %in% opt_genes_seq ~ cli::symbol$cross,
+      .default = ""
+    ),
+    `Optimal Set` = cell_spec(`Optimal Set`,
+                              color = case_when(Genes %in% overlap_all ~ "green",
+                                                Genes %in% opt_genes_seq ~ "#8B8000",
+                                                .default = "red")),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "",
+                              match(Genes, candidates_all))
+  )
+
+gene_dist |> 
+  kbl(escape = FALSE) |> 
+  kable_styling(full_width = FALSE) |> 
+  collapse_rows(columns = 1)
+```
+
 ### SMOTE-Random Forest
 
 ```{r}
@@ -919,6 +959,46 @@ opt_genes_smote_rf <- c(overlap_all, genes_add_smote_rf)
 ```
 
 In the SMOTE-Random Forest classifier, the F1-score stabilizes at around 0.7 when we reach `r n_genes_smote_rf` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_rf`=`r length(opt_genes_smote_rf)` The added genes are: `r str_flatten_comma(genes_add_smote_rf, last = " and ")`.
+
+```{r}
+#| label: tbl-gene-opt-smote-rf
+#| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-Random Forest Workflow'
+
+candidates_all <- gene_smote_rf_names %>%
+  filter(Genes > 0L) %>% 
+  pull(Name)
+candidates_unused <- gene_smote_rf_names %>%
+  filter(Genes > 0L) %>% 
+  slice_max(order_by = Genes, n = -n_genes_smote_rf) |> 
+  arrange(Genes) |> 
+  pull(Name)
+gene_order <- c(opt_genes_smote_rf, candidates_unused)
+
+gene_dist <-
+  data.frame(Genes = gene_order) |>
+  mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+         .before = Genes) |> 
+  mutate(
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, ""),
+    `Optimal Set` = case_when(
+      Genes %in% opt_genes_smote_rf ~ cli::symbol$circle_filled,
+      Set == "Candidates" & !Genes %in% opt_genes_smote_rf ~ cli::symbol$cross,
+      .default = ""
+    ),
+    `Optimal Set` = cell_spec(`Optimal Set`,
+                              color = case_when(Genes %in% overlap_all ~ "green",
+                                                Genes %in% opt_genes_smote_rf ~ "#8B8000",
+                                                .default = "red")),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "",
+                              match(Genes, candidates_all))
+  )
+
+gene_dist |> 
+  kbl(escape = FALSE) |> 
+  kable_styling(full_width = FALSE) |> 
+  collapse_rows(columns = 1)
+```
 
 ## Test Set Performance
 
