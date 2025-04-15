@@ -134,6 +134,7 @@ train_derep_codeset <- train_ref %>%
 ```{r}
 #| label: tbl-hist-codeset
 #| tbl-cap: 'Histotype Distribution in Training Set by Processing Stage'
+#| tbl-pos: H
 
 hist_codeset <-
   bind_rows(
@@ -146,8 +147,9 @@ hist_codeset <-
   )
 
 hist_codeset |> 
-  kbl() |> 
+  kbl(booktabs = TRUE, longtable = TRUE, linesep = "") |> 
   kable_styling() |> 
+  collapse_rows(columns = 1) |> 
   pack_rows(
     index = c(
       "Selected Cohorts" = 7,
@@ -157,13 +159,13 @@ hist_codeset |>
       "Normalized and Recombined" = 6,
       "Removed Replicates" = 6
     )
-  ) |> 
-  collapse_rows(columns = 1)
+  )
 ```
 
 ```{r}
 #| label: tbl-hist-train-conf-val
 #| tbl-cap: 'Histotype Distribution in Training, Confirmation, and Validation Sets'
+#| tbl-pos: H
 
 hist_train_conf_val <-
   list(Training = train_ref,
@@ -184,7 +186,7 @@ hist_train_conf_val <-
   select(-Total)
 
 hist_train_conf_val |> 
-  kbl() |> 
+  kbl(booktabs = TRUE, linesep = "") |> 
   kable_styling() |> 
   collapse_rows(columns = 1)
 ```
@@ -196,8 +198,8 @@ hist_train_conf_val |>
 #| tbl-cap: 'Pre-QC Cohort Distribution by CodeSet'
 
 cohorts_dist <-
-  cohorts %>%
-  filter(col_name %in% c(cs1_samples_coh, cs2_samples_coh, cs3_samples_coh)) %>%
+  cohorts |> 
+  filter(col_name %in% c(cs1_samples_coh, cs2_samples_coh, cs3_samples_coh)) |> 
   mutate(CodeSet = toupper(file_source),
          cohort = factor(
            cohort,
@@ -217,35 +219,37 @@ cohorts_dist <-
              "POOL-2",
              "POOL-3"
            )
-         )) %>%
+         )) |> 
   tbl_summary(
     by = CodeSet,
     label = list(cohort ~ "Cohort"),
     include = c(CodeSet, cohort)
-  ) %>%
+  ) |> 
   modify_header(label ~ "**CodeSet**")
 
-cohorts_dist
+cohorts_dist |> 
+  as_kable_extra(booktabs = TRUE, linesep = "") |> 
+  kable_styling()
 ```
 
 ## Quality Control
 
 ### Failed Samples
 
-We use an aggregated `QCFlag` that considers a sample to have failed QC if any of the following conditions are true:
+We use an aggregated `QCFlag` that considers a sample to have failed QC if any of the following QC conditions are flagged:
 
--   `linFlag`: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown
--   `imagingFlag`: percent of field of view is less than 75%
--   `spcFlag`: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero
--   `normFlag`: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the @sec-gd-vs-nr relationship below.
+-   Linearity
+-   Imaging
+-   Smallest Positive Control
+-   Normality
 
 ```{r}
 #| label: tbl-qc-failed
 #| tbl-cap: 'Quality Control Summary'
 
 qc_failed <-
-  bind_rows(cs1_qc, cs2_qc, cs3_qc) %>%
-  droplevels() %>%
+  bind_rows(cs1_qc, cs2_qc, cs3_qc) |> 
+  droplevels() |> 
   tbl_summary(
     by = CodeSet,
     label = list(
@@ -256,11 +260,13 @@ qc_failed <-
       QCFlag ~ "Overall QC"
     ),
     include = matches("(?<!bd)Flag", perl = TRUE)
-  ) %>%
-  bold_labels() %>%
+  ) |> 
+  bold_labels() |> 
   modify_header(label ~ "**Quality Control Flag**")
 
-qc_failed
+qc_failed |> 
+  as_kable_extra(booktabs = TRUE, linesep = "") |> 
+  kable_styling(full_width = FALSE)
 ```
 
 ### %GD vs. SNR {#sec-gd-vs-nr}
@@ -270,24 +276,40 @@ qc_failed
 #| fig-height: 8
 #| fig-cap: '% Genes Detected vs. Signal to Noise Ratio'
 
-p1 <- ggplot(cs1_qc, aes(snr, pergd)) +
+p1 <- ggplot(cs1_qc, aes(snr, pergd, color = normFlag)) +
   geom_point() +
-  labs(title = "CS1")
-p2 <- ggplot(cs2_qc, aes(snr, pergd)) +
-  geom_point() +
-  labs(title = "CS2")
-p3 <- ggplot(cs3_qc, aes(snr, pergd)) +
-  geom_point() +
-  labs(title = "CS3")
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_color_manual(values = c("red", "green4")) +
+  labs(x = "SNR", y = "% GD", title = "CS1", color = "Flag") +
+  theme_bw() +
+  theme(plot.title = element_text(colour = "#607C8E"))
 
-p_gd_snr_all <- p1 / p2 / p3 &
+p2 <- ggplot(cs2_qc, aes(snr, pergd, color = normFlag)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_color_manual(values = c("red", "green4")) +
+  labs(x = "SNR", y = "% GD", title = "CS2", color = "Flag") +
+  theme_bw() +
+  theme(plot.title = element_text(colour = "#FFA756"))
+
+p3 <- ggplot(cs3_qc, aes(snr, pergd, color = normFlag)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_color_manual(values = c("red", "green4")) +
+  labs(x = "SNR", y = "% GD", title = "CS3", color = "Flag") +
+  theme_bw() +
+  theme(plot.title = element_text(colour = "#259FED"))
+
+p_gd_snr_all <- wrap_plots(list(p1, p2, p3), ncol = 1) +
+  plot_annotation(title = "% Genes Detected vs. Signal-to-Noise Ratio",
+                  tag_levels = "A") + 
+  plot_layout(guides = "collect", axes = "collect") &
   labs(x = "SNR", y = "% GD") &
-  geom_vline(xintercept = 100, color = "red", linetype = "dashed") &
-  geom_hline(yintercept = 50, color = "red", linetype = "dashed") &
-  theme_bw() &
-  theme(panel.grid.minor = element_blank()) &
-  plot_annotation(title = "% Genes Detected vs. SNR",
-                  tag_levels = "a")
+  geom_vline(xintercept = 100, color = "grey20", linetype = "dashed") &
+  geom_hline(yintercept = 50, color = "grey20", linetype = "dashed") &
+  scale_x_continuous(labels = scales::label_comma()) &
+  theme(panel.grid.minor = element_blank(),
+        legend.justification = "top")
 print(p_gd_snr_all)
 ```
 
@@ -296,10 +318,10 @@ print(p_gd_snr_all)
 #| fig-height: 8
 #| fig-cap: '% Genes Detected vs. Signal to Noise Ratio (Zoomed)'
 
-p_gd_snr_zoomed <- p_gd_snr_all &
-  lims(x = c(0, 2000)) &
-    plot_annotation(title = "% Genes Detected vs. SNR (Zoomed)",
-                  tag_levels = "a")
+p_gd_snr_zoomed <- p_gd_snr_all +
+  plot_annotation(title = "% Genes Detected vs. Signal-to-Noise Ratio (Zoomed)",
+                  tag_levels = "A") &
+  lims(x = c(0, 2000))
 print(p_gd_snr_zoomed)
 ```
 
@@ -354,6 +376,7 @@ p_genes_cs13_rand1 <-
               color = "red") +
   facet_wrap(~ Gene, nrow = 8, ncol = 9) +
   theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
   labs(
     title = "Random1-Normalized CS1 vs. CS3 Gene Expression",
     subtitle = paste0("Samples=", n_distinct(genes_cs13_rand1[["ottaID"]])),
@@ -413,6 +436,7 @@ p_genes_cs23_rand1 <-
               color = "red") +
   facet_wrap(~ Gene, nrow = 8, ncol = 9) +
   theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
   labs(
     title = "Random1-Normalized CS2 vs. CS3 Gene Expression",
     subtitle = paste0("Samples=", n_distinct(genes_cs23_rand1[["ottaID"]])),
@@ -469,6 +493,7 @@ p_genes_cs13_hkgenes <-
               color = "red") +
   facet_wrap(~ Gene, nrow = 8, ncol = 9) +
   theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
   labs(
     title = "HKgenes-Normalized CS1 vs. CS3 Gene Expression",
     subtitle = paste0("Samples=",
@@ -526,6 +551,7 @@ p_genes_cs23_hkgenes <-
               color = "red") +
   facet_wrap(~ Gene, nrow = 8, ncol = 9) +
   theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
   labs(
     title = "HKgenes-Normalized CS2 vs. CS3 Gene Expression",
     subtitle = paste0("Samples=",

@@ -108,10 +108,11 @@ all_metrics_train <- all_metrics_train %>%
 ```{r}
 #| label: tbl-train-accuracy
 #| tbl-cap: 'Training Set Mean Accuracy'
+#| tbl-pos: 'H'
 
 all_metrics_train |>
   summarize_metrics(metric = "accuracy") |>
-  kbl(escape = FALSE) |>
+  kbl(booktabs = TRUE, escape = FALSE) |>
   kable_styling() |>
   add_header_above(c(" " = 3, "Histotypes" = 5)) |>
   column_spec(column = 3, border_right = TRUE) |>
@@ -159,9 +160,11 @@ print(p)
 ```{r}
 #| label: tbl-train-sens
 #| tbl-cap: 'Training Set Mean Sensitivity'
+#| tbl-pos: 'H'
+
 all_metrics_train |>
   summarize_metrics(metric = "sensitivity") |>
-  kbl(escape = FALSE) |>
+  kbl(booktabs = TRUE, escape = FALSE) |>
   kable_styling() |>
   add_header_above(c(" " = 3, "Histotypes" = 5)) |>
   column_spec(column = 3, border_right = TRUE) |>
@@ -209,9 +212,11 @@ print(p)
 ```{r}
 #| label: tbl-train-spec
 #| tbl-cap: 'Training Set Mean Specificity'
+#| tbl-pos: 'H'
+
 all_metrics_train |>
   summarize_metrics(metric = "specificity") |>
-  kbl(escape = FALSE) |>
+  kbl(booktabs = TRUE, escape = FALSE) |>
   kable_styling() |>
   add_header_above(c(" " = 3, "Histotypes" = 5)) |>
   column_spec(column = 3, border_right = TRUE) |>
@@ -259,9 +264,11 @@ print(p)
 ```{r}
 #| label: tbl-train-f1
 #| tbl-cap: 'Training Set Mean F1-Score'
+#| tbl-pos: 'H'
+
 all_metrics_train |>
   summarize_metrics(metric = "f_meas") |>
-  kbl(escape = FALSE) |>
+  kbl(booktabs = TRUE, escape = FALSE) |>
   kable_styling() |>
   add_header_above(c(" " = 3, "Histotypes" = 5)) |>
   column_spec(column = 3, border_right = TRUE) |>
@@ -309,9 +316,11 @@ print(p)
 ```{r}
 #| label: tbl-train-bal-accuracy
 #| tbl-cap: 'Training Set Mean Balanced Accuracy'
+#| tbl-pos: 'H'
+
 all_metrics_train |>
   summarize_metrics(metric = "bal_accuracy") |>
-  kbl(escape = FALSE) |>
+  kbl(booktabs = TRUE, escape = FALSE) |>
   kable_styling() |>
   add_header_above(c(" " = 3, "Histotypes" = 5)) |>
   column_spec(column = 3, border_right = TRUE) |>
@@ -359,9 +368,11 @@ print(p)
 ```{r}
 #| label: tbl-train-kappa
 #| tbl-cap: 'Training Set Mean Kappa'
+#| tbl-pos: 'H'
+
 all_metrics_train |>
   summarize_metrics(metric = "kap") |>
-  kbl(escape = FALSE) |>
+  kbl(booktabs = TRUE, escape = FALSE) |>
   kable_styling() |>
   add_header_above(c(" " = 3, "Histotypes" = 5)) |>
   column_spec(column = 3, border_right = TRUE) |>
@@ -411,9 +422,11 @@ print(p)
 ```{r}
 #| label: tbl-train-gmean
 #| tbl-cap: 'Training Set Mean G-mean'
+#| tbl-pos: 'H'
+
 all_metrics_train |>
   summarize_metrics(metric = "gmean") |>
-  kbl(escape = FALSE) |>
+  kbl(booktabs = TRUE, escape = FALSE) |>
   kable_styling() |>
   add_header_above(c(" " = 3, "Histotypes" = 5)) |>
   column_spec(column = 3, border_right = TRUE) |>
@@ -722,6 +735,7 @@ datatable(
 ```{r}
 #| label: tbl-rank-agg-comp-metrics
 #| tbl-cap: 'Rank Aggregation Comparison of Metrics Used'
+#| tbl-pos: 'H'
 
 rank_agg_metrics <- list(F1 = wflow_rank_agg_f1,
                          `Balanced Accuracy` = wflow_rank_agg_bal_acc,
@@ -730,13 +744,14 @@ rank_agg_metrics <- list(F1 = wflow_rank_agg_f1,
   pivot_wider(names_from = "Metric", values_from = "Workflow")
 
 rank_agg_metrics |> 
-  kbl() |> 
+  kbl(booktabs = TRUE, linesep = "") |> 
   kable_styling(full_width = FALSE)
 ```
 
 ```{r}
 #| label: tbl-rank-agg-final
 #| tbl-cap: 'Top 5 Workflows from Final Rank Aggregation'
+#| tbl-pos: 'H'
 
 # Rank aggregation of aggregated metrics using GA
 wflow_ranks_metrics <- rank_agg_metrics |> 
@@ -758,7 +773,7 @@ wflow_rank_agg_metrics <- splendid:::sink_output(RankAggreg(
   enframe(name = "Rank", value = "Workflow")
 
 wflow_rank_agg_metrics |> 
-  kbl() |> 
+  kbl(booktabs = TRUE, linesep = "") |> 
   kable_styling(full_width = FALSE)
 ```
 
@@ -841,6 +856,7 @@ Misclassified cases from a previous step of the sequence of classifiers are not 
 #| label: fig-gene-seq
 #| fig-cap: 'Gene Optimization for Sequential Classifier'
 #| fig-height: 8
+#| out-width: '100%'
  
 gene_seq_names <- all_vi_seq %>% 
   rename(Name = Variable) %>% 
@@ -893,6 +909,7 @@ In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average 
 ```{r}
 #| label: tbl-gene-opt-seq
 #| tbl-cap: 'Gene Profile of Optimal Set in Sequential Algorithm'
+#| tbl-pos: 'H'
 
 candidates_all <- gene_seq_names %>%
   filter(Genes > 0L) %>% 
@@ -925,7 +942,7 @@ gene_dist <-
   )
 
 gene_dist |> 
-  kbl(escape = FALSE) |> 
+  kbl(booktabs = TRUE, linesep = "", escape = FALSE) |> 
   kable_styling(full_width = FALSE) |> 
   collapse_rows(columns = 1)
 ```
@@ -935,6 +952,7 @@ gene_dist |>
 ```{r}
 #| label: fig-gene-smote-rf
 #| fig-cap: 'Gene Optimization for SMOTE-Random Forest Classifier'
+#| out-width: '100%'
 
 gene_smote_rf_names <- all_vi_train %>% 
   filter(wflow == "smote_rf") %>% 
@@ -980,6 +998,7 @@ In the SMOTE-Random Forest classifier, the F1-score stabilizes at around 0.7 whe
 ```{r}
 #| label: tbl-gene-opt-smote-rf
 #| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-Random Forest Workflow'
+#| tbl-pos: 'H'
 
 candidates_all <- gene_smote_rf_names %>%
   filter(Genes > 0L) %>% 
@@ -1012,7 +1031,7 @@ gene_dist <-
   )
 
 gene_dist |> 
-  kbl(escape = FALSE) |> 
+  kbl(booktabs = TRUE, linesep = "", escape = FALSE) |> 
   kable_styling(full_width = FALSE) |> 
   collapse_rows(columns = 1)
 ```
@@ -1086,6 +1105,7 @@ conf_data <- readRDS(here("data", "conf_data.rds"))
 ```{r}
 #| label: tbl-conf-eval
 #| tbl-cap: 'Evaluation Metrics on Confirmation Set Models'
+#| tbl-pos: 'H'
 
 # Confirmation set overall predictions
 conf_pred_overall <- data.frame(FileName = rownames(conf_data),
@@ -1181,7 +1201,7 @@ conf_eval <-
              by = c("Method", "Metric"))
   
 conf_eval |> 
-  kbl(digits = 3) |> 
+  kbl(booktabs = TRUE, linesep = "", digits = 3) |> 
   kable_styling() |> 
   collapse_rows(columns = 1) |>  
   add_header_above(c(" " = 3, "Histotypes" = 5))
@@ -1395,6 +1415,7 @@ val_data <- readRDS(here("data", "val_data.rds"))
 ```{r}
 #| label: tbl-val-eval
 #| tbl-cap: 'Evaluation Metrics on Validation Set Model, SMOTE-Random Forest, Optimal Set'
+#| tbl-pos: 'H'
 
 # Validation set overall predictions
 val_pred_overall <- data.frame(FileName = rownames(val_data),
@@ -1453,7 +1474,7 @@ val_eval <-
   inner_join(val_eval_overall, val_eval_per_class, by = "Metric")
 
 val_eval |> 
-  kbl(digits = 3) |>
+  kbl(booktabs = TRUE, linesep = "", digits = 3) |>
   kable_styling() |> 
   collapse_rows(columns = 1) |> 
   add_header_above(c(" " = 2, "Histotypes" = 5))
