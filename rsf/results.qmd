@@ -29,6 +29,7 @@ library(conflicted)
 conflict_prefer("margin", "ggplot2")
 conflict_prefer("set_names", "purrr")
 conflict_prefer("filter", "dplyr")
+conflict_prefer("HKnorm", "nanostringr")
 
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
@@ -123,6 +124,7 @@ all_metrics_train |>
 #| label: fig-train-accuracy
 #| fig-cap: 'Training Set Mean Accuracy'
 #| fig-height: 8
+#| fig-width: 7
 
 p <- ggplot(
   all_metrics_train %>% filter(.metric == "accuracy"),
@@ -175,6 +177,7 @@ all_metrics_train |>
 #| label: fig-train-sens
 #| fig-cap: 'Training Set Mean Sensitivity'
 #| fig-height: 8
+#| fig-width: 7
 
 p <- ggplot(
   all_metrics_train %>% filter(.metric == "sensitivity"),
@@ -227,6 +230,7 @@ all_metrics_train |>
 #| label: fig-train-spec
 #| fig-cap: 'Training Set Mean Specificity'
 #| fig-height: 8
+#| fig-width: 7
 
 p <- ggplot(
   all_metrics_train %>% filter(.metric == "specificity"),
@@ -279,6 +283,7 @@ all_metrics_train |>
 #| label: fig-train-f1
 #| fig-cap: 'Training Set Mean F1-Score'
 #| fig-height: 8
+#| fig-width: 7
 
 p <- ggplot(
   all_metrics_train %>% filter(.metric == "f_meas"),
@@ -331,6 +336,7 @@ all_metrics_train |>
 #| label: fig-train-bal-accuracy
 #| fig-cap: 'Training Set Mean Balanced Accuracy'
 #| fig-height: 8
+#| fig-width: 7
 
 p <- ggplot(
   all_metrics_train %>% filter(.metric == "bal_accuracy"),
@@ -383,6 +389,7 @@ all_metrics_train |>
 #| label: fig-train-kappa
 #| fig-cap: 'Training Set Mean Kappa'
 #| fig-height: 8
+#| fig-width: 7
 
 p <- ggplot(
   all_metrics_train %>% filter(.metric == "kap"),
@@ -437,6 +444,7 @@ all_metrics_train |>
 #| label: fig-train-gmean
 #| fig-cap: 'Training Set Mean G-mean'
 #| fig-height: 8
+#| fig-width: 7
 
 p <- ggplot(
   all_metrics_train %>% filter(.metric == "gmean"),
@@ -856,6 +864,8 @@ Misclassified cases from a previous step of the sequence of classifiers are not 
 #| label: fig-gene-seq
 #| fig-cap: 'Gene Optimization for Sequential Classifier'
 #| fig-height: 8
+#| fig-width: 7
+#| out-height: '50%'
 #| out-width: '100%'
  
 gene_seq_names <- all_vi_seq %>% 
@@ -942,7 +952,10 @@ gene_dist <-
   )
 
 gene_dist |> 
-  kbl(booktabs = TRUE, linesep = "", escape = FALSE) |> 
+  kbl(booktabs = TRUE,
+      longtable = TRUE,
+      linesep = "",
+      escape = FALSE) |> 
   kable_styling(full_width = FALSE) |> 
   collapse_rows(columns = 1)
 ```
@@ -952,6 +965,9 @@ gene_dist |>
 ```{r}
 #| label: fig-gene-smote-rf
 #| fig-cap: 'Gene Optimization for SMOTE-Random Forest Classifier'
+#| fig-height: 6
+#| fig-width: 7
+#| out-height: '50%'
 #| out-width: '100%'
 
 gene_smote_rf_names <- all_vi_train %>% 
@@ -1031,7 +1047,10 @@ gene_dist <-
   )
 
 gene_dist |> 
-  kbl(booktabs = TRUE, linesep = "", escape = FALSE) |> 
+  kbl(booktabs = TRUE,
+      longtable = TRUE,
+      linesep = "",
+      escape = FALSE) |> 
   kable_styling(full_width = FALSE) |> 
   collapse_rows(columns = 1)
 ```
@@ -1202,7 +1221,7 @@ conf_eval <-
   
 conf_eval |> 
   kbl(booktabs = TRUE, linesep = "", digits = 3) |> 
-  kable_styling() |> 
+  kable_styling(latex_options = "scale_down") |> 
   collapse_rows(columns = 1) |>  
   add_header_above(c(" " = 3, "Histotypes" = 5))
 ```
@@ -1210,6 +1229,7 @@ conf_eval |>
 ```{r}
 #| label: fig-conf-conf-mat
 #| fig-cap: 'Confusion Matrices for Confirmation Set Models'
+#| fig-height: 6
 #| fig-width: 8
 #| out-width: '100%'
 
@@ -1352,7 +1372,8 @@ print(roc_curve_seq_opt)
 ```{r}
 #| label: fig-roc-curve-smote-rf-full
 #| fig-cap: 'ROC Curves for SMOTE-Random Forest, Full Set Model in Confirmation Set'
-#| fig-width: 9
+#| fig-height: 7
+#| fig-width: 8
 #| out-width: '100%'
 
 preds <- predict(mod_smote_rf_full, conf_data, type = "prob") %>%
@@ -1379,7 +1400,8 @@ print(roc_curve_smote_rf_full)
 ```{r}
 #| label: fig-roc-curve-smote-rf-opt
 #| fig-cap: 'ROC Curves for SMOTE-Random Forest, Optimal Set Model in Confirmation Set'
-#| fig-width: 9
+#| fig-height: 7
+#| fig-width: 8
 #| out-width: '100%'
 
 preds <- predict(mod_smote_rf_opt, conf_data, type = "prob") %>% 
@@ -1507,7 +1529,8 @@ print(val_conf_mat)
 ```{r}
 #| label: fig-val-roc-curve-smote-rf-opt
 #| fig-cap: 'ROC Curves for SMOTE-Random Forest, Optimal Set Model in Validation Set'
-#| fig-width: 9
+#| fig-height: 7
+#| fig-width: 8
 #| out-width: '100%'
 
 preds <- predict(mod_smote_rf_opt, val_data, type = "prob") |> 

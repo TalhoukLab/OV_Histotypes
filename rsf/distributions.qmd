@@ -274,6 +274,7 @@ qc_failed |>
 ```{r}
 #| label: fig-qc-gd-snr-all
 #| fig-height: 8
+#| fig-width: 7
 #| fig-cap: '% Genes Detected vs. Signal to Noise Ratio'
 
 p1 <- ggplot(cs1_qc, aes(snr, pergd, color = normFlag)) +
@@ -316,6 +317,7 @@ print(p_gd_snr_all)
 ```{r}
 #| label: fig-qc-gd-snr-zoomed
 #| fig-height: 8
+#| fig-width: 7
 #| fig-cap: '% Genes Detected vs. Signal to Noise Ratio (Zoomed)'
 
 p_gd_snr_zoomed <- p_gd_snr_all +
@@ -562,3 +564,4 @@ p_genes_cs23_hkgenes <-
 
 print(p_genes_cs23_hkgenes)
 ```
+
