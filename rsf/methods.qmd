@@ -27,7 +27,7 @@ coefmat <- readRDS(here("data/coefmat.rds"))
 
 ### Case Selection
 
-Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide the data into training, confirmation, and validation sets by using samples from these sets of cohorts:
+Prior to pre-processing, samples were split into a training, a confirmation, and a validation set.
 
 -   Training
     -   CS1: MAYO, OOU, OOUE, VOA, MTL
@@ -40,22 +40,49 @@ Raw data comes from three NanoString CodeSets (CS): CS1, CS2, and CS3. We divide
 
 ### Quality Control
 
-Samples that failed any of the following NanoString quality control conditions were removed:
+Before normalization, we calculated several quality control measures and excluded samples that failed to achieve sample quality in one or more of these measures.
 
--   `linFlag`: linearity of positive controls with positive control concentrations is less than 0.95, or linearity measures are unknown
--   `imagingFlag`: percent of field of view is less than 75%
--   `spcFlag`: smallest positive control is less than the lower limit of detection (negative control average expression less two times the negative control standard deviation), or negative control average expression equals zero
--   `normFlag`: signal to noise ratio less than 100, or percent of genes detected is less than 50. Note: these thresholds were determined by examining the \[%GD vs. SNR\] relationship below.
+-   **Linearity of positive control genes**: If the R-squared from a linear model of positive controls and their concentrations is less than 0.95 or missing, then the sample is flagged.
+-   **Imaging quality**: The sample is flagged if the field of view percentage is less than 75%.
+-   **Positive Control flag**: We consider the two smallest positive controls at concentrations 0.5 and 1. If these two controls are less than the lower limit of detection (defined as two standard deviations below the mean of the negative control expression), or if the mean negative control expression is 0, the sample is flagged.
+-   **The signal-to-noise ratio or percent of genes detected**: These two measures are defined as the ratio of the average housekeeping gene expression over the upper limit of detection, defined as two standard deviations above the mean of the negative control expression (or 0 if this limit is less than 0.001), and the proportion of endogenous genes with expression greater than the upper limit of detection. These measures are flagged if they are below a pre-specified threshold, which is determined visually by considering their bivariate distribution in a scatterplot. In this case, we used 100 for the SNR threshold and 50% for the threshold for genes detected. Note: these thresholds were determined by examining the relationship in @sec-gd-vs-nr.
 
-### Normalization
+### Housekeeping Genes Normalization
 
-The full training set (n=`r nrow(train_data)`) is comprised of data from CodeSets (CS) 1, 2, and 3. All CodeSets were first normalized to housekeeping genes, then different approaches were taken for subsequent normalizations of each CodeSet.
+The full training set (n=`r nrow(train_data)`) comprised of data from three CodeSets (CS) 1, 2, and 3. Data normalization removes technical variation from high-throughput platforms to improve the validity of comparative analyses.
 
-CS1 was normalized to CS3 using five "Random1" reference samples. These reference samples are randomly selected from CS1 among all samples in the three CodeSets that share common otta IDs, such that we obtain one sample from each of the five histotypes. Then, we use the reference-based method to normalize CS1 to CS3 across their common genes, for the remaining expression samples @talhouk2016.
+Each CodeSet was first normalized to housekeeping genes: *ACTB*, *RPL19*, *POLR1B*, *SDHA*, and *PGK1*. Housekeeping genes encode proteins responsible for basic cell function and have consistent expression in all cells. All expression values were log2 transformed. Normalization to housekeeping genes corrects the viable RNA from each sample. This is achieved by subtracting the average log (base 2)-transformed expression of the housekeeping genes from the log (base 2)-transformed expression of each gene:
 
-Similarly, CS2 was normalized to CS3 using the same "Random1" reference samples, now taken from CS2. Normalization was performed across common genes between CS2 and CS3.
+$$
+log_2(\text{endogenous gene expression}) - \text{average(}log_2(\text{housekeeping gene expresssion})) = \text{relative expression}
+$$ {#eq-norm-hkgenes}
 
-For CS3, we first split the dataset into three sites: Vancouver, USC, and AOC. We use the CS3-Vancouver subset as a "reference standard", and normalized CS3-USC and CS3-AOC to CS3-Vancouver using a "Random1" reference set randomly selected among samples common between Vancouver, USC, and AOC. Finally, the CS3-Vancouver expression samples are included in the training set without further normalization.
+### Between CodeSet and Site Normalization
+
+To normalize between CodeSets, we randomly selected five specimens, one from each histotype, among specimens repeated in all three CodeSets. This formed the reference set (Random 1). We selected only one sample from each histotype to use as few samples as possible for normalization and retain the rest for analysis.
+
+A reference-based approach (@talhouk2016) was used to normalize CS1 to CS3 and CS2 to CS3 across their common genes:
+
+$$
+\text{X-Norm}_{\text{CS1}} = X_{\text{CS1}} + {\bar{R}_{\text{CS3}}} - {\bar{R}_{\text{CS1}}} \\
+\text{X-Norm}_{\text{CS2}} = X_{\text{CS2}} + {\bar{R}_{\text{CS3}}} - {\bar{R}_{\text{CS2}}}
+$$ {#eq-rand1-cs1-cs2}
+
+Samples in CS3 were processed at three different locations; we also had to normalize for “site” in this CodeSet. Finally, the CS3 expression samples were included in the training set without further normalization:
+
+$$
+\text{X-Norm}_{\text{CS3-USC}} = X_{\text{CS3-USC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-USC}}} \\
+\text{X-Norm}_{\text{CS3-AOC}} = X_{\text{CS3-AOC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-AOC}}}
+$$ {#eq-rand1-cs3-sites}
+
+Finally, the CS3 expression samples were included in the training set without further normalization. The initial training set is assembled by combining all four of the previously mentioned normalized datasets along with the two CS3 expression subsets not used in normalization:
+
+$$
+\begin{align*} 
+\text{Training Set} &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X-Norm}_{\text{CS3-USC}} + \text{X-Norm}_{\text{CS3-AOC}} + \text{X-Norm}_{\text{CS3}} + \text{X-Norm}_{\text{CS3-VAN}} \\
+                        &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X-Norm}_{\text{CS3}}
+\end{align*}
+$$ {#eq-training-set}
 
 ```{r}
 #| label: fig-venn-genes
@@ -103,7 +130,7 @@ The final training set used only genes that were common across all three CodeSet
 ```{r}
 #| label: fig-processing
 #| fig-cap: 'Cohorts Selection'
-#| out-height: '100%'
+#| out-height: '50%'
 #| out-width: '100%'
 
 # Training Cohort
@@ -317,6 +344,8 @@ $$ {#eq-sequential}
 ```{r}
 #| label: fig-two-step-flowchart
 #| fig-cap: 'Two-Step Algorithm'
+#| out-width: '100%'
+
 grViz(
   paste0(
     "digraph sequential_algorithm {
@@ -363,6 +392,7 @@ The aggregation for two-step predictions is quite straightforward:
 ```{r}
 #| label: fig-two-step-predictions
 #| fig-cap: 'Aggregating Predictions for Two-Step Algorithm'
+#| out-width: '100%'
 
 grViz(
   paste0(
@@ -406,6 +436,7 @@ The order of classes and workflows to use at each step in the sequential algorit
 ```{r}
 #| label: fig-sequential-flowchart
 #| fig-cap: 'Sequential Algorithm'
+#| out-width: '100%'
 
 grViz(
   paste0(
@@ -468,6 +499,7 @@ We have to aggregate the one-vs-all predictions from each of the sequential algo
 ```{r}
 #| label: fig-sequential-predictions
 #| fig-cap: 'Aggregating Predictions for Sequential Algorithm'
+#| out-width: '100%'
 
 grViz(
   paste0(
@@ -509,60 +541,6 @@ grViz(
   )
 )
 ```
-
-## Gene Optimization
-
-```{r}
-#| label: gene-opt
-genes_all <- names(train_data)
-overlap_PrOTYPE <- intersect(genes_all, cs5$Name)
-overlap_SPOT <- intersect(genes_all, coefmat[["Symbol"]])
-overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
-candidates <- setdiff(genes_all, overlap_all)
-```
-
-We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of `r length(genes_all)` genes are used in the classifier training set.
-
-There are `r length(overlap_PrOTYPE)` genes in the classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`.
-
-There are also `r length(overlap_SPOT)` genes in the classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
-
-We obtain a total of `r length(overlap_all)` genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining `r length(candidates)` candidate genes based on an overall variable importance rank to the set of `r length(overlap_all)` base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
-
-Here is the breakdown of genes used and whether they belong to the PrOTYPE and/or SPOT sets:
-
-```{r}
-#| label: tbl-gene-dist
-#| tbl-cap: 'Gene Distribution'
-
-gene_dist <-
-  data.frame(Genes = genes_all) |>
-  mutate(
-    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
-    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, "")
-  ) |>
-  arrange(desc(PrOTYPE), desc(SPOT))
-
-gene_dist |> 
-  kbl() |> 
-  kable_styling(full_width = FALSE)
-```
-
-### Variable Importance
-
-Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
-
-For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
-
-The variable importance measures are:
-
--   Random Forest: impurity measure (Gini index)
-
--   XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features's splits)
-
--   SVM: permutation based p-values
-
--   Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value
 
 ## Performance Evaluation
 
@@ -636,4 +614,64 @@ The area under the receiver operating curve (AUC) is calculated by adding up the
 
 We did not use AUC to measure class-specific training set performance because combining predicted probabilities in a one-vs-all fashion might be potentially misleading. The sum of probabilities that add up to the "other" class is not equivalent to the predicted probability of the "other" class when using a multiclass classifier.
 
-Instead, we only reported ROC curves and their associated AUCs for the test set performance of the sequential and two-step algorithms.
+Instead, we only reported ROC curves and their associated AUCs for test set performance among the highest ranked algorithms.
+
+## Rank Aggregation
+
+To select the best algorithm, we implemented a two-stage rank aggregation procedure using the Genetic Algorithm. First, we ranked all workflows based on per-class F1-scores, balanced accuracy, and kappa to see which workflows performed well in predicting all five histotypes. Then, we took the ranks from these three performance metrics and performed a second run of rank aggregation. The top 5 workflows were determined from the final rank aggregation result.
+
+## Gene Optimization
+
+```{r}
+#| label: gene-opt
+
+genes_all <- names(train_data)
+overlap_PrOTYPE <- intersect(genes_all, cs5$Name)
+overlap_SPOT <- intersect(genes_all, coefmat[["Symbol"]])
+overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+candidates <- setdiff(genes_all, overlap_all)
+```
+
+We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of `r length(genes_all)` genes are used in the classifier training set.
+
+There are `r length(overlap_PrOTYPE)` genes in the classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`.
+
+There are also `r length(overlap_SPOT)` genes in the classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
+
+We obtain a total of `r length(overlap_all)` genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining `r length(candidates)` candidate genes based on a variable importance rank to the set of `r length(overlap_all)` base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
+
+Here is the breakdown of genes used and whether they belong to the PrOTYPE and/or SPOT sets:
+
+```{r}
+#| label: tbl-gene-dist
+#| tbl-cap: 'Gene Distribution'
+#| tbl-pos: H
+
+gene_dist <-
+  data.frame(Genes = genes_all) |>
+  mutate(
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, "")
+  ) |>
+  arrange(desc(PrOTYPE), desc(SPOT))
+
+gene_dist |> 
+  kbl(booktabs = TRUE, longtable = TRUE, linesep = "") |> 
+  kable_styling(full_width = FALSE)
+```
+
+### Variable Importance
+
+Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
+
+For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
+
+The variable importance measures are:
+
+-   Random Forest: impurity measure (Gini index)
+
+-   XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features's splits)
+
+-   SVM: permutation based p-values
+
+-   Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value
