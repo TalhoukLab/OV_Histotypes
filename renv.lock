@@ -3762,6 +3762,19 @@
       ],
       "Hash": "2982481615756e24e79fee95bdc95daa"
     },
+    "webshot": {
+      "Package": "webshot",
+      "Version": "0.5.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "callr",
+        "jsonlite",
+        "magrittr"
+      ],
+      "Hash": "16858ee1aba97f902d24049d4a44ef16"
+    },
     "whisker": {
       "Package": "whisker",
       "Version": "0.4",
