@@ -2376,14 +2376,9 @@
     },
     "nanostringr": {
       "Package": "nanostringr",
-      "Version": "0.5.0",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "TalhoukLab",
-      "RemoteRepo": "nanostringr",
-      "RemoteRef": "master",
-      "RemoteSha": "5e9f03509e3150831a77234e8fbd4c658c4c9768",
+      "Version": "0.6.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "assertthat",
@@ -2394,7 +2389,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "b1b6d357460b4d7aef77bb0b032ca5df"
+      "Hash": "c234139be9377f284695dd6908e4366b"
     },
     "nlme": {
       "Package": "nlme",
