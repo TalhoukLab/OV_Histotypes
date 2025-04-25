@@ -3,12 +3,18 @@
 source(here::here("validation/cs_process_cohorts.R"))
 
 
+# Housekeeping Genes Normalization ----------------------------------------
+
+cs2_norm_coh <- HKnorm(cs2_coh)
+cs3_norm_coh <- HKnorm(cs3_coh)
+
+
 # Pools Method ------------------------------------------------------------
 
 # Pool set: pool samples from CS2
 pool_samples <-
   gsub("-|\\.RCC", "", grep("POOL", pools[["CS2-FileName"]], value = TRUE))
-cs2_pools <- select(cs2_norm, Name, paste0("X", pool_samples))
+cs2_pools <- select(cs2_norm_coh, Name, paste0("X", pool_samples))
 
 # Locked down reference pools weights
 weights <- c("Pool1", "Pool2", "Pool3") %>%
@@ -25,7 +31,7 @@ cs3_pools_mgx <-
   enframe(rowMeans(ref_pools), name = "Name", value = "cs3_exp")
 
 # Extract cs2 norm counts (not pools)
-cs2_norm_counts <- cs2_norm %>% select(-one_of(names(cs2_pools)[-1]))
+cs2_norm_counts <- cs2_norm_coh %>% select(-one_of(names(cs2_pools)[-1]))
 
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs2_normalized_data_pools <-
@@ -37,7 +43,7 @@ cs2_normalized_data_pools <-
   spread(Name, exp)
 
 # Extract cs3 norm counts (not pools)
-cs3_norm_counts <- cs3_norm %>% select(-one_of(names(ref_pools)))
+cs3_norm_counts <- cs3_norm_coh %>% select(-one_of(names(ref_pools)))
 
 # Normalize each gene by adding batch effect (diff in mean gx)
 cs3_normalized_data_pools <-
