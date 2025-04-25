@@ -8,22 +8,20 @@ all_codesets <- combn(codesets, 2) %>%
   as_tibble(.name_repair = "unique") %>%
   set_names(map_chr(., paste, collapse = "_vs_"))
 
+# Grouping dataset used for random selection of common samples
+group_df <- hist |>
+  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName))
+
 
 # Reference Method: 3 Common Samples --------------------------------------
 
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
-hist_rand3 <- hist %>%
-  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
+hist_rand3 <- group_df %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 3) %>%
   ungroup()
-
-# Gene expression from random common samples, preserving gene order
-cs1_rand3 <- join_avg(cs1_clean, hist_rand3, "ottaID", "keep")
-cs2_rand3 <- join_avg(cs2_clean, hist_rand3, "ottaID", "keep")
-cs3_rand3 <- join_avg(cs3_clean, hist_rand3, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
 cs1_counts3 <- join_avg(cs1_clean, hist_rand3, "ottaID", "discard")
@@ -32,25 +30,30 @@ cs3_counts3 <- join_avg(cs3_clean, hist_rand3, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand3 <-
-  refMethod(cs1_counts3, cs3_rand3, cs1_rand3) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
+  normalize_random(
+    x = cs1_clean,
+    ref = cs3_clean,
+    group_df = group_df,
+    n = 3,
+    strata = "revHist",
+    seed = 2020
+  )
 
 cs2_norm_rand3 <-
-  refMethod(cs2_counts3, cs3_rand3, cs2_rand3) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
+  normalize_random(
+    x = cs2_clean,
+    ref = cs3_clean,
+    group_df = group_df,
+    n = 3,
+    strata = "revHist",
+    seed = 2020
+  )
 
 # Combined gene expression
 counts3 <-
   set_names(list(cs1_counts3, cs2_counts3, cs3_counts3), codesets)
-norm_rand3 <- list(cs1_norm_rand3, cs2_norm_rand3, cs3_counts3) %>%
-  set_names(codesets) %>%
-  map_at(1:2, select, -"revHist")
+norm_rand3 <-
+  set_names(list(cs1_norm_rand3, cs2_norm_rand3, cs3_counts3), codesets)
 
 # Concordance measures for all genes averaged across samples
 metrics_non3 <- all_codesets %>%
@@ -103,17 +106,11 @@ print(p_rand3)
 
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
-hist_rand2 <- hist %>%
-  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
+hist_rand2 <- group_df %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 2) %>%
   ungroup()
-
-# Gene expression from random common samples, preserving gene order
-cs1_rand2 <- join_avg(cs1_clean, hist_rand2, "ottaID", "keep")
-cs2_rand2 <- join_avg(cs2_clean, hist_rand2, "ottaID", "keep")
-cs3_rand2 <- join_avg(cs3_clean, hist_rand2, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
 cs1_counts2 <- join_avg(cs1_clean, hist_rand2, "ottaID", "discard")
@@ -122,25 +119,30 @@ cs3_counts2 <- join_avg(cs3_clean, hist_rand2, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand2 <-
-  refMethod(cs1_counts2, cs3_rand2, cs1_rand2) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
+  normalize_random(
+    x = cs1_clean,
+    ref = cs3_clean,
+    group_df = group_df,
+    n = 2,
+    strata = "revHist",
+    seed = 2020
+  )
 
 cs2_norm_rand2 <-
-  refMethod(cs2_counts2, cs3_rand2, cs2_rand2) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
+  normalize_random(
+    x = cs2_clean,
+    ref = cs3_clean,
+    group_df = group_df,
+    n = 2,
+    strata = "revHist",
+    seed = 2020
+  )
 
 # Combined gene expression
 counts2 <-
   set_names(list(cs1_counts2, cs2_counts2, cs3_counts2), codesets)
-norm_rand2 <- list(cs1_norm_rand2, cs2_norm_rand2, cs3_counts2) %>%
-  set_names(codesets) %>%
-  map_at(1:2, select, -"revHist")
+norm_rand2 <-
+  set_names(list(cs1_norm_rand2, cs2_norm_rand2, cs3_counts2), codesets)
 
 # Concordance measures for all genes averaged across samples
 metrics_non2 <- all_codesets %>%
@@ -193,17 +195,11 @@ print(p_rand2)
 
 # Random selection of common samples with equal number of histotypes
 set.seed(2020)
-hist_rand1 <- hist %>%
-  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
+hist_rand1 <- group_df %>%
   distinct(ottaID, revHist) %>%
   group_by(revHist) %>%
   slice_sample(n = 1) %>%
   ungroup()
-
-# Gene expression from random common samples, preserving gene order
-cs1_rand1 <- join_avg(cs1_clean, hist_rand1, "ottaID", "keep")
-cs2_rand1 <- join_avg(cs2_clean, hist_rand1, "ottaID", "keep")
-cs3_rand1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "keep")
 
 # Remove common samples from CS1, preserving gene order
 cs1_counts1 <- join_avg(cs1_clean, hist_rand1, "ottaID", "discard")
@@ -212,25 +208,30 @@ cs3_counts1 <- join_avg(cs3_clean, hist_rand1, "ottaID", "discard")
 
 # Normalize by reference method using common samples, add histotypes from annot
 cs1_norm_rand1 <-
-  refMethod(cs1_counts1, cs3_rand1, cs1_rand1) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
+  normalize_random(
+    x = cs1_clean,
+    ref = cs3_clean,
+    group_df = group_df,
+    n = 1,
+    strata = "revHist",
+    seed = 2020
+  )
 
 cs2_norm_rand1 <-
-  refMethod(cs2_counts1, cs3_rand1, cs2_rand1) %>%
-  as.data.frame() %>%
-  rownames_to_column("ottaID") %>%
-  inner_join(hist %>% distinct(ottaID, revHist), by = "ottaID") %>%
-  column_to_rownames("ottaID")
+  normalize_random(
+    x = cs2_clean,
+    ref = cs3_clean,
+    group_df = group_df,
+    n = 1,
+    strata = "revHist",
+    seed = 2020
+  )
 
 # Combined gene expression
 counts1 <-
   set_names(list(cs1_counts1, cs2_counts1, cs3_counts1), codesets)
-norm_rand1 <- list(cs1_norm_rand1, cs2_norm_rand1, cs3_counts1) %>%
-  set_names(codesets) %>%
-  map_at(1:2, select, -"revHist")
+norm_rand1 <-
+  set_names(list(cs1_norm_rand1, cs2_norm_rand1, cs3_counts1), codesets)
 
 # Concordance measures for all genes averaged across samples
 metrics_non1 <- all_codesets %>%
