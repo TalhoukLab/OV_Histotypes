@@ -19,7 +19,6 @@ cs2_dedup <- cohorts %>%
 cs3_dedup <- cohorts %>%
   semi_join(hist_cs3_van, by = "col_name") %>%
   filter(col_name %in% cs3_samples) %>%
-  filter(!cohort %in% c("POOL-1", "POOL-2", "POOL-3")) %>%
   filter(!duplicated(ottaID, fromLast = TRUE))
 
 # Reference Samples -------------------------------------------------------
