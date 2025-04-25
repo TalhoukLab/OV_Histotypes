@@ -2222,7 +2222,7 @@
     },
     "mgcv": {
       "Package": "mgcv",
-      "Version": "1.9-1",
+      "Version": "1.9-3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -2235,7 +2235,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "110ee9d83b496279960e162ac97764ce"
+      "Hash": "51fcbccd59569cdad6da6b8e49cdf4f2"
     },
     "microbenchmark": {
       "Package": "microbenchmark",
@@ -2376,9 +2376,14 @@
     },
     "nanostringr": {
       "Package": "nanostringr",
-      "Version": "0.4.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.5.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "TalhoukLab",
+      "RemoteRepo": "nanostringr",
+      "RemoteRef": "master",
+      "RemoteSha": "5e9f03509e3150831a77234e8fbd4c658c4c9768",
       "Requirements": [
         "R",
         "assertthat",
@@ -2386,9 +2391,10 @@
         "dplyr",
         "purrr",
         "rlang",
+        "tibble",
         "tidyr"
       ],
-      "Hash": "8d3cc434b11bbfb2b34d56870f5f374d"
+      "Hash": "b1b6d357460b4d7aef77bb0b032ca5df"
     },
     "nlme": {
       "Package": "nlme",
