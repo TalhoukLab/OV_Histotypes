@@ -276,18 +276,30 @@ van_samples <- hist %>%
 cs3_norm_van <- select(cs3_norm, 1:3, any_of(paste0("X", van_samples)))
 
 ## AOC
-aoc_samples <- hist %>%
-  filter(CodeSet == "CS3", site == "AOC") %>%
-  pull(FileName)
+aoc_samples <- hist_all %>%
+  filter(CodeSet == "CS3" &
+           site == "AOC" & (FileName %in% cs123_samples |
+                              grepl("POOL", FileName))) |>
+  pull(FileName) |>
+  paste0("X", ... = _)
 
-cs3_norm_aoc <- select(cs3_norm, 1:3, any_of(paste0("X", aoc_samples)))
+cs3_norm_aoc <- cs3_coh %>%
+  select(where(is.character), all_of(cs3_samples_coh_qc)) |>
+  HKnorm() |>
+  select(where(is.character), all_of(aoc_samples))
 
 ## USC
-usc_samples <- hist %>%
-  filter(CodeSet == "CS3", site == "USC") %>%
-  pull(FileName)
+usc_samples <- hist_all %>%
+  filter(CodeSet == "CS3" &
+           site == "USC" & (FileName %in% cs123_samples |
+                              grepl("POOL", FileName))) |>
+  pull(FileName) |>
+  paste0("X", ... = _)
 
-cs3_norm_usc <- select(cs3_norm, 1:3, any_of(paste0("X", usc_samples)))
+cs3_norm_usc <- cs3_coh %>%
+  select(where(is.character), all_of(cs3_samples_coh_qc)) |>
+  HKnorm() |>
+  select(where(is.character), all_of(usc_samples))
 
 # Find summaryID common to CS1/CS2/CS3
 common_cs <- annot_cs123 %>%
