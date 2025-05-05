@@ -165,14 +165,21 @@ cs3_aoc_norm <- normalize_pools(
   mutate(FileName = gsub("^X", "", FileName)) |>
   column_to_rownames("FileName")
 
-# Remove test sets and pool samples from CS3-VAN
-cs3_train <- cs3_X %>%
-  rownames_to_column("FileName") %>%
-  mutate(col_name = paste0("X", FileName)) %>%
-  inner_join(cohorts, by = "col_name") %>%
-  filter(!cohort %in% c("TNCO", "DOVE4")) %>%
-  column_to_rownames("FileName") %>%
-  select(all_of(common_genes123))
+# Remove cross-site replicates, test sets, and pool samples from CS3
+cs3_train <-
+  list(VAN = cs3_X, USC = cs3_usc_norm, AOC = cs3_aoc_norm) |>
+  map(~ {
+    .x |>
+      rownames_to_column("FileName") %>%
+      mutate(col_name = paste0("X", FileName)) %>%
+      inner_join(cohorts, by = "col_name") %>%
+      filter(!cohort %in% c("TNCO", "DOVE4")) %>%
+      column_to_rownames("FileName") %>%
+      select(ottaID, all_of(common_genes123))
+  }) |>
+  list_rbind(names_to = "Site") |>
+  filter(Site == "VAN", .by = ottaID) |>
+  select(-c(Site, ottaID))
 
 
 # Construct Training Set --------------------------------------------------
