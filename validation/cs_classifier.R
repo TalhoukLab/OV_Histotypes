@@ -141,69 +141,28 @@ cs2_all_train <- refMethod(Y = cs2_all_X[cs23_genes],
 
 # Normalization by Pools --------------------------------------------------
 
-# CS3-VAN reference pools setup
-weights <- c("Pool1", "Pool2", "Pool3") %>%
-  set_names() %>%
-  map_dbl(~ ncol(select(ref_pools, matches(.))) / ncol(ref_pools))
-
-ref_mean_gx <-
-  rowMeans(ref_pools) %>%
-  enframe(name = "Name", value = "ref_exp")
-
 # CS3-USC normalized to CS3-VAN by pools
-cs3_usc_R_mean_gx <-
-  weights %>%
-  imap(~ {
-    df <- select(cs3_usc_R, Name, matches(.y)) %>%
-      column_to_rownames("Name")
-    enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
-  })  %>%
-  reduce(inner_join, by = "Name") %>%
-  transmute(Name, norm_exp = rowSums(select(., contains("Pool"))))
-
-merged_usc <- inner_join(ref_mean_gx, cs3_usc_R_mean_gx, by = "Name") %>%
-  transmute(Name, be = ref_exp - norm_exp) %>%
-  inner_join(cs3_usc_X, by = "Name")
-
-cs3_usc_norm <- merged_usc %>%
-  pivot_longer(
-    cols = starts_with("X"),
-    names_to = "FileName",
-    names_prefix = "X",
-    values_to = "value"
-  ) %>%
-  mutate(value = value + be) %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
+cs3_usc_norm <- normalize_pools(
+  x = cs3_usc_X,
+  x_pools = cs3_usc_R,
+  ref_pools = ref_pools,
+  p = 3,
+  weigh = TRUE,
+  same_codeset = TRUE
+) |>
+  mutate(FileName = gsub("^X", "", FileName)) |>
   column_to_rownames("FileName")
 
-# CS3-USC normalized to CS3-VAN by pools
-cs3_aoc_R_mean_gx <-
-  weights %>%
-  imap(~ {
-    df <- select(cs3_aoc_R, Name, matches(.y)) %>%
-      column_to_rownames("Name")
-    enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
-  })  %>%
-  reduce(inner_join, by = "Name") %>%
-  transmute(Name, norm_exp = rowSums(select(., contains("Pool"))))
-
-merged_aoc <- inner_join(ref_mean_gx, cs3_aoc_R_mean_gx, by = "Name") %>%
-  transmute(Name, be = ref_exp - norm_exp) %>%
-  inner_join(cs3_aoc_X, by = "Name")
-
-cs3_aoc_norm <- merged_aoc %>%
-  pivot_longer(
-    cols = starts_with("X"),
-    names_to = "FileName",
-    names_prefix = "X",
-    values_to = "value"
-  ) %>%
-  mutate(value = value + be) %>%
-  pivot_wider(id_cols = FileName,
-              names_from = Name,
-              values_from = value) %>%
+# CS3-AOC normalized to CS3-VAN by pools
+cs3_aoc_norm <- normalize_pools(
+  x = cs3_aoc_X,
+  x_pools = cs3_aoc_R,
+  ref_pools = ref_pools,
+  p = 3,
+  weigh = TRUE,
+  same_codeset = TRUE
+) |>
+  mutate(FileName = gsub("^X", "", FileName)) |>
   column_to_rownames("FileName")
 
 # Remove test sets and pool samples from CS3-VAN

@@ -597,23 +597,6 @@
       "Repository": "CRAN",
       "Hash": "b7d8d8ee39869c18d8846a184dd8a1af"
     },
-    "bookdown": {
-      "Package": "bookdown",
-      "Version": "0.39",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "htmltools",
-        "jquerylib",
-        "knitr",
-        "rmarkdown",
-        "tinytex",
-        "xfun",
-        "yaml"
-      ],
-      "Hash": "cb4f7066855b6f936e8d25edc9a9cff9"
-    },
     "boot": {
       "Package": "boot",
       "Version": "1.3-24",
@@ -2376,9 +2359,14 @@
     },
     "nanostringr": {
       "Package": "nanostringr",
-      "Version": "0.6.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.6.1",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "TalhoukLab",
+      "RemoteRepo": "nanostringr",
+      "RemoteRef": "master",
+      "RemoteSha": "d6a7d23f93082750469e9f10c95b67bb6d2b5684",
       "Requirements": [
         "R",
         "assertthat",
@@ -2389,7 +2377,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "c234139be9377f284695dd6908e4366b"
+      "Hash": "357db3113981aa25906f8cd543bf8cea"
     },
     "nlme": {
       "Package": "nlme",
