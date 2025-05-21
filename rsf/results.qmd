@@ -780,6 +780,9 @@ wflow_rank_agg_metrics <- splendid:::sink_output(RankAggreg(
   pluck("top.list") %>%
   enframe(name = "Rank", value = "Workflow")
 
+# Number of top workflows
+n_wflow_top <- nrow(wflow_rank_agg_metrics)
+
 wflow_rank_agg_metrics |> 
   kbl(booktabs = TRUE, linesep = "") |> 
   kable_styling(full_width = FALSE)
@@ -787,18 +790,18 @@ wflow_rank_agg_metrics |>
 
 ### Top Workflows
 
-We look at the per-class evaluation metrics of the top `r nrow(wflow_rank_agg_metrics)` workflows.
+We look at the per-class evaluation metrics of the top `r n_wflow_top` workflows.
 
 ```{r}
-#| label: fig-metrics-top-by-metric
-#| fig-cap: !expr paste('Top', nrow(wflow_rank_agg_metrics), 'Workflow Per-Class Evaluation Metrics by Metric')
+#| label: fig-metrics-top-by-metric-all
+#| fig-cap: !expr paste('Top', n_wflow_top, 'Workflow Per-Class Evaluation Metrics by Metric')
 #| fig-height: 7
 #| out-width: '100%'
 
-metrics_top <- per_class_metrics %>%
-  distinct(pick(-fold_id, -.estimate)) %>%
+metrics_top <- per_class_metrics |> 
+  distinct(pick(-fold_id, -.estimate)) |> 
   rename(Workflow = wflow) |> 
-  inner_join(wflow_rank_agg_metrics, by = "Workflow") %>%
+  inner_join(wflow_rank_agg_metrics, by = "Workflow") |> 
   mutate(
     Workflow = fct_reorder(Workflow, Rank),
     .metric = case_match(
@@ -849,7 +852,72 @@ p <-
     x = "Workflow",
     y = "Metric Value",
     color = "Class",
-    title = paste("Top", nrow(wflow_rank_agg_metrics), "Workflow Per-Class Evaluation Metrics by Metric")
+    title = paste("Top", n_wflow_top, "Workflow Per-Class Evaluation Metrics by Metric")
+  )
+print(p)
+```
+
+```{r}
+#| label: fig-metrics-top-by-metric-3
+#| fig-cap: !expr paste('Top', n_wflow_top, 'Workflow Per-Class Evaluation Metrics by Metric')
+#| fig-width: 10
+#| fig-height: 4
+#| out-width: '100%'
+
+metrics_top <- per_class_metrics |> 
+  distinct(pick(-fold_id, -.estimate)) |> 
+  rename(Workflow = wflow) |> 
+  inner_join(wflow_rank_agg_metrics, by = "Workflow") |> 
+  filter(.metric %in% c("f_meas", "bal_accuracy", "kap")) |> 
+  mutate(
+    Workflow = fct_reorder(Workflow, Rank),
+    .metric = case_match(
+      .metric,
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa",
+      .ptype = factor(
+        levels = c(
+          "F1-Score",
+          "Balanced Accuracy",
+          "Kappa"
+        )
+      )
+    )
+  ) |> 
+  drop_na(.metric) |> 
+  arrange(Rank)
+
+p <-
+  ggplot(metrics_top) +
+  geom_pointrange(
+    aes(
+      x = class_group,
+      y = mean_estimate,
+      ymin = lower,
+      ymax = upper,
+      color = Workflow
+    ),
+    position = position_dodge(width = 0.5),
+    fatten = 1
+  ) +
+  geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
+  scale_color_brewer(palette = "Set1") +
+  scale_y_continuous(breaks = seq(0, 1, 0.2)) +
+  facet_wrap(vars(.metric), nrow = 1) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    legend.position = "inside",
+    legend.position.inside = c(0.01, 0.01),
+    legend.justification.inside = c(0, 0)
+  ) +
+  labs(
+    x = "Workflow",
+    y = "Metric Value",
+    title = paste("Top", n_wflow_top, "Workflow Per-Class Evaluation Metrics by Metric")
   )
 print(p)
 ```
