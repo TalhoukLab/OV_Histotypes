@@ -1123,6 +1123,62 @@ gene_dist |>
   collapse_rows(columns = 1)
 ```
 
+### Two-Step
+
+```{r}
+#| label: fig-gene-two-step
+#| fig-cap: 'Gene Optimization for Two-Step Classifier'
+#| fig-height: 6
+#| fig-width: 7
+#| out-height: '50%'
+#| out-width: '100%'
+
+gene_two_step_names <- all_vi_two_step %>% 
+  rename(Name = Variable) %>% 
+  rowid_to_column("Genes") %>% 
+  add_row(Genes = 0L, Name = "Base", .before = 1)
+
+dat_gene_two_step <- gene_opt_all_metrics_conf_two_step %>% 
+  filter(.metric == "f_meas", class_group == "Overall") %>% 
+  mutate(
+    min_estimate = min(.estimate),
+    max_estimate = max(.estimate),
+    .by = c(Sequence, Genes)
+  ) %>%
+  mutate(
+    label = paste0(
+      "Sequence: ",
+      Sequence,
+      ", Workflow: ",
+      wflow,
+      ", Measure: ",
+      .metric)
+  ) %>% 
+  inner_join(gene_two_step_names, by = "Genes")
+
+p_gene_two_step <-
+  ggplot(dat_gene_two_step, aes(text = Name)) +
+  geom_pointrange(aes(
+    x = Genes,
+    y = mean_estimate,
+    ymin = min_estimate,
+    ymax = max_estimate
+  )) +
+  facet_wrap(~ label, ncol = 1) +
+  theme_bw() +
+  labs(x = "Genes Added",
+       y = "F1-Score",
+       title = "Gene Optimziation for Two-Step Classifier")
+ggplotly(p_gene_two_step)
+
+n_genes_two_step <- 15
+genes_add_two_step <- gene_two_step_names %>%
+  filter(Genes > 0L) %>% 
+  slice_min(order_by = Genes, n = n_genes_two_step) %>% 
+  pull(Name)
+opt_genes_two_step <- c(overlap_all, genes_add_two_step)
+```
+
 ## Test Set Performance
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
@@ -1174,6 +1230,34 @@ mod_smote_rf_opt <- smote_rf_model %>%
                               skip = TRUE)) %>%
   fit(data = train_ref)
 
+# Two-step data
+two_step_data <- readRDS(here("data", "two_step_data.rds"))
+two_step_class <- readRDS(here("data", "two_step_class.rds"))
+
+# Two-step full model
+set.seed(2024)
+mod_two_step_full <- list(all_models_two_step,
+                          two_step_data,
+                          two_step_class) %>% 
+  pmap(~ {
+    data = cbind(..2, class = ..3)
+    ..1 %>% fit(data = data)
+  })
+
+# Two-step optimal gene list model
+set.seed(2024)
+mod_two_step_opt <- list(all_models_two_step,
+                         two_step_data,
+                         two_step_class) %>% 
+  pmap(~ {
+    data = cbind(..2, class = ..3)
+    ..1 %>%
+      update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
+                      step_select(c(all_of(!!opt_genes_two_step), class),
+                                  skip = TRUE)) %>%
+      fit(data = data)
+  })
+
 # Per-class metric set
 per_class_mset <-
   metric_set(accuracy, sensitivity, specificity, f_meas, bal_accuracy, kap)
@@ -1199,7 +1283,10 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                                 Truth = conf_class) %>%
   mutate(
     c(p_seq_full = mod_seq_full,
-      p_seq_opt = mod_seq_opt) %>%
+      p_seq_opt = mod_seq_opt,
+      p_two_step_full = mod_two_step_full,
+      p_two_step_opt = mod_two_step_opt
+    ) %>%
       map(~ predict(., conf_data)[[".pred_class"]]) %>%
       bind_cols()
   ) %>%
@@ -1220,6 +1307,10 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
     ),
     Prediction_smote_rf_full = predict(mod_smote_rf_full, conf_data)[[".pred_class"]],
     Prediction_smote_rf_opt = predict(mod_smote_rf_opt, conf_data)[[".pred_class"]],
+    Prediction_two_step_full = ifelse(!grepl("non", p_two_step_full_s1),
+                                      p_two_step_full_s1, p_two_step_full_s2),
+    Prediction_two_step_optimal = ifelse(!grepl("non", p_two_step_opt_s1),
+                                         p_two_step_opt_s1, p_two_step_opt_s2), 
     across(c("Truth", matches("Prediction")), factor)
   ) %>%
   select(-starts_with("p", ignore.case = FALSE)) %>%
@@ -1237,7 +1328,9 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       "sequential_full" ~ "Sequential, Full Set",
       "sequential_optimal" ~ "Sequential, Optimal Set",
       "smote_rf_full" ~ "SMOTE-Random Forest, Full Set",
-      "smote_rf_opt" ~ "SMOTE-Random Forest, Optimal Set"
+      "smote_rf_opt" ~ "SMOTE-Random Forest, Optimal Set",
+      "two_step_full" ~ "Two-Step, Full Set",
+      "two_step_optimal" ~ "Two-Step, Optimal Set"
     )
   ))
 
@@ -1297,7 +1390,7 @@ conf_eval |>
 ```{r}
 #| label: fig-conf-conf-mat
 #| fig-cap: 'Confusion Matrices for Confirmation Set Models'
-#| fig-height: 6
+#| fig-height: 9
 #| fig-width: 8
 #| out-width: '100%'
 
@@ -1315,7 +1408,7 @@ conf_conf_mat <- conf_pred_overall %>%
         axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
       )
   ) %>%
-  wrap_plots() +
+  wrap_plots(nrow = 3) +
   plot_annotation(title = "Confusion Matrices for Confirmation Set Models", tag_levels = "A")
 
 print(conf_conf_mat)
@@ -1337,7 +1430,14 @@ conf_class_seq <- list(
   factor(conf_class[!conf_class %in% c("HGSC", "CCOC", "ENOC")])
 )
 
-class_groups <-
+conf_data_two_step <- list(conf_data,
+                           conf_data[conf_class != "HGSC", ])
+
+conf_class_two_step <-
+  list(factor(ifelse(conf_class == "HGSC", "HGSC", "non-HGSC")),
+       factor(conf_class[conf_class != "HGSC"]))
+
+class_groups_seq <-
   set_names(class_palette, paste0("(?<!non_)", c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
   imap_chr(~ paste0(
     "<span style = 'color:",
@@ -1347,6 +1447,17 @@ class_groups <-
     "</span>"
   )) |>
   str_replace_all(string = map_chr(map(conf_class_seq, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
+
+class_groups_two_step <- 
+    set_names(class_palette, paste0("(?<!non_)", c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  imap_chr(~ paste0(
+    "<span style = 'color:",
+    .x,
+    ";'>",
+    gsub("(?<!non_)", "", .y, fixed = TRUE),
+    "</span>"
+  )) |>
+  str_replace_all(string = map_chr(map(conf_class_two_step, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
 ```
 
 #### Sequential, Full
@@ -1359,7 +1470,7 @@ class_groups <-
 #| out-width: '100%'
 
 roc_curve_seq_full <- mod_seq_full %>% 
-  set_names(class_groups) |> 
+  set_names(class_groups_seq) |> 
   list(conf_data_seq, conf_class_seq) %>% 
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")%>% 
@@ -1402,7 +1513,7 @@ print(roc_curve_seq_full)
 #| out-width: '100%'
 
 roc_curve_seq_opt <- mod_seq_opt %>% 
-  set_names(class_groups) |> 
+  set_names(class_groups_seq) |> 
   list(conf_data_seq, conf_class_seq) %>% 
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")%>% 
@@ -1489,6 +1600,102 @@ roc_curve_smote_rf_opt <-
   theme(panel.grid = element_blank(),
         strip.text = element_text(face = "bold"))
 print(roc_curve_smote_rf_opt)
+```
+
+#### Two-Step, Full
+
+```{r}
+#| label: fig-roc-curve-two-step-full
+#| fig-cap: 'ROC Curves for Two-Step Full Model in Confirmation Set'
+#| fig-height: 7
+#| fig-width: 7
+#| out-width: '100%'
+
+roc_curve_two_step_full <- mod_two_step_full %>% 
+  set_names(class_groups_two_step) %>% 
+  list(conf_data_two_step, conf_class_two_step) %>% 
+  pmap(~ {
+    preds <- predict(..1, ..2, type = "prob")
+    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
+    preds <- preds %>% 
+      add_column(truth = ..3)
+    roc_df <- preds %>% 
+      roc_curve(truth, all_of(prob_cols))
+    auc <- preds %>% 
+      roc_auc(truth, all_of(prob_cols)) %>% 
+      pull(.estimate) %>% 
+      number(accuracy = 0.001, prefix = "AUC = ")
+    autoplot(roc_df) +
+      geom_label(
+        x = 1,
+        y = 0,
+        hjust = 1,
+        vjust = 0,
+        label = auc,
+        size = 3
+      ) +
+      theme(panel.grid = element_blank(),
+            strip.text = element_text(face = "bold"))
+  }) |> 
+  map_at(2, ~ .x +
+           facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette[-1])))) |>
+  imap(~ .x +
+         labs(title = .y) +
+         theme(plot.title = element_markdown(face = "bold"))) %>% 
+  wrap_plots(widths = c(1, -1)) +
+  plot_annotation(
+    title = "ROC Curves for Two-Step, Full Set Model in Confirmation Set",
+    tag_levels = "A"
+  )
+print(roc_curve_two_step_full)
+```
+
+#### Two-Step, Optimal
+
+```{r}
+#| label: fig-roc-curve-two-step-optimal
+#| fig-cap: 'ROC Curves for Two-Step Optimal Model in Confirmation Set'
+#| fig-height: 7
+#| fig-width: 7
+#| out-width: '100%'
+
+roc_curve_two_step_optimal <- mod_two_step_opt %>% 
+  set_names(class_groups_two_step) %>% 
+  list(conf_data_two_step, conf_class_two_step) %>% 
+  pmap(~ {
+    preds <- predict(..1, ..2, type = "prob")
+    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
+    preds <- preds %>% 
+      add_column(truth = ..3)
+    roc_df <- preds %>% 
+      roc_curve(truth, all_of(prob_cols))
+    auc <- preds %>% 
+      roc_auc(truth, all_of(prob_cols)) %>% 
+      pull(.estimate) %>% 
+      number(accuracy = 0.001, prefix = "AUC = ")
+    autoplot(roc_df) +
+      geom_label(
+        x = 1,
+        y = 0,
+        hjust = 1,
+        vjust = 0,
+        label = auc,
+        size = 3
+      ) +
+      theme(panel.grid = element_blank(),
+            strip.text = element_text(face = "bold"))
+  }) |> 
+  map_at(2, ~ .x +
+           facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette[-1])))) |>
+  imap(~ .x +
+         labs(title = .y) +
+         theme(plot.title = element_markdown(face = "bold"))) %>% 
+  wrap_plots(widths = c(1, -1)) +
+  plot_annotation(
+    title = "ROC Curves for Two-Step, Optimal Set Model in Confirmation Set",
+    tag_levels = "A"
+  )
+print(roc_curve_two_step_optimal)
 ```
 :::
 
