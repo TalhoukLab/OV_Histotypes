@@ -223,11 +223,11 @@ grViz(
 
     conf1 -> conf2 [xlabel = 'Exclude QC\nFails: ", nrow(tnco) - nrow(conf2), "']
     conf2 -> conf3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(conf2) - nrow(conf3), "']
-    conf3 -> conf4 [xlabel = 'Exclude\nDuplicates: ", nrow(conf3) - nrow(conf4), "', minlen = 7]
+    conf3 -> conf4 [xlabel = 'Exclude\nReplicates: ", nrow(conf3) - nrow(conf4), "', minlen = 7]
 
     val1 -> val2 [xlabel = 'Exclude QC\nFails: ", nrow(dove4) - nrow(val2), "']
     val2 -> val3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(val2) - nrow(val3), "']
-    val3 -> val4 [xlabel = 'Exclude\nDuplicates: ", nrow(val3) - nrow(val4), "', minlen = 7]
+    val3 -> val4 [xlabel = 'Exclude\nReplicates: ", nrow(val3) - nrow(val4), "', minlen = 7]
 
     # subgraph definitions
     subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; ICON7; JAPAN; conf1; val1}
