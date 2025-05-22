@@ -1687,7 +1687,7 @@ print(roc_curve_smote_rf_opt)
 #| label: fig-roc-curve-two-step-full
 #| fig-cap: 'ROC Curves for Two-Step Full Model in Confirmation Set'
 #| fig-height: 7
-#| fig-width: 7
+#| fig-width: 9
 #| out-width: '100%'
 
 roc_curve_two_step_full <- mod_two_step_full %>% 
@@ -1735,7 +1735,7 @@ print(roc_curve_two_step_full)
 #| label: fig-roc-curve-two-step-optimal
 #| fig-cap: 'ROC Curves for Two-Step Optimal Model in Confirmation Set'
 #| fig-height: 7
-#| fig-width: 7
+#| fig-width: 9
 #| out-width: '100%'
 
 roc_curve_two_step_optimal <- mod_two_step_opt %>% 
