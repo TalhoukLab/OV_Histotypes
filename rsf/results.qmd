@@ -1214,6 +1214,50 @@ genes_add_two_step <- gene_two_step_names %>%
 opt_genes_two_step <- c(overlap_all, genes_add_two_step)
 ```
 
+```{r}
+#| label: tbl-gene-opt-two-step
+#| tbl-cap: 'Gene Profile of Optimal Set in Two-Step Workflow'
+#| tbl-pos: 'H'
+
+candidates_all <- gene_two_step_names %>%
+  filter(Genes > 0L) %>% 
+  pull(Name)
+candidates_unused <- gene_two_step_names %>%
+  filter(Genes > 0L) %>% 
+  slice_max(order_by = Genes, n = -n_genes_two_step) |> 
+  arrange(Genes) |> 
+  pull(Name)
+gene_order <- c(opt_genes_two_step, candidates_unused)
+
+gene_dist <-
+  data.frame(Genes = gene_order) |>
+  mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+         .before = Genes) |> 
+  mutate(
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, ""),
+    `Optimal Set` = case_when(
+      Genes %in% opt_genes_two_step ~ cli::symbol$circle_filled,
+      Set == "Candidates" & !Genes %in% opt_genes_two_step ~ cli::symbol$circle_filled,
+      .default = ""
+    ),
+    `Optimal Set` = cell_spec(`Optimal Set`,
+                              color = case_when(Genes %in% overlap_all ~ "green",
+                                                Genes %in% opt_genes_two_step ~ "#8B8000",
+                                                .default = "#FF0000")),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "",
+                              match(Genes, candidates_all))
+  )
+
+gene_dist |> 
+  kbl(booktabs = TRUE,
+      longtable = TRUE,
+      linesep = "",
+      escape = FALSE) |> 
+  kable_styling(full_width = FALSE) |> 
+  collapse_rows(columns = 1)
+```
+
 ## Test Set Performance
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
