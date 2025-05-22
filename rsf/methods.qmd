@@ -218,7 +218,7 @@ grViz(
     train_1 -> train_2 [xlabel = 'Exclude QC Fails: ", nrow(train_coh) - nrow(train2), "']
     train_2 -> train_3 [xlabel = 'Exclude Other Histotypes: ", nrow(train2) - nrow(train3), "']
     train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]
-    train_cs1 -> train_5 [xlabel = 'Exclude Duplicates: ", nrow(train4) - 15 - nrow(train5), "']
+    train_cs1 -> train_5 [xlabel = 'Exclude Replicates: ", nrow(train4) - 15 - nrow(train5), "']
     {train_cs2 train_cs3} -> train_5
 
     conf1 -> conf2 [xlabel = 'Exclude QC\nFails: ", nrow(tnco) - nrow(conf2), "']
