@@ -1898,6 +1898,46 @@ val_eval |>
 ```
 
 ```{r}
+#| label: fig-val-metrics-smote-rf
+#| fig-cap: 'SMOTE-Random Forest Per-Class Metrics in Validation Set'
+#| fig-width: 8
+#| out-width: '100%'
+
+val_metrics_top <- val_eval_per_class |> 
+  pivot_longer(
+    cols = where(is.numeric),
+    names_to = "Class",
+    names_ptypes = list(Class = factor(
+      levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")
+    )),
+    values_to = "Value"
+  ) |> 
+  filter(Metric %in% c("F1-Score", "Balanced Accuracy", "Kappa")) |> 
+  mutate(Metric = fct_inorder(Metric))
+  
+p <- ggplot(val_metrics_top) +
+  geom_col(
+    aes(x = Class, y = Value, fill = Class),
+    show.legend = FALSE
+  ) +
+  geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
+  scale_fill_brewer(palette = "Dark2") +
+  scale_y_continuous(breaks = seq(0, 1, 0.2)) +
+  facet_wrap(vars(Metric), nrow = 1) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank()
+  ) +
+  labs(
+    y = "Metric Value",
+    title = paste("SMOTE-Random Forest Per-Class Metrics in Validation Set")
+  )
+print(p)
+```
+
+```{r}
 #| label: fig-val-conf-mat
 #| fig-cap: 'Confusion Matrix for Validation Set Model'
 
@@ -2041,4 +2081,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
