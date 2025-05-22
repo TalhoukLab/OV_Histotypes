@@ -1481,7 +1481,8 @@ conf_metrics_top <- conf_eval_per_class |>
     )),
     values_to = "Value"
   ) |>
-  filter(Metric %in% c("F1-Score", "Balanced Accuracy", "Kappa"))
+  filter(Metric %in% c("F1-Score", "Balanced Accuracy", "Kappa")) |> 
+  mutate(Metric = fct_inorder(Metric))
 
 p <- ggplot(conf_metrics_top) +
   geom_col(
@@ -2040,3 +2041,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
