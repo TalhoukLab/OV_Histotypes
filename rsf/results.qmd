@@ -890,30 +890,29 @@ metrics_top <- per_class_metrics |>
 
 p <-
   ggplot(metrics_top) +
-  geom_col(
-    aes(x = class_group, y = mean_estimate, fill = Workflow),
-    alpha = 0.5,
-    position = position_dodge()
-  ) +
-  geom_errorbar(
+  geom_pointrange(
     aes(
       x = class_group,
+      y = mean_estimate,
       ymin = lower,
       ymax = upper,
       color = Workflow
     ),
-    position = position_dodge()
+    position = position_dodge(width = 0.5),
+    fatten = 1
   ) +
   geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
   scale_color_brewer(palette = "Set1") +
-  scale_fill_brewer(palette = "Set1") +
   scale_y_continuous(breaks = seq(0, 1, 0.2)) +
   facet_wrap(vars(.metric), nrow = 1) +
   theme_bw() +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank()
+    panel.grid.major.x = element_blank(),
+    legend.position = "inside",
+    legend.position.inside = c(0.01, 0.01),
+    legend.justification.inside = c(0, 0)
   ) +
   labs(
     x = "Workflow",
@@ -921,39 +920,6 @@ p <-
     title = paste("Top", n_wflow_top, "Workflow Per-Class Evaluation Metrics by Metric")
   )
 print(p)
-
-# p <-
-#   ggplot(metrics_top) +
-#   geom_pointrange(
-#     aes(
-#       x = class_group,
-#       y = mean_estimate,
-#       ymin = lower,
-#       ymax = upper,
-#       color = Workflow
-#     ),
-#     position = position_dodge(width = 0.5),
-#     fatten = 1
-#   ) +
-#   geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
-#   scale_color_brewer(palette = "Set1") +
-#   scale_y_continuous(breaks = seq(0, 1, 0.2)) +
-#   facet_wrap(vars(.metric), nrow = 1) +
-#   theme_bw() +
-#   theme(
-#     plot.title = element_text(face = "bold"),
-#     panel.grid.minor = element_blank(),
-#     panel.grid.major.x = element_blank(),
-#     legend.position = "inside",
-#     legend.position.inside = c(0.01, 0.01),
-#     legend.justification.inside = c(0, 0)
-#   ) +
-#   labs(
-#     x = "Workflow",
-#     y = "Metric Value",
-#     title = paste("Top", n_wflow_top, "Workflow Per-Class Evaluation Metrics by Metric")
-#   )
-# print(p)
 ```
 
 Misclassified cases from a previous step of the sequence of classifiers are not included in subsequent steps of the training set CV folds. Thus, we cannot piece together the test set predictions from the sequential and two-step algorithms to obtain overall metrics.
