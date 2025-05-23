@@ -1328,6 +1328,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   mutate(
     c(p_seq_full = mod_seq_full,
       p_seq_opt = mod_seq_opt,
+      p_smote_rf_full = list(mod_smote_rf_full),
+      p_smote_rf_opt = list(mod_smote_rf_opt),
       p_two_step_full = mod_two_step_full,
       p_two_step_opt = mod_two_step_opt
     ) %>%
@@ -1349,14 +1351,14 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       !grepl("non", p_seq_opt_s3) ~ p_seq_opt_s3,
       .default = p_seq_opt_s4
     ),
-    Prediction_smote_rf_full = predict(mod_smote_rf_full, conf_data)[[".pred_class"]],
-    Prediction_smote_rf_opt = predict(mod_smote_rf_opt, conf_data)[[".pred_class"]],
+    Prediction_smote_rf_full = p_smote_rf_full,
+    Prediction_smote_rf_opt = p_smote_rf_opt,
     Prediction_two_step_full = ifelse(!grepl("non", p_two_step_full_s1),
                                       p_two_step_full_s1, p_two_step_full_s2),
     Prediction_two_step_optimal = ifelse(!grepl("non", p_two_step_opt_s1),
                                          p_two_step_opt_s1, p_two_step_opt_s2), 
     across(c("Truth", matches("Prediction")), factor)
-  ) %>%
+  ) |> 
   select(-starts_with("p", ignore.case = FALSE)) %>%
   pivot_longer(
     cols = matches("Prediction"),
@@ -1429,6 +1431,83 @@ conf_eval |>
   kable_styling(latex_options = "scale_down") |> 
   collapse_rows(columns = 1) |>  
   add_header_above(c(" " = 3, "Histotypes" = 5))
+```
+
+```{r}
+#| label: fig-conf-entropy
+#| fig-cap: 'Entropy vs. Predicted Probability in Confirmation Set'
+#| fig-width: 10
+#| fig-height: 6
+#| out-width: '100%'
+
+conf_entropy <- data.frame(FileName = rownames(conf_data),
+                           Truth = conf_class) %>%
+  mutate(
+    c(p_seq_full = mod_seq_full,
+      p_seq_opt = mod_seq_opt,
+      p_smote_rf_full = list(smote_rf_full = mod_smote_rf_full),
+      p_smote_rf_opt = list(smote_rf_opt = mod_smote_rf_opt),
+      p_two_step_full = mod_two_step_full,
+      p_two_step_opt = mod_two_step_opt
+    ) |>
+      map(~ {
+        predict(., conf_data, type = "prob") |>
+          rowwise() |>
+          mutate(
+            prob = max(c_across(where(is.numeric))),
+            entropy = entropy::entropy(c_across(matches(".pred")), unit = "log2")
+          ) |>
+          ungroup()
+      }) |>
+      list_cbind() |>
+      unnest_wider(col = everything(), names_sep =  "/")
+  ) |>
+  pivot_longer(
+    cols = where(is.numeric),
+    names_to = c("Method", "Workflow", "Metric"),
+    names_pattern = "(.*)\\.(.*)/(.*)",
+    values_to = "Value"
+  ) |>
+  mutate(Method = factor(
+    case_match(
+      Method,
+      "p_seq_full" ~ "Sequential, Full Set",
+      "p_seq_opt" ~ "Sequential, Optimal Set",
+      "p_smote_rf_full" ~ "SMOTE-Random Forest, Full Set",
+      "p_smote_rf_opt" ~ "SMOTE-Random Forest, Optimal Set",
+      "p_two_step_full" ~ "Two-Step, Full Set",
+      "p_two_step_opt" ~ "Two-Step, Optimal Set"
+    )
+  )) |>
+  inner_join(conf_pred_overall, by = join_by(FileName, Truth, Method)) |>
+  filter(Metric %in% c("prob", "entropy")) |>
+  filter(
+    (grepl("Sequential", Method) & (
+      Prediction == "HGSC" & Workflow == "smote_rf_s1" |
+        Prediction == "CCOC" & Workflow == "hybrid_xgb_s2" |
+        Prediction == "ENOC" & Workflow == "up_svm_s3" |
+        Prediction %in% c("LGSC", "MUC") & Workflow == "hybrid_mr_s4"
+    )) |
+    grepl("SMOTE-Random Forest", Method) |
+    (grepl("Two-Step", Method) & (
+      Prediction == "HGSC" & Workflow == "smote_rf_s1" |
+        Prediction != "HGSC" & Workflow == "hybrid_svm_s2"
+    ))
+  ) |>
+  pivot_wider(names_from = Metric, values_from = Value)
+
+p <- ggplot(conf_entropy) +
+  geom_point(aes(x = prob, y = entropy, color = Prediction), alpha = 0.5) +
+  scale_color_brewer(palette = "Dark2") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+  facet_wrap(vars(Method), ncol = 2) +
+  labs(
+    x = "Probability",
+    y = "Entropy (log base 2)",
+    title = "Entropy vs. Predicted Probability in Confirmation Set"
+  )
+print(p)
 ```
 
 ```{r}
