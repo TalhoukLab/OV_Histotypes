@@ -24,8 +24,7 @@ cs5 <- rawOTTA3
 data("od.otta")
 od.otta <- to_native_type(od.otta)
 
-cohorts <- read_excel(here("data-raw/bc-842_avail_cosp_2020-08-31.xlsx"),
-                      sheet = "data")
+cohorts <- read_excel(here("data-raw/bc-842_avail_cosp_2020-09-15.xlsx"), sheet = "data")
 pools <- read_excel(here("data-raw/RNA-Pools-Source_CS1-2-3.xlsx"))
 ref_pools <- readRDS(here("data/van_pools_cs3.rds"))
 
