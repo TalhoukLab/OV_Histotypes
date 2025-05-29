@@ -1261,17 +1261,22 @@ mod_seq_opt <- list(all_models_seq,
       fit(data = data)
   })
 
+# Training data
+train_ref <- train_data |>
+  mutate(class = factor(train_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+                                                
 # smote_rf full model
 set.seed(2024)
-train_ref <- cbind(train_data, class = train_class)
-mod_smote_rf_full <- smote_rf_model %>% fit(data = train_ref)
+mod_smote_rf_full <- smote_rf_model |>
+  fit(data = train_ref)
 
 # smote_rf optimal gene list model
 set.seed(2024)
-mod_smote_rf_opt <- smote_rf_model %>% 
-  update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
-                  step_select(c(all_of(!!opt_genes_smote_rf), class),
-                              skip = TRUE)) %>%
+mod_smote_rf_opt <- smote_rf_model |> 
+  pluck("pre", "actions", "recipe", "recipe") |> 
+  step_select(c(all_of(!!opt_genes_smote_rf), class),
+              skip = TRUE) |> 
+  update_recipe(x = smote_rf_model, recipe = _) |> 
   fit(data = train_ref)
 
 # Two-step data
