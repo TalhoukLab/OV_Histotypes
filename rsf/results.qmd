@@ -1241,24 +1241,22 @@ seq_wflows <- readRDS(here("data", "seq_wflows.rds"))
 set.seed(2024)
 mod_seq_full <- list(all_models_seq,
                      seq_data,
-                     seq_class) %>% 
-  pmap(~ {
-    data = cbind(..2, class = ..3)
-    ..1 %>% fit(data = data)
-  })
+                     seq_class) |> 
+  pmap(~ ..1 |> fit(data = cbind(..2, class = ..3)))
 
 # Sequential optimal gene list model
 set.seed(2024)
 mod_seq_opt <- list(all_models_seq,
                     seq_data,
-                    seq_class) %>% 
+                    seq_class) |> 
   pmap(~ {
-    data = cbind(..2, class = ..3)
-    ..1 %>%
-      update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
-                      step_select(c(all_of(!!opt_genes_seq), class),
-                                  skip = TRUE)) %>%
-      fit(data = data)
+    ..1 |>
+      pluck("pre", "actions", "recipe", "recipe") |>
+      step_select(c(all_of(!!opt_genes_seq), class), skip = TRUE) |>
+      modify_in("var_info", \(x) x |>
+                  filter(variable %in% c(opt_genes_seq, "class"))) |>
+      update_recipe(x = ..1, recipe = _) |>
+      fit(data = cbind(..2, class = ..3))
   })
 
 # Training data
@@ -1276,6 +1274,8 @@ mod_smote_rf_opt <- smote_rf_model |>
   pluck("pre", "actions", "recipe", "recipe") |> 
   step_select(c(all_of(!!opt_genes_smote_rf), class),
               skip = TRUE) |> 
+  modify_in("var_info", \(x) x |>
+                  filter(variable %in% c(opt_genes_smote_rf, "class"))) |>
   update_recipe(x = smote_rf_model, recipe = _) |> 
   fit(data = train_ref)
 
@@ -1287,24 +1287,22 @@ two_step_class <- readRDS(here("data", "two_step_class.rds"))
 set.seed(2024)
 mod_two_step_full <- list(all_models_two_step,
                           two_step_data,
-                          two_step_class) %>% 
-  pmap(~ {
-    data = cbind(..2, class = ..3)
-    ..1 %>% fit(data = data)
-  })
+                          two_step_class) |> 
+  pmap(~ ..1 |> fit(data = cbind(..2, class = ..3)))
 
 # Two-step optimal gene list model
 set.seed(2024)
 mod_two_step_opt <- list(all_models_two_step,
                          two_step_data,
-                         two_step_class) %>% 
+                         two_step_class) |> 
   pmap(~ {
-    data = cbind(..2, class = ..3)
-    ..1 %>%
-      update_recipe(pluck(., "pre", "actions", "recipe", "recipe") %>%
-                      step_select(c(all_of(!!opt_genes_two_step), class),
-                                  skip = TRUE)) %>%
-      fit(data = data)
+    ..1 |>
+      pluck("pre", "actions", "recipe", "recipe") |>
+      step_select(c(all_of(!!opt_genes_two_step), class), skip = TRUE) |>
+      modify_in("var_info", \(x) x |>
+                  filter(variable %in% c(opt_genes_two_step, "class"))) |>
+      update_recipe(x = ..1, recipe = _) |>
+      fit(data = cbind(..2, class = ..3))
   })
 
 # Per-class metric set
