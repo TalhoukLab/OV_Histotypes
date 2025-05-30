@@ -1253,8 +1253,8 @@ mod_seq_opt <- list(all_models_seq,
     ..1 |>
       pluck("pre", "actions", "recipe", "recipe") |>
       step_select(c(all_of(!!opt_genes_seq), class), skip = TRUE) |>
-      modify_in("var_info", \(x) x |>
-                  filter(variable %in% c(opt_genes_seq, "class"))) |>
+      modify_at(c("var_info", "term_info"), \(x) x |>
+                  filter(variable %in% c(opt_genes_seq, "class"))) |> 
       update_recipe(x = ..1, recipe = _) |>
       fit(data = cbind(..2, class = ..3))
   })
@@ -1274,8 +1274,8 @@ mod_smote_rf_opt <- smote_rf_model |>
   pluck("pre", "actions", "recipe", "recipe") |> 
   step_select(c(all_of(!!opt_genes_smote_rf), class),
               skip = TRUE) |> 
-  modify_in("var_info", \(x) x |>
-                  filter(variable %in% c(opt_genes_smote_rf, "class"))) |>
+  modify_at(c("var_info", "term_info"), \(x) x |>
+              filter(variable %in% c(opt_genes_smote_rf, "class"))) |> 
   update_recipe(x = smote_rf_model, recipe = _) |> 
   fit(data = train_ref)
 
@@ -1299,8 +1299,8 @@ mod_two_step_opt <- list(all_models_two_step,
     ..1 |>
       pluck("pre", "actions", "recipe", "recipe") |>
       step_select(c(all_of(!!opt_genes_two_step), class), skip = TRUE) |>
-      modify_in("var_info", \(x) x |>
-                  filter(variable %in% c(opt_genes_two_step, "class"))) |>
+      modify_at(c("var_info", "term_info"), \(x) x |>
+                  filter(variable %in% c(opt_genes_two_step, "class"))) |> 
       update_recipe(x = ..1, recipe = _) |>
       fit(data = cbind(..2, class = ..3))
   })
