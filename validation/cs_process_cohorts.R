@@ -71,7 +71,50 @@ hist_stan <- od.otta %>%
     )
   )
 
-# All Histotypes
+# # All Histotypes
+# hist_all <- annot_all %>%
+#   left_join(hist_stan, by = "ottaID") %>%
+#   transmute(
+#     FileName,
+#     ottaID,
+#     CodeSet,
+#     revHist = case_when(
+#       !is.na(cohort) ~ hist_rev,
+#       is.na(cohort) & revHist == "CCC" ~ "CCOC",
+#       is.na(cohort) & revHist == "ENOCa" ~ "ENOC",
+#       revHist %in% c("", "UNK") ~ NA_character_,
+#       TRUE ~ revHist
+#     ),
+#     hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
+#     site
+#   )
+#
+# # Main Histotypes: "CCOC", "ENOC", "HGSC", "LGSC", "MUC"
+# hist_main <- hist_all %>%
+#   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC"))
+
+# histology_mol_v3 histotypes (from Susan)
+histology_mol_v3_df <- read_excel(
+  here(
+    "data-raw",
+    "revHist_selected_cohorts compare AI mol his v3_editAB.xlsx"
+  ),
+  sheet = 1,
+  na = c("", "NA")
+) |>
+  select(FileName, histology_mol_v3, histology_source_v3)
+
+# IHC histotypes (includes COSP, from hist_rev_V2)
+bc_1965_ihc_data <-
+  read_excel(here("data-raw", "bc-1965_ihc_data_2025-06-04.xlsx"), sheet = 1) |>
+  distinct(FileName, hist_rev_v2, hist_rev_v2_source)
+
+# COSP histotypes
+cosp_df <- cohorts |>
+  mutate(FileName = gsub("^X", "", col_name)) |>
+  select(FileName, has_cosp, hist_cosp, hist_cosp_details)
+
+# Original reviewed histotypes
 hist_all <- annot_all %>%
   left_join(hist_stan, by = "ottaID") %>%
   transmute(
@@ -85,13 +128,78 @@ hist_all <- annot_all %>%
       revHist %in% c("", "UNK") ~ NA_character_,
       TRUE ~ revHist
     ),
-    hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
     site
   )
 
+# Add molecular-based histotypes on top of revHist
+# Priority: histology_mol_v3 > hist_rev_v2 > hist_cosp
+hist_all_mol <- hist_all |>
+  left_join(histology_mol_v3_df, by = "FileName") |>
+  left_join(bc_1965_ihc_data, by = "FileName") |>
+  left_join(cosp_df, by = "FileName") |>
+  mutate(
+    histology_mol_v3_mapped = case_match(
+      histology_mol_v3,
+      "1H" ~ "HGSC",
+      "1L" ~ "LGSC",
+      "1" ~ "SC",
+      "2" ~ "MUC",
+      "3" ~ "ENOC",
+      "4" ~ "CCOC",
+      "6" ~ "Other specified epithelial ovarian cancer",
+      "0" ~ "OTHER",
+      "20" ~ "MUC LMP",
+      "99" ~ "SC LMP",
+      .default = histology_mol_v3
+    ),
+    hist_rev_v2_mapped = case_when(
+      hist_rev_v2 == "clear cell" ~ "CCOC",
+      hist_rev_v2 == "endometrioid" ~ "ENOC",
+      hist_rev_v2 == "high-grade serous" ~ "HGSC",
+      hist_rev_v2 == "low-grade serous" ~ "LGSC",
+      hist_rev_v2 == "mucinous" ~ "MUC",
+      hist_rev_v2 == "serous" & hist_rev_v2_source == "CB-81" ~ revHist,
+      .default = hist_rev_v2
+    ),
+    hist_cosp_mapped = case_when(
+      hist_cosp %in% c("HGSOC", "high-grade serous") ~ "HGSC",
+      hist_cosp %in% c("LGSOC", "low-grade serous") ~ "LGSC",
+      hist_cosp == "clear cell" ~ "CCOC",
+      hist_cosp == "endometrioid" ~ "ENOC",
+      hist_cosp == "mucinous" ~ "MUC",
+      hist_cosp == "serous" & hist_cosp_details == "CB-81" ~ revHist,
+      .default = hist_cosp
+    ),
+    across(
+      c(
+        histology_mol_v3_mapped,
+        hist_rev_v2_mapped,
+        hist_cosp_mapped
+      ),
+      ~ if_else(revHist != ., "discordant", "concordant"),
+      .names = "revHist_vs_{gsub('_mapped', '', {col}, fixed = TRUE)}"
+    ),
+    hist_final_source = case_when(
+      !is.na(histology_mol_v3_mapped) ~ "histology_mol_v3",
+      !is.na(hist_rev_v2_mapped) ~ "hist_rev_v2",
+      !is.na(hist_cosp_mapped) ~ "hist_cosp",
+      !is.na(revHist) ~ "revHist"
+    ),
+    hist_final = case_match(
+      hist_final_source,
+      "histology_mol_v3" ~ histology_mol_v3_mapped,
+      "hist_rev_v2" ~ hist_rev_v2_mapped,
+      "hist_cosp" ~ hist_cosp_mapped,
+      "revHist" ~ revHist
+    ),
+    hist_gr = if_else(hist_final == "HGSC", "HGSC", "non-HGSC")
+  ) |>
+  relocate(hist_final_source, .after = hist_gr) |>
+  select(-matches("mapped"))
+
 # Main Histotypes: "CCOC", "ENOC", "HGSC", "LGSC", "MUC"
-hist_main <- hist_all %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC"))
+hist_main <- hist_all_mol |>
+  filter(hist_final %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC"))
 
 # CS1/2/3 annotations
 cs1_exp <- filter(annot_all, CodeSet == "CS1")
@@ -209,7 +317,7 @@ hist <- hist_main %>%
   droplevels()
 
 # Histotypes for each distinct ottaID
-hist_df <- distinct(hist, ottaID, revHist)
+hist_df <- distinct(hist, ottaID, hist_final)
 
 # Add ottaID and CodeSet to annotNEW
 annotNEW <- annotNEW %>%
@@ -364,8 +472,8 @@ cs3_clean <- cs3_norm_van %>%
 set.seed(2020)
 hist_rand1 <- hist %>%
   filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
-  distinct(ottaID, revHist) %>%
-  group_by(revHist) %>%
+  distinct(ottaID, hist_final) %>%
+  group_by(hist_final) %>%
   slice_sample(n = 1) %>%
   ungroup()
 
@@ -400,7 +508,7 @@ cs3_clean_van <- cs3_norm_van %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
+  select(-c(CodeSet, hist_final, hist_gr, site))
 
 cs3_clean_aoc <- cs3_norm_aoc %>%
   rename_all(~ gsub("^X", "", .)) %>%
@@ -409,7 +517,7 @@ cs3_clean_aoc <- cs3_norm_aoc %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
+  select(-c(CodeSet, hist_final, hist_gr, site))
 
 cs3_clean_usc <- cs3_norm_usc %>%
   rename_all(~ gsub("^X", "", .)) %>%
@@ -418,7 +526,7 @@ cs3_clean_usc <- cs3_norm_usc %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
+  select(-c(CodeSet, hist_final, hist_gr, site))
 
 # CS3 site-specific expression and reference data
 ## Vancouver
@@ -430,8 +538,8 @@ cs3_van <- cs3_norm_van %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
   filter(!duplicated(ottaID, fromLast = TRUE)) %>%
-  anti_join(hist_rand1, by = c("ottaID", "revHist")) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
+  anti_join(hist_rand1, by = c("ottaID", "hist_final")) %>%
+  select(-c(CodeSet, hist_final, hist_gr, site))
 
 cs3_van_X <- cs3_norm_van %>% select(Name, !matches("POOL"))
 cs3_van_R <- cs3_norm_van %>% select(Name, matches("POOL"))
@@ -444,7 +552,7 @@ cs3_aoc <- cs3_norm_aoc %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
+  select(-c(CodeSet, hist_final, hist_gr, site))
 
 cs3_aoc_X <- cs3_norm_aoc %>%
   select(Name, !matches(paste0("POOL|", paste(hist_rand1$ottaID, collapse = "|"))))
@@ -460,7 +568,7 @@ cs3_usc <- cs3_norm_usc %>%
   gather(FileName, value, -Name) %>%
   inner_join(hist, by = "FileName") %>%
   spread(Name, value) %>%
-  select(-c(CodeSet, revHist, hist_gr, site))
+  select(-c(CodeSet, hist_final, hist_gr, site))
 
 cs3_usc_X <- cs3_norm_usc %>%
   select(Name, !matches(paste0("POOL|", paste(hist_rand1$ottaID, collapse = "|"))))

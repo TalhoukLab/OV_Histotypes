@@ -200,7 +200,7 @@ train_ref <- train_ref_comb %>%
   slice_tail(n = 1, by = ottaID)
 
 train_data <- select(train_ref, where(is.double))
-train_class <- train_ref[["revHist"]]
+train_class <- train_ref[["hist_final"]]
 
 saveRDS(train_data, here::here("data/train_data.rds"))
 saveRDS(train_class, here::here("data/train_class.rds"))
@@ -226,11 +226,11 @@ saveRDS(train_step2_class, here::here("data/train_step2_class.rds"))
 cs1_all_ref <- cs1_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  filter(hist_final %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
 
 cs1_all_data <- select(cs1_all_ref, where(is.double))
-cs1_all_class <- cs1_all_ref[["revHist"]]
+cs1_all_class <- cs1_all_ref[["hist_final"]]
 
 saveRDS(cs1_all_data, here::here("data/cs1_all_data.rds"))
 saveRDS(cs1_all_class, here::here("data/cs1_all_class.rds"))
@@ -239,11 +239,11 @@ saveRDS(cs1_all_class, here::here("data/cs1_all_class.rds"))
 cs2_all_ref <- cs2_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
-  filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
+  filter(hist_final %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
 
 cs2_all_data <- select(cs2_all_ref, where(is.double))
-cs2_all_class <- cs2_all_ref[["revHist"]]
+cs2_all_class <- cs2_all_ref[["hist_final"]]
 
 saveRDS(cs2_all_data, here::here("data/cs2_all_data.rds"))
 saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
@@ -262,7 +262,7 @@ conf_ref <- cs3_X %>%
   column_to_rownames("FileName")
 
 conf_data <- select(conf_ref, where(is.double))
-conf_class <- conf_ref[["revHist"]]
+conf_class <- conf_ref[["hist_final"]]
 
 saveRDS(conf_data, here::here("data/conf_data.rds"))
 saveRDS(conf_class, here::here("data/conf_class.rds"))
@@ -278,7 +278,7 @@ val_ref <- cs3_X %>%
   column_to_rownames("FileName")
 
 val_data <- select(val_ref, where(is.double))
-val_class <- val_ref[["revHist"]]
+val_class <- val_ref[["hist_final"]]
 
 saveRDS(val_data, here::here("data/val_data.rds"))
 saveRDS(val_class, here::here("data/val_class.rds"))

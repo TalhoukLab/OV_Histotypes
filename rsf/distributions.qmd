@@ -22,12 +22,12 @@ train_cohort_codeset <- hist_all %>%
   filter(FileName %in% gsub("^X", "", c(
     cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
   ))) %>%
-  mutate(revHist = revHist %>%
+  mutate(hist_final = hist_final %>%
            factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
            fct_na_value_to_level(level = "Other")) %>%
   droplevels() %>%
   describeBy(
-    var.names = "revHist",
+    var.names = "hist_final",
     var.labels = "Histotype",
     by1 = "CodeSet",
     test = FALSE,
@@ -46,12 +46,12 @@ train_qc_codeset <- hist_all %>%
     "",
     c(cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc)
   )) %>% 
-  mutate(revHist = revHist %>%
+  mutate(hist_final = hist_final %>%
            factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
            fct_na_value_to_level(level = "Other")) %>%
   droplevels() %>% 
   describeBy(
-    var.names = "revHist",
+    var.names = "hist_final",
     var.labels = "Histotype",
     by1 = "CodeSet",
     test = FALSE,
@@ -66,11 +66,11 @@ train_qc_codeset <- hist_all %>%
 
 train_hist_codeset <- hist %>%
   filter(FileName %in% gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))) %>%
-  mutate(revHist = revHist %>%
+  mutate(hist_final = hist_final %>%
            factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
            fct_na_value_to_level(level = "Other")) %>%
   describeBy(
-    var.names = "revHist",
+    var.names = "hist_final",
     var.labels = "Histotype",
     by1 = "CodeSet",
     test = FALSE,
@@ -85,11 +85,11 @@ train_hist_codeset <- hist %>%
 
 train_dedup_codeset <- hist %>%
   filter(FileName %in% gsub("^X", "", c(cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name))) %>%
-  mutate(revHist = revHist %>%
+  mutate(hist_final = hist_final %>%
            factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
            fct_na_value_to_level(level = "Other")) %>%
   describeBy(
-    var.names = "revHist",
+    var.names = "hist_final",
     var.labels = "Histotype",
     by1 = "CodeSet",
     test = FALSE,
@@ -103,9 +103,9 @@ train_dedup_codeset <- hist %>%
 #| label: train-comb-codeset
 
 train_comb_codeset <- train_ref_comb %>% 
-  mutate(revHist = fct_infreq(revHist)) %>% 
+  mutate(hist_final = fct_infreq(hist_final)) %>% 
   describeBy(
-    var.names = "revHist",
+    var.names = "hist_final",
     var.labels = "Histotype",
     by1 = "CodeSet",
     test = FALSE,
@@ -119,9 +119,9 @@ train_comb_codeset <- train_ref_comb %>%
 #| label: train-derep-codeset
 
 train_derep_codeset <- train_ref %>% 
-  mutate(revHist = fct_infreq(revHist)) %>% 
+  mutate(hist_final = fct_infreq(hist_final)) %>% 
   describeBy(
-    var.names = "revHist",
+    var.names = "hist_final",
     var.labels = "Histotype",
     by1 = "CodeSet",
     test = FALSE,
@@ -171,11 +171,11 @@ hist_train_conf_val <-
   list(Training = train_ref,
        Confirmation = conf_ref,
        Validation = val_ref) |> 
-  map_dfr(~ select(., revHist), .id = "Data") |> 
+  map_dfr(~ select(., hist_final), .id = "Data") |> 
   mutate(Data = factor(Data, levels = c("Training", "Confirmation", "Validation")),
-         revHist = factor(revHist, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
+         hist_final = factor(hist_final, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
   describeBy(
-    var.names = "revHist",
+    var.names = "hist_final",
     var.labels = "Histotype",
     by1 = "Data",
     total = "bottom",
