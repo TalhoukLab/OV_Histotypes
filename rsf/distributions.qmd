@@ -18,7 +18,7 @@ source(here("validation/cs_classifier.R"))
 ```{r}
 #| label: train-cohort-codeset
 
-train_cohort_codeset <- hist_all %>%
+train_cohort_codeset <- hist_all_mol %>%
   filter(FileName %in% gsub("^X", "", c(
     cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
   ))) %>%
@@ -40,7 +40,7 @@ train_cohort_codeset <- hist_all %>%
 ```{r}
 #| label: train-qc-codeset
 
-train_qc_codeset <- hist_all %>%
+train_qc_codeset <- hist_all_mol %>%
   filter(FileName %in% gsub(
     "^X",
     "",
@@ -158,7 +158,8 @@ hist_codeset |>
       "Removed Duplicates" = 6,
       "Normalized and Recombined" = 6,
       "Removed Replicates" = 6
-    )
+    ),
+    indent = FALSE
   )
 ```
 
