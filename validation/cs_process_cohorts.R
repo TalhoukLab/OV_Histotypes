@@ -192,9 +192,12 @@ hist_all_mol <- hist_all |>
       "hist_cosp" ~ hist_cosp_mapped,
       "revHist" ~ revHist
     ),
-    hist_gr = if_else(hist_final == "HGSC", "HGSC", "non-HGSC")
+    hist_gr = if_else(hist_final == "HGSC", "HGSC", "non-HGSC"),
+    hist_gr2 = hist_final |>
+      factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) |>
+      fct_na_value_to_level(level = "Other")
   ) |>
-  relocate(hist_final_source, .after = hist_gr) |>
+  relocate(hist_final_source, .after = hist_gr2) |>
   select(-matches("mapped"))
 
 # Main Histotypes: "CCOC", "ENOC", "HGSC", "LGSC", "MUC"

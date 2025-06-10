@@ -22,12 +22,9 @@ train_cohort_codeset <- hist_all_mol %>%
   filter(FileName %in% gsub("^X", "", c(
     cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
   ))) %>%
-  mutate(hist_final = hist_final %>%
-           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
-           fct_na_value_to_level(level = "Other")) %>%
   droplevels() %>%
   describeBy(
-    var.names = "hist_final",
+    var.names = "hist_gr2",
     var.labels = "Histotype",
     by1 = "CodeSet",
     test = FALSE,
@@ -41,17 +38,12 @@ train_cohort_codeset <- hist_all_mol %>%
 #| label: train-qc-codeset
 
 train_qc_codeset <- hist_all_mol %>%
-  filter(FileName %in% gsub(
-    "^X",
-    "",
-    c(cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc)
-  )) %>% 
-  mutate(hist_final = hist_final %>%
-           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
-           fct_na_value_to_level(level = "Other")) %>%
+  filter(FileName %in% gsub("^X", "", c(
+    cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc
+  ))) %>% 
   droplevels() %>% 
   describeBy(
-    var.names = "hist_final",
+    var.names = "hist_gr2",
     var.labels = "Histotype",
     by1 = "CodeSet",
     test = FALSE,
@@ -65,10 +57,8 @@ train_qc_codeset <- hist_all_mol %>%
 #| label: train-hist-codeset
 
 train_hist_codeset <- hist %>%
-  filter(FileName %in% gsub("^X", "", c(cs1_samples, cs2_samples, cs3_samples))) %>%
-  mutate(hist_final = hist_final %>%
-           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
-           fct_na_value_to_level(level = "Other")) %>%
+  mutate(hist_final = factor(hist_final,
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) %>%
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -84,10 +74,11 @@ train_hist_codeset <- hist %>%
 #| label: train-dedup-codeset
 
 train_dedup_codeset <- hist %>%
-  filter(FileName %in% gsub("^X", "", c(cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name))) %>%
-  mutate(hist_final = hist_final %>%
-           factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) %>%
-           fct_na_value_to_level(level = "Other")) %>%
+  filter(FileName %in% gsub("^X", "", c(
+    cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name
+  ))) %>%
+  mutate(hist_final = factor(hist_final,
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) %>%
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
