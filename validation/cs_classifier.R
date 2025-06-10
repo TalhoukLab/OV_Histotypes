@@ -226,7 +226,6 @@ saveRDS(train_step2_class, here::here("data/train_step2_class.rds"))
 cs1_all_ref <- cs1_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
-  filter(hist_final %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
 
 cs1_all_data <- select(cs1_all_ref, where(is.double))
@@ -239,7 +238,6 @@ saveRDS(cs1_all_class, here::here("data/cs1_all_class.rds"))
 cs2_all_ref <- cs2_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
-  filter(hist_final %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")) %>%
   column_to_rownames("FileName")
 
 cs2_all_data <- select(cs2_all_ref, where(is.double))
