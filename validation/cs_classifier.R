@@ -218,10 +218,11 @@ train_step2_class <- train_ref |>
   filter(hist_gr != "HGSC") |>
   pull(hist_final)
 
-saveRDS(train_step1_data, here::here("data/train_step1_data.rds"))
-saveRDS(train_step1_class, here::here("data/train_step1_class.rds"))
-saveRDS(train_step2_data, here::here("data/train_step2_data.rds"))
-saveRDS(train_step2_class, here::here("data/train_step2_class.rds"))
+two_step_data <- list(train_step1_data, train_step2_data)
+saveRDS(two_step_data, here::here("data/two_step_data.rds"))
+
+two_step_class <- list(train_step1_class, train_step2_class)
+saveRDS(two_step_class, here::here("data/two_step_class.rds"))
 
 
 # CS1 and CS2 with duplicates ---------------------------------------------

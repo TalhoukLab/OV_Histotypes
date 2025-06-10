@@ -16,15 +16,3 @@ step2_wflow <- all_metrics_retrain_4 %>%
 
 two_step_wflows <- c(step1_wflow, step2_wflow)
 saveRDS(two_step_wflows, here("data/two_step_wflows.rds"))
-
-# Combine training data
-two_step_data <- map(c("train_step1_data", "train_step2_data"), ~ {
-  readRDS(here("data", paste0(.x, ".rds")))
-})
-saveRDS(two_step_data, here("data/two_step_data.rds"))
-
-# Combine training classes
-two_step_class <- map(c("train_step1_class", "train_step2_class"), ~ {
-  readRDS(here("data", paste0(.x, ".rds")))
-})
-saveRDS(two_step_class, here("data/two_step_class.rds"))
