@@ -34,10 +34,28 @@ conflict_prefer("HKnorm", "nanostringr")
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
 
+## Inputs
 # Training data
-train_data <- readRDS(here("data/train_data.rds"))
-train_class <- readRDS(here("data/train_class.rds"))
+train_data <- readRDS(here("data", "train_data.rds"))
+train_class <- readRDS(here("data", "train_class.rds"))
 
+# Confirmation data
+conf_data <- readRDS(here("data", "conf_data.rds"))
+conf_class <- readRDS(here("data", "conf_class.rds"))
+
+# Validation data
+val_data <- readRDS(here("data", "val_data.rds"))
+val_class <- readRDS(here("data", "val_class.rds"))
+
+# Sequential data
+seq_data <- readRDS(here("data", "seq_data.rds"))
+seq_class <- readRDS(here("data", "seq_class.rds"))
+
+# Two-step data
+two_step_data <- readRDS(here("data", "two_step_data.rds"))
+two_step_class <- readRDS(here("data", "two_step_class.rds"))
+
+## Outputs
 # Metrics
 all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
 per_class_metrics_seq <-
@@ -68,6 +86,9 @@ coefmat <- readRDS(here("data/coefmat.rds"))
 overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
 overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
 overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+
+# PrOTYPE final model
+final_model <- readRDS(here("data/final_model.rds"))
 
 # Histotypes colour palette
 class_palette <- brewer.pal(n = 5, name = "Dark2")
@@ -1232,11 +1253,6 @@ The top 2 methods are the sequential and SMOTE-Random Forest classifiers. We can
 ```{r}
 #| label: top-models
 
-# sequential data
-seq_data <- readRDS(here("data", "seq_data.rds"))
-seq_class <- readRDS(here("data", "seq_class.rds"))
-seq_wflows <- readRDS(here("data", "seq_wflows.rds"))
-
 # Sequential full model
 set.seed(2024)
 mod_seq_full <- list(all_models_seq,
@@ -1279,10 +1295,6 @@ mod_smote_rf_opt <- smote_rf_model |>
   update_recipe(x = smote_rf_model, recipe = _) |> 
   fit(data = train_ref)
 
-# Two-step data
-two_step_data <- readRDS(here("data", "two_step_data.rds"))
-two_step_class <- readRDS(here("data", "two_step_class.rds"))
-
 # Two-step full model
 set.seed(2024)
 mod_two_step_full <- list(all_models_two_step,
@@ -1311,14 +1323,6 @@ per_class_mset <-
 ```
 
 ### Confirmation Set
-
-```{r}
-#| label: confirmation-set
-
-# Load data
-conf_class <- readRDS(here("data", "conf_class.rds"))
-conf_data <- readRDS(here("data", "conf_data.rds"))
-```
 
 ```{r}
 #| label: tbl-conf-eval
@@ -1870,14 +1874,6 @@ print(roc_curve_two_step_optimal)
 ### Validation Set
 
 ```{r}
-#| label: validation-set
-
-# Load data
-val_class <- readRDS(here("data", "val_class.rds"))
-val_data <- readRDS(here("data", "val_data.rds"))
-```
-
-```{r}
 #| label: tbl-val-eval
 #| tbl-cap: 'Evaluation Metrics on Validation Set Model, SMOTE-Random Forest, Optimal Set'
 #| tbl-pos: 'H'
@@ -2041,8 +2037,6 @@ print(val_roc_curve_smote_rf_opt)
 #| fig-height: 7
 #| fig-width: 10
 #| out-width: '100%'
-
-final_model <- readRDS(here("data/final_model.rds"))
 
 val_pred_hgsc_samples <- mod_smote_rf_opt |> 
   predict(val_data, type = "class") |> 
