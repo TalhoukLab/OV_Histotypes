@@ -208,11 +208,15 @@ saveRDS(train_class, here::here("data/train_class.rds"))
 
 # Two-Step Training Set ---------------------------------------------------
 
-# Training set for two-step classifier
+# Training sets for two-step classifier
 train_step1_data <- train_data
-train_step1_class <- ifelse(train_class == "HGSC", "HGSC", "non-HGSC")
-train_step2_data <- train_data[train_step1_class != "HGSC", ]
-train_step2_class <- train_class[train_step1_class != "HGSC"]
+train_step1_class <- train_ref |> pull(hist_gr)
+train_step2_data <- train_ref |>
+  filter(hist_gr != "HGSC") |>
+  select(where(is.double))
+train_step2_class <- train_ref |>
+  filter(hist_gr != "HGSC") |>
+  pull(hist_final)
 
 saveRDS(train_step1_data, here::here("data/train_step1_data.rds"))
 saveRDS(train_step1_class, here::here("data/train_step1_class.rds"))
