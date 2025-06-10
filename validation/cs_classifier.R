@@ -5,17 +5,17 @@ source(here::here("src/funs.R"))
 
 # Remove Duplicates -------------------------------------------------------
 
-# CS1: n=249
+# CS1: n=246
 cs1_dedup <- cohorts %>%
   filter(col_name %in% cs1_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE))
 
-# CS2: n=784
+# CS2: n=795
 cs2_dedup <- cohorts %>%
   filter(col_name %in% cs2_samples) %>%
   filter(!duplicated(ottaID, fromLast = TRUE))
 
-# CS3: n=2010 (Vancouver site only and removed pools)
+# CS3: n=2011 (Vancouver site only and removed pools)
 cs3_dedup <- cohorts %>%
   semi_join(hist_cs3_van, by = "col_name") %>%
   filter(col_name %in% cs3_samples) %>%
@@ -44,34 +44,34 @@ cs3_samples_R <- cs3_dedup %>%
 
 # Expression Samples ------------------------------------------------------
 
-# CS1: n=244
+# CS1: n=241
 cs1_samples_X <- cs1_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   pull(col_name)
 
-# CS1 with duplicates: n=260
+# CS1 with duplicates: n=257
 cs1_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs1_samples) %>%
   pull(col_name)
 
-# CS2: n=779
+# CS2: n=790
 cs2_samples_X <- cs2_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   pull(col_name)
 
-# CS2 with duplicates: n=809
+# CS2 with duplicates: n=820
 cs2_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs2_samples) %>%
   pull(col_name)
 
-# CS3: n=2005
+# CS3: n=2006
 cs3_samples_X <- cs3_dedup %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   pull(col_name)
 
-# CS3 with duplicates: n=2138
+# CS3 with duplicates: n=2139
 cs3_samples_all_X <- cohorts %>%
   anti_join(hist_rand1, by = "ottaID") %>%
   filter(col_name %in% cs3_samples) %>%
@@ -92,19 +92,19 @@ cs3_R <- select_samples(cs3_norm, cs3_samples_R)
 
 # Expression Datasets -----------------------------------------------------
 
-# CS1: 244 samples by 256 genes
+# CS1: 241 samples by 256 genes
 cs1_X <- select_samples(cs1_norm, cs1_samples_X)
 
-# CS1 with duplicates: 260 samples by 256 genes
+# CS1 with duplicates: 257 samples by 256 genes
 cs1_all_X <- select_samples(cs1_norm, cs1_samples_all_X)
 
-# CS2: 779 samples by 365 genes
+# CS2: 790 samples by 365 genes
 cs2_X <- select_samples(cs2_norm, cs2_samples_X)
 
-# CS2 with duplicates: 809 samples by 365 genes
+# CS2 with duplicates: 820 samples by 365 genes
 cs2_all_X <- select_samples(cs2_norm, cs2_samples_all_X)
 
-# CS3: 2005 samples by 513 genes
+# CS3: 2006 samples by 513 genes
 cs3_X <- select_samples(cs3_norm, cs3_samples_X)
 
 
@@ -184,7 +184,7 @@ cs3_train <-
 
 # Construct Training Set --------------------------------------------------
 
-# Combined Training Set (CS1 + CS2 + CS3), n=244+779+468=1491
+# Combined Training Set (CS1 + CS2 + CS3), n=241+790+470=1501
 # Common genes n=72
 train_ref_comb <-
   bind_rows(cs1_train, cs2_train, cs3_train) %>%
@@ -195,7 +195,7 @@ train_ref_comb <-
   inner_join(hist, by = "FileName") %>%
   column_to_rownames("FileName")
 
-# Training set removed replicates (CS3 > CS2 > CS1), n=1491-248=1243
+# Training set removed replicates (CS3 > CS2 > CS1), n=1501-244=1257
 train_ref <- train_ref_comb %>%
   slice_tail(n = 1, by = ottaID)
 
@@ -227,7 +227,7 @@ saveRDS(two_step_class, here::here("data/two_step_class.rds"))
 
 # CS1 and CS2 with duplicates ---------------------------------------------
 
-# CS1 all set, n=279-19=260 (CS1 - other histotypes), common genes with CS3 n=79
+# CS1 all set, n=257, common genes with CS3 n=79
 cs1_all_ref <- cs1_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
@@ -239,7 +239,7 @@ cs1_all_class <- cs1_all_ref[["hist_final"]]
 saveRDS(cs1_all_data, here::here("data/cs1_all_data.rds"))
 saveRDS(cs1_all_class, here::here("data/cs1_all_class.rds"))
 
-# CS2 all set, n=876-67=809 (CS2 - other histotypes), common genes with CS3 n=136
+# CS2 all set, n=820 common genes with CS3 n=136
 cs2_all_ref <- cs2_all_train %>%
   rownames_to_column("FileName") %>%
   inner_join(hist, by = "FileName") %>%
@@ -254,7 +254,7 @@ saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 
 # Construct Test Sets -----------------------------------------------------
 
-# Confirmation set, n=643 (TNCO)
+# Confirmation set, n=642 (TNCO)
 conf_ref <- cs3_X %>%
   rownames_to_column("FileName") %>%
   mutate(col_name = paste0("X", FileName)) %>%
