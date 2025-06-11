@@ -23,6 +23,7 @@ for dataset in "${dataSets[@]}"; do
             echo "n_folds <- $n_folds" >> $R_file
             echo 'fold_id <- "'$v'"' >> $R_file
             echo "ngene <- '$ng'" >> $R_file
+            echo 'gene_opt_wflow <- "'$gene_opt_wflow'"' >> $R_file
             echo 'inputDir <- "'$inputDir'"' >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file
             echo 'source("pipeline/gene_opt/1a-tune_wflows.R")' >> $R_file

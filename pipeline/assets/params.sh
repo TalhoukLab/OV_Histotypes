@@ -9,6 +9,7 @@ rank_metric="f_meas"
 seqData=(seq)
 nseq=4
 ngenes=44
+gene_opt_wflow="smote_rf"
 
 # Directory parameters
 user="$(whoami)"
