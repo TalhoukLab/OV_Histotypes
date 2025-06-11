@@ -64,7 +64,7 @@ per_class_metrics_two_step <-
   readRDS(here("data/per_class_metrics_two_step.rds"))
 
 # Models
-smote_rf_model <- readRDS(here("data/wflow_smote_rf_model_train.rds"))
+wflow_smote_rf_model <- readRDS(here("data/wflow_smote_rf_model_train.rds"))
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
 
@@ -1279,20 +1279,24 @@ mod_seq_opt <- list(all_models_seq,
 train_ref <- train_data |>
   mutate(class = factor(train_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
                                                 
-# smote_rf full model
+# smote_rf full model trained
 set.seed(2024)
-mod_smote_rf_full <- smote_rf_model |>
+mod_smote_rf_full <- wflow_smote_rf_model |>
   fit(data = train_ref)
 
-# smote_rf optimal gene list model
+# smote_rf optimal gene list workflow
 set.seed(2024)
-mod_smote_rf_opt <- smote_rf_model |> 
-  pluck("pre", "actions", "recipe", "recipe") |> 
+wflow_smote_rf_opt <- wflow_smote_rf_model |>
+  pluck("pre", "actions", "recipe", "recipe") |>
   step_select(c(all_of(!!opt_genes_smote_rf), class),
-              skip = TRUE) |> 
+              skip = TRUE) |>
   modify_at(c("var_info", "term_info"), \(x) x |>
-              filter(variable %in% c(opt_genes_smote_rf, "class"))) |> 
-  update_recipe(x = smote_rf_model, recipe = _) |> 
+              filter(variable %in% c(opt_genes_smote_rf, "class"))) |>
+  update_recipe(x = smote_rf_model, recipe = _)
+
+# smote_rf optimal gene list model trained
+set.seed(2024)
+mod_smote_rf_opt <- wflow_smote_rf_opt |>
   fit(data = train_ref)
 
 # Two-step full model
