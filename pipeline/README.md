@@ -10,8 +10,7 @@ dataSets=(train)
 
 ## Retraining
 
-To find the sequence of workflows to use in the sequential and two-step methods, we need to retrain the ML pipeline after each class is removed.
-This allows us to obtain an unbiased estimate of the internal validation score to use when assessing the next workflow to use.
+To find the sequence of workflows to use in the sequential and two-step methods, we need to retrain the ML pipeline after each class is removed. This allows us to obtain an unbiased estimate of the internal validation score to use when assessing the next workflow to use.
 
 Run `make retrain` with these parameters, one at a time:
 
@@ -21,6 +20,7 @@ dataSets=(retrain_4)
 dataSets=(retrain_3)
 dataSets=(retrain_2)
 ```
+
 Do not supply an array to `dataSets` as the results of a later retraining step depends on the previous.
 
 ## Sequential and Two-Step
@@ -56,6 +56,7 @@ Then run `make gene_opt` with parameters:
 
 ``` bash
 dataSets=(conf)
+gene_opt_wflow="smote_rf"
 ```
 
 to run gene optimization on the entire confirmation set.
@@ -78,8 +79,9 @@ to run gene optimization for the sequential and two-step methods on the confirma
 
 Results are stored at `resultsDir` specified in `pipeline/assets/params.sh`. It has three main directories:
 
-- `scriptDir`: contains the R and sh scripts used to submit jobs to SLURM
-- `logDir`: contains logs for standard output (extension `.o`) and standard error (extension `.e`) associated with the jobs, if any
-- `outputDir`: contains the outputs for the submitted jobs
+-   `scriptDir`: contains the R and sh scripts used to submit jobs to SLURM
+-   `logDir`: contains logs for standard output (extension `.o`) and standard error (extension `.e`) associated with the jobs, if any
+-   `outputDir`: contains the outputs for the submitted jobs
 
 The outputs in `outputDir` are structured first within the name of the task and within that subdirectories will use the data object name.
+
