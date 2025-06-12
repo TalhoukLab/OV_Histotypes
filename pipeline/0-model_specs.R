@@ -81,14 +81,14 @@ wflow_sets <- workflow_set(preproc, models)
 
 # Option 1: sequential gene optimization workflow
 # Option 2: sequential algorithm workflow
-# Option 3: best workflow for gene optimization
+# Option 3: specified workflow for gene optimization
 # Option 4: create workflow using subsampling method and algorithm name
 if (exists("nseq") & exists("seq_data")) {
   wflow <- readRDS(file.path(inputDir, paste0(seq_data, "_wflows.rds")))[[nseq]]
 } else if (exists("nseq") & !exists("seq_data")) {
   wflow <- readRDS(file.path(inputDir, paste0(dataset, "_wflows.rds")))[[nseq]]
-} else if (exists("top_wflow")) {
-  wflow <- top_wflow
+} else if (exists("gene_opt_wflow")) {
+  wflow <- gene_opt_wflow
 } else {
   wflow <- paste(samp, alg, sep = "_")
 }
