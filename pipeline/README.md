@@ -64,12 +64,14 @@ to run gene optimization on the entire confirmation set.
 Run `make gene_opt_seq` with parameters:
 
 ``` bash
-seqData=(conf_seq)
+dataSets=(conf_seq)
+seqData="seq"
 nseq=4
 ```
 
 ``` bash
-seqData=(conf_two_step)
+dataSets=(conf_two_step)
+seqData="two_step"
 nseq=2
 ```
 
@@ -84,4 +86,3 @@ Results are stored at `resultsDir` specified in `pipeline/assets/params.sh`. It 
 -   `outputDir`: contains the outputs for the submitted jobs
 
 The outputs in `outputDir` are structured first within the name of the task and within that subdirectories will use the data object name.
-
