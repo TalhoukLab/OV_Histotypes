@@ -1705,8 +1705,9 @@ print(roc_curve_smote_rf_full)
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- predict(mod_smote_rf_opt, conf_data, type = "prob") %>% 
-  add_column(truth = factor(conf_class))
+preds <- mod_smote_rf_opt |> 
+  predict(conf_data, type = "prob") %>% 
+  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds %>%
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
