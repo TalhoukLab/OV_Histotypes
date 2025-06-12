@@ -449,10 +449,10 @@ print(p)
 Multi-step methods:
 
 -   **sequential**: sequential algorithm sequence of subsampling methods and algorithms used are:
-    -   HGSC vs. non-HGSC using SMOTE subsampling and random forest
-    -   CCOC vs. non-CCOC using hybrid subsampling and XGBoost
-    -   ENOC vs. non-ENOC using upsampling and support vector machine
-    -   LGSC vs. MUC using hybrid subsampling and regularized multinomial regression
+    -   HGSC vs. non-HGSC using upsubsampling and random forest
+    -   CCOC vs. non-CCOC using SMOTE subsampling and XGBoost
+    -   ENOC vs. non-ENOC using hybrid subsampling and support vector machine
+    -   LGSC vs. MUC using hybrid subsampling and random forest
 -   **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
     -   HGSC vs. non-HGSC using SMOTE subsampling and random forest
     -   CCOC vs. ENOC vs. MUC vs. LGSC using hybrid subsampling and support vector machine
@@ -940,7 +940,7 @@ p_gene_seq <-
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq)
 
-n_genes_seq <- 7
+n_genes_seq <- 9
 genes_add_seq <- gene_seq_names %>%
   filter(Genes > 0L) %>% 
   slice_min(order_by = Genes, n = n_genes_seq) %>% 
@@ -948,7 +948,7 @@ genes_add_seq <- gene_seq_names %>%
 opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
 
-In the sequential algorithm, sequences 1, 2, and 4 have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 3, the F1-score stabilizes at around 0.88 when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
+In the sequential algorithm, all sequences have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 4, the F1-score is highest when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-seq
@@ -1035,7 +1035,7 @@ p_gene_smote_rf <-
        title = "Gene Optimziation for SMOTE-Random Forest Classifier")
 ggplotly(p_gene_smote_rf)
 
-n_genes_smote_rf <- 18
+n_genes_smote_rf <- 16
 genes_add_smote_rf <- gene_smote_rf_names %>% 
   filter(Genes > 0L) %>% 
   slice_min(order_by = Genes, n = n_genes_smote_rf) %>% 
@@ -1043,7 +1043,7 @@ genes_add_smote_rf <- gene_smote_rf_names %>%
 opt_genes_smote_rf <- c(overlap_all, genes_add_smote_rf)
 ```
 
-In the SMOTE-Random Forest classifier, the F1-score stabilizes at around 0.7 when we reach `r n_genes_smote_rf` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_rf`=`r length(opt_genes_smote_rf)` The added genes are: `r str_flatten_comma(genes_add_smote_rf, last = " and ")`.
+In the SMOTE-Random Forest classifier, the mean F1-score is highest when we reach `r n_genes_smote_rf` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_rf`=`r length(opt_genes_smote_rf)` The added genes are: `r str_flatten_comma(genes_add_smote_rf, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-smote-rf
@@ -1237,7 +1237,7 @@ wflow_smote_rf_opt <- wflow_smote_rf_model |>
               skip = TRUE) |>
   modify_at(c("var_info", "term_info"), \(x) x |>
               filter(variable %in% c(opt_genes_smote_rf, "class"))) |>
-  update_recipe(x = smote_rf_model, recipe = _)
+  update_recipe(x = wflow_smote_rf_model, recipe = _)
 
 # smote_rf optimal gene list model trained
 set.seed(2024)
@@ -1439,15 +1439,15 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
   filter(Metric %in% c("prob", "entropy")) |>
   filter(
     (grepl("Sequential", Method) & (
-      Prediction == "HGSC" & Workflow == "smote_rf_s1" |
-        Prediction == "CCOC" & Workflow == "hybrid_xgb_s2" |
-        Prediction == "ENOC" & Workflow == "up_svm_s3" |
-        Prediction %in% c("LGSC", "MUC") & Workflow == "hybrid_mr_s4"
+      Prediction == "HGSC" & grepl("s1", Workflow) |
+        Prediction == "CCOC" & grepl("s2", Workflow) |
+        Prediction == "ENOC" & grepl("s3", Workflow) |
+        Prediction %in% c("MUC", "LGSC") & grepl("s4", Workflow)
     )) |
     grepl("SMOTE-Random Forest", Method) |
     (grepl("Two-Step", Method) & (
-      Prediction == "HGSC" & Workflow == "smote_rf_s1" |
-        Prediction != "HGSC" & Workflow == "hybrid_svm_s2"
+      Prediction == "HGSC" & grepl("s1", Workflow) |
+        Prediction != "HGSC" & grepl("s2", Workflow)
     ))
   ) |>
   pivot_wider(names_from = Metric, values_from = Value)
@@ -1676,8 +1676,9 @@ print(roc_curve_seq_opt)
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- predict(mod_smote_rf_full, conf_data, type = "prob") %>%
-  add_column(truth = factor(conf_class))
+preds <- mod_smote_rf_full %>% 
+  predict(conf_data, type = "prob") %>%
+  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds %>%
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
@@ -1961,8 +1962,9 @@ print(val_conf_mat)
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- predict(mod_smote_rf_opt, val_data, type = "prob") |> 
-  add_column(truth = factor(val_class))
+preds <- mod_smote_rf_opt |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds %>%
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
