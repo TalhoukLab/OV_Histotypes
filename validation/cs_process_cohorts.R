@@ -71,28 +71,6 @@ hist_stan <- od.otta %>%
     )
   )
 
-# # All Histotypes
-# hist_all <- annot_all %>%
-#   left_join(hist_stan, by = "ottaID") %>%
-#   transmute(
-#     FileName,
-#     ottaID,
-#     CodeSet,
-#     revHist = case_when(
-#       !is.na(cohort) ~ hist_rev,
-#       is.na(cohort) & revHist == "CCC" ~ "CCOC",
-#       is.na(cohort) & revHist == "ENOCa" ~ "ENOC",
-#       revHist %in% c("", "UNK") ~ NA_character_,
-#       TRUE ~ revHist
-#     ),
-#     hist_gr = ifelse(revHist == "HGSC", "HGSC", "non-HGSC"),
-#     site
-#   )
-#
-# # Main Histotypes: "CCOC", "ENOC", "HGSC", "LGSC", "MUC"
-# hist_main <- hist_all %>%
-#   filter(revHist %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC"))
-
 # histology_mol_v3 histotypes (from Susan)
 histology_mol_v3_df <- read_excel(
   here(
