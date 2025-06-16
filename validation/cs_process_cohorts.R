@@ -190,18 +190,18 @@ cs3_exp <- filter(annot_all, CodeSet == "CS3")
 # Select specific cohorts and extract samples
 cs1_samples_coh <- cohorts %>%
   filter(file_source == "cs1",
-         cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL")) %>%
+         cohort %in% c("OOU", "OOUE", "VOA", "MAYO", "MTL")) %>%
   pull(col_name)
 
 cs2_samples_coh <- cohorts %>%
   filter(
     file_source == "cs2",
     cohort %in% c(
-      "MAYO",
       "OOU",
       "OOUE",
-      "OVAR3",
       "VOA",
+      "MAYO",
+      "OVAR3",
       "ICON7",
       "JAPAN",
       "MTL",
@@ -214,11 +214,11 @@ cs3_samples_coh <- cohorts %>%
   filter(
     file_source == "cs3",
     cohort %in% c(
-      "DOVE4",
       "OOU",
       "OOUE",
-      "TNCO",
       "VOA",
+      "TNCO",
+      "DOVE4",
       "POOL-1",
       "POOL-2",
       "POOL-3"

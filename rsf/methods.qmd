@@ -30,8 +30,8 @@ coefmat <- readRDS(here("data/coefmat.rds"))
 Prior to pre-processing, samples were split into a training, a confirmation, and a validation set.
 
 -   Training
-    -   CS1: MAYO, OOU, OOUE, VOA, MTL
-    -   CS2: MAYO, OOU, OOUE, OVAR3, VOA, OVAR11, JAPAN, MTL, POOL-CTRL
+    -   CS1: OOU, OOUE, VOA, MAYO, MTL
+    -   CS2: OOU, OOUE, VOA, MAYO, OVAR3, OVAR11, JAPAN, MTL, POOL-CTRL
     -   CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
 -   Confirmation:
     -   CS3: TNCO
