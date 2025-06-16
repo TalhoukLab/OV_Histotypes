@@ -211,7 +211,8 @@ cohorts_dist <-
              "POOL-2",
              "POOL-3"
            )
-         )) |> 
+         ) |>
+           fct_recode(OVAR11 = "ICON7")) |> 
   tbl_summary(
     by = CodeSet,
     label = list(cohort ~ "Cohort"),
@@ -556,3 +557,4 @@ p_genes_cs23_hkgenes <-
 
 print(p_genes_cs23_hkgenes)
 ```
+
