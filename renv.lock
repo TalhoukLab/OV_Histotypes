@@ -2333,27 +2333,6 @@
       "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
       "Repository": "CRAN"
     },
-    "corpcor": {
-      "Package": "corpcor",
-      "Version": "1.6.9",
-      "Source": "Repository",
-      "Date": "2017-03-31",
-      "Title": "Efficient Estimation of Covariance and (Partial) Correlation",
-      "Author": "Juliane Schafer, Rainer Opgen-Rhein, Verena Zuber, Miika Ahdesmaki,  A. Pedro Duarte Silva, and Korbinian Strimmer.",
-      "Maintainer": "Korbinian Strimmer <strimmerlab@gmail.com>",
-      "Depends": [
-        "R (>= 3.0.2)"
-      ],
-      "Imports": [
-        "stats"
-      ],
-      "Suggests": [],
-      "Description": "Implements a James-Stein-type shrinkage estimator for  the covariance matrix, with separate shrinkage for variances and correlations.   The details of the method are explained in Schafer and Strimmer (2005)  <DOI:10.2202/1544-6115.1175> and Opgen-Rhein and Strimmer (2007)  <DOI:10.2202/1544-6115.1252>.  The approach is both computationally as well as statistically very efficient, it is applicable to \"small n, large p\" data,  and always returns a positive definite and well-conditioned covariance matrix.   In addition to inferring the covariance matrix the package also provides  shrinkage estimators for partial correlations and partial variances.   The inverse of the covariance and correlation matrix  can be efficiently computed, as well as any arbitrary power of the  shrinkage correlation matrix.  Furthermore, functions are available for fast  singular value decomposition, for computing the pseudoinverse, and for  checking the rank and positive definiteness of a matrix.",
-      "License": "GPL (>= 3)",
-      "URL": "http://strimmerlab.org/software/corpcor/",
-      "NeedsCompilation": "no",
-      "Repository": "CRAN"
-    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.5.2",
@@ -3179,29 +3158,6 @@
       "NeedsCompilation": "yes",
       "Author": "Brandon Greenwell [aut, cre] (<https://orcid.org/0000-0002-8120-0084>)",
       "Maintainer": "Brandon Greenwell <greenwell.brandon@gmail.com>",
-      "Repository": "CRAN"
-    },
-    "fdrtool": {
-      "Package": "fdrtool",
-      "Version": "1.2.15",
-      "Source": "Repository",
-      "Date": "2015-07-07",
-      "Title": "Estimation of (Local) False Discovery Rates and Higher Criticism",
-      "Author": "Bernd Klaus and Korbinian Strimmer.",
-      "Maintainer": "Korbinian Strimmer <strimmerlab@gmail.com>",
-      "Depends": [
-        "R (>= 3.0.2)"
-      ],
-      "Suggests": [],
-      "Imports": [
-        "graphics",
-        "grDevices",
-        "stats"
-      ],
-      "Description": "Estimates both tail area-based false  discovery rates (Fdr) as well as local false discovery rates (fdr) for a  variety of null models (p-values, z-scores, correlation coefficients, t-scores).  The proportion of null values and the parameters of the null  distribution are adaptively estimated from the data.  In addition, the package  contains functions for non-parametric density estimation (Grenander estimator),  for monotone regression (isotonic regression and antitonic regression with weights), for computing the greatest convex minorant (GCM) and the least concave majorant (LCM),  for the half-normal and correlation distributions, and for computing empirical higher criticism (HC) scores and the corresponding decision threshold.",
-      "License": "GPL (>= 3)",
-      "URL": "http://strimmerlab.org/software/fdrtool/",
-      "NeedsCompilation": "yes",
       "Repository": "CRAN"
     },
     "fontawesome": {
@@ -6165,23 +6121,6 @@
       "Maintainer": "Xavier Robin <pROC-cran@xavier.robin.name>",
       "Repository": "CRAN"
     },
-    "pamr": {
-      "Package": "pamr",
-      "Version": "1.56.1",
-      "Source": "Repository",
-      "Title": "Pam: Prediction Analysis for Microarrays",
-      "Author": "T. Hastie, R. Tibshirani, Balasubramanian Narasimhan, Gil Chu",
-      "Description": "Some functions for sample classification in microarrays.",
-      "Maintainer": "Rob Tibshirani  <tibs@stanford.edu>",
-      "Depends": [
-        "R (>= 2.10)",
-        "cluster",
-        "survival"
-      ],
-      "License": "GPL-2",
-      "Repository": "CRAN",
-      "NeedsCompilation": "yes"
-    },
     "parallelMap": {
       "Package": "parallelMap",
       "Version": "1.5.1",
@@ -8043,34 +7982,6 @@
       "NeedsCompilation": "yes",
       "Author": "Hadley Wickham [aut], Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>), Dana Seidel [aut], Posit, PBC [cph, fnd]",
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
-      "Repository": "CRAN"
-    },
-    "sda": {
-      "Package": "sda",
-      "Version": "1.3.7",
-      "Source": "Repository",
-      "Date": "2015-07-08",
-      "Title": "Shrinkage Discriminant Analysis and CAT Score Variable Selection",
-      "Author": "Miika Ahdesmaki, Verena Zuber, Sebastian Gibb, and Korbinian Strimmer",
-      "Maintainer": "Korbinian Strimmer <strimmerlab@gmail.com>",
-      "Depends": [
-        "R (>= 3.0.2)",
-        "entropy (>= 1.2.1)",
-        "corpcor (>= 1.6.8)",
-        "fdrtool (>= 1.2.15)"
-      ],
-      "Suggests": [
-        "crossval (>= 1.0.3)"
-      ],
-      "Imports": [
-        "graphics",
-        "stats",
-        "utils"
-      ],
-      "Description": "Provides an efficient framework for  high-dimensional linear and diagonal discriminant analysis with  variable selection.  The classifier is trained using James-Stein-type  shrinkage estimators and predictor variables are ranked using  correlation-adjusted t-scores (CAT scores).  Variable selection error  is controlled using false non-discovery rates or higher criticism.",
-      "License": "GPL (>= 3)",
-      "URL": "http://strimmerlab.org/software/sda/",
-      "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
     "selectr": {
