@@ -821,7 +821,7 @@ p <-
       ymax = upper,
       color = class_group
     ),
-    position = position_jitter(width = 0.3),
+    position = position_dodge(width = 0.25),
     fatten = 1
   ) +
   scale_color_brewer(palette = "Dark2") + 
@@ -2073,4 +2073,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
