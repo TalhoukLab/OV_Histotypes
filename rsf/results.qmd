@@ -953,18 +953,18 @@ In the sequential algorithm, all sequences have relatively flat average F1-score
 #| tbl-cap: 'Gene Profile of Optimal Set in Sequential Algorithm'
 #| tbl-pos: 'H'
 
-candidates_all <- gene_seq_names %>%
-  filter(Genes > 0L) %>% 
+candidates_all <- gene_seq_names |>
+  filter(Genes > 0) |>
   pull(Name)
-candidates_unused <- gene_seq_names %>%
-  filter(Genes > 0L) %>% 
-  slice_max(order_by = Genes, n = -n_genes_seq) |> 
-  arrange(Genes) |> 
+unused_genes_seq <- gene_seq_names |>
+  filter(Genes > 0) |>
+  slice_max(order_by = Genes, n = -n_genes_seq) |>
+  arrange(Genes) |>
   pull(Name)
-gene_order <- c(opt_genes_seq, candidates_unused)
+gene_order_seq <- c(opt_genes_seq, unused_genes_seq)
 
 gene_dist <-
-  data.frame(Genes = gene_order) |>
+  data.frame(Genes = gene_order_seq) |>
   mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
          .before = Genes) |> 
   mutate(
@@ -1048,18 +1048,18 @@ In the SMOTE-Random Forest classifier, the mean F1-score is highest when we reac
 #| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-Random Forest Workflow'
 #| tbl-pos: 'H'
 
-candidates_all <- gene_smote_rf_names %>%
-  filter(Genes > 0L) %>% 
+candidates_all <- gene_smote_rf_names |>
+  filter(Genes > 0) |>
   pull(Name)
-candidates_unused <- gene_smote_rf_names %>%
-  filter(Genes > 0L) %>% 
+unused_genes_smote_rf <- gene_smote_rf_names |>
+  filter(Genes > 0) |>
   slice_max(order_by = Genes, n = -n_genes_smote_rf) |> 
   arrange(Genes) |> 
   pull(Name)
-gene_order <- c(opt_genes_smote_rf, candidates_unused)
+gene_order_smote_rf <- c(opt_genes_smote_rf, unused_genes_smote_rf)
 
 gene_dist <-
-  data.frame(Genes = gene_order) |>
+  data.frame(Genes = gene_order_smote_rf) |>
   mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
          .before = Genes) |> 
   mutate(
@@ -1148,18 +1148,18 @@ opt_genes_two_step <- c(overlap_all, genes_add_two_step)
 #| tbl-cap: 'Gene Profile of Optimal Set in Two-Step Workflow'
 #| tbl-pos: 'H'
 
-candidates_all <- gene_two_step_names %>%
-  filter(Genes > 0L) %>% 
+candidates_all <- gene_two_step_names |>
+  filter(Genes > 0) |>
   pull(Name)
-candidates_unused <- gene_two_step_names %>%
-  filter(Genes > 0L) %>% 
+unused_genes_two_step <- gene_two_step_names |>
+  filter(Genes > 0) |> 
   slice_max(order_by = Genes, n = -n_genes_two_step) |> 
   arrange(Genes) |> 
   pull(Name)
-gene_order <- c(opt_genes_two_step, candidates_unused)
+gene_order_two_step <- c(opt_genes_two_step, unused_genes_two_step)
 
 gene_dist <-
-  data.frame(Genes = gene_order) |>
+  data.frame(Genes = gene_order_two_step) |>
   mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
          .before = Genes) |> 
   mutate(
@@ -1197,24 +1197,28 @@ The top 2 methods are the sequential and SMOTE-Random Forest classifiers. We can
 #| label: top-models
 
 # Sequential full model
-set.seed(2024)
 mod_seq_full <- list(all_models_seq,
                      seq_data,
                      seq_class) |> 
-  pmap(~ ..1 |> fit(data = cbind(..2, class = ..3)))
+  pmap(~ {
+    set.seed(2024)
+    ..1 |> fit(data = cbind(..2, class = ..3))
+  })
 
 # Sequential optimal gene list model
-set.seed(2024)
 mod_seq_opt <- list(all_models_seq,
-                    seq_data,
-                    seq_class) |> 
+                     seq_data,
+                     seq_class) |> 
   pmap(~ {
-    ..1 |>
+    set.seed(2024)
+    wflow <- ..1 |>
       pluck("pre", "actions", "recipe", "recipe") |>
-      step_select(c(all_of(!!opt_genes_seq), class), skip = TRUE) |>
       modify_at(c("var_info", "term_info"), \(x) x |>
+                  arrange(match(variable, gene_order_seq)) |>
                   filter(variable %in% c(opt_genes_seq, "class"))) |> 
-      update_recipe(x = ..1, recipe = _) |>
+      update_recipe(x = ..1, recipe = _)
+    set.seed(2024)
+    wflow |>
       fit(data = cbind(..2, class = ..3))
   })
 
@@ -1231,10 +1235,10 @@ mod_smote_rf_full <- wflow_smote_rf_model |>
 set.seed(2024)
 wflow_smote_rf_opt <- wflow_smote_rf_model |>
   pluck("pre", "actions", "recipe", "recipe") |>
-  step_select(c(all_of(!!opt_genes_smote_rf), class),
-              skip = TRUE) |>
-  modify_at(c("var_info", "term_info"), \(x) x |>
-              filter(variable %in% c(opt_genes_smote_rf, "class"))) |>
+  modify_at(c("var_info", "term_info"),
+            \(x) x |>
+              filter(variable %in% c(opt_genes_smote_rf, "class")) |>
+              arrange(match(variable, gene_order_smote_rf))) |>
   update_recipe(x = wflow_smote_rf_model, recipe = _)
 
 # smote_rf optimal gene list model trained
@@ -1243,24 +1247,28 @@ mod_smote_rf_opt <- wflow_smote_rf_opt |>
   fit(data = train_ref)
 
 # Two-step full model
-set.seed(2024)
 mod_two_step_full <- list(all_models_two_step,
                           two_step_data,
                           two_step_class) |> 
-  pmap(~ ..1 |> fit(data = cbind(..2, class = ..3)))
+  pmap(~ {
+    set.seed(2024)
+    ..1 |> fit(data = cbind(..2, class = ..3))
+  })
 
 # Two-step optimal gene list model
-set.seed(2024)
 mod_two_step_opt <- list(all_models_two_step,
                          two_step_data,
                          two_step_class) |> 
   pmap(~ {
-    ..1 |>
+    set.seed(2024)
+    wflow <- ..1 |>
       pluck("pre", "actions", "recipe", "recipe") |>
-      step_select(c(all_of(!!opt_genes_two_step), class), skip = TRUE) |>
       modify_at(c("var_info", "term_info"), \(x) x |>
+                  arrange(match(variable, gene_order_two_step)) |> 
                   filter(variable %in% c(opt_genes_two_step, "class"))) |> 
-      update_recipe(x = ..1, recipe = _) |>
+      update_recipe(x = ..1, recipe = _)
+    set.seed(2024)
+    wflow |>
       fit(data = cbind(..2, class = ..3))
   })
 
@@ -2073,3 +2081,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
