@@ -759,10 +759,7 @@ wflow_rank_agg_metrics |>
 We look at the per-class evaluation metrics of the top `r n_wflow_top` workflows.
 
 ```{r}
-#| label: fig-metrics-top-by-metric-all
-#| fig-cap: !expr paste('Top', n_wflow_top, 'Workflow Per-Class Evaluation Metrics by Metric')
-#| fig-height: 7
-#| out-width: '100%'
+#| label: metrics-top
 
 metrics_top <- per_class_metrics |> 
   distinct(pick(-fold_id, -.estimate)) |> 
@@ -792,6 +789,27 @@ metrics_top <- per_class_metrics |>
   ) |> 
   drop_na(.metric) |> 
   arrange(Rank)
+
+metrics_top_df <- metrics_top |>
+  select(Metric = .metric, Workflow, mean_estimate, lower, upper, class_group) |>
+  mutate(across(where(is.numeric), ~ round(., digits = 3))) |>
+  mutate(Estimate = paste0(mean_estimate, " (", lower, ", ", upper, ")"),
+         .keep = "unused") |> 
+  arrange(Metric, class_group) |> 
+  pivot_wider(names_from = "class_group", values_from = "Estimate")
+
+metrics_top_df |> 
+  kbl(booktabs = TRUE, linesep = "") |> 
+  kable_styling(full_width = FALSE) |> 
+  collapse_rows(columns = 1) |> 
+  add_header_above(c(" " = 2, "Histotypes" = 5))
+```
+
+```{r}
+#| label: fig-top-wflows-by-all-metric
+#| fig-cap: !expr paste('Top', n_wflow_top, 'Workflow Per-Class Evaluation Metrics by Metric')
+#| fig-height: 7
+#| out-width: '100%'
 
 p <-
   ggplot(metrics_top) +
@@ -824,38 +842,18 @@ print(p)
 ```
 
 ```{r}
-#| label: fig-metrics-top-by-metric-3
+#| label: fig-top-wflows-by-three-metrics
 #| fig-cap: !expr paste('Top', n_wflow_top, 'Workflow Per-Class Evaluation Metrics by Metric')
 #| fig-width: 10
 #| fig-height: 6
 #| out-width: '100%'
 
-metrics_top <- per_class_metrics |> 
-  distinct(pick(-fold_id, -.estimate)) |> 
-  rename(Workflow = wflow) |> 
-  inner_join(wflow_rank_agg_metrics, by = "Workflow") |> 
-  filter(.metric %in% c("f_meas", "bal_accuracy", "kap")) |> 
-  mutate(
-    Workflow = fct_reorder(Workflow, Rank),
-    .metric = case_match(
-      .metric,
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa",
-      .ptype = factor(
-        levels = c(
-          "F1-Score",
-          "Balanced Accuracy",
-          "Kappa"
-        )
-      )
-    )
-  ) |> 
-  drop_na(.metric) |> 
-  arrange(Rank)
+metrics_3_top <- metrics_top |> 
+  filter(.metric %in% c("F1-Score", "Balanced Accuracy", "Kappa")) |> 
+  mutate(.metric = droplevels(.metric))
 
 p <-
-  ggplot(metrics_top) +
+  ggplot(metrics_3_top) +
   geom_pointrange(
     aes(
       x = class_group,
@@ -2075,3 +2073,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
