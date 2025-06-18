@@ -936,8 +936,7 @@ Misclassified cases from a previous step of the sequence of classifiers are not 
 #| label: fig-gene-seq
 #| fig-cap: 'Gene Optimization for Sequential Classifier'
 #| fig-height: 8
-#| fig-width: 7
-#| out-height: '50%'
+#| fig-width: 5
 #| out-width: '100%'
  
 gene_seq_names <- all_vi_seq %>% 
@@ -976,7 +975,7 @@ p_gene_seq <-
   labs(x = "Genes Added",
        y = "F1-Score",
        title = "Gene Optimziation for Sequential Classifier")
-ggplotly(p_gene_seq)
+ggplotly(p_gene_seq, width = 600, height = 600)
 
 n_genes_seq <- 9
 genes_add_seq <- gene_seq_names %>%
@@ -1037,9 +1036,8 @@ gene_dist |>
 ```{r}
 #| label: fig-gene-smote-rf
 #| fig-cap: 'Gene Optimization for SMOTE-Random Forest Classifier'
-#| fig-height: 6
-#| fig-width: 7
-#| out-height: '50%'
+#| fig-height: 5
+#| fig-width: 5
 #| out-width: '100%'
 
 gene_smote_rf_names <- all_vi_train %>% 
@@ -1071,7 +1069,7 @@ p_gene_smote_rf <-
   labs(x = "Genes Added",
        y = "F1-Score",
        title = "Gene Optimziation for SMOTE-Random Forest Classifier")
-ggplotly(p_gene_smote_rf)
+ggplotly(p_gene_smote_rf, width = 600, height = 400)
 
 n_genes_smote_rf <- 16
 genes_add_smote_rf <- gene_smote_rf_names %>% 
@@ -1133,8 +1131,7 @@ gene_dist |>
 #| label: fig-gene-two-step
 #| fig-cap: 'Gene Optimization for Two-Step Classifier'
 #| fig-height: 6
-#| fig-width: 7
-#| out-height: '50%'
+#| fig-width: 5
 #| out-width: '100%'
 
 gene_two_step_names <- all_vi_two_step %>% 
@@ -1173,7 +1170,7 @@ p_gene_two_step <-
   labs(x = "Genes Added",
        y = "F1-Score",
        title = "Gene Optimziation for Two-Step Classifier")
-ggplotly(p_gene_two_step)
+ggplotly(p_gene_two_step, width = 600, height = 600)
 
 n_genes_two_step <- 15
 genes_add_two_step <- gene_two_step_names %>%
