@@ -1004,7 +1004,7 @@ unused_genes_seq <- gene_seq_names |>
   pull(Name)
 gene_order_seq <- c(opt_genes_seq, unused_genes_seq)
 
-gene_dist <-
+gene_dist_seq <-
   tibble(
     Genes = gene_order_seq,
     Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
@@ -1026,7 +1026,7 @@ gene_dist <-
   ) |>
   relocate(Set, .before = Genes)
 
-gene_dist |> 
+gene_dist_seq |> 
   kbl(booktabs = TRUE,
       longtable = TRUE,
       linesep = "",
@@ -1100,7 +1100,7 @@ unused_genes_smote_rf <- gene_smote_rf_names |>
   pull(Name)
 gene_order_smote_rf <- c(opt_genes_smote_rf, unused_genes_smote_rf)
 
-gene_dist <-
+gene_dist_smote_rf <-
   tibble(
     Genes = gene_order_smote_rf,
     Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
@@ -1123,7 +1123,7 @@ gene_dist <-
   ) |>
   relocate(Set, .before = Genes)
 
-gene_dist |> 
+gene_dist_smote_rf |> 
   kbl(booktabs = TRUE,
       longtable = TRUE,
       linesep = "",
@@ -1202,7 +1202,7 @@ unused_genes_two_step <- gene_two_step_names |>
   pull(Name)
 gene_order_two_step <- c(opt_genes_two_step, unused_genes_two_step)
 
-gene_dist <-
+gene_dist_two_step <-
   tibble(
     Genes = gene_order_two_step,
     Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
@@ -1222,7 +1222,7 @@ gene_dist <-
   ) |>
   relocate(Set, .before = Genes)
 
-gene_dist |> 
+gene_dist_two_step |> 
   kbl(booktabs = TRUE,
       longtable = TRUE,
       linesep = "",
