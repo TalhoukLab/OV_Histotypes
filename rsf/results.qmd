@@ -855,9 +855,9 @@ metrics_3_top_ranks <- bind_rows(
   semi_join(wflow_rank_agg_metrics, by = "Workflow")
 
 metrics_3_top_ranks |> 
+  select(-Metric) |> 
   kbl() |> 
   kable_styling() |> 
-  remove_column(columns = 1) |> 
   pack_rows(
     group_label = "F1-Score",
     start_row = 1,
