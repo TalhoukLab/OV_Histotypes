@@ -759,7 +759,8 @@ wflow_rank_agg_metrics |>
 We look at the per-class evaluation metrics of the top `r n_wflow_top` workflows.
 
 ```{r}
-#| label: metrics-top
+#| label: tbl-metrics-top
+#| tbl-cap: "Top Workflow Per-Class Evaluation Metrics"
 
 metrics_top <- per_class_metrics |> 
   distinct(pick(-fold_id, -.estimate)) |> 
@@ -839,6 +840,45 @@ p <-
     title = paste("Top", n_wflow_top, "Workflow Per-Class Evaluation Metrics by Metric")
   )
 print(p)
+```
+
+```{r}
+#| label: tbl-metrics-3-top-ranks
+#| tbl-cap: "Top Workflow Per-Class Evaluation Metrics and Ranks"
+
+metrics_3_top_ranks <- bind_rows(
+  `F1-Score` = f1_summary,
+  `Balanced Accuracy` = bal_acc_summary,
+  Kappa = kap_summary,
+  .id = "Metric"
+) |> 
+  semi_join(wflow_rank_agg_metrics, by = "Workflow")
+
+metrics_3_top_ranks |> 
+  kbl() |> 
+  kable_styling() |> 
+  remove_column(columns = 1) |> 
+  pack_rows(
+    group_label = "F1-Score",
+    start_row = 1,
+    end_row = 5,
+    label_row_css = "border-bottom: 1px solid; text-align: center;",
+    background = "#fce4d6"
+  ) |>
+  pack_rows(
+    group_label = "Balanced Accuracy",
+    start_row = 6,
+    end_row = 10,
+    label_row_css = "border-bottom: 1px solid; text-align: center;",
+    background = "#ededed"
+  ) |>
+  pack_rows(
+    group_label = "Kappa",
+    start_row = 11,
+    end_row = 15,
+    label_row_css = "border-bottom: 1px solid; text-align: center;",
+    background = "#e2efda"
+  )
 ```
 
 ```{r}
@@ -2081,4 +2121,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
