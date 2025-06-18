@@ -71,9 +71,6 @@ hist_stan <- od.otta %>%
     )
   )
 
-# ENOC review (from Bianca)
-enoc_review <- read_excel(here("data-raw", "list_dx_updated.xlsx"))
-
 # histology_mol_v3 histotypes (from Susan)
 histology_mol_v3_df <- read_excel(
   here(
