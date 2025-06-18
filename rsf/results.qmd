@@ -10,6 +10,7 @@ library(tibble)
 library(tidyr)
 library(ggplot2)
 library(forcats)
+library(cli)
 library(knitr)
 library(kableExtra)
 library(RankAggreg)
@@ -801,7 +802,8 @@ metrics_top_df <- metrics_top |>
 
 metrics_top_df |> 
   kbl(booktabs = TRUE, linesep = "") |> 
-  kable_styling(full_width = FALSE) |> 
+  kable_styling(full_width = FALSE,
+                latex_options = "scale_down") |> 
   collapse_rows(columns = 1) |> 
   add_header_above(c(" " = 2, "Histotypes" = 5))
 ```
@@ -856,8 +858,8 @@ metrics_3_top_ranks <- bind_rows(
 
 metrics_3_top_ranks |> 
   select(-Metric) |> 
-  kbl() |> 
-  kable_styling() |> 
+  kbl(booktabs = TRUE, linesep = "") |> 
+  kable_styling(full_width = FALSE) |> 
   pack_rows(
     group_label = "F1-Score",
     start_row = 1,
@@ -1003,24 +1005,26 @@ unused_genes_seq <- gene_seq_names |>
 gene_order_seq <- c(opt_genes_seq, unused_genes_seq)
 
 gene_dist <-
-  data.frame(Genes = gene_order_seq) |>
-  mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
-         .before = Genes) |> 
-  mutate(
-    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
-    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, ""),
-    `Optimal Set` = case_when(
-      Genes %in% opt_genes_seq ~ cli::symbol$circle_filled,
-      Set == "Candidates" & !Genes %in% opt_genes_seq ~ cli::symbol$circle_filled,
-      .default = ""
-    ),
-    `Optimal Set` = cell_spec(`Optimal Set`,
-                              color = case_when(Genes %in% overlap_all ~ "green",
-                                                Genes %in% opt_genes_seq ~ "#8B8000",
-                                                .default = "#FF0000")),
-    `Candidate Rank` = ifelse(Genes %in% overlap_all, "",
-                              match(Genes, candidates_all))
-  )
+  tibble(
+    Genes = gene_order_seq,
+    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
+    `Optimal Set` = if_else(
+      Genes %in% opt_genes_seq,
+      symbol$circle_filled,
+      symbol$circle_cross
+    ) |>
+      cell_spec(
+        color = case_when(
+          Genes %in% overlap_all ~ "green",
+          Genes %in% opt_genes_seq ~ "#8B8000",
+          .default = "#FF0000"
+        )
+      ),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all))
+  ) |>
+  relocate(Set, .before = Genes)
 
 gene_dist |> 
   kbl(booktabs = TRUE,
@@ -1097,24 +1101,27 @@ unused_genes_smote_rf <- gene_smote_rf_names |>
 gene_order_smote_rf <- c(opt_genes_smote_rf, unused_genes_smote_rf)
 
 gene_dist <-
-  data.frame(Genes = gene_order_smote_rf) |>
-  mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
-         .before = Genes) |> 
-  mutate(
-    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
-    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, ""),
-    `Optimal Set` = case_when(
-      Genes %in% opt_genes_smote_rf ~ cli::symbol$circle_filled,
-      Set == "Candidates" & !Genes %in% opt_genes_smote_rf ~ cli::symbol$circle_filled,
-      .default = ""
-    ),
-    `Optimal Set` = cell_spec(`Optimal Set`,
-                              color = case_when(Genes %in% overlap_all ~ "green",
-                                                Genes %in% opt_genes_smote_rf ~ "#8B8000",
-                                                .default = "#FF0000")),
-    `Candidate Rank` = ifelse(Genes %in% overlap_all, "",
-                              match(Genes, candidates_all))
-  )
+  tibble(
+    Genes = gene_order_smote_rf,
+    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
+    `Optimal Set` = if_else(
+      Genes %in% opt_genes_smote_rf,
+      symbol$circle_filled,
+      symbol$circle_cross
+    ) |>
+      cell_spec(
+        color = case_when(
+          Genes %in% overlap_all ~ "green",
+          Genes %in% opt_genes_smote_rf ~ "#8B8000",
+          .default = "#FF0000"
+        )
+      ),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
+    )
+  ) |>
+  relocate(Set, .before = Genes)
 
 gene_dist |> 
   kbl(booktabs = TRUE,
@@ -1196,24 +1203,24 @@ unused_genes_two_step <- gene_two_step_names |>
 gene_order_two_step <- c(opt_genes_two_step, unused_genes_two_step)
 
 gene_dist <-
-  data.frame(Genes = gene_order_two_step) |>
-  mutate(Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
-         .before = Genes) |> 
-  mutate(
-    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, cli::symbol$tick, ""),
-    SPOT = ifelse(Genes %in% overlap_SPOT, cli::symbol$tick, ""),
-    `Optimal Set` = case_when(
-      Genes %in% opt_genes_two_step ~ cli::symbol$circle_filled,
-      Set == "Candidates" & !Genes %in% opt_genes_two_step ~ cli::symbol$circle_filled,
-      .default = ""
-    ),
-    `Optimal Set` = cell_spec(`Optimal Set`,
-                              color = case_when(Genes %in% overlap_all ~ "green",
-                                                Genes %in% opt_genes_two_step ~ "#8B8000",
-                                                .default = "#FF0000")),
-    `Candidate Rank` = ifelse(Genes %in% overlap_all, "",
-                              match(Genes, candidates_all))
-  )
+  tibble(
+    Genes = gene_order_two_step,
+    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
+    `Optimal Set` = if_else(Genes %in% opt_genes_two_step,
+                            symbol$circle_filled,
+                            symbol$circle_cross) |> 
+      cell_spec(
+        color = case_when(
+          Genes %in% overlap_all ~ "green",
+          Genes %in% opt_genes_two_step ~ "#8B8000",
+          .default = "#FF0000"
+        )
+      ),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all))
+  ) |>
+  relocate(Set, .before = Genes)
 
 gene_dist |> 
   kbl(booktabs = TRUE,
