@@ -169,14 +169,16 @@ tnco <- cohorts |> filter(cohort == "TNCO")
 conf1 <- paste0(unique(tnco$cohort), "\nn = ", nrow(tnco))
 conf2 <- tnco |> filter(col_name %in% cs3_samples_coh_qc)
 conf3 <- tnco |> filter(col_name %in% cs3_samples)
-conf4 <- tnco |> filter(col_name %in% cs3_dedup$col_name)
+conf4 <- conf3 |> semi_join(hist_cs3_van, by = "col_name")
+conf5 <- tnco |> filter(col_name %in% cs3_dedup$col_name)
 
 # Validation Cohort
 dove4 <- cohorts |> filter(cohort == "DOVE4")
 val1 <- paste0(unique(dove4$cohort), "\nn = ", nrow(dove4))
 val2 <- dove4 |> filter(col_name %in% cs3_samples_coh_qc)
 val3 <- dove4 |> filter(col_name %in% cs3_samples)
-val4 <- dove4 |> filter(col_name %in% cs3_dedup$col_name)
+val4 <- val3 |> semi_join(hist_cs3_van, by = "col_name")
+val5 <- dove4 |> filter(col_name %in% cs3_dedup$col_name)
 
 grViz(
   paste0(
@@ -209,12 +211,12 @@ grViz(
     conf1 [label = '", conf1, "', color = 'black']
     conf2 [label = 'Confirmation\nCohort\nn = ", nrow(conf2), "', style = 'filled', fillcolor = '#B19CD7']
     conf3 [label = 'Confirmation\nCohort\nn = ", nrow(conf3), "', style = 'filled', fillcolor = '#B19CD7']
-    conf4 [label = 'Confirmation\nCohort\nn = ", nrow(conf4), "', style = 'filled', fillcolor = '#B19CD7']
+    conf5 [label = 'Confirmation\nCohort\nn = ", nrow(conf5), "', style = 'filled', fillcolor = '#B19CD7']
 
     val1 [label = '", val1, "', color = 'black']
     val2 [label = 'Validation\nCohort\nn = ", nrow(val2), "', style = 'filled', fillcolor = '#04D9FF']
     val3 [label = 'Validation\nCohort\nn = ", nrow(val3), "', style = 'filled', fillcolor = '#04D9FF']
-    val4 [label = 'Validation\nCohort\nn = ", nrow(val4), "', style = 'filled', fillcolor = '#04D9FF']
+    val5 [label = 'Validation\nCohort\nn = ", nrow(val5), "', style = 'filled', fillcolor = '#04D9FF']
 
     # edge definitions
     edge [minlen = 4, arrowsize = 0.75]
@@ -228,17 +230,17 @@ grViz(
 
     conf1 -> conf2 [xlabel = 'Exclude QC\nFails: ", nrow(tnco) - nrow(conf2), "']
     conf2 -> conf3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(conf2) - nrow(conf3), "']
-    conf3 -> conf4 [xlabel = 'Exclude\nReplicates: ", nrow(conf3) - nrow(conf4), "', minlen = 7]
+    conf3 -> conf5 [xlabel = 'Exclude non-Vancouver: ", nrow(conf3) - nrow(conf4), "\nExclude Replicates: ", nrow(conf4) - nrow(conf5), "', minlen = 7]
 
     val1 -> val2 [xlabel = 'Exclude QC\nFails: ", nrow(dove4) - nrow(val2), "']
     val2 -> val3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(val2) - nrow(val3), "']
-    val3 -> val4 [xlabel = 'Exclude\nReplicates: ", nrow(val3) - nrow(val4), "', minlen = 7]
+    val3 -> val5 [xlabel = 'Exclude non-Vancouver: ", nrow(val3) - nrow(val4), "\nExclude Replicates: ", nrow(val4) - nrow(val5), "', minlen = 7]
 
     # subgraph definitions
     subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; OVAR11; JAPAN; conf1; val1}
     subgraph {rank = same; train_2; conf2; val2}
     subgraph {rank = same; train_cs1; train_cs2; train_cs3; conf3; val3}
-    subgraph {rank = same; train_5; conf4; val4}
+    subgraph {rank = same; train_5; conf5; val5}
     }
     "
   )
