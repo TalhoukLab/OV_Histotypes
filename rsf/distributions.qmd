@@ -352,7 +352,7 @@ genes_cs13_rand1 <- train_ref_comb %>%
   mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) %>%
   ungroup() %>%
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
-         Rc = paste0("Rc = ", round(Rc, digits = 3)))
+         Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
 
 p_genes_cs13_rand1 <-
   ggplot(genes_cs13_rand1, aes(x = Value_CS1, y = Value_CS3)) +
@@ -363,7 +363,7 @@ p_genes_cs13_rand1 <-
     size = 3,
     hjust = 0,
     vjust = 1,
-    aes(label = Rc),
+    aes(label = Rc_label),
     check_overlap = TRUE
   ) +
   geom_abline(slope = 1,
@@ -412,7 +412,7 @@ genes_cs23_rand1 <- train_ref_comb %>%
   mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) %>%
   ungroup() %>%
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
-         Rc = paste0("Rc = ", round(Rc, digits = 3)))
+         Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
 
 p_genes_cs23_rand1 <-
   ggplot(genes_cs23_rand1, aes(x = Value_CS2, y = Value_CS3)) +
@@ -423,7 +423,7 @@ p_genes_cs23_rand1 <-
     size = 3,
     hjust = 0,
     vjust = 1,
-    aes(label = Rc),
+    aes(label = Rc_label),
     check_overlap = TRUE
   ) +
   geom_abline(slope = 1,
@@ -469,7 +469,7 @@ genes_cs13_hkgenes <-
   mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) %>%
   ungroup() %>%
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
-         Rc = paste0("Rc = ", round(Rc, digits = 3)))
+         Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
 
 p_genes_cs13_hkgenes <- 
   ggplot(genes_cs13_hkgenes, aes(x = Value_CS1, y = Value_CS3)) +
@@ -480,7 +480,7 @@ p_genes_cs13_hkgenes <-
     size = 3,
     hjust = 0,
     vjust = 1,
-    aes(label = Rc),
+    aes(label = Rc_label),
     check_overlap = TRUE
   ) +
   geom_abline(slope = 1,
@@ -527,7 +527,7 @@ genes_cs23_hkgenes <-
   mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) %>%
   ungroup() %>%
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
-         Rc = paste0("Rc = ", round(Rc, digits = 3)))
+         Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
 
 p_genes_cs23_hkgenes <- 
   ggplot(genes_cs23_hkgenes, aes(x = Value_CS2, y = Value_CS3)) +
@@ -538,7 +538,7 @@ p_genes_cs23_hkgenes <-
     size = 3,
     hjust = 0,
     vjust = 1,
-    aes(label = Rc),
+    aes(label = Rc_label),
     check_overlap = TRUE
   ) +
   geom_abline(slope = 1,
@@ -558,3 +558,58 @@ p_genes_cs23_hkgenes <-
 print(p_genes_cs23_hkgenes)
 ```
 
+```{r}
+#| label: tbl-genes-comp-test
+#| tbl-cap: "Wilcoxon signed rank test of gene correlations between normalization methods"
+
+genes_cs13_comp <-
+  inner_join(
+    genes_cs13_rand1 |> distinct(Gene, Rc),
+    genes_cs13_hkgenes |> distinct(Gene, Rc),
+    by = "Gene",
+    suffix = c("_rand1", "_hkgenes")
+  )
+
+genes_cs23_comp <-
+  inner_join(
+    genes_cs23_rand1 |> distinct(Gene, Rc),
+    genes_cs23_hkgenes |> distinct(Gene, Rc),
+    by = "Gene",
+    suffix = c("_rand1", "_hkgenes")
+  )
+
+genes_all_comp <-
+  inner_join(genes_cs13_comp,
+             genes_cs23_comp,
+             by = "Gene",
+             suffix = c("_CS1", "_CS2")) |>
+  pivot_longer(
+    cols = where(is.numeric),
+    names_to = c("Normalization", "CodeSet"),
+    names_pattern = "Rc_(.*)_(.*)",
+    values_to = "Correlation"
+  ) |>
+  pivot_wider(names_from = CodeSet, values_from = Correlation) |>
+  mutate(
+    Normalization = fct_recode(Normalization,
+                               `Housekeeping Genes` = "hkgenes",
+                               `Random1` = "rand1")
+  )
+
+genes_comp_test <-
+  genes_all_comp |>
+  tbl_summary(
+    by = Normalization,
+    label = list(CS1 ~ "CS1 vs. CS3", CS2 ~ "CS2 vs. CS3"),
+    include = c(CS1, CS2)
+  ) |>
+  bold_labels() |>
+  gtsummary::modify_header(label ~ "**Correlation**") |>
+  add_p(
+    test = all_continuous() ~ "paired.wilcox.test",
+    pvalue_fun = label_style_pvalue(digits = 3),
+    group = Gene
+  )
+
+genes_comp_test
+```
