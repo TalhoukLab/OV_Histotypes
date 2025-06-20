@@ -134,7 +134,7 @@
     "href": "rsf/distributions.html#pairwise-gene-expression",
     "title": "3  Distributions",
     "section": "3.4 Pairwise Gene Expression",
-    "text": "3.4 Pairwise Gene Expression\n\n\n\n\n\n\n\n\nFigure 3.3: Random1-Normalized CS1 vs. CS3 Gene Expression\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3.4: Random1-Normalized CS2 vs. CS3 Gene Expression\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3.5: HKgenes-Normalized CS1 vs. CS3 Gene Expression\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3.6: HKgenes-Normalized CS2 vs. CS3 Gene Expression",
+    "text": "3.4 Pairwise Gene Expression\n\n\n\n\n\n\n\n\nFigure 3.3: Random1-Normalized CS1 vs. CS3 Gene Expression\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3.4: Random1-Normalized CS2 vs. CS3 Gene Expression\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3.5: HKgenes-Normalized CS1 vs. CS3 Gene Expression\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 3.6: HKgenes-Normalized CS2 vs. CS3 Gene Expression\n\n\n\n\n\n\n\n\n\nTable 3.5: Wilcoxon signed rank test of gene correlations between normalization methods\n\n\n\n\n\n\n  \n    \n      Correlation\n      Housekeeping Genes\nN = 721\n      Random1\nN = 721\n      p-value2\n    \n  \n  \n    CS1 vs. CS3\n0.84 (0.72, 0.90)\n0.85 (0.64, 0.90)\n0.160\n    CS2 vs. CS3\n0.79 (0.69, 0.88)\n0.84 (0.73, 0.90)\n&lt;0.001\n  \n  \n  \n    \n      1 Median (Q1, Q3)\n    \n    \n      2 Wilcoxon signed rank test with continuity correction",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Distributions</span>"
     ]
