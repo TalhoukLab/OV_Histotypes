@@ -2034,6 +2034,57 @@ print(val_roc_curve_smote_rf_opt)
 ```
 
 ```{r}
+#| label: tbl-val-pred-enoc-clin
+#| tbl-cap: "Clinicopath characteristics between correct and incorrect predictions of ENOC cases"
+
+od.otta <- od.otta |>
+  mutate(otta_id = as.character(otta_id))
+
+val_pred_enoc_clin <- val_pred_overall |>
+  inner_join(hist |> select(FileName, ottaID), by = "FileName") |>
+  inner_join(od.otta, by = c("ottaID" = "otta_id")) |>
+  filter(Truth == "ENOC") |>
+  mutate(
+    Prediction_ENOC = factor(
+      if_else(Prediction == "ENOC", "Predicted ENOC Correctly", "Missed ENOC")
+    ) |>
+      fct_rev(),
+    stage_b1v234 = fct_collapse(
+      stage_full,
+      I = c("IA", "IB", "IC"),
+      `II-IV` = c("IIA", "IIB", "IIC", "III(NOS)", "IIIA", "IIIB", "IIIC", "IV")
+    ) |>
+      droplevels(),
+    race_white = fct_collapse(
+      race,
+      `non-white` = c("Asian", "other")
+    ) |>
+      droplevels(),
+    arid1a_gr = fct_collapse(
+      arid1a,
+      `absent/subclonal` = c("absent", "subclonal")
+    ) |>
+      droplevels()
+  )
+
+val_pred_enoc_clin |>
+  tbl_summary(
+    by = Prediction_ENOC,
+    label = list(
+      age_dx ~ "Age at diagnosis",
+      grade ~ "Tumour grade",
+      stage_b1v234 ~ "FIGO tumour stage",
+      race_white ~ "Race",
+      arid1a_gr ~ "ARID1A"
+    ),
+    include = c(age_dx, grade, stage_b1v234, race_white, arid1a_gr)
+  ) |>
+  add_p() |>
+  bold_labels() |>
+  bold_p()
+```
+
+```{r}
 #| label: fig-val-pred-protype
 #| fig-cap: 'Subtype Prediction Summary among Predicted HGSC Samples'
 #| fig-height: 7
