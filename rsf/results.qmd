@@ -24,6 +24,7 @@ library(themis)
 library(RColorBrewer)
 library(ggh4x)
 library(ggtext)
+library(ggrepel)
 library(randomForest)
 library(here)
 library(DESeq2)
@@ -2409,3 +2410,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
