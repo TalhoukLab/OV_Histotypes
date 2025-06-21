@@ -28,11 +28,22 @@ library(randomForest)
 library(here)
 library(DESeq2)
 library(conflicted)
-conflict_prefer("margin", "ggplot2")
-conflict_prefer("set_names", "purrr")
-conflict_prefer("filter", "dplyr")
-conflict_prefer("HKnorm", "nanostringr")
 
+# Choose preferences among conflicting functions
+conflicts_prefer(
+  ggplot2::margin(),
+  purrr::set_names(),
+  dplyr::filter(),
+  nanostringr::HKnorm(),
+  plotly::rename(),
+  base::setdiff(),
+  dplyr::count(),
+  purrr::reduce(),
+  base::intersect(),
+  base::union()
+)
+
+# Run cohort processing
 source(here("validation/cs_process_cohorts.R"))
 source(here("src/funs.R"))
 
@@ -2398,4 +2409,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
