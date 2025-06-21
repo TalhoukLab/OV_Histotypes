@@ -26,6 +26,7 @@ library(ggh4x)
 library(ggtext)
 library(randomForest)
 library(here)
+library(DESeq2)
 library(conflicted)
 conflict_prefer("margin", "ggplot2")
 conflict_prefer("set_names", "purrr")
@@ -2085,6 +2086,227 @@ val_pred_enoc_clin |>
 ```
 
 ```{r}
+#| label: fig-val-all-volcano
+#| fig-cap: "Volcano Plots of Validation Set Predictions"
+#| fig-width: 10
+#| fig-height: 8
+
+marina_genes <- c(
+  "GCNT3",
+  "MRE11A",
+  "FANCG",
+  "GK5",
+  "KIF4A",
+  "KIF24",
+  "FOXRED2",
+  "LRRC15",
+  "BAX",
+  "EPB41L3",
+  "IDO1",
+  "PPP2R4",
+  "IFT88",
+  "ESD",
+  "S100A6",
+  "CTLA4",
+  "BRAF",
+  "CTNNBL1",
+  "GPR64",
+  "DHX35",
+  "STC1",
+  "VSIG4",
+  "ERGIC3",
+  "PDE6D",
+  "CRISPLD2",
+  "MAP4K3",
+  "RNF114",
+  "ANKRD1",
+  "LUM",
+  "FHIT",
+  "CEACAM5",
+  "GMPR",
+  "HIST1H2BG",
+  "ASRGL1",
+  "PLAC4",
+  "MROH5",
+  "POSTN",
+  "MAK",
+  "CAMK1",
+  "B4GALT5"
+)
+
+marina_genes2 <- c(
+  "PSRC1",
+  "PAX8",
+  "RICTOR",
+  "ISG15",
+  "BIRC5",
+  "FOXJ1",
+  "PAX2",
+  "EGFL6",
+  "BABAM1",
+  "RSPO1" ,
+  "CD302" ,
+  "HBB" ,
+  "EPB41L3",
+  "ANKRD1" ,
+  "ANKRA2" ,
+  "MITF" ,
+  "VSIG4" ,
+  "PDE6D" ,
+  "KRAS" ,
+  "SRI" ,
+  "KLK7" ,
+  "ERGIC3",
+  "TSC1" ,
+  "MAK" ,
+  "PSME2",
+  "CDK9" ,
+  "BAALC" ,
+  "FOXC2" ,
+  "TSHR" ,
+  "PTGS2" ,
+  "FAM126B",
+  "S100A6" ,
+  "CD8A" ,
+  "MyD88" ,
+  "FOXRED2",
+  "FKSG2" ,
+  "MEST" ,
+  "TMEM45A",
+  "COL11A1" ,
+  "CCL5" ,
+  "KIF4A" ,
+  "KIF3B" ,
+  "GFPT2" ,
+  "FOLR1" ,
+  "CX3CR1" ,
+  "PEX3" ,
+  "PIK3CA" ,
+  "SLC25A19" ,
+  "PTGS1" ,
+  "PBX1" ,
+  "FOXP3" ,
+  "FAM58A" ,
+  "PJA2" ,
+  "KIF24" ,
+  "CTLA4" ,
+  "PKM2" ,
+  "TLR4" ,
+  "CCNE1" ,
+  "LRRC15" ,
+  "BRAF"
+)
+
+# LGSC differential gene expression analysis
+val_lgsc_condition <- val_pred_overall |>
+  filter(Truth == "LGSC") |>
+  mutate(Prediction_LSGC = fct_other(
+    Prediction,
+    keep = "LGSC",
+    other_level = "non_LGSC"
+  ))
+
+val_lgsc_exp <- cs3 |>
+  rename_all(~ gsub("^X", "", .)) |>
+  select(Name, all_of(val_lgsc_condition[["FileName"]])) |>
+  column_to_rownames("Name")
+
+dds_lgsc <- DESeqDataSetFromMatrix(countData = val_lgsc_exp,
+                                   colData = val_lgsc_condition,
+                                   design = ~ Prediction_LSGC)
+dds_lgsc <- dds_lgsc[rowSums(counts(dds_lgsc)) > 1, ]
+dds_lgsc <- DESeq(dds_lgsc)
+
+res_lgsc <- dds_lgsc |>
+  results() |>
+  as.data.frame() |>
+  rownames_to_column(var = "Gene") |>
+  mutate(
+    Significant = if_else(padj < 0.05, TRUE, FALSE),
+    `Marina's Sets` = if_else(Gene %in% union(marina_genes, marina_genes2), TRUE, FALSE)
+  )
+
+# LGSC volcano plot
+val_lgsc_volcano <-
+  ggplot(res_lgsc, aes(x = log2FoldChange, y = -log10(padj))) +
+  geom_point(aes(shape = Significant, color = `Marina's Sets`),
+             alpha = 0.5,
+             stroke = 0.75) +
+  geom_text_repel(data = res_lgsc |> filter(Significant),
+                  aes(label = Gene),
+                  seed = 2025) +
+  scale_color_manual(values = c("red", "forestgreen")) +
+  scale_shape_manual(values = c(21, 8)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+  labs(title = "LGSC",
+       caption = "Significant: adjusted p-value < 0.05",
+       x = "Log2 Fold Change",
+       y = "-Log10 p-value")
+
+# ENOC differential gene expression analysis
+val_enoc_condition <- val_pred_overall |>
+  filter(Truth == "ENOC") |>
+  mutate(Prediction_LSGC = fct_other(
+    Prediction,
+    keep = "ENOC",
+    other_level = "non_ENOC"
+  ))
+
+val_enoc_exp <- cs3 |>
+  rename_all(~ gsub("^X", "", .)) |>
+  select(Name, all_of(val_enoc_condition[["FileName"]])) |>
+  column_to_rownames("Name")
+
+dds_enoc <- DESeqDataSetFromMatrix(countData = val_enoc_exp,
+                                   colData = val_enoc_condition,
+                                   design = ~ Prediction_LSGC)
+dds_enoc <- dds_enoc[rowSums(counts(dds_enoc)) > 1, ]
+dds_enoc <- DESeq(dds_enoc)
+
+res_enoc <- dds_enoc |>
+  results() |>
+  as.data.frame() |>
+  rownames_to_column(var = "Gene") |>
+  mutate(
+    Significant = if_else(padj < 1e-4, TRUE, FALSE),
+    `Marina's Sets` = if_else(Gene %in% union(marina_genes, marina_genes2), TRUE, FALSE)
+  )
+
+# ENOC volcano plot
+val_enoc_volcano <-
+  ggplot(res_enoc, aes(x = log2FoldChange, y = -log10(padj))) +
+  geom_point(aes(shape = Significant, color = `Marina's Sets`),
+             alpha = 0.5,
+             stroke = 0.75) +
+  geom_text_repel(
+    data = res_enoc |> filter(Significant),
+    aes(label = Gene),
+    seed = 2025,
+    max.overlaps = 25
+  ) +
+  scale_color_manual(values = c("red", "forestgreen")) +
+  scale_shape_manual(values = c(21, 8)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+  labs(title = "ENOC",
+       caption = "Significant: adjusted p-value < 0.0001",
+       x = "Log2 Fold Change",
+       y = "-Log10 p-value")
+
+# Combined volcano plots
+val_all_volcano <-
+  list(val_lgsc_volcano, val_enoc_volcano) |>
+  wrap_plots(ncol = 2) +
+  plot_layout(guides = "collect",
+              axes = "collect") +
+  plot_annotation(title = "Volcano Plots of Validation Set Predictions",
+                  tag_levels = "A")
+
+print(val_all_volcano)
+```
+
+```{r}
 #| label: fig-val-pred-protype
 #| fig-cap: 'Subtype Prediction Summary among Predicted HGSC Samples'
 #| fig-height: 7
@@ -2176,3 +2398,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
