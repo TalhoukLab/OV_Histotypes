@@ -2200,6 +2200,7 @@ res_lgsc <- dds_lgsc |>
   as.data.frame() |>
   rownames_to_column(var = "Gene") |>
   left_join(all_gene_ranks, c("Gene" = "Genes")) |> 
+  semi_join(cs3 |> filter(Code.Class == "Endogenous"), by = c("Gene" = "Name")) |> 
   as_tibble() |> 
   mutate(Significant = if_else(padj < 0.05, TRUE, FALSE)) |> 
   rowwise() |> 
@@ -2249,6 +2250,7 @@ res_enoc <- dds_enoc |>
   as.data.frame() |>
   rownames_to_column(var = "Gene") |>
   left_join(all_gene_ranks, c("Gene" = "Genes")) |> 
+  semi_join(cs3 |> filter(Code.Class == "Endogenous"), by = c("Gene" = "Name")) |> 
   as_tibble() |> 
   mutate(Significant = if_else(padj < 1e-4, TRUE, FALSE)) |>
   rowwise() |>
@@ -2380,3 +2382,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
