@@ -2219,11 +2219,14 @@ val_lgsc_volcano <-
   scale_color_manual(values = c("red", "forestgreen")) +
   scale_shape_manual(values = c(21, 8)) +
   theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  labs(title = "LGSC",
-       caption = "Significant: adjusted p-value < 0.05",
-       x = "Log2 Fold Change",
-       y = "-Log10 p-value")
+  theme(panel.grid.minor = element_blank(),
+        axis.title = element_markdown()) +
+  labs(
+    title = "LGSC",
+    caption = "Significant: adjusted p-value < 0.05",
+    x = "Log<sub>2</sub> Fold Change",
+    y = "-Log<sub>10</sub> p-value"
+  )
 
 # ENOC differential gene expression analysis
 val_enoc_condition <- val_pred_overall |>
@@ -2272,11 +2275,14 @@ val_enoc_volcano <-
   scale_color_manual(values = c("red", "forestgreen")) +
   scale_shape_manual(values = c(21, 8)) +
   theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  labs(title = "ENOC",
-       caption = "Significant: adjusted p-value < 0.0001",
-       x = "Log2 Fold Change",
-       y = "-Log10 p-value")
+  theme(panel.grid.minor = element_blank(),
+        axis.title = element_markdown()) +
+  labs(
+    title = "ENOC",
+    caption = "Significant: adjusted p-value < 0.05",
+    x = "Log<sub>2</sub> Fold Change",
+    y = "-Log<sub>10</sub> p-value"
+  )
 
 # Combined volcano plots
 val_all_volcano <-
@@ -2382,4 +2388,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
