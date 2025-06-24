@@ -2199,39 +2199,25 @@ res_lgsc <- dds_lgsc |>
   results() |>
   as.data.frame() |>
   rownames_to_column(var = "Gene") |>
-  left_join(all_gene_ranks, c("Gene" = "Genes")) |> 
-  semi_join(cs3 |> filter(Code.Class == "Endogenous"), by = c("Gene" = "Name")) |> 
-  as_tibble() |> 
-  mutate(Significant = if_else(padj < 0.05, TRUE, FALSE)) |> 
-  rowwise() |> 
-  mutate(`Marina's Sets` = any(!is.na(c_across(matches("genes"))))) |> 
+  left_join(all_gene_ranks, c("Gene" = "Genes")) |>
+  semi_join(cs3 |> filter(Code.Class == "Endogenous"), by = c("Gene" = "Name")) |>
+  as_tibble() |>
+  mutate(
+    Significant = case_when(
+      padj < 0.05 & log2FoldChange > 2 ~ "Yes (Up)",
+      padj < 0.05 & log2FoldChange < -2 ~ "Yes (Down)",
+      .default = "No"
+    ) |>
+      factor(levels = c("No", "Yes (Up)", "Yes (Down)"))
+  ) |>
+  rowwise() |>
+  mutate(`Marina's Sets` = any(!is.na(c_across(matches("genes"))))) |>
   ungroup()
-
-# LGSC volcano plot
-val_lgsc_volcano <-
-  ggplot(res_lgsc, aes(x = log2FoldChange, y = -log10(padj))) +
-  geom_point(aes(shape = Significant, color = `Marina's Sets`),
-             alpha = 0.5,
-             stroke = 0.75) +
-  geom_text_repel(data = res_lgsc |> filter(Significant),
-                  aes(label = Gene),
-                  seed = 2025) +
-  scale_color_manual(values = c("red", "forestgreen")) +
-  scale_shape_manual(values = c(21, 8)) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        axis.title = element_markdown()) +
-  labs(
-    title = "LGSC",
-    caption = "Significant: adjusted p-value < 0.05",
-    x = "Log<sub>2</sub> Fold Change",
-    y = "-Log<sub>10</sub> p-value"
-  )
 
 # ENOC differential gene expression analysis
 val_enoc_condition <- val_pred_overall |>
   filter(Truth == "ENOC") |>
-  mutate(Prediction_LSGC = fct_other(
+  mutate(Prediction_ENOC = fct_other(
     Prediction,
     keep = "ENOC",
     other_level = "non_ENOC"
@@ -2244,7 +2230,7 @@ val_enoc_exp <- cs3 |>
 
 dds_enoc <- DESeqDataSetFromMatrix(countData = val_enoc_exp,
                                    colData = val_enoc_condition,
-                                   design = ~ Prediction_LSGC)
+                                   design = ~ Prediction_ENOC)
 dds_enoc <- dds_enoc[rowSums(counts(dds_enoc)) > 1, ]
 dds_enoc <- DESeq(dds_enoc)
 
@@ -2252,46 +2238,67 @@ res_enoc <- dds_enoc |>
   results() |>
   as.data.frame() |>
   rownames_to_column(var = "Gene") |>
-  left_join(all_gene_ranks, c("Gene" = "Genes")) |> 
-  semi_join(cs3 |> filter(Code.Class == "Endogenous"), by = c("Gene" = "Name")) |> 
-  as_tibble() |> 
-  mutate(Significant = if_else(padj < 1e-4, TRUE, FALSE)) |>
+  left_join(all_gene_ranks, c("Gene" = "Genes")) |>
+  semi_join(cs3 |> filter(Code.Class == "Endogenous"), by = c("Gene" = "Name")) |>
+  as_tibble() |>
+  mutate(
+    Significant = case_when(
+      padj < 0.05 & log2FoldChange > 2 ~ "Yes (Up)",
+      padj < 0.05 & log2FoldChange < -2 ~ "Yes (Down)",
+      .default = "No"
+    ) |>
+      factor(levels = c("No", "Yes (Up)", "Yes (Down)"))
+  ) |>
   rowwise() |>
   mutate(`Marina's Sets` = any(!is.na(c_across(matches("genes"))))) |>
   ungroup()
 
-# ENOC volcano plot
-val_enoc_volcano <-
-  ggplot(res_enoc, aes(x = log2FoldChange, y = -log10(padj))) +
-  geom_point(aes(shape = Significant, color = `Marina's Sets`),
-             alpha = 0.5,
-             stroke = 0.75) +
+# Combined volcano plot
+res_all <- bind_rows(LGSC = res_lgsc, ENOC = res_enoc, .id = "Histotype") |>
+  mutate(Histotype = fct_inorder(Histotype))
+
+val_all_volcano <- ggplot(res_all, aes(x = log2FoldChange, y = -log10(padj))) +
+  facet_wrap2(
+    vars(Histotype),
+    nrow = 1,
+    scales = "free",
+    strip = strip_themed(background_x = elem_list_rect(fill = class_palette[c(4, 3)]))
+  ) +
+  annotate("rect", xmin = 2, xmax = Inf, ymin = -log10(0.05), ymax = Inf,
+           alpha = 0.2) +
+  annotate("rect", xmin = -Inf, xmax = -2, ymin = -log10(0.05), ymax = Inf,
+           alpha = 0.2) +
+  geom_hline(yintercept = -log10(0.05), linetype = "dotted") +
+  geom_vline(xintercept = c(-2, 2), linetype = "dotted") +
+  geom_point(
+    aes(shape = Significant, color = `Marina's Sets`),
+    alpha = 0.5,
+    stroke = 0.75,
+    show.legend = TRUE
+  ) +
   geom_text_repel(
-    data = res_enoc |> filter(Significant),
+    data = res_all |> filter(Significant != "No"),
     aes(label = Gene),
+    size = 3,
     seed = 2025,
     max.overlaps = 25
   ) +
+  scale_x_continuous(breaks = c(-6, -4, -2, 0, 2, 4)) +
   scale_color_manual(values = c("red", "forestgreen")) +
-  scale_shape_manual(values = c(21, 8)) +
+  scale_shape_manual(values = c(21, 2, 6), drop = FALSE) +
   theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        axis.title = element_markdown()) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.caption = element_markdown(),
+    axis.title = element_markdown(),
+    strip.text = element_text(size = 12, face = "bold")
+  ) +
   labs(
-    title = "ENOC",
-    caption = "Significant: adjusted p-value < 0.05",
     x = "Log<sub>2</sub> Fold Change",
-    y = "-Log<sub>10</sub> p-value"
+    y = "-Log<sub>10</sub> p-value",
+    title = "Volcano Plots of Validation Set Predictions",
+    caption = "Significance condition: p<sub>adj</sub> < 0.05 and |log<sub>2</sub>FC| > 2"
   )
-
-# Combined volcano plots
-val_all_volcano <-
-  list(val_lgsc_volcano, val_enoc_volcano) |>
-  wrap_plots(ncol = 2) +
-  plot_layout(guides = "collect",
-              axes = "collect") +
-  plot_annotation(title = "Volcano Plots of Validation Set Predictions",
-                  tag_levels = "A")
 
 print(val_all_volcano)
 ```
