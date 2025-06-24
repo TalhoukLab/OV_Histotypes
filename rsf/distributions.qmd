@@ -18,11 +18,11 @@ source(here("validation/cs_classifier.R"))
 ```{r}
 #| label: train-cohort-codeset
 
-train_cohort_codeset <- hist_all_mol %>%
+train_cohort_codeset <- hist_all_mol |>
   filter(FileName %in% gsub("^X", "", c(
     cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
-  ))) %>%
-  droplevels() %>%
+  ))) |>
+  droplevels() |>
   describeBy(
     var.names = "hist_gr2",
     var.labels = "Histotype",
@@ -37,11 +37,11 @@ train_cohort_codeset <- hist_all_mol %>%
 ```{r}
 #| label: train-qc-codeset
 
-train_qc_codeset <- hist_all_mol %>%
+train_qc_codeset <- hist_all_mol |>
   filter(FileName %in% gsub("^X", "", c(
     cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc
-  ))) %>% 
-  droplevels() %>% 
+  ))) |> 
+  droplevels() |> 
   describeBy(
     var.names = "hist_gr2",
     var.labels = "Histotype",
@@ -56,9 +56,9 @@ train_qc_codeset <- hist_all_mol %>%
 ```{r}
 #| label: train-hist-codeset
 
-train_hist_codeset <- hist %>%
+train_hist_codeset <- hist |>
   mutate(hist_final = factor(hist_final,
-                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) %>%
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -73,12 +73,12 @@ train_hist_codeset <- hist %>%
 ```{r}
 #| label: train-dedup-codeset
 
-train_dedup_codeset <- hist %>%
+train_dedup_codeset <- hist |>
   filter(FileName %in% gsub("^X", "", c(
     cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name
-  ))) %>%
+  ))) |>
   mutate(hist_final = factor(hist_final,
-                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) %>%
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -93,8 +93,8 @@ train_dedup_codeset <- hist %>%
 ```{r}
 #| label: train-comb-codeset
 
-train_comb_codeset <- train_ref_comb %>% 
-  mutate(hist_final = fct_infreq(hist_final)) %>% 
+train_comb_codeset <- train_ref_comb |> 
+  mutate(hist_final = fct_infreq(hist_final)) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -109,8 +109,8 @@ train_comb_codeset <- train_ref_comb %>%
 ```{r}
 #| label: train-derep-codeset
 
-train_derep_codeset <- train_ref %>% 
-  mutate(hist_final = fct_infreq(hist_final)) %>% 
+train_derep_codeset <- train_ref |> 
+  mutate(hist_final = fct_infreq(hist_final)) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -329,28 +329,28 @@ print(p_gd_snr_zoomed)
 #| out-width: '100%'
 #| fig-cap: 'Random1-Normalized CS1 vs. CS3 Gene Expression'
 
-genes_cs13_rand1 <- train_ref_comb %>%
-  rownames_to_column("FileName") %>%
-  group_by(ottaID) %>%
-  mutate(n_codeset = n_distinct(CodeSet)) %>%
-  filter(all(c("CS1", "CS3") %in% CodeSet)) %>%
-  group_by(ottaID, CodeSet) %>%
-  filter(n_codeset > 1, !duplicated(ottaID)) %>%
-  ungroup() %>%
+genes_cs13_rand1 <- train_ref_comb |>
+  rownames_to_column("FileName") |>
+  group_by(ottaID) |>
+  mutate(n_codeset = n_distinct(CodeSet)) |>
+  filter(all(c("CS1", "CS3") %in% CodeSet)) |>
+  group_by(ottaID, CodeSet) |>
+  filter(n_codeset > 1, !duplicated(ottaID)) |>
+  ungroup() |>
   pivot_longer(
     cols = where(is.double),
     names_to = "Gene",
     names_ptypes = list(Gene = factor()),
     values_to = "Value"
-  ) %>%
+  ) |>
   pivot_wider(
     id_cols = c(ottaID, Gene),
     names_from = "CodeSet",
     values_from = c("Value", "FileName")
-  ) %>%
-  group_by(Gene) %>%
-  mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) %>%
-  ungroup() %>%
+  ) |>
+  group_by(Gene) |>
+  mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) |>
+  ungroup() |>
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
          Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
 
@@ -389,28 +389,28 @@ print(p_genes_cs13_rand1)
 #| out-width: '100%'
 #| fig-cap: 'Random1-Normalized CS2 vs. CS3 Gene Expression'
 
-genes_cs23_rand1 <- train_ref_comb %>%
-  rownames_to_column("FileName") %>%
-  group_by(ottaID) %>%
-  mutate(n_codeset = n_distinct(CodeSet)) %>%
-  filter(all(c("CS2", "CS3") %in% CodeSet)) %>%
-  group_by(ottaID, CodeSet) %>%
-  filter(n_codeset > 1, !duplicated(ottaID)) %>%
-  ungroup() %>%
+genes_cs23_rand1 <- train_ref_comb |>
+  rownames_to_column("FileName") |>
+  group_by(ottaID) |>
+  mutate(n_codeset = n_distinct(CodeSet)) |>
+  filter(all(c("CS2", "CS3") %in% CodeSet)) |>
+  group_by(ottaID, CodeSet) |>
+  filter(n_codeset > 1, !duplicated(ottaID)) |>
+  ungroup() |>
   pivot_longer(
     cols = where(is.double),
     names_to = "Gene",
     names_ptypes = list(Gene = factor()),
     values_to = "Value"
-  ) %>%
+  ) |>
   pivot_wider(
     id_cols = c(ottaID, Gene),
     names_from = "CodeSet",
     values_from = c("Value", "FileName")
-  ) %>%
-  group_by(Gene) %>%
-  mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) %>%
-  ungroup() %>%
+  ) |>
+  group_by(Gene) |>
+  mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) |>
+  ungroup() |>
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
          Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
 
@@ -450,24 +450,24 @@ print(p_genes_cs23_rand1)
 #| fig-cap: 'HKgenes-Normalized CS1 vs. CS3 Gene Expression'
 
 genes_cs13_hkgenes <-
-  list(CS1 = cs1_norm, CS3 = cs3_norm) %>%
+  list(CS1 = cs1_norm, CS3 = cs3_norm) |>
   imap(~ {
-    .x %>%
-      rename_all(~ gsub("^X", "", .)) %>%
+    .x |>
+      rename_all(~ gsub("^X", "", .)) |>
       pivot_longer(where(is.double),
                    names_to = "FileName",
-                   values_to = "Value") %>%
+                   values_to = "Value") |>
       inner_join(genes_cs13_rand1,
-                 by = c("Name" = "Gene", "FileName" = paste0("FileName_", .y))) %>%
+                 by = c("Name" = "Gene", "FileName" = paste0("FileName_", .y))) |>
       select(Name, FileName, ottaID, Value)
-  }) %>%
+  }) |>
   reduce(inner_join,
          by = c("Name", "ottaID"),
-         suffix = c("_CS1", "_CS3")) %>%
-  select(ottaID, Gene = Name, everything()) %>%
-  group_by(Gene) %>%
-  mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) %>%
-  ungroup() %>%
+         suffix = c("_CS1", "_CS3")) |>
+  select(ottaID, Gene = Name, everything()) |>
+  group_by(Gene) |>
+  mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) |>
+  ungroup() |>
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
          Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
 
@@ -508,24 +508,24 @@ print(p_genes_cs13_hkgenes)
 #| fig-cap: 'HKgenes-Normalized CS2 vs. CS3 Gene Expression'
 
 genes_cs23_hkgenes <-
-  list(CS2 = cs2_norm, CS3 = cs3_norm) %>%
+  list(CS2 = cs2_norm, CS3 = cs3_norm) |>
   imap(~ {
-    .x %>%
-      rename_all(~ gsub("^X", "", .)) %>%
+    .x |>
+      rename_all(~ gsub("^X", "", .)) |>
       pivot_longer(where(is.double),
                    names_to = "FileName",
-                   values_to = "Value") %>%
+                   values_to = "Value") |>
       inner_join(genes_cs23_rand1,
-                 by = c("Name" = "Gene", "FileName" = paste0("FileName_", .y))) %>%
+                 by = c("Name" = "Gene", "FileName" = paste0("FileName_", .y))) |>
       select(Name, FileName, ottaID, Value)
-  }) %>%
+  }) |>
   reduce(inner_join,
          by = c("Name", "ottaID"),
-         suffix = c("_CS2", "_CS3")) %>%
-  select(ottaID, Gene = Name, everything()) %>%
-  group_by(Gene) %>%
-  mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) %>%
-  ungroup() %>%
+         suffix = c("_CS2", "_CS3")) |>
+  select(ottaID, Gene = Name, everything()) |>
+  group_by(Gene) |>
+  mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) |>
+  ungroup() |>
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
          Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
 

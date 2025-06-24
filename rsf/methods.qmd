@@ -295,8 +295,8 @@ preproc_none <- rec
 preproc_down <- step_downsample(rec, class, seed = 2024)
 preproc_up <- step_upsample(rec, class, seed = 2024)
 preproc_smote <- step_smote(rec, class, seed = 2024)
-preproc_hybrid <- rec %>%
-  step_smote(class, over_ratio = 0.5, seed = 2024) %>%
+preproc_hybrid <- rec |>
+  step_smote(class, over_ratio = 0.5, seed = 2024) |>
   step_downsample(class, under_ratio = 1, seed = 2024)
 preproc <- list(
   none = preproc_none,
@@ -307,11 +307,11 @@ preproc <- list(
 )
 
 sampling_df <- map(preproc, ~ {
-  exec(prep, .x) %>%
-    pluck("template") %>%
+  exec(prep, .x) |>
+    pluck("template") |>
     count(class)
-}) %>%
-  list_rbind(names_to = "Sampling") %>%
+}) |>
+  list_rbind(names_to = "Sampling") |>
   mutate(Sampling = factor(Sampling, levels = c("none", "down", "up", "smote", "hybrid")),
          class = fct_reorder(class, n, .desc = TRUE))
 

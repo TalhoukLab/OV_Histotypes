@@ -15,7 +15,6 @@ library(knitr)
 library(kableExtra)
 library(RankAggreg)
 library(splendid)
-library(magrittr)
 library(DT)
 library(plotly)
 library(patchwork)
@@ -117,8 +116,8 @@ We summarize cross-validated training performance of class metrics in the traini
 ```{r}
 #| label: train-metrics
 
-all_metrics_train <- all_metrics_train %>%
-  separate(wflow, c("Subsampling", "Algorithms"), remove = FALSE) %>%
+all_metrics_train <- all_metrics_train |> 
+  separate(wflow, c("Subsampling", "Algorithms"), remove = FALSE) |> 
   mutate(
     Subsampling = factor(Subsampling, levels = c("none", "down", "up", "smote", "hybrid")),
     Algorithms = factor(Algorithms, levels = c("rf", "svm", "xgb", "mr")),
@@ -126,12 +125,12 @@ all_metrics_train <- all_metrics_train %>%
       class_group,
       levels = c("Overall", "HGSC", "CCOC", "ENOC", "LGSC", "MUC")
     )
-  ) %>% 
+  ) |> 
   mutate(
     lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
     upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
     .by = c(wflow, class_group, .metric)
-  ) %>% 
+  ) |>
   mutate(
     undefined = case_when(any(is.nan(mean_estimate)) ~ "all",
                           any(is.na(.estimate)) ~ "some",
@@ -164,7 +163,7 @@ all_metrics_train |>
 #| fig-width: 7
 
 p <- ggplot(
-  all_metrics_train %>% filter(.metric == "accuracy"),
+  all_metrics_train |> filter(.metric == "accuracy"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -217,7 +216,7 @@ all_metrics_train |>
 #| fig-width: 7
 
 p <- ggplot(
-  all_metrics_train %>% filter(.metric == "sensitivity"),
+  all_metrics_train |> filter(.metric == "sensitivity"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -270,7 +269,7 @@ all_metrics_train |>
 #| fig-width: 7
 
 p <- ggplot(
-  all_metrics_train %>% filter(.metric == "specificity"),
+  all_metrics_train |> filter(.metric == "specificity"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -323,7 +322,7 @@ all_metrics_train |>
 #| fig-width: 7
 
 p <- ggplot(
-  all_metrics_train %>% filter(.metric == "f_meas"),
+  all_metrics_train |> filter(.metric == "f_meas"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -376,7 +375,7 @@ all_metrics_train |>
 #| fig-width: 7
 
 p <- ggplot(
-  all_metrics_train %>% filter(.metric == "bal_accuracy"),
+  all_metrics_train |> filter(.metric == "bal_accuracy"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -429,7 +428,7 @@ all_metrics_train |>
 #| fig-width: 7
 
 p <- ggplot(
-  all_metrics_train %>% filter(.metric == "kap"),
+  all_metrics_train |> filter(.metric == "kap"),
   aes(
     x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
     y = mean_estimate,
@@ -515,12 +514,12 @@ per_class_metrics <- bind_rows(all_metrics_train,
   droplevels()
 
 # Keep only workflows that predicted at least one case in each class
-per_class_metrics_comp <- per_class_metrics %>%
-  distinct(pick(-fold_id, -.estimate)) %>%
-  select(wflow, .metric, class_group, mean_estimate) %>%
-  arrange(class_group) %>%
-  pivot_wider(names_from = "class_group", values_from = "mean_estimate") %>%
-  drop_na() %>%
+per_class_metrics_comp <- per_class_metrics |> 
+  distinct(pick(-fold_id, -.estimate)) |> 
+  select(wflow, .metric, class_group, mean_estimate) |> 
+  arrange(class_group) |> 
+  pivot_wider(names_from = "class_group", values_from = "mean_estimate") |> 
+  drop_na() |> 
   pivot_longer(cols = where(is.numeric),
                names_to = "class_group",
                values_to = "mean_estimate")
@@ -537,13 +536,13 @@ per_class_metrics_comp <- per_class_metrics %>%
 per_class_f1 <- filter(per_class_metrics_comp, .metric == "f_meas")
 
 # Rank metric
-wflow_ranks_f1 <- per_class_f1 %>%
-  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) %>%
-  arrange(rank) %>%
+wflow_ranks_f1 <- per_class_f1 |> 
+  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) |> 
+  arrange(rank) |> 
   pivot_wider(id_cols = class_group,
               names_from = "rank",
-              values_from = "wflow") %>%
-  column_to_rownames("class_group") %>%
+              values_from = "wflow") |> 
+  column_to_rownames("class_group") |> 
   as.matrix()
 
 # Rank aggregation of metrics using genetic algorithm
@@ -554,8 +553,8 @@ wflow_rank_agg_f1 <- splendid:::sink_output(RankAggreg(
   seed = 2025,
   verbose = FALSE,
   maxIter = 1e4
-)) %>% 
-  pluck("top.list") %>% 
+)) |> 
+  pluck("top.list") |> 
   enframe(name = "Rank", value = "Workflow")
 
 # Metric summary with rank aggregation
@@ -601,13 +600,13 @@ datatable(
 per_class_bal_acc <- filter(per_class_metrics_comp, .metric == "bal_accuracy")
 
 # Rank metric
-wflow_ranks_bal_acc <- per_class_bal_acc %>%
-  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) %>%
-  arrange(rank) %>%
+wflow_ranks_bal_acc <- per_class_bal_acc |>
+  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) |>
+  arrange(rank) |>
   pivot_wider(id_cols = class_group,
               names_from = "rank",
-              values_from = "wflow") %>%
-  column_to_rownames("class_group") %>%
+              values_from = "wflow") |>
+  column_to_rownames("class_group") |>
   as.matrix()
 
 # Rank aggregation of metrics using genetic algorithm
@@ -618,8 +617,8 @@ wflow_rank_agg_bal_acc <- splendid:::sink_output(RankAggreg(
   seed = 2025,
   verbose = FALSE,
   maxIter = 1e5
-)) %>% 
-  pluck("top.list") %>% 
+)) |> 
+  pluck("top.list") |> 
   enframe(name = "Rank", value = "Workflow")
 
 # Metric summary with rank aggregation
@@ -665,13 +664,13 @@ datatable(
 per_class_kap <- filter(per_class_metrics_comp, .metric == "kap")
 
 # Rank metric
-wflow_ranks_kap <- per_class_kap %>%
-  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) %>%
-  arrange(rank) %>%
+wflow_ranks_kap <- per_class_kap |>
+  mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) |>
+  arrange(rank) |>
   pivot_wider(id_cols = class_group,
               names_from = "rank",
-              values_from = "wflow") %>%
-  column_to_rownames("class_group") %>%
+              values_from = "wflow") |>
+  column_to_rownames("class_group") |>
   as.matrix()
 
 # Rank aggregation of metrics using genetic algorithm
@@ -682,8 +681,8 @@ wflow_rank_agg_kap <- splendid:::sink_output(RankAggreg(
   seed = 2025,
   verbose = FALSE,
   maxIter = 1e4
-)) %>% 
-  pluck("top.list") %>% 
+)) |> 
+  pluck("top.list") |> 
   enframe(name = "Rank", value = "Workflow")
 
 # Metric summary with rank aggregation
@@ -759,7 +758,7 @@ wflow_rank_agg_metrics <- splendid:::sink_output(RankAggreg(
   seed = 2025,
   verbose = FALSE
 )) |>
-  pluck("top.list") %>%
+  pluck("top.list") |>
   enframe(name = "Rank", value = "Workflow")
 
 # Number of top workflows
@@ -956,18 +955,18 @@ Misclassified cases from a previous step of the sequence of classifiers are not 
 #| fig-width: 5
 #| out-width: '100%'
  
-gene_seq_names <- all_vi_seq %>% 
-  rename(Name = Variable) %>% 
-  rowid_to_column("Genes") %>% 
+gene_seq_names <- all_vi_seq |> 
+  rename(Name = Variable) |> 
+  rowid_to_column("Genes") |> 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_seq <- gene_opt_all_metrics_conf_seq %>% 
-  filter(.metric == "f_meas", class_group == "Overall") %>% 
+dat_gene_seq <- gene_opt_all_metrics_conf_seq |> 
+  filter(.metric == "f_meas", class_group == "Overall") |> 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
     .by = c(Sequence, Genes)
-  ) %>%
+  ) |>
   mutate(
     label = paste0(
       "Sequence: ",
@@ -976,7 +975,7 @@ dat_gene_seq <- gene_opt_all_metrics_conf_seq %>%
       wflow,
       ", Measure: ",
       .metric)
-  ) %>% 
+  ) |> 
   inner_join(gene_seq_names, by = "Genes")
 
 p_gene_seq <-
@@ -995,9 +994,9 @@ p_gene_seq <-
 ggplotly(p_gene_seq, width = 600, height = 600)
 
 n_genes_seq <- 9
-genes_add_seq <- gene_seq_names %>%
-  filter(Genes > 0L) %>% 
-  slice_min(order_by = Genes, n = n_genes_seq) %>% 
+genes_add_seq <- gene_seq_names |>
+  filter(Genes > 0L) |> 
+  slice_min(order_by = Genes, n = n_genes_seq) |> 
   pull(Name)
 opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
@@ -1059,20 +1058,20 @@ gene_dist_seq |>
 #| fig-width: 5
 #| out-width: '100%'
 
-gene_smote_rf_names <- all_vi_train %>% 
-  filter(wflow == "smote_rf") %>% 
-  rowid_to_column("Genes") %>% 
-  select(Genes, Name = Variable) %>% 
+gene_smote_rf_names <- all_vi_train |> 
+  filter(wflow == "smote_rf") |> 
+  rowid_to_column("Genes") |> 
+  select(Genes, Name = Variable) |> 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_smote_rf <- gene_opt_all_metrics_conf %>% 
-  filter(.metric == "f_meas", class_group == "Overall") %>% 
+dat_gene_smote_rf <- gene_opt_all_metrics_conf |> 
+  filter(.metric == "f_meas", class_group == "Overall") |> 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
     .by = Genes
-  ) %>%
-  mutate(label = paste0("Workflow: smote_rf, Measure: ", .metric)) %>% 
+  ) |>
+  mutate(label = paste0("Workflow: smote_rf, Measure: ", .metric)) |> 
   inner_join(gene_smote_rf_names, by = "Genes")
 
 p_gene_smote_rf <- 
@@ -1091,9 +1090,9 @@ p_gene_smote_rf <-
 ggplotly(p_gene_smote_rf, width = 600, height = 400)
 
 n_genes_smote_rf <- 16
-genes_add_smote_rf <- gene_smote_rf_names %>% 
-  filter(Genes > 0L) %>% 
-  slice_min(order_by = Genes, n = n_genes_smote_rf) %>% 
+genes_add_smote_rf <- gene_smote_rf_names |> 
+  filter(Genes > 0L) |> 
+  slice_min(order_by = Genes, n = n_genes_smote_rf) |> 
   pull(Name)
 opt_genes_smote_rf <- c(overlap_all, genes_add_smote_rf)
 ```
@@ -1156,18 +1155,18 @@ gene_dist_smote_rf |>
 #| fig-width: 5
 #| out-width: '100%'
 
-gene_two_step_names <- all_vi_two_step %>% 
-  rename(Name = Variable) %>% 
-  rowid_to_column("Genes") %>% 
+gene_two_step_names <- all_vi_two_step |> 
+  rename(Name = Variable) |> 
+  rowid_to_column("Genes") |> 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_two_step <- gene_opt_all_metrics_conf_two_step %>% 
-  filter(.metric == "f_meas", class_group == "Overall") %>% 
+dat_gene_two_step <- gene_opt_all_metrics_conf_two_step |> 
+  filter(.metric == "f_meas", class_group == "Overall") |> 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
     .by = c(Sequence, Genes)
-  ) %>%
+  ) |>
   mutate(
     label = paste0(
       "Sequence: ",
@@ -1176,7 +1175,7 @@ dat_gene_two_step <- gene_opt_all_metrics_conf_two_step %>%
       wflow,
       ", Measure: ",
       .metric)
-  ) %>% 
+  ) |> 
   inner_join(gene_two_step_names, by = "Genes")
 
 p_gene_two_step <-
@@ -1195,9 +1194,9 @@ p_gene_two_step <-
 ggplotly(p_gene_two_step, width = 600, height = 600)
 
 n_genes_two_step <- 15
-genes_add_two_step <- gene_two_step_names %>%
-  filter(Genes > 0L) %>% 
-  slice_min(order_by = Genes, n = n_genes_two_step) %>% 
+genes_add_two_step <- gene_two_step_names |>
+  filter(Genes > 0L) |> 
+  slice_min(order_by = Genes, n = n_genes_two_step) |> 
   pull(Name)
 opt_genes_two_step <- c(overlap_all, genes_add_two_step)
 ```
@@ -1345,7 +1344,7 @@ per_class_mset <-
 
 # Confirmation set overall predictions
 conf_pred_overall <- data.frame(FileName = rownames(conf_data),
-                                Truth = conf_class) %>%
+                                Truth = conf_class) |>
   mutate(
     c(p_seq_full = mod_seq_full,
       p_seq_opt = mod_seq_opt,
@@ -1353,11 +1352,11 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       p_smote_rf_opt = list(mod_smote_rf_opt),
       p_two_step_full = mod_two_step_full,
       p_two_step_opt = mod_two_step_opt
-    ) %>%
-      map(~ predict(., conf_data)[[".pred_class"]]) %>%
+    ) |> 
+      map(~ predict(., conf_data)[[".pred_class"]]) |> 
       bind_cols()
-  ) %>%
-  rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) %>% 
+  ) |> 
+  rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) |> 
   mutate(
     across(matches("p"), as.character),
     Prediction_sequential_full = case_when(
@@ -1380,13 +1379,13 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                                          p_two_step_opt_s1, p_two_step_opt_s2), 
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
-  select(-starts_with("p", ignore.case = FALSE)) %>%
+  select(-starts_with("p", ignore.case = FALSE)) |> 
   pivot_longer(
     cols = matches("Prediction"),
     names_to = "Method",
     names_prefix = "Prediction_",
     values_to = "Prediction"
-  ) %>% 
+  ) |> 
   mutate(across(c(Truth, Prediction),
                 ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))) |> 
   mutate(Method = factor(
@@ -1402,27 +1401,25 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   ))
 
 # Confirmation set overall metrics
-conf_eval_overall <- conf_pred_overall %>%
-  group_by(Method) %>%
+conf_eval_overall <- conf_pred_overall |>
   summarize(
     Accuracy = accuracy_vec(Truth, Prediction),
     Sensitivity = sensitivity_vec(Truth, Prediction),
     Specificity = specificity_vec(Truth, Prediction),
     `F1-Score` = f_meas_vec(Truth, Prediction),
     `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
-    Kappa = kap_vec(Truth, Prediction)
-  ) |> 
-  pivot_longer(
-    cols = where(is.numeric),
-    names_to = "Metric",
-    values_to = "Overall"
-  )
+    Kappa = kap_vec(Truth, Prediction),
+    .by = Method
+  ) |>
+  pivot_longer(cols = where(is.numeric),
+               names_to = "Metric",
+               values_to = "Overall")
 
 # Confirmation set per-class metrics
-conf_eval_per_class <- conf_pred_overall %>%
-  nest(.by = Method) %>%
-  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) %>%
-  unnest(data) %>%
+conf_eval_per_class <- conf_pred_overall |> 
+  nest(.by = Method) |> 
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
+  unnest(data) |> 
   mutate(
     Metric = case_match(
       .metric,
@@ -1434,7 +1431,7 @@ conf_eval_per_class <- conf_pred_overall %>%
       "kap" ~ "Kappa"
     ),
     .keep = "unused"
-  ) %>%
+  ) |> 
   pivot_wider(
     id_cols = c(Method, Metric),
     names_from = class_group,
@@ -1462,7 +1459,7 @@ conf_eval |>
 #| out-width: '100%'
 
 conf_entropy <- data.frame(FileName = rownames(conf_data),
-                           Truth = conf_class) %>%
+                           Truth = conf_class) |>
   mutate(
     c(p_seq_full = mod_seq_full,
       p_seq_opt = mod_seq_opt,
@@ -1580,11 +1577,11 @@ print(p)
 #| fig-width: 8
 #| out-width: '100%'
 
-conf_conf_mat <- conf_pred_overall %>%
-  nest(.by = Method) %>%
-  deframe() %>%
+conf_conf_mat <- conf_pred_overall |>
+  nest(.by = Method) |>
+  deframe() |>
   imap(
-    ~ conf_mat(.x, Truth, Prediction) %>%
+    ~ conf_mat(.x, Truth, Prediction) |>
       autoplot(type = "heatmap") +
       scale_fill_distiller(palette = "YlOrBr", direction = 1) +
       labs(title = .y) +
@@ -1593,7 +1590,7 @@ conf_conf_mat <- conf_pred_overall %>%
         axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
         axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
       )
-  ) %>%
+  ) |>
   wrap_plots(nrow = 3) +
   plot_annotation(title = "Confusion Matrices for Confirmation Set Models", tag_levels = "A")
 
@@ -1655,17 +1652,17 @@ class_groups_two_step <-
 #| fig-width: 7
 #| out-width: '100%'
 
-roc_curve_seq_full <- mod_seq_full %>% 
+roc_curve_seq_full <- mod_seq_full |> 
   set_names(class_groups_seq) |> 
-  list(conf_data_seq, conf_class_seq) %>% 
+  list(conf_data_seq, conf_class_seq) |> 
   pmap(~ {
-    preds <- predict(..1, ..2, type = "prob")%>% 
+    preds <- predict(..1, ..2, type = "prob") |> 
       add_column(truth = ..3)
-    roc_df <- preds %>% 
+    roc_df <- preds |> 
       roc_curve(truth, matches(".pred")[1])
-    auc <- preds %>% 
-      roc_auc(truth, matches(".pred")[1]) %>% 
-      pull(.estimate) %>% 
+    auc <- preds |> 
+      roc_auc(truth, matches(".pred")[1]) |> 
+      pull(.estimate) |> 
       number(accuracy = 0.001, prefix = "AUC = ")
     autoplot(roc_df) +
       geom_label(
@@ -1677,10 +1674,10 @@ roc_curve_seq_full <- mod_seq_full %>%
         size = 3
       ) +
       theme(panel.grid = element_blank())
-  }) %>% 
+  }) |> 
   imap(~ .x +
          labs(title = .y) +
-         theme(plot.title = element_markdown(face = "bold"))) %>% 
+         theme(plot.title = element_markdown(face = "bold"))) |> 
   wrap_plots(widths = c(1, -1)) +
   plot_annotation(
     title = "ROC Curves for Sequential, Full Set Model in Confirmation Set",
@@ -1698,17 +1695,17 @@ print(roc_curve_seq_full)
 #| fig-width: 7
 #| out-width: '100%'
 
-roc_curve_seq_opt <- mod_seq_opt %>% 
+roc_curve_seq_opt <- mod_seq_opt |> 
   set_names(class_groups_seq) |> 
-  list(conf_data_seq, conf_class_seq) %>% 
+  list(conf_data_seq, conf_class_seq) |> 
   pmap(~ {
-    preds <- predict(..1, ..2, type = "prob")%>% 
+    preds <- predict(..1, ..2, type = "prob") |> 
       add_column(truth = ..3)
-    roc_df <- preds %>% 
+    roc_df <- preds |> 
       roc_curve(truth, matches(".pred")[1])
-    auc <- preds %>% 
-      roc_auc(truth, matches(".pred")[1]) %>% 
-      pull(.estimate) %>% 
+    auc <- preds |> 
+      roc_auc(truth, matches(".pred")[1]) |> 
+      pull(.estimate) |> 
       number(accuracy = 0.001, prefix = "AUC = ")
     autoplot(roc_df) +
       geom_label(
@@ -1720,10 +1717,10 @@ roc_curve_seq_opt <- mod_seq_opt %>%
         size = 3
       ) +
       theme(panel.grid = element_blank())
-  }) %>% 
+  }) |> 
   imap(~ .x +
          labs(title = .y) +
-         theme(plot.title = element_markdown(face = "bold"))) %>% 
+         theme(plot.title = element_markdown(face = "bold"))) |> 
   wrap_plots(widths = c(1, -1)) +
   plot_annotation(
     title = "ROC Curves for Sequential, Optimal Set Model in Confirmation Set",
@@ -1741,15 +1738,15 @@ print(roc_curve_seq_opt)
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_smote_rf_full %>% 
-  predict(conf_data, type = "prob") %>%
+preds <- mod_smote_rf_full |> 
+  predict(conf_data, type = "prob") |>
   add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-roc_df <- preds %>%
+roc_df <- preds |>
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-auc <- preds %>%
-  roc_auc(truth, matches(".pred")) %>% 
-  pull(.estimate) %>% 
+auc <- preds |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
 roc_curve_smote_rf_full <-
   autoplot(roc_df) +
@@ -1771,14 +1768,14 @@ print(roc_curve_smote_rf_full)
 #| out-width: '100%'
 
 preds <- mod_smote_rf_opt |> 
-  predict(conf_data, type = "prob") %>% 
+  predict(conf_data, type = "prob") |> 
   add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-roc_df <- preds %>%
+roc_df <- preds |>
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-auc <- preds %>%
-  roc_auc(truth, matches(".pred")) %>% 
-  pull(.estimate) %>% 
+auc <- preds |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
 roc_curve_smote_rf_opt <- 
   autoplot(roc_df) +
@@ -1799,19 +1796,19 @@ print(roc_curve_smote_rf_opt)
 #| fig-width: 9
 #| out-width: '100%'
 
-roc_curve_two_step_full <- mod_two_step_full %>% 
-  set_names(class_groups_two_step) %>% 
-  list(conf_data_two_step, conf_class_two_step) %>% 
+roc_curve_two_step_full <- mod_two_step_full |> 
+  set_names(class_groups_two_step) |> 
+  list(conf_data_two_step, conf_class_two_step) |> 
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")
     prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds <- preds %>% 
+    preds <- preds |> 
       add_column(truth = ..3)
-    roc_df <- preds %>% 
+    roc_df <- preds |> 
       roc_curve(truth, all_of(prob_cols))
-    auc <- preds %>% 
-      roc_auc(truth, all_of(prob_cols)) %>% 
-      pull(.estimate) %>% 
+    auc <- preds |> 
+      roc_auc(truth, all_of(prob_cols)) |> 
+      pull(.estimate) |> 
       number(accuracy = 0.001, prefix = "AUC = ")
     autoplot(roc_df) +
       geom_label(
@@ -1829,7 +1826,7 @@ roc_curve_two_step_full <- mod_two_step_full %>%
            facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette[-1])))) |>
   imap(~ .x +
          labs(title = .y) +
-         theme(plot.title = element_markdown(face = "bold"))) %>% 
+         theme(plot.title = element_markdown(face = "bold"))) |> 
   wrap_plots(widths = c(1, -1)) +
   plot_annotation(
     title = "ROC Curves for Two-Step, Full Set Model in Confirmation Set",
@@ -1847,19 +1844,19 @@ print(roc_curve_two_step_full)
 #| fig-width: 9
 #| out-width: '100%'
 
-roc_curve_two_step_optimal <- mod_two_step_opt %>% 
-  set_names(class_groups_two_step) %>% 
-  list(conf_data_two_step, conf_class_two_step) %>% 
+roc_curve_two_step_optimal <- mod_two_step_opt |> 
+  set_names(class_groups_two_step) |> 
+  list(conf_data_two_step, conf_class_two_step) |> 
   pmap(~ {
     preds <- predict(..1, ..2, type = "prob")
     prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds <- preds %>% 
+    preds <- preds |> 
       add_column(truth = ..3)
-    roc_df <- preds %>% 
+    roc_df <- preds |> 
       roc_curve(truth, all_of(prob_cols))
-    auc <- preds %>% 
-      roc_auc(truth, all_of(prob_cols)) %>% 
-      pull(.estimate) %>% 
+    auc <- preds |> 
+      roc_auc(truth, all_of(prob_cols)) |> 
+      pull(.estimate) |> 
       number(accuracy = 0.001, prefix = "AUC = ")
     autoplot(roc_df) +
       geom_label(
@@ -1877,7 +1874,7 @@ roc_curve_two_step_optimal <- mod_two_step_opt %>%
            facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette[-1])))) |>
   imap(~ .x +
          labs(title = .y) +
-         theme(plot.title = element_markdown(face = "bold"))) %>% 
+         theme(plot.title = element_markdown(face = "bold"))) |> 
   wrap_plots(widths = c(1, -1)) +
   plot_annotation(
     title = "ROC Curves for Two-Step, Optimal Set Model in Confirmation Set",
@@ -1896,23 +1893,23 @@ print(roc_curve_two_step_optimal)
 
 # Validation set overall predictions
 val_pred_overall <- data.frame(FileName = rownames(val_data),
-                               Truth = val_class) %>%
+                               Truth = val_class) |>
   mutate(
     Prediction_smote_rf_opt = predict(mod_smote_rf_opt, val_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
-  ) %>% 
+  ) |> 
   pivot_longer(
     cols = matches("Prediction"),
     names_to = "Method",
     names_prefix = "Prediction_",
     values_to = "Prediction"
-  ) %>% 
+  ) |> 
   mutate(across(c(Truth, Prediction),
                 ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))),
          Method = "SMOTE-Random Forest, Optimal Set")
 
 # Validation set overall metrics
-val_eval_overall <- val_pred_overall %>%
+val_eval_overall <- val_pred_overall |>
   summarize(
     Accuracy = accuracy_vec(Truth, Prediction),
     Sensitivity = sensitivity_vec(Truth, Prediction),
@@ -2001,11 +1998,11 @@ print(p)
 #| label: fig-val-conf-mat
 #| fig-cap: 'Confusion Matrix for Validation Set Model'
 
-val_conf_mat <- val_pred_overall %>%
-  nest(.by = Method) %>%
-  deframe() %>%
+val_conf_mat <- val_pred_overall |>
+  nest(.by = Method) |>
+  deframe() |>
   imap(
-    ~ conf_mat(.x, Truth, Prediction) %>%
+    ~ conf_mat(.x, Truth, Prediction) |>
       autoplot(type = "heatmap") +
       scale_fill_distiller(palette = "YlOrBr", direction = 1) +
       labs(title = .y) +
@@ -2014,7 +2011,7 @@ val_conf_mat <- val_pred_overall %>%
         axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
         axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
       )
-  ) %>% 
+  ) |> 
   wrap_plots() +
   plot_annotation(title = "Confusion Matrix for Validation Set Model")
 
@@ -2031,12 +2028,12 @@ print(val_conf_mat)
 preds <- mod_smote_rf_opt |> 
   predict(val_data, type = "prob") |> 
   add_column(truth = factor(val_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-roc_df <- preds %>%
+roc_df <- preds |>
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-auc <- preds %>%
-  roc_auc(truth, matches(".pred")) %>% 
-  pull(.estimate) %>% 
+auc <- preds |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
 val_roc_curve_smote_rf_opt <- 
   autoplot(roc_df) +
@@ -2395,3 +2392,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
