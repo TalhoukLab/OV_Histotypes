@@ -2161,22 +2161,19 @@ table_2.2_reduced <-
   }) |>
   bind_rows()
 
-# Combined tables
-all_supp_tables <- bind_rows(
+# Gene ranks from all tables combined
+all_gene_ranks <- bind_rows(
   `Total genes, All studies` = table_2.1_all,
   `Total genes, Reduced studies` = table_2.1_reduced,
   `Overlapping genes, All studies` = table_2.2_all,
   `Overlapping genes, Reduced studies` = table_2.2_reduced,
   .id = "List"
 ) |> 
-  mutate(List = fct_inorder(List))
-
-# All genes
-marina_genes_total <- all_supp_tables |> 
-  filter(List %in% c("Total genes, All studies",
-                     "Total genes, Reduced studies")) |> 
-  pull(Genes) |> 
-  unique()
+  pivot_wider(
+    id_cols = "Genes",
+    names_from = "List",
+    values_from = "Rank"
+  )
 
 # LGSC differential gene expression analysis
 val_lgsc_condition <- val_pred_overall |>
@@ -2202,10 +2199,12 @@ res_lgsc <- dds_lgsc |>
   results() |>
   as.data.frame() |>
   rownames_to_column(var = "Gene") |>
-  mutate(
-    Significant = if_else(padj < 0.05, TRUE, FALSE),
-    `Marina's Sets` = if_else(Gene %in% marina_genes_total, TRUE, FALSE)
-  )
+  left_join(all_gene_ranks, c("Gene" = "Genes")) |> 
+  as_tibble() |> 
+  mutate(Significant = if_else(padj < 0.05, TRUE, FALSE)) |> 
+  rowwise() |> 
+  mutate(`Marina's Sets` = any(!is.na(c_across(matches("genes"))))) |> 
+  ungroup()
 
 # LGSC volcano plot
 val_lgsc_volcano <-
@@ -2249,10 +2248,12 @@ res_enoc <- dds_enoc |>
   results() |>
   as.data.frame() |>
   rownames_to_column(var = "Gene") |>
-  mutate(
-    Significant = if_else(padj < 1e-4, TRUE, FALSE),
-    `Marina's Sets` = if_else(Gene %in% marina_genes_total, TRUE, FALSE)
-  )
+  left_join(all_gene_ranks, c("Gene" = "Genes")) |> 
+  as_tibble() |> 
+  mutate(Significant = if_else(padj < 1e-4, TRUE, FALSE)) |>
+  rowwise() |>
+  mutate(`Marina's Sets` = any(!is.na(c_across(matches("genes"))))) |>
+  ungroup()
 
 # ENOC volcano plot
 val_enoc_volcano <-
@@ -2379,4 +2380,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
