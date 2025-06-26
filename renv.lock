@@ -8313,28 +8313,6 @@
       "Author": "Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>), Maxim Shemanarev [aut, cph] (Author of AGG), Tony Juricic [ctb, cph] (Contributor to AGG), Milan Marusinec [ctb, cph] (Contributor to AGG), Spencer Garrett [ctb] (Contributor to AGG), Posit, PBC [cph, fnd]",
       "Repository": "CRAN"
     },
-    "randomForest": {
-      "Package": "randomForest",
-      "Version": "4.6-14",
-      "Source": "Repository",
-      "Title": "Breiman and Cutler's Random Forests for Classification and Regression",
-      "Date": "2018-03-22",
-      "Depends": [
-        "R (>= 3.2.2)",
-        "stats"
-      ],
-      "Suggests": [
-        "RColorBrewer",
-        "MASS"
-      ],
-      "Author": "Fortran original by Leo Breiman and Adele Cutler, R port by Andy Liaw and Matthew Wiener.",
-      "Description": "Classification and regression based on a forest of trees using random inputs, based on Breiman (2001) <DOI:10.1023/A:1010933404324>.",
-      "Maintainer": "Andy Liaw <andy_liaw@merck.com>",
-      "License": "GPL (>= 2)",
-      "URL": "https://www.stat.berkeley.edu/~breiman/RandomForests/",
-      "NeedsCompilation": "yes",
-      "Repository": "CRAN"
-    },
     "ranger": {
       "Package": "ranger",
       "Version": "0.16.0",
