@@ -874,8 +874,18 @@ metrics_3_top_ranks <- bind_rows(
   `Balanced Accuracy` = bal_acc_summary,
   Kappa = kap_summary,
   .id = "Metric"
-) |> 
-  semi_join(wflow_rank_agg_metrics, by = "Workflow")
+) |>
+  semi_join(wflow_rank_agg_metrics, by = "Workflow") |>
+  mutate(
+    Workflow = Workflow |>
+      fct_inorder() |>
+      fct_recode(
+        `SMOTE-RF` = "smote_rf",
+        `SMOTE-XGB` = "smote_xgb",
+        `hybrid-XGB` = "hybrid_xgb",
+        `2-STEP` = "two_step"
+      )
+  )
 
 metrics_3_top_ranks |> 
   select(-Metric) |> 
