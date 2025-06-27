@@ -782,7 +782,14 @@ metrics_top <- per_class_metrics |>
   rename(Workflow = wflow) |> 
   inner_join(wflow_rank_agg_metrics, by = "Workflow") |> 
   mutate(
-    Workflow = fct_reorder(Workflow, Rank),
+    Workflow = Workflow |>
+      fct_reorder(Rank) |>
+      fct_recode(
+        `SMOTE-RF` = "smote_rf",
+        `SMOTE-XGB` = "smote_xgb",
+        `hybrid-XGB` = "hybrid_xgb",
+        `2-STEP` = "two_step"
+      ), 
     .metric = case_match(
       .metric,
       "accuracy" ~ "Accuracy",
@@ -1049,11 +1056,11 @@ gene_dist_seq |>
   collapse_rows(columns = 1)
 ```
 
-### SMOTE-Random Forest
+### SMOTE-RF
 
 ```{r}
 #| label: fig-gene-smote-rf
-#| fig-cap: 'Gene Optimization for SMOTE-Random Forest Classifier'
+#| fig-cap: 'Gene Optimization for SMOTE-RF Classifier'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
@@ -1071,7 +1078,7 @@ dat_gene_smote_rf <- gene_opt_all_metrics_conf |>
     max_estimate = max(.estimate),
     .by = Genes
   ) |>
-  mutate(label = paste0("Workflow: smote_rf, Measure: ", .metric)) |> 
+  mutate(label = paste0("Workflow: SMOTE-RF, Measure: ", .metric)) |> 
   inner_join(gene_smote_rf_names, by = "Genes")
 
 p_gene_smote_rf <- 
@@ -1086,7 +1093,7 @@ p_gene_smote_rf <-
   theme_bw() +
   labs(x = "Genes Added",
        y = "F1-Score",
-       title = "Gene Optimziation for SMOTE-Random Forest Classifier")
+       title = "Gene Optimziation for SMOTE-RF Classifier")
 ggplotly(p_gene_smote_rf, width = 600, height = 400)
 
 n_genes_smote_rf <- 16
@@ -1097,11 +1104,11 @@ genes_add_smote_rf <- gene_smote_rf_names |>
 opt_genes_smote_rf <- c(overlap_all, genes_add_smote_rf)
 ```
 
-In the SMOTE-Random Forest classifier, the mean F1-score is highest when we reach `r n_genes_smote_rf` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_rf`=`r length(opt_genes_smote_rf)` The added genes are: `r str_flatten_comma(genes_add_smote_rf, last = " and ")`.
+In the SMOTE-RF classifier, the mean F1-score is highest when we reach `r n_genes_smote_rf` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_rf`=`r length(opt_genes_smote_rf)` The added genes are: `r str_flatten_comma(genes_add_smote_rf, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-smote-rf
-#| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-Random Forest Workflow'
+#| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-RF Workflow'
 #| tbl-pos: 'H'
 
 candidates_all <- gene_smote_rf_names |>
@@ -1146,11 +1153,11 @@ gene_dist_smote_rf |>
   collapse_rows(columns = 1)
 ```
 
-### Two-Step
+### 2-STEP
 
 ```{r}
 #| label: fig-gene-two-step
-#| fig-cap: 'Gene Optimization for Two-Step Classifier'
+#| fig-cap: 'Gene Optimization for 2-STEP Classifier'
 #| fig-height: 6
 #| fig-width: 5
 #| out-width: '100%'
@@ -1190,7 +1197,7 @@ p_gene_two_step <-
   theme_bw() +
   labs(x = "Genes Added",
        y = "F1-Score",
-       title = "Gene Optimziation for Two-Step Classifier")
+       title = "Gene Optimziation for 2-STEP Classifier")
 ggplotly(p_gene_two_step, width = 600, height = 600)
 
 n_genes_two_step <- 15
@@ -1203,7 +1210,7 @@ opt_genes_two_step <- c(overlap_all, genes_add_two_step)
 
 ```{r}
 #| label: tbl-gene-opt-two-step
-#| tbl-cap: 'Gene Profile of Optimal Set in Two-Step Workflow'
+#| tbl-cap: 'Gene Profile of Optimal Set in 2-STEP Workflow'
 #| tbl-pos: 'H'
 
 candidates_all <- gene_two_step_names |>
@@ -1249,7 +1256,7 @@ gene_dist_two_step |>
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
-The top 2 methods are the sequential and SMOTE-Random Forest classifiers. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these classifiers.
+The top 2 methods are the sequential and SMOTE-RF classifiers. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these classifiers.
 
 ```{r}
 #| label: top-models
@@ -1388,15 +1395,15 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   ) |> 
   mutate(across(c(Truth, Prediction),
                 ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))) |> 
-  mutate(Method = factor(
+  mutate(Method = fct_inorder(
     case_match(
       Method,
       "sequential_full" ~ "Sequential, Full Set",
       "sequential_optimal" ~ "Sequential, Optimal Set",
-      "smote_rf_full" ~ "SMOTE-Random Forest, Full Set",
-      "smote_rf_opt" ~ "SMOTE-Random Forest, Optimal Set",
-      "two_step_full" ~ "Two-Step, Full Set",
-      "two_step_optimal" ~ "Two-Step, Optimal Set"
+      "smote_rf_full" ~ "SMOTE-RF, Full Set",
+      "smote_rf_opt" ~ "SMOTE-RF, Optimal Set",
+      "two_step_full" ~ "2-STEP, Full Set",
+      "two_step_optimal" ~ "2-STEP, Optimal Set"
     )
   ))
 
@@ -1486,15 +1493,15 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
     names_pattern = "(.*)\\.(.*)/(.*)",
     values_to = "Value"
   ) |>
-  mutate(Method = factor(
+  mutate(Method = fct_inorder(
     case_match(
       Method,
       "p_seq_full" ~ "Sequential, Full Set",
       "p_seq_opt" ~ "Sequential, Optimal Set",
-      "p_smote_rf_full" ~ "SMOTE-Random Forest, Full Set",
-      "p_smote_rf_opt" ~ "SMOTE-Random Forest, Optimal Set",
-      "p_two_step_full" ~ "Two-Step, Full Set",
-      "p_two_step_opt" ~ "Two-Step, Optimal Set"
+      "p_smote_rf_full" ~ "SMOTE-RF, Full Set",
+      "p_smote_rf_opt" ~ "SMOTE-RF, Optimal Set",
+      "p_two_step_full" ~ "2-STEP, Full Set",
+      "p_two_step_opt" ~ "2-STEP, Optimal Set"
     )
   )) |>
   inner_join(conf_pred_overall, by = join_by(FileName, Truth, Method)) |>
@@ -1506,8 +1513,8 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
         Prediction == "ENOC" & grepl("s3", Workflow) |
         Prediction %in% c("MUC", "LGSC") & grepl("s4", Workflow)
     )) |
-    grepl("SMOTE-Random Forest", Method) |
-    (grepl("Two-Step", Method) & (
+    grepl("SMOTE-RF", Method) |
+    (grepl("2-STEP", Method) & (
       Prediction == "HGSC" & grepl("s1", Workflow) |
         Prediction != "HGSC" & grepl("s2", Workflow)
     ))
@@ -1729,11 +1736,11 @@ roc_curve_seq_opt <- mod_seq_opt |>
 print(roc_curve_seq_opt)
 ```
 
-#### SMOTE-Random Forest, Full
+#### SMOTE-RF, Full
 
 ```{r}
 #| label: fig-roc-curve-smote-rf-full
-#| fig-cap: 'ROC Curves for SMOTE-Random Forest, Full Set Model in Confirmation Set'
+#| fig-cap: 'ROC Curves for SMOTE-RF, Full Set Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -1750,19 +1757,22 @@ auc <- preds |>
   number(accuracy = 0.001, prefix = "AUC = ")
 roc_curve_smote_rf_full <-
   autoplot(roc_df) +
-  labs(title = "ROC Curve for SMOTE-Random Forest, Full Set Model in Confirmation Set",
+  labs(title = "ROC Curve for SMOTE-RF, Full Set Model in Confirmation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
-  theme(panel.grid = element_blank(),
-        strip.text = element_text(face = "bold"))
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
 print(roc_curve_smote_rf_full)
 ```
 
-#### SMOTE-Random Forest, Optimal
+#### SMOTE-RF, Optimal
 
 ```{r}
 #| label: fig-roc-curve-smote-rf-opt
-#| fig-cap: 'ROC Curves for SMOTE-Random Forest, Optimal Set Model in Confirmation Set'
+#| fig-cap: 'ROC Curves for SMOTE-RF, Optimal Set Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -1779,19 +1789,22 @@ auc <- preds |>
   number(accuracy = 0.001, prefix = "AUC = ")
 roc_curve_smote_rf_opt <- 
   autoplot(roc_df) +
-  labs(title = "ROC Curve for SMOTE-Random Forest, Optimal Set Model in Confirmation Set",
+  labs(title = "ROC Curve for SMOTE-RF, Optimal Set Model in Confirmation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
-  theme(panel.grid = element_blank(),
-        strip.text = element_text(face = "bold"))
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
 print(roc_curve_smote_rf_opt)
 ```
 
-#### Two-Step, Full
+#### 2-STEP, Full
 
 ```{r}
 #| label: fig-roc-curve-two-step-full
-#| fig-cap: 'ROC Curves for Two-Step Full Model in Confirmation Set'
+#| fig-cap: 'ROC Curves for 2-STEP Full Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 9
 #| out-width: '100%'
@@ -1829,17 +1842,17 @@ roc_curve_two_step_full <- mod_two_step_full |>
          theme(plot.title = element_markdown(face = "bold"))) |> 
   wrap_plots(widths = c(1, -1)) +
   plot_annotation(
-    title = "ROC Curves for Two-Step, Full Set Model in Confirmation Set",
+    title = "ROC Curves for 2-STEP, Full Set Model in Confirmation Set",
     tag_levels = "A"
   )
 print(roc_curve_two_step_full)
 ```
 
-#### Two-Step, Optimal
+#### 2-STEP, Optimal
 
 ```{r}
 #| label: fig-roc-curve-two-step-optimal
-#| fig-cap: 'ROC Curves for Two-Step Optimal Model in Confirmation Set'
+#| fig-cap: 'ROC Curves for 2-STEP Optimal Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 9
 #| out-width: '100%'
@@ -1877,7 +1890,7 @@ roc_curve_two_step_optimal <- mod_two_step_opt |>
          theme(plot.title = element_markdown(face = "bold"))) |> 
   wrap_plots(widths = c(1, -1)) +
   plot_annotation(
-    title = "ROC Curves for Two-Step, Optimal Set Model in Confirmation Set",
+    title = "ROC Curves for 2-STEP, Optimal Set Model in Confirmation Set",
     tag_levels = "A"
   )
 print(roc_curve_two_step_optimal)
@@ -1888,7 +1901,7 @@ print(roc_curve_two_step_optimal)
 
 ```{r}
 #| label: tbl-val-eval
-#| tbl-cap: 'Evaluation Metrics on Validation Set Model, SMOTE-Random Forest, Optimal Set'
+#| tbl-cap: 'Evaluation Metrics on Validation Set Model, SMOTE-RF, Optimal Set'
 #| tbl-pos: 'H'
 
 # Validation set overall predictions
@@ -1906,7 +1919,7 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
   ) |> 
   mutate(across(c(Truth, Prediction),
                 ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))),
-         Method = "SMOTE-Random Forest, Optimal Set")
+         Method = "SMOTE-RF, Optimal Set")
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall |>
@@ -1956,7 +1969,7 @@ val_eval |>
 
 ```{r}
 #| label: fig-val-metrics-smote-rf
-#| fig-cap: 'SMOTE-Random Forest Per-Class Metrics in Validation Set'
+#| fig-cap: 'SMOTE-RF Per-Class Metrics in Validation Set'
 #| fig-width: 8
 #| out-width: '100%'
 
@@ -1989,7 +2002,7 @@ p <- ggplot(val_metrics_top) +
   ) +
   labs(
     y = "Metric Value",
-    title = paste("SMOTE-Random Forest Per-Class Metrics in Validation Set")
+    title = paste("SMOTE-RF Per-Class Metrics in Validation Set")
   )
 print(p)
 ```
@@ -2020,7 +2033,7 @@ print(val_conf_mat)
 
 ```{r}
 #| label: fig-val-roc-curve-smote-rf-opt
-#| fig-cap: 'ROC Curves for SMOTE-Random Forest, Optimal Set Model in Validation Set'
+#| fig-cap: 'ROC Curves for SMOTE-RF, Optimal Set Model in Validation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -2037,11 +2050,14 @@ auc <- preds |>
   number(accuracy = 0.001, prefix = "AUC = ")
 val_roc_curve_smote_rf_opt <- 
   autoplot(roc_df) +
-  labs(title = "ROC Curve for SMOTE-Random Forest, Optimal Set Model in Validation Set",
+  labs(title = "ROC Curve for SMOTE-RF, Optimal Set Model in Validation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
-  theme(panel.grid = element_blank(),
-        strip.text = element_text(face = "bold"))
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
 print(val_roc_curve_smote_rf_opt)
 ```
 
@@ -2392,4 +2408,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
