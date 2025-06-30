@@ -14,7 +14,6 @@ library(cli)
 library(knitr)
 library(kableExtra)
 library(RankAggreg)
-library(splendid)
 library(DT)
 library(plotly)
 library(patchwork)
@@ -546,14 +545,14 @@ wflow_ranks_f1 <- per_class_f1 |>
   as.matrix()
 
 # Rank aggregation of metrics using genetic algorithm
-wflow_rank_agg_f1 <- splendid:::sink_output(RankAggreg(
+wflow_rank_agg_f1 <- RankAggreg(
   x = wflow_ranks_f1,
   k = ncol(wflow_ranks_f1),
   method = "GA",
   seed = 2025,
   verbose = FALSE,
   maxIter = 1e4
-)) |> 
+) |> 
   pluck("top.list") |> 
   enframe(name = "Rank", value = "Workflow")
 
@@ -610,14 +609,14 @@ wflow_ranks_bal_acc <- per_class_bal_acc |>
   as.matrix()
 
 # Rank aggregation of metrics using genetic algorithm
-wflow_rank_agg_bal_acc <- splendid:::sink_output(RankAggreg(
+wflow_rank_agg_bal_acc <- RankAggreg(
   x = wflow_ranks_bal_acc,
   k = ncol(wflow_ranks_bal_acc),
   method = "GA",
   seed = 2025,
   verbose = FALSE,
   maxIter = 1e5
-)) |> 
+) |> 
   pluck("top.list") |> 
   enframe(name = "Rank", value = "Workflow")
 
@@ -674,14 +673,14 @@ wflow_ranks_kap <- per_class_kap |>
   as.matrix()
 
 # Rank aggregation of metrics using genetic algorithm
-wflow_rank_agg_kap <- splendid:::sink_output(RankAggreg(
+wflow_rank_agg_kap <- RankAggreg(
   x = wflow_ranks_kap,
   k = ncol(wflow_ranks_kap),
   method = "GA",
   seed = 2025,
   verbose = FALSE,
   maxIter = 1e4
-)) |> 
+) |> 
   pluck("top.list") |> 
   enframe(name = "Rank", value = "Workflow")
 
@@ -751,13 +750,13 @@ wflow_ranks_metrics <- rank_agg_metrics |>
   as.matrix()
 
 # Take top 5 workflows
-wflow_rank_agg_metrics <- splendid:::sink_output(RankAggreg(
+wflow_rank_agg_metrics <- RankAggreg(
   x = wflow_ranks_metrics,
   k = 5,
   method = "GA",
   seed = 2025,
   verbose = FALSE
-)) |>
+) |>
   pluck("top.list") |>
   enframe(name = "Rank", value = "Workflow")
 

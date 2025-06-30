@@ -1,7 +1,5 @@
 all: tune_wflows merge_results summarize_results
 
-splendid: train_eval merge_eval iv_summary
-
 sequential: seq_tune seq_merge seq_summarize
 
 retrain: retrain_tune retrain_merge retrain_summarize
@@ -18,19 +16,6 @@ merge_results:
 
 summarize_results:
 	./3-summarize_results.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# Splendid pipeline
-# Train models and return evaluations
-train_eval:
-	./splendid/1-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# Merge evaluations across reps and algorithms
-merge_eval:
-	./splendid/2-merge_eval.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# Internal validation summary and combined across datasets
-iv_summary:
-	./splendid/3-iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Sequential classifier
 seq_tune:
