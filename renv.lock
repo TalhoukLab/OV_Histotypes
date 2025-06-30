@@ -310,83 +310,6 @@
       "Author": "Martin Morgan [aut], Marcel Ramos [ctb], Bioconductor Package Maintainer [ctb, cre]",
       "Maintainer": "Bioconductor Package Maintainer <maintainer@bioconductor.org>"
     },
-    "C50": {
-      "Package": "C50",
-      "Version": "0.1.8",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "C5.0 Decision Trees and Rule-Based Models",
-      "Authors@R": "c( person(\"Max\", \"Kuhn\", , \"mxkuhn@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Steve\", \"Weston\", role = \"ctb\"), person(\"Mark\", \"Culp\", role = \"ctb\"), person(\"Nathan\", \"Coulter\", role = \"ctb\"), person(\"Ross\", \"Quinlan\", role = \"aut\", comment = \"Author of imported C code\"), person(\"RuleQuest Research\", role = \"cph\", comment = \"Copyright holder of imported C code\"), person(\"Rulequest Research Pty Ltd.\", role = \"cph\", comment = \"Copyright holder of imported C code\") )",
-      "Maintainer": "Max Kuhn <mxkuhn@gmail.com>",
-      "Description": "C5.0 decision trees and rule-based models for pattern recognition that extend the work of Quinlan (1993, ISBN:1-55860-238-0).",
-      "License": "GPL-3",
-      "URL": "https://topepo.github.io/C5.0/",
-      "BugReports": "https://github.com/topepo/C5.0/issues",
-      "Depends": [
-        "R (>= 2.10.0)"
-      ],
-      "Imports": [
-        "Cubist (>= 0.3.0)",
-        "partykit"
-      ],
-      "Suggests": [
-        "covr",
-        "knitr",
-        "modeldata",
-        "rmarkdown",
-        "testthat (>= 3.0.0)"
-      ],
-      "VignetteBuilder": "knitr",
-      "Biarch": "true",
-      "Config/testthat/edition": "3",
-      "Encoding": "UTF-8",
-      "LazyLoad": "yes",
-      "RoxygenNote": "7.2.3",
-      "NeedsCompilation": "yes",
-      "Author": "Max Kuhn [aut, cre], Steve Weston [ctb], Mark Culp [ctb], Nathan Coulter [ctb], Ross Quinlan [aut] (Author of imported C code), RuleQuest Research [cph] (Copyright holder of imported C code), Rulequest Research Pty Ltd. [cph] (Copyright holder of imported C code)",
-      "Repository": "CRAN"
-    },
-    "Cubist": {
-      "Package": "Cubist",
-      "Version": "0.4.2.1",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Rule- And Instance-Based Regression Modeling",
-      "Authors@R": "c( person(\"Max\", \"Kuhn\", , \"mxkuhn@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Steve\", \"Weston\", role = \"ctb\"), person(\"Chris\", \"Keefer\", role = \"ctb\"), person(\"Nathan\", \"Coulter\", role = \"ctb\"), person(\"Ross\", \"Quinlan\", role = \"aut\", comment = \"Author of imported C code\"), person(\"Rulequest Research Pty Ltd.\", role = \"cph\", comment = \"Copyright holder of imported C code\") )",
-      "Maintainer": "Max Kuhn <mxkuhn@gmail.com>",
-      "Description": "Regression modeling using rules with added instance-based corrections.",
-      "License": "GPL-3",
-      "URL": "https://topepo.github.io/Cubist//, https://topepo.github.io/Cubist/",
-      "BugReports": "https://github.com/topepo/Cubist/issues",
-      "Depends": [
-        "lattice"
-      ],
-      "Imports": [
-        "reshape2",
-        "utils"
-      ],
-      "Suggests": [
-        "covr",
-        "dplyr (>= 0.7.4)",
-        "knitr",
-        "mlbench",
-        "modeldata",
-        "rlang",
-        "rmarkdown",
-        "testthat (>= 3.0.0)",
-        "tidyrules"
-      ],
-      "VignetteBuilder": "knitr",
-      "Biarch": "true",
-      "Config/Needs/website": "pkgdown, caret, tidymodels, rules",
-      "Config/testthat/edition": "3",
-      "Encoding": "UTF-8",
-      "LazyLoad": "yes",
-      "RoxygenNote": "7.2.3",
-      "NeedsCompilation": "yes",
-      "Author": "Max Kuhn [aut, cre], Steve Weston [ctb], Chris Keefer [ctb], Nathan Coulter [ctb], Ross Quinlan [aut] (Author of imported C code), Rulequest Research Pty Ltd. [cph] (Copyright holder of imported C code)",
-      "Repository": "RSPM"
-    },
     "DBI": {
       "Package": "DBI",
       "Version": "1.2.3",
@@ -692,24 +615,6 @@
       "LazyData": "true",
       "Repository": "CRAN"
     },
-    "Formula": {
-      "Package": "Formula",
-      "Version": "1.2-3",
-      "Source": "Repository",
-      "Date": "2018-05-02",
-      "Title": "Extended Model Formulas",
-      "Description": "Infrastructure for extended formulas with multiple parts on the right-hand side and/or multiple responses on the left-hand side (see <DOI:10.18637/jss.v034.i01>).",
-      "Authors@R": "c(person(given = \"Achim\", family = \"Zeileis\", role = c(\"aut\", \"cre\"), email = \"Achim.Zeileis@R-project.org\", comment = c(ORCID = \"0000-0003-0918-3766\")), person(given = \"Yves\", family = \"Croissant\", role = \"aut\", email = \"Yves.Croissant@univ-reunion.fr\"))",
-      "Depends": [
-        "R (>= 2.0.0)",
-        "stats"
-      ],
-      "License": "GPL-2 | GPL-3",
-      "NeedsCompilation": "no",
-      "Author": "Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>), Yves Croissant [aut]",
-      "Maintainer": "Achim Zeileis <Achim.Zeileis@R-project.org>",
-      "Repository": "CRAN"
-    },
     "GPfit": {
       "Package": "GPfit",
       "Version": "1.0-8",
@@ -984,14 +889,15 @@
       "NeedsCompilation": "yes",
       "Author": "Brian Ripley [aut, cre, cph], Bill Venables [ctb], Douglas M. Bates [ctb], Kurt Hornik [trl] (partial port ca 1998), Albrecht Gebhardt [trl] (partial port ca 1998), David Firth [ctb]",
       "Maintainer": "Brian Ripley <ripley@stats.ox.ac.uk>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.6-5",
+      "Version": "1.7-3",
       "Source": "Repository",
       "VersionNote": "do also bump src/version.h, inst/include/Matrix/version.h",
-      "Date": "2024-01-06",
+      "Date": "2025-03-05",
       "Priority": "recommended",
       "Title": "Sparse and Dense Matrix Classes and Methods",
       "Description": "A rich hierarchy of sparse and dense matrix classes, including general, symmetric, triangular, and diagonal matrices with numeric, logical, or pattern entries.  Efficient methods for operating on such matrices, often wrapping the 'BLAS', 'LAPACK', and 'SuiteSparse' libraries.",
@@ -999,9 +905,9 @@
       "URL": "https://Matrix.R-forge.R-project.org",
       "BugReports": "https://R-forge.R-project.org/tracker/?atid=294&group_id=61",
       "Contact": "Matrix-authors@R-project.org",
-      "Authors@R": "c(person(\"Douglas\", \"Bates\", role = \"aut\", comment = c(ORCID = \"0000-0001-8316-9503\")), person(\"Martin\", \"Maechler\", role = c(\"aut\", \"cre\"), email = \"mmaechler+Matrix@gmail.com\", comment = c(ORCID = \"0000-0002-8685-9910\")), person(\"Mikael\", \"Jagan\", role = \"aut\", comment = c(ORCID = \"0000-0002-3542-2938\")), person(\"Timothy A.\", \"Davis\", role = \"ctb\", comment = c(ORCID = \"0000-0001-7614-6899\", \"SuiteSparse libraries, notably CHOLMOD and AMD\", \"collaborators listed in dir(pattern=\\\"^[A-Z]+[.]txt$\\\", full.names=TRUE, system.file(\\\"doc\\\", \\\"SuiteSparse\\\", package=\\\"Matrix\\\"))\")), person(\"Jens\", \"Oehlschlägel\", role = \"ctb\", comment = \"initial nearPD()\"), person(\"Jason\", \"Riedy\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4345-4200\", \"GNU Octave's condest() and onenormest()\", \"Copyright: Regents of the University of California\")), person(\"R Core Team\", role = \"ctb\", comment = \"base R's matrix implementation\"))",
+      "Authors@R": "c(person(\"Douglas\", \"Bates\", role = \"aut\", comment = c(ORCID = \"0000-0001-8316-9503\")), person(\"Martin\", \"Maechler\", role = c(\"aut\", \"cre\"), email = \"mmaechler+Matrix@gmail.com\", comment = c(ORCID = \"0000-0002-8685-9910\")), person(\"Mikael\", \"Jagan\", role = \"aut\", comment = c(ORCID = \"0000-0002-3542-2938\")), person(\"Timothy A.\", \"Davis\", role = \"ctb\", comment = c(ORCID = \"0000-0001-7614-6899\", \"SuiteSparse libraries\", \"collaborators listed in dir(system.file(\\\"doc\\\", \\\"SuiteSparse\\\", package=\\\"Matrix\\\"), pattern=\\\"License\\\", full.names=TRUE, recursive=TRUE)\")), person(\"George\", \"Karypis\", role = \"ctb\", comment = c(ORCID = \"0000-0003-2753-1437\", \"METIS library\", \"Copyright: Regents of the University of Minnesota\")), person(\"Jason\", \"Riedy\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4345-4200\", \"GNU Octave's condest() and onenormest()\", \"Copyright: Regents of the University of California\")), person(\"Jens\", \"Oehlschlägel\", role = \"ctb\", comment = \"initial nearPD()\"), person(\"R Core Team\", role = \"ctb\", comment = c(ROR = \"02zz1nj61\", \"base R's matrix implementation\")))",
       "Depends": [
-        "R (>= 3.5.0)",
+        "R (>= 4.4)",
         "methods"
       ],
       "Imports": [
@@ -1027,9 +933,9 @@
       "BuildResaveData": "no",
       "Encoding": "UTF-8",
       "NeedsCompilation": "yes",
-      "Author": "Douglas Bates [aut] (<https://orcid.org/0000-0001-8316-9503>), Martin Maechler [aut, cre] (<https://orcid.org/0000-0002-8685-9910>), Mikael Jagan [aut] (<https://orcid.org/0000-0002-3542-2938>), Timothy A. Davis [ctb] (<https://orcid.org/0000-0001-7614-6899>, SuiteSparse libraries, notably CHOLMOD and AMD, collaborators listed in dir(pattern=\"^[A-Z]+[.]txt$\", full.names=TRUE, system.file(\"doc\", \"SuiteSparse\", package=\"Matrix\"))), Jens Oehlschlägel [ctb] (initial nearPD()), Jason Riedy [ctb] (<https://orcid.org/0000-0002-4345-4200>, GNU Octave's condest() and onenormest(), Copyright: Regents of the University of California), R Core Team [ctb] (base R's matrix implementation)",
+      "Author": "Douglas Bates [aut] (<https://orcid.org/0000-0001-8316-9503>), Martin Maechler [aut, cre] (<https://orcid.org/0000-0002-8685-9910>), Mikael Jagan [aut] (<https://orcid.org/0000-0002-3542-2938>), Timothy A. Davis [ctb] (<https://orcid.org/0000-0001-7614-6899>, SuiteSparse libraries, collaborators listed in dir(system.file(\"doc\", \"SuiteSparse\", package=\"Matrix\"), pattern=\"License\", full.names=TRUE, recursive=TRUE)), George Karypis [ctb] (<https://orcid.org/0000-0003-2753-1437>, METIS library, Copyright: Regents of the University of Minnesota), Jason Riedy [ctb] (<https://orcid.org/0000-0002-4345-4200>, GNU Octave's condest() and onenormest(), Copyright: Regents of the University of California), Jens Oehlschlägel [ctb] (initial nearPD()), R Core Team [ctb] (02zz1nj61, base R's matrix implementation)",
       "Maintainer": "Martin Maechler <mmaechler+Matrix@gmail.com>",
-      "Repository": "RSPM"
+      "Repository": "CRAN"
     },
     "MatrixGenerics": {
       "Package": "MatrixGenerics",
@@ -1069,36 +975,6 @@
       "NeedsCompilation": "no",
       "Author": "Constantin Ahlmann-Eltze [aut] (<https://orcid.org/0000-0002-3762-068X>), Peter Hickey [aut, cre] (<https://orcid.org/0000-0002-8153-6258>), Hervé Pagès [aut]",
       "Maintainer": "Peter Hickey <peter.hickey@gmail.com>"
-    },
-    "ModelMetrics": {
-      "Package": "ModelMetrics",
-      "Version": "1.2.2.2",
-      "Source": "Repository",
-      "Title": "Rapid Calculation of Model Metrics",
-      "Date": "2018-11-03",
-      "Authors@R": "person(\"Tyler\", \"Hunt\", email = \"thunt@snapfinance.com\", role = c(\"aut\", \"cre\"))",
-      "Description": "Collection of metrics for evaluating models written in C++ using 'Rcpp'. Popular metrics include area under the curve, log loss, root mean square error, etc.",
-      "Depends": [
-        "R (>= 3.2.2)"
-      ],
-      "License": "GPL (>= 2)",
-      "Encoding": "UTF-8",
-      "LazyData": "true",
-      "LinkingTo": [
-        "Rcpp"
-      ],
-      "Imports": [
-        "Rcpp",
-        "data.table"
-      ],
-      "RoxygenNote": "6.0.1",
-      "Suggests": [
-        "testthat"
-      ],
-      "NeedsCompilation": "yes",
-      "Author": "Tyler Hunt [aut, cre]",
-      "Maintainer": "Tyler Hunt <thunt@snapfinance.com>",
-      "Repository": "CRAN"
     },
     "R6": {
       "Package": "R6",
@@ -1741,7 +1617,8 @@
       ],
       "License": "LGPL (>= 2)",
       "NeedsCompilation": "no",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "askpass": {
       "Package": "askpass",
@@ -1981,7 +1858,8 @@
       "URL": "https://github.com/mmaechler/R-bitops",
       "BugReports": "https://github.com/mmaechler/R-bitops/issues",
       "NeedsCompilation": "yes",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "blob": {
       "Package": "blob",
@@ -2365,79 +2243,6 @@
       "Maintainer": "Daniel D. Sjoberg <danield.sjoberg@gmail.com>",
       "Repository": "CRAN"
     },
-    "caret": {
-      "Package": "caret",
-      "Version": "6.0-94",
-      "Source": "Repository",
-      "Title": "Classification and Regression Training",
-      "Authors@R": "c(person(given = \"Max\", family = \"Kuhn\", role = c(\"aut\", \"cre\"), email = \"mxkuhn@gmail.com\", comment = c(ORCID = \"0000-0003-2402-136X\")), person(given = \"Jed\", family = \"Wing\", role = \"ctb\"), person(given = \"Steve\", family = \"Weston\", role = \"ctb\"), person(given = \"Andre\", family = \"Williams\", role = \"ctb\"), person(given = \"Chris\", family = \"Keefer\", role = \"ctb\"), person(given = \"Allan\", family = \"Engelhardt\", role = \"ctb\"), person(given = \"Tony\", family = \"Cooper\", role = \"ctb\"), person(given = \"Zachary\", family = \"Mayer\", role = \"ctb\"), person(given = \"Brenton\", family = \"Kenkel\", role = \"ctb\"), person(given = \"R Core Team\", role = \"ctb\"), person(given = \"Michael\", family = \"Benesty\", role = \"ctb\"), person(given = \"Reynald\", family = \"Lescarbeau\", role = \"ctb\"), person(given = \"Andrew\", family = \"Ziem\", role = \"ctb\"), person(given = \"Luca\", family = \"Scrucca\", role = \"ctb\"), person(given = \"Yuan\", family = \"Tang\", role = \"ctb\"), person(given = \"Can\", family = \"Candan\", role = \"ctb\"), person(given = \"Tyler\", family = \"Hunt\", role = \"ctb\"))",
-      "Description": "Misc functions for training and plotting classification and regression models.",
-      "License": "GPL (>= 2)",
-      "URL": "https://github.com/topepo/caret/",
-      "BugReports": "https://github.com/topepo/caret/issues",
-      "Depends": [
-        "ggplot2",
-        "lattice (>= 0.20)",
-        "R (>= 3.2.0)"
-      ],
-      "Imports": [
-        "e1071",
-        "foreach",
-        "grDevices",
-        "methods",
-        "ModelMetrics (>= 1.2.2.2)",
-        "nlme",
-        "plyr",
-        "pROC",
-        "recipes (>= 0.1.10)",
-        "reshape2",
-        "stats",
-        "stats4",
-        "utils",
-        "withr (>= 2.0.0)"
-      ],
-      "Suggests": [
-        "BradleyTerry2",
-        "covr",
-        "Cubist",
-        "dplyr",
-        "earth (>= 2.2-3)",
-        "ellipse",
-        "fastICA",
-        "gam (>= 1.15)",
-        "ipred",
-        "kernlab",
-        "klaR",
-        "knitr",
-        "MASS",
-        "Matrix",
-        "mda",
-        "mgcv",
-        "mlbench",
-        "MLmetrics",
-        "nnet",
-        "pamr",
-        "party (>= 0.9-99992)",
-        "pls",
-        "proxy",
-        "randomForest",
-        "RANN",
-        "rmarkdown",
-        "rpart",
-        "spls",
-        "subselect",
-        "superpc",
-        "testthat (>= 0.9.1)",
-        "themis (>= 0.1.3)"
-      ],
-      "VignetteBuilder": "knitr",
-      "Encoding": "UTF-8",
-      "RoxygenNote": "7.2.3",
-      "NeedsCompilation": "yes",
-      "Author": "Max Kuhn [aut, cre] (<https://orcid.org/0000-0003-2402-136X>), Jed Wing [ctb], Steve Weston [ctb], Andre Williams [ctb], Chris Keefer [ctb], Allan Engelhardt [ctb], Tony Cooper [ctb], Zachary Mayer [ctb], Brenton Kenkel [ctb], R Core Team [ctb], Michael Benesty [ctb], Reynald Lescarbeau [ctb], Andrew Ziem [ctb], Luca Scrucca [ctb], Yuan Tang [ctb], Can Candan [ctb], Tyler Hunt [ctb]",
-      "Maintainer": "Max Kuhn <mxkuhn@gmail.com>",
-      "Repository": "RSPM"
-    },
     "ccaPP": {
       "Package": "ccaPP",
       "Version": "0.3.3",
@@ -2528,7 +2333,8 @@
       "NeedsCompilation": "yes",
       "Author": "Brian Ripley [aut, cre, cph], William Venables [cph]",
       "Maintainer": "Brian Ripley <ripley@stats.ox.ac.uk>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "cli": {
       "Package": "cli",
@@ -3374,40 +3180,6 @@
       "NeedsCompilation": "no",
       "Author": "Hadley Wickham [cre, aut], Maximilian Girlich [aut], Mark Fairbanks [aut], Ryan Dickerson [aut], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
-      "Repository": "CRAN"
-    },
-    "e1071": {
-      "Package": "e1071",
-      "Version": "1.7-3",
-      "Source": "Repository",
-      "Title": "Misc Functions of the Department of Statistics, Probability Theory Group (Formerly: E1071), TU Wien",
-      "Imports": [
-        "graphics",
-        "grDevices",
-        "class",
-        "stats",
-        "methods",
-        "utils"
-      ],
-      "Suggests": [
-        "cluster",
-        "mlbench",
-        "nnet",
-        "randomForest",
-        "rpart",
-        "SparseM",
-        "xtable",
-        "Matrix",
-        "MASS",
-        "slam"
-      ],
-      "Authors@R": "c(person(given = \"David\", family = \"Meyer\", role = c(\"aut\", \"cre\"), email = \"David.Meyer@R-project.org\"), person(given = \"Evgenia\", family = \"Dimitriadou\", role = c(\"aut\",\"cph\")), person(given = \"Kurt\", family = \"Hornik\", role = \"aut\"), person(given = \"Andreas\", family = \"Weingessel\", role = \"aut\"), person(given = \"Friedrich\", family = \"Leisch\", role = \"aut\"), person(given = \"Chih-Chung\", family = \"Chang\", role = c(\"ctb\",\"cph\"), comment = \"libsvm C++-code\"), person(given = \"Chih-Chen\", family = \"Lin\", role = c(\"ctb\",\"cph\"), comment = \"libsvm C++-code\"))",
-      "Description": "Functions for latent class analysis, short time Fourier transform, fuzzy clustering, support vector machines, shortest path computation, bagged clustering, naive Bayes classifier, ...",
-      "License": "GPL-2 | GPL-3",
-      "LazyLoad": "yes",
-      "NeedsCompilation": "yes",
-      "Author": "David Meyer [aut, cre], Evgenia Dimitriadou [aut, cph], Kurt Hornik [aut], Andreas Weingessel [aut], Friedrich Leisch [aut], Chih-Chung Chang [ctb, cph] (libsvm C++-code), Chih-Chen Lin [ctb, cph] (libsvm C++-code)",
-      "Maintainer": "David Meyer <David.Meyer@R-project.org>",
       "Repository": "CRAN"
     },
     "entropy": {
@@ -4460,7 +4232,8 @@
       "RoxygenNote": "7.2.1",
       "NeedsCompilation": "yes",
       "Author": "Mark van der Loo [aut, cre], David Turner [ctb]",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "gridExtra": {
       "Package": "gridExtra",
@@ -5227,27 +5000,6 @@
       "Maintainer": "Simon Couch <simon.couch@posit.co>",
       "Repository": "CRAN"
     },
-    "inum": {
-      "Package": "inum",
-      "Version": "1.0-1",
-      "Source": "Repository",
-      "Title": "Interval and Enum-Type Representation of Vectors",
-      "Date": "2019-04-24",
-      "Authors@R": "person(\"Torsten\", \"Hothorn\", role = c(\"aut\", \"cre\"), email = \"Torsten.Hothorn@R-project.org\")",
-      "Description": "Enum-type representation of vectors and representation of intervals, including a method of coercing variables in data frames.",
-      "Depends": [
-        "R (>= 3.3.0)"
-      ],
-      "Imports": [
-        "stats",
-        "libcoin (>= 1.0-0)"
-      ],
-      "License": "GPL-2",
-      "NeedsCompilation": "no",
-      "Author": "Torsten Hothorn [aut, cre]",
-      "Maintainer": "Torsten Hothorn <Torsten.Hothorn@R-project.org>",
-      "Repository": "CRAN"
-    },
     "ipred": {
       "Package": "ipred",
       "Version": "0.9-14",
@@ -5278,7 +5030,8 @@
       "NeedsCompilation": "yes",
       "Author": "Andrea Peters [aut], Torsten Hothorn [aut, cre], Brian D. Ripley [ctb], Terry Therneau [ctb], Beth Atkinson [ctb]",
       "Maintainer": "Torsten Hothorn <Torsten.Hothorn@R-project.org>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "isoband": {
       "Package": "isoband",
@@ -5549,7 +5302,8 @@
       "NeedsCompilation": "yes",
       "Author": "Alexandros Karatzoglou [aut, cre], Alex Smola [aut], Kurt Hornik [aut] (<https://orcid.org/0000-0003-4198-9911>), National ICT Australia (NICTA) [cph], Michael A. Maniscalco [ctb, cph], Choon Hui Teo [ctb]",
       "Maintainer": "Alexandros Karatzoglou <alexandros.karatzoglou@gmail.com>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "knitr": {
       "Package": "knitr",
@@ -5848,33 +5602,6 @@
       "Maintainer": "Rob Carnell <bertcarnell@gmail.com>",
       "Repository": "RSPM"
     },
-    "libcoin": {
-      "Package": "libcoin",
-      "Version": "1.0-10",
-      "Source": "Repository",
-      "Title": "Linear Test Statistics for Permutation Inference",
-      "Date": "2023-09-26",
-      "Authors@R": "c(person(\"Torsten\", \"Hothorn\", role = c(\"aut\", \"cre\"), email = \"Torsten.Hothorn@R-project.org\", comment = c(ORCID = \"0000-0001-8301-0471\")), person(\"Henric\", \"Winell\", role = \"aut\", comment = c(ORCID = \"0000-0001-7995-3047\")))",
-      "Description": "Basic infrastructure for linear test statistics and permutation inference in the framework of Strasser and Weber (1999) <https://epub.wu.ac.at/102/>. This package must not be used by end-users. CRAN package 'coin' implements all user interfaces and is ready to be used by anyone.",
-      "Depends": [
-        "R (>= 3.4.0)"
-      ],
-      "Suggests": [
-        "coin"
-      ],
-      "Imports": [
-        "stats",
-        "mvtnorm"
-      ],
-      "LinkingTo": [
-        "mvtnorm"
-      ],
-      "NeedsCompilation": "yes",
-      "License": "GPL-2",
-      "Author": "Torsten Hothorn [aut, cre] (<https://orcid.org/0000-0001-8301-0471>), Henric Winell [aut] (<https://orcid.org/0000-0001-7995-3047>)",
-      "Maintainer": "Torsten Hothorn <Torsten.Hothorn@R-project.org>",
-      "Repository": "CRAN"
-    },
     "lifecycle": {
       "Package": "lifecycle",
       "Version": "1.0.4",
@@ -6044,25 +5771,6 @@
       "NeedsCompilation": "yes",
       "Author": "Vitalie Spinu [aut, cre], Garrett Grolemund [aut], Hadley Wickham [aut], Davis Vaughan [ctb], Ian Lyttle [ctb], Imanuel Costigan [ctb], Jason Law [ctb], Doug Mitarotonda [ctb], Joseph Larmarange [ctb], Jonathan Boiser [ctb], Chel Hee Lee [ctb]",
       "Repository": "RSPM"
-    },
-    "maboost": {
-      "Package": "maboost",
-      "Version": "1.0-0",
-      "Source": "Repository",
-      "Date": "2014-11-01",
-      "Title": "Binary and Multiclass Boosting Algorithms",
-      "Author": "Tofigh Naghibi",
-      "Depends": [
-        "R(>= 2.10)",
-        "rpart",
-        "C50"
-      ],
-      "Description": "Performs binary and multiclass boosting in maximum-margin, sparse, smooth and normal settings as described in \"A Boosting Framework on Grounds of Online Learning\" by T. Naghibi and B. Pfister, (2014).  For further information regarding the algorithms, please refer to http://arxiv.org/abs/1409.7202",
-      "Maintainer": "Tofigh Naghibi <tofigh@gmail.com>",
-      "License": "GPL (>= 2)",
-      "Repository": "CRAN",
-      "Collate": "'maboost-package.r' 'maboost.R' 'maboost.default.R' 'maboost.formula.R' 'maboost.machine.bin.R' 'maboost.machine.multi.R' 'predict.maboost.R' 'print.maboost.R' 'projsplx.R' 'projsplx_k.R' 'summary.maboost.R' 'update.maboost.R' 'varplot.maboost.R'",
-      "NeedsCompilation": "no"
     },
     "magrittr": {
       "Package": "magrittr",
@@ -6488,24 +6196,24 @@
       "Author": "Derek Chiu [aut, cre] (<https://orcid.org/0000-0002-7591-4881>), Aline Talhouk [aut] (<https://orcid.org/0000-0001-7760-410X>), Samuel Leung [aut] (<https://orcid.org/0000-0003-0138-7254>)",
       "Maintainer": "Derek Chiu <dchiu@bccrc.ca>",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "TalhoukLab",
       "RemoteRepo": "nanostringr",
       "RemoteRef": "master",
-      "RemoteSha": "d6a7d23f93082750469e9f10c95b67bb6d2b5684"
+      "RemoteSha": "d6a7d23f93082750469e9f10c95b67bb6d2b5684",
+      "RemoteHost": "api.github.com"
     },
     "nlme": {
       "Package": "nlme",
-      "Version": "3.1-164",
+      "Version": "3.1-168",
       "Source": "Repository",
-      "Date": "2023-11-27",
+      "Date": "2025-03-31",
       "Priority": "recommended",
       "Title": "Linear and Nonlinear Mixed Effects Models",
-      "Authors@R": "c(person(\"José\", \"Pinheiro\", role = \"aut\", comment = \"S version\"), person(\"Douglas\", \"Bates\", role = \"aut\", comment = \"up to 2007\"), person(\"Saikat\", \"DebRoy\", role = \"ctb\", comment = \"up to 2002\"), person(\"Deepayan\", \"Sarkar\", role = \"ctb\", comment = \"up to 2005\"), person(\"EISPACK authors\", role = \"ctb\", comment = \"src/rs.f\"), person(\"Siem\", \"Heisterkamp\", role = \"ctb\", comment = \"Author fixed sigma\"), person(\"Bert\", \"Van Willigen\",role = \"ctb\", comment = \"Programmer fixed sigma\"), person(\"Johannes\", \"Ranke\", role = \"ctb\", comment = \"varConstProp()\"), person(\"R Core Team\", email = \"R-core@R-project.org\", role = c(\"aut\", \"cre\")))",
+      "Authors@R": "c(person(\"José\", \"Pinheiro\", role = \"aut\", comment = \"S version\"), person(\"Douglas\", \"Bates\", role = \"aut\", comment = \"up to 2007\"), person(\"Saikat\", \"DebRoy\", role = \"ctb\", comment = \"up to 2002\"), person(\"Deepayan\", \"Sarkar\", role = \"ctb\", comment = \"up to 2005\"), person(\"EISPACK authors\", role = \"ctb\", comment = \"src/rs.f\"), person(\"Siem\", \"Heisterkamp\", role = \"ctb\", comment = \"Author fixed sigma\"), person(\"Bert\", \"Van Willigen\",role = \"ctb\", comment = \"Programmer fixed sigma\"), person(\"Johannes\", \"Ranke\", role = \"ctb\", comment = \"varConstProp()\"), person(\"R Core Team\", email = \"R-core@R-project.org\", role = c(\"aut\", \"cre\"), comment = c(ROR = \"02zz1nj61\")))",
       "Contact": "see 'MailingList'",
       "Description": "Fit and compare Gaussian linear and nonlinear mixed-effects models.",
       "Depends": [
-        "R (>= 3.5.0)"
+        "R (>= 3.6.0)"
       ],
       "Imports": [
         "graphics",
@@ -6514,7 +6222,6 @@
         "lattice"
       ],
       "Suggests": [
-        "Hmisc",
         "MASS",
         "SASmixed"
       ],
@@ -6525,16 +6232,16 @@
       "MailingList": "R-help@r-project.org",
       "URL": "https://svn.r-project.org/R-packages/trunk/nlme/",
       "NeedsCompilation": "yes",
-      "Author": "José Pinheiro [aut] (S version), Douglas Bates [aut] (up to 2007), Saikat DebRoy [ctb] (up to 2002), Deepayan Sarkar [ctb] (up to 2005), EISPACK authors [ctb] (src/rs.f), Siem Heisterkamp [ctb] (Author fixed sigma), Bert Van Willigen [ctb] (Programmer fixed sigma), Johannes Ranke [ctb] (varConstProp()), R Core Team [aut, cre]",
+      "Author": "José Pinheiro [aut] (S version), Douglas Bates [aut] (up to 2007), Saikat DebRoy [ctb] (up to 2002), Deepayan Sarkar [ctb] (up to 2005), EISPACK authors [ctb] (src/rs.f), Siem Heisterkamp [ctb] (Author fixed sigma), Bert Van Willigen [ctb] (Programmer fixed sigma), Johannes Ranke [ctb] (varConstProp()), R Core Team [aut, cre] (02zz1nj61)",
       "Maintainer": "R Core Team <R-core@R-project.org>",
       "Repository": "CRAN"
     },
     "nnet": {
       "Package": "nnet",
-      "Version": "7.3-19",
+      "Version": "7.3-20",
       "Source": "Repository",
       "Priority": "recommended",
-      "Date": "2023-05-02",
+      "Date": "2025-01-01",
       "Depends": [
         "R (>= 3.0.0)",
         "stats",
@@ -6543,7 +6250,7 @@
       "Suggests": [
         "MASS"
       ],
-      "Authors@R": "c(person(\"Brian\", \"Ripley\", role = c(\"aut\", \"cre\", \"cph\"), email = \"ripley@stats.ox.ac.uk\"), person(\"William\", \"Venables\", role = \"cph\"))",
+      "Authors@R": "c(person(\"Brian\", \"Ripley\", role = c(\"aut\", \"cre\", \"cph\"), email = \"Brian.Ripley@R-project.org\"), person(\"William\", \"Venables\", role = \"cph\"))",
       "Description": "Software for feed-forward neural networks with a single hidden layer, and for multinomial log-linear models.",
       "Title": "Feed-Forward Neural Networks and Multinomial Log-Linear Models",
       "ByteCompile": "yes",
@@ -6551,7 +6258,7 @@
       "URL": "http://www.stats.ox.ac.uk/pub/MASS4/",
       "NeedsCompilation": "yes",
       "Author": "Brian Ripley [aut, cre, cph], William Venables [cph]",
-      "Maintainer": "Brian Ripley <ripley@stats.ox.ac.uk>",
+      "Maintainer": "Brian Ripley <Brian.Ripley@R-project.org>",
       "Repository": "CRAN"
     },
     "numDeriv": {
@@ -6642,46 +6349,6 @@
       "Suggests": [],
       "RoxygenNote": "7.1.1",
       "NeedsCompilation": "no"
-    },
-    "pROC": {
-      "Package": "pROC",
-      "Version": "1.15.3",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Display and Analyze ROC Curves",
-      "Date": "2019-07-21",
-      "Encoding": "UTF-8",
-      "Depends": [
-        "R (>= 2.14)"
-      ],
-      "Imports": [
-        "methods",
-        "plyr",
-        "Rcpp (>= 0.11.1)"
-      ],
-      "Suggests": [
-        "microbenchmark",
-        "tcltk",
-        "MASS",
-        "logcondens",
-        "doParallel",
-        "testthat",
-        "vdiffr",
-        "ggplot2"
-      ],
-      "LinkingTo": [
-        "Rcpp"
-      ],
-      "Authors@R": "c(person(\"Xavier\", \"Robin\", role = c(\"cre\", \"aut\"),  email = \"pROC-cran@xavier.robin.name\", comment = c(ORCID = \"0000-0002-6813-3200\")), person(\"Natacha\", \"Turck\", role = \"aut\"), person(\"Alexandre\", \"Hainard\", role = \"aut\"), person(\"Natalia\", \"Tiberti\", role = \"aut\"), person(\"Frédérique\", \"Lisacek\", role = \"aut\"), person(\"Jean-Charles\", \"Sanchez\", role = \"aut\"), person(\"Markus\", \"Müller\", role = \"aut\"), person(\"Stefan\", \"Siegert\", role = \"ctb\",  comment = \"Fast DeLong code\",  email = \"stefan_siegert@gmx.de\"), person(\"Matthias\", \"Doering\", role = \"ctb\",  comment = \"Hand & Till Multiclass\"))",
-      "Description": "Tools for visualizing, smoothing and comparing receiver operating characteristic (ROC curves). (Partial) area under the curve (AUC) can be compared with statistical tests based on U-statistics or bootstrap. Confidence intervals can be computed for (p)AUC or ROC curves.",
-      "License": "GPL (>= 3)",
-      "URL": "http://expasy.org/tools/pROC/",
-      "BugReports": "https://github.com/xrobin/pROC/issues",
-      "LazyData": "yes",
-      "NeedsCompilation": "yes",
-      "Author": "Xavier Robin [cre, aut] (<https://orcid.org/0000-0002-6813-3200>), Natacha Turck [aut], Alexandre Hainard [aut], Natalia Tiberti [aut], Frédérique Lisacek [aut], Jean-Charles Sanchez [aut], Markus Müller [aut], Stefan Siegert [ctb] (Fast DeLong code), Matthias Doering [ctb] (Hand & Till Multiclass)",
-      "Maintainer": "Xavier Robin <pROC-cran@xavier.robin.name>",
-      "Repository": "CRAN"
     },
     "parallelly": {
       "Package": "parallelly",
@@ -6790,57 +6457,6 @@
       "Author": "Max Kuhn [aut, cre], Davis Vaughan [aut], Emil Hvitfeldt [ctb], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Repository": "CRAN"
     },
-    "partykit": {
-      "Package": "partykit",
-      "Version": "1.2-5",
-      "Source": "Repository",
-      "Title": "A Toolkit for Recursive Partytioning",
-      "Date": "2019-07-17",
-      "Authors@R": "c(person(given = \"Torsten\", family = \"Hothorn\", role = c(\"aut\", \"cre\"), email = \"Torsten.Hothorn@R-project.org\", comment = c(ORCID = \"0000-0001-8301-0471\")), person(given = \"Heidi\", family = \"Seibold\", role = \"ctb\", email = \"heidi@seibold.co\", comment = c(ORCID = \"0000-0002-8960-9642\")), person(given = \"Achim\", family = \"Zeileis\", role = \"aut\", email = \"Achim.Zeileis@R-project.org\", comment = c(ORCID = \"0000-0003-0918-3766\")))",
-      "Description": "A toolkit with infrastructure for representing, summarizing, and visualizing tree-structured regression and classification models. This unified infrastructure can be used for reading/coercing tree models from different sources ('rpart', 'RWeka', 'PMML') yielding objects that share functionality for print()/plot()/predict() methods. Furthermore, new and improved reimplementations of conditional inference trees (ctree()) and model-based recursive partitioning (mob()) from the 'party' package are provided based on the new infrastructure. A description of this package was published by Hothorn and Zeileis (2015) <http://jmlr.org/papers/v16/hothorn15a.html>.",
-      "Depends": [
-        "R (>= 3.1.0)",
-        "graphics",
-        "grid",
-        "libcoin (>= 1.0-0)",
-        "mvtnorm"
-      ],
-      "Imports": [
-        "grDevices",
-        "stats",
-        "utils",
-        "survival",
-        "Formula (>= 1.2-1)",
-        "inum (>= 1.0-0)",
-        "rpart (>= 4.1-11)"
-      ],
-      "Suggests": [
-        "XML",
-        "pmml",
-        "rJava",
-        "sandwich",
-        "strucchange",
-        "vcd",
-        "AER",
-        "mlbench",
-        "TH.data (>= 1.0-3)",
-        "coin (>= 1.1-0)",
-        "RWeka (>= 0.4-19)",
-        "datasets",
-        "parallel",
-        "psychotools (>= 0.3-0)",
-        "psychotree",
-        "party (>= 1.3-0)"
-      ],
-      "LazyData": "yes",
-      "License": "GPL-2 | GPL-3",
-      "URL": "http://partykit.R-Forge.R-project.org/partykit",
-      "RoxygenNote": "6.1.1",
-      "NeedsCompilation": "yes",
-      "Author": "Torsten Hothorn [aut, cre] (<https://orcid.org/0000-0001-8301-0471>), Heidi Seibold [ctb] (<https://orcid.org/0000-0002-8960-9642>), Achim Zeileis [aut] (<https://orcid.org/0000-0003-0918-3766>)",
-      "Maintainer": "Torsten Hothorn <Torsten.Hothorn@R-project.org>",
-      "Repository": "CRAN"
-    },
     "patchwork": {
       "Package": "patchwork",
       "Version": "1.3.0",
@@ -6908,11 +6524,12 @@
       "URL": "https://github.com/valentint/pcaPP",
       "BugReports": "https://github.com/valentint/pcaPP/issues",
       "NeedsCompilation": "yes",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.9.0",
+      "Version": "1.10.2",
       "Source": "Repository",
       "Title": "Coloured Formatting for Columns",
       "Authors@R": "c(person(given = \"Kirill\", family = \"M\\u00fcller\", role = c(\"aut\", \"cre\"), email = \"kirill@cynkra.com\", comment = c(ORCID = \"0000-0002-1416-3412\")), person(given = \"Hadley\", family = \"Wickham\", role = \"aut\"), person(given = \"RStudio\", role = \"cph\"))",
@@ -6922,7 +6539,6 @@
       "BugReports": "https://github.com/r-lib/pillar/issues",
       "Imports": [
         "cli (>= 2.3.0)",
-        "fansi",
         "glue",
         "lifecycle",
         "rlang (>= 1.0.2)",
@@ -6955,18 +6571,18 @@
       ],
       "VignetteBuilder": "knitr",
       "Encoding": "UTF-8",
-      "RoxygenNote": "7.2.3",
+      "RoxygenNote": "7.3.2.9000",
       "Config/testthat/edition": "3",
       "Config/testthat/parallel": "true",
       "Config/testthat/start-first": "format_multi_fuzz, format_multi_fuzz_2, format_multi, ctl_colonnade, ctl_colonnade_1, ctl_colonnade_2",
       "Config/autostyle/scope": "line_breaks",
       "Config/autostyle/strict": "true",
-      "Config/gha/extra-packages": "DiagrammeR=?ignore-before-r=3.5.0",
+      "Config/gha/extra-packages": "units=?ignore-before-r=4.3.0",
       "Config/Needs/website": "tidyverse/tidytemplate",
       "NeedsCompilation": "no",
       "Author": "Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>), Hadley Wickham [aut], RStudio [cph]",
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
-      "Repository": "RSPM"
+      "Repository": "CRAN"
     },
     "pkgconfig": {
       "Package": "pkgconfig",
@@ -7213,34 +6829,40 @@
       "License": "GPL (>= 2)",
       "RoxygenNote": "7.2.3",
       "NeedsCompilation": "yes",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "progress": {
       "Package": "progress",
-      "Version": "1.2.2",
+      "Version": "1.2.3",
       "Source": "Repository",
       "Title": "Terminal Progress Bars",
-      "Author": "Gábor Csárdi [aut, cre], Rich FitzJohn [aut]",
-      "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+      "Authors@R": "c( person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Rich\", \"FitzJohn\", role = \"aut\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
       "Description": "Configurable Progress bars, they may include percentage, elapsed time, and/or the estimated completion time. They work in terminals, in 'Emacs' 'ESS', 'RStudio', 'Windows' 'Rgui' and the 'macOS' 'R.app'. The package also provides a 'C++' 'API', that works with or without 'Rcpp'.",
       "License": "MIT + file LICENSE",
-      "LazyData": "true",
-      "URL": "https://github.com/r-lib/progress#readme",
+      "URL": "https://github.com/r-lib/progress#readme, http://r-lib.github.io/progress/",
       "BugReports": "https://github.com/r-lib/progress/issues",
+      "Depends": [
+        "R (>= 3.6)"
+      ],
       "Imports": [
+        "crayon",
         "hms",
         "prettyunits",
-        "R6",
-        "crayon"
+        "R6"
       ],
       "Suggests": [
         "Rcpp",
-        "testthat",
+        "testthat (>= 3.0.0)",
         "withr"
       ],
-      "RoxygenNote": "6.1.0",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
       "Encoding": "UTF-8",
+      "RoxygenNote": "7.2.3",
       "NeedsCompilation": "no",
+      "Author": "Gábor Csárdi [aut, cre], Rich FitzJohn [aut], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
       "Repository": "CRAN"
     },
     "progressr": {
@@ -7287,7 +6909,8 @@
       "NeedsCompilation": "no",
       "Author": "Henrik Bengtsson [aut, cre, cph]",
       "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "promises": {
       "Package": "promises",
@@ -8144,7 +7767,8 @@
       "License": "GPL (>= 2)",
       "Author": "Martin Maechler [aut, cre] (<https://orcid.org/0000-0002-8685-9910>), Peter Rousseeuw [ctb] (Qn and Sn), Christophe Croux [ctb] (Qn and Sn), Valentin Todorov [aut] (most robust Cov), Andreas Ruckstuhl [aut] (nlrob, anova, glmrob), Matias Salibian-Barrera [aut] (lmrob orig.), Tobias Verbeke [ctb, fnd] (mc, adjbox), Manuel Koller [aut] (mc, lmrob, psi-func.), Eduardo L. T. Conceicao [aut] (MM-, tau-, CM-, and MTL- nlrob), Maria Anna di Palma [ctb] (initial version of Comedian)",
       "Maintainer": "Martin Maechler <maechler@stat.math.ethz.ch>",
-      "Repository": "CRAN"
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
     },
     "rpart": {
       "Package": "rpart",
