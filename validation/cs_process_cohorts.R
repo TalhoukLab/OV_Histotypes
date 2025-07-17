@@ -450,13 +450,16 @@ cs3_clean <- cs3_norm_van %>%
   select(FileName, ottaID, all_of(common_genes123))
 
 # Random selection of common samples with equal number of histotypes
-set.seed(2020)
-hist_rand1 <- hist %>%
-  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) %>%
-  distinct(ottaID, hist_final) %>%
-  group_by(hist_final) %>%
-  slice_sample(n = 1) %>%
-  ungroup()
+# Ensure only technical (not biological) replicates are used for normalization
+set.seed(1776)
+hist_rand1 <- hist |>
+  filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) |>
+  inner_join(annot_all, by = c("FileName", "CodeSet", "ottaID")) |>
+  select(CodeSet, ottaID, hist_final, tissue.source, sample.type) |>
+  filter(sample.type != "Rep.BIO", .by = c(ottaID, CodeSet)) |>
+  filter(n_distinct(CodeSet) == 3, .by = ottaID) |>
+  distinct(ottaID, hist_final) |>
+  slice_sample(n = 1, by = hist_final)
 
 # CS3-VAN site mapping used for ensuring CS3 samples are from Vancouver
 hist_cs3_van <- hist %>%

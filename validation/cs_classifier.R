@@ -5,21 +5,36 @@ source(here::here("src/funs.R"))
 
 # Remove Duplicates -------------------------------------------------------
 
-# CS1: n=246
-cs1_dedup <- cohorts %>%
-  filter(col_name %in% cs1_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE))
+# Tissue sources
+tissue_df <- annot_all |>
+  mutate(col_name = paste0("X", FileName), tissue.source, .keep = "none")
 
-# CS2: n=795
-cs2_dedup <- cohorts %>%
-  filter(col_name %in% cs2_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE))
+# CS1: n=264
+cs1_df <- cohorts %>%
+  filter(col_name %in% cs1_samples)
 
-# CS3: n=2011 (Vancouver site only and removed pools)
-cs3_dedup <- cohorts %>%
+# CS2: n=826
+cs2_df <- cohorts %>%
+  filter(col_name %in% cs2_samples)
+
+# CS3: n=2094 (Vancouver site only and removed pools)
+cs3_df <- cohorts %>%
   semi_join(hist_cs3_van, by = "col_name") %>%
-  filter(col_name %in% cs3_samples) %>%
-  filter(!duplicated(ottaID, fromLast = TRUE))
+  filter(col_name %in% cs3_samples)
+
+cs_all_df <-
+  bind_rows(cs1_df, cs2_df, cs3_df) |>
+  full_join(hist_rand1, by = "ottaID") |>
+  inner_join(tissue_df, by = "col_name") |>
+  filter(!is.na(hist_final) & tissue.source == "FFPE" | is.na(hist_final)) |>
+  filter(!duplicated(ottaID, fromLast = TRUE), .by = file_source) |>
+  select(-c(hist_final, tissue.source))
+
+# CS1: 246, CS2: 795, CS3: 2011
+cs1_dedup <- cs_all_df |> filter(file_source == "cs1")
+cs2_dedup <- cs_all_df |> filter(file_source == "cs2")
+cs3_dedup <- cs_all_df |> filter(file_source == "cs3")
+
 
 # Reference Samples -------------------------------------------------------
 
