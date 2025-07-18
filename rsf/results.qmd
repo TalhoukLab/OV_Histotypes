@@ -78,7 +78,7 @@ per_class_metrics_two_step <-
   readRDS(here("data/per_class_metrics_two_step.rds"))
 
 # Models
-wflow_smote_rf_model <- readRDS(here("data/wflow_smote_rf_model_train.rds"))
+wflow_up_xgb_model <- readRDS(here("data/wflow_up_xgb_model_train.rds"))
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
 
@@ -784,10 +784,10 @@ metrics_top <- per_class_metrics |>
     Workflow = Workflow |>
       fct_reorder(Rank) |>
       fct_recode(
-        `SMOTE-RF` = "smote_rf",
-        `SMOTE-XGB` = "smote_xgb",
-        `hybrid-XGB` = "hybrid_xgb",
-        `2-STEP` = "two_step"
+        `2-STEP` = "two_step",
+        `Up-XGB` = "up_xgb",
+        `Up-RF` = "up_rf",
+        `SMOTE-SVM` = "smote_svm"
       ), 
     .metric = case_match(
       .metric,
@@ -879,10 +879,10 @@ metrics_3_top_ranks <- bind_rows(
     Workflow = Workflow |>
       fct_inorder() |>
       fct_recode(
-        `SMOTE-RF` = "smote_rf",
-        `SMOTE-XGB` = "smote_xgb",
-        `hybrid-XGB` = "hybrid_xgb",
-        `2-STEP` = "two_step"
+        `2-STEP` = "two_step",
+        `Up-XGB` = "up_xgb",
+        `Up-RF` = "up_rf",
+        `SMOTE-SVM` = "smote_svm"
       )
   )
 
@@ -1009,7 +1009,7 @@ p_gene_seq <-
        title = "Gene Optimziation for Sequential Classifier")
 ggplotly(p_gene_seq, width = 600, height = 600)
 
-n_genes_seq <- 9
+n_genes_seq <- 5
 genes_add_seq <- gene_seq_names |>
   filter(Genes > 0L) |> 
   slice_min(order_by = Genes, n = n_genes_seq) |> 
@@ -1017,7 +1017,7 @@ genes_add_seq <- gene_seq_names |>
 opt_genes_seq <- c(overlap_all, genes_add_seq)
 ```
 
-In the sequential algorithm, all sequences have relatively flat average F1-scores across the number of genes added. However, we can observe in sequence 4, the F1-score is highest when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
+In the sequential algorithm, all sequences have relatively flat average F1-scores across the number of genes added. One area we can use to differentiate is in sequence 3, where the maximum F1-score is highest when we reach `r n_genes_seq` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_seq`=`r length(opt_genes_seq)` The added genes are: `r str_flatten_comma(genes_add_seq, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-seq
@@ -1065,33 +1065,33 @@ gene_dist_seq |>
   collapse_rows(columns = 1)
 ```
 
-### SMOTE-RF
+### Up-XGB
 
 ```{r}
-#| label: fig-gene-smote-rf
-#| fig-cap: 'Gene Optimization for SMOTE-RF Classifier'
+#| label: fig-gene-up-xgb
+#| fig-cap: 'Gene Optimization for Up-XGB Classifier'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
 
-gene_smote_rf_names <- all_vi_train |> 
-  filter(wflow == "smote_rf") |> 
+gene_up_xgb_names <- all_vi_train |> 
+  filter(wflow == "up_xgb") |> 
   rowid_to_column("Genes") |> 
   select(Genes, Name = Variable) |> 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_smote_rf <- gene_opt_all_metrics_conf |> 
+dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
   filter(.metric == "f_meas", class_group == "Overall") |> 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
     .by = Genes
   ) |>
-  mutate(label = paste0("Workflow: SMOTE-RF, Measure: ", .metric)) |> 
-  inner_join(gene_smote_rf_names, by = "Genes")
+  mutate(label = paste0("Workflow: Up-XGB, Measure: ", .metric)) |> 
+  inner_join(gene_up_xgb_names, by = "Genes")
 
-p_gene_smote_rf <- 
-  ggplot(dat_gene_smote_rf, aes(text = Name)) +
+p_gene_up_xgb <- 
+  ggplot(dat_gene_up_xgb, aes(text = Name)) +
   geom_pointrange(aes(
     x = Genes,
     y = mean_estimate,
@@ -1102,49 +1102,49 @@ p_gene_smote_rf <-
   theme_bw() +
   labs(x = "Genes Added",
        y = "F1-Score",
-       title = "Gene Optimziation for SMOTE-RF Classifier")
-ggplotly(p_gene_smote_rf, width = 600, height = 400)
+       title = "Gene Optimziation for Up-XGB Classifier")
+ggplotly(p_gene_up_xgb, width = 600, height = 400)
 
-n_genes_smote_rf <- 16
-genes_add_smote_rf <- gene_smote_rf_names |> 
+n_genes_up_xgb <- 2
+genes_add_up_xgb <- gene_up_xgb_names |> 
   filter(Genes > 0L) |> 
-  slice_min(order_by = Genes, n = n_genes_smote_rf) |> 
+  slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
   pull(Name)
-opt_genes_smote_rf <- c(overlap_all, genes_add_smote_rf)
+opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
 ```
 
-In the SMOTE-RF classifier, the mean F1-score is highest when we reach `r n_genes_smote_rf` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_rf`=`r length(opt_genes_smote_rf)` The added genes are: `r str_flatten_comma(genes_add_smote_rf, last = " and ")`.
+In the Up-XGB classifier, the mean F1-score is highest when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r``n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
 
 ```{r}
-#| label: tbl-gene-opt-smote-rf
-#| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-RF Workflow'
+#| label: tbl-gene-opt-up-xgb
+#| tbl-cap: 'Gene Profile of Optimal Set in Up-XGB Workflow'
 #| tbl-pos: 'H'
 
-candidates_all <- gene_smote_rf_names |>
+candidates_all <- gene_up_xgb_names |>
   filter(Genes > 0) |>
   pull(Name)
-unused_genes_smote_rf <- gene_smote_rf_names |>
+unused_genes_up_xgb <- gene_up_xgb_names |>
   filter(Genes > 0) |>
-  slice_max(order_by = Genes, n = -n_genes_smote_rf) |> 
+  slice_max(order_by = Genes, n = -n_genes_up_xgb) |> 
   arrange(Genes) |> 
   pull(Name)
-gene_order_smote_rf <- c(opt_genes_smote_rf, unused_genes_smote_rf)
+gene_order_up_xgb <- c(opt_genes_up_xgb, unused_genes_up_xgb)
 
-gene_dist_smote_rf <-
+gene_dist_up_xgb <-
   tibble(
-    Genes = gene_order_smote_rf,
+    Genes = gene_order_up_xgb,
     Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
     PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
     SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
     `Optimal Set` = if_else(
-      Genes %in% opt_genes_smote_rf,
+      Genes %in% opt_genes_up_xgb,
       symbol$circle_filled,
       symbol$circle_cross
     ) |>
       cell_spec(
         color = case_when(
           Genes %in% overlap_all ~ "green",
-          Genes %in% opt_genes_smote_rf ~ "#8B8000",
+          Genes %in% opt_genes_up_xgb ~ "#8B8000",
           .default = "#FF0000"
         )
       ),
@@ -1153,7 +1153,7 @@ gene_dist_smote_rf <-
   ) |>
   relocate(Set, .before = Genes)
 
-gene_dist_smote_rf |> 
+gene_dist_up_xgb |> 
   kbl(booktabs = TRUE,
       longtable = TRUE,
       linesep = "",
@@ -1209,7 +1209,7 @@ p_gene_two_step <-
        title = "Gene Optimziation for 2-STEP Classifier")
 ggplotly(p_gene_two_step, width = 600, height = 600)
 
-n_genes_two_step <- 15
+n_genes_two_step <- 2
 genes_add_two_step <- gene_two_step_names |>
   filter(Genes > 0L) |> 
   slice_min(order_by = Genes, n = n_genes_two_step) |> 
@@ -1265,7 +1265,7 @@ gene_dist_two_step |>
 
 Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
 
-The top 2 methods are the sequential and SMOTE-RF classifiers. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for both of these classifiers.
+The top 2 methods are the sequential, 2-STEP, and Up-XGB classifiers. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for all three these classifiers.
 
 ```{r}
 #| label: top-models
@@ -1276,13 +1276,13 @@ mod_seq_full <- list(all_models_seq,
                      seq_class) |> 
   pmap(~ {
     set.seed(2024)
-    ..1 |> fit(data = cbind(..2, class = ..3))
+    ..1 |> fit(data = cbind(..2, class = factor(..3)))
   })
 
 # Sequential optimal gene list model
 mod_seq_opt <- list(all_models_seq,
-                     seq_data,
-                     seq_class) |> 
+                    seq_data,
+                    seq_class) |> 
   pmap(~ {
     set.seed(2024)
     wflow <- ..1 |>
@@ -1293,31 +1293,31 @@ mod_seq_opt <- list(all_models_seq,
       update_recipe(x = ..1, recipe = _)
     set.seed(2024)
     wflow |>
-      fit(data = cbind(..2, class = ..3))
+      fit(data = cbind(..2, class = factor(..3)))
   })
 
 # Training data
 train_ref <- train_data |>
-  mutate(class = factor(train_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  mutate(class = factor(train_class, levels = c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")))
                                                 
-# smote_rf full model trained
+# up_xgb full model trained
 set.seed(2024)
-mod_smote_rf_full <- wflow_smote_rf_model |>
+mod_up_xgb_full <- wflow_up_xgb_model |>
   fit(data = train_ref)
 
-# smote_rf optimal gene list workflow
+# up_xgb optimal gene list workflow
 set.seed(2024)
-wflow_smote_rf_opt <- wflow_smote_rf_model |>
+wflow_up_xgb_opt <- wflow_up_xgb_model |>
   pluck("pre", "actions", "recipe", "recipe") |>
   modify_at(c("var_info", "term_info"),
             \(x) x |>
-              filter(variable %in% c(opt_genes_smote_rf, "class")) |>
-              arrange(match(variable, gene_order_smote_rf))) |>
-  update_recipe(x = wflow_smote_rf_model, recipe = _)
+              filter(variable %in% c(opt_genes_up_xgb, "class")) |>
+              arrange(match(variable, gene_order_up_xgb))) |>
+  update_recipe(x = wflow_up_xgb_model, recipe = _)
 
-# smote_rf optimal gene list model trained
+# up_xgb optimal gene list model trained
 set.seed(2024)
-mod_smote_rf_opt <- wflow_smote_rf_opt |>
+mod_up_xgb_opt <- wflow_up_xgb_opt |>
   fit(data = train_ref)
 
 # Two-step full model
@@ -1326,7 +1326,7 @@ mod_two_step_full <- list(all_models_two_step,
                           two_step_class) |> 
   pmap(~ {
     set.seed(2024)
-    ..1 |> fit(data = cbind(..2, class = ..3))
+    ..1 |> fit(data = cbind(..2, class = factor(..3)))
   })
 
 # Two-step optimal gene list model
@@ -1343,7 +1343,7 @@ mod_two_step_opt <- list(all_models_two_step,
       update_recipe(x = ..1, recipe = _)
     set.seed(2024)
     wflow |>
-      fit(data = cbind(..2, class = ..3))
+      fit(data = cbind(..2, class = factor(..3)))
   })
 
 # Per-class metric set
@@ -1364,8 +1364,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   mutate(
     c(p_seq_full = mod_seq_full,
       p_seq_opt = mod_seq_opt,
-      p_smote_rf_full = list(mod_smote_rf_full),
-      p_smote_rf_opt = list(mod_smote_rf_opt),
+      p_up_xgb_full = list(mod_up_xgb_full),
+      p_up_xgb_opt = list(mod_up_xgb_opt),
       p_two_step_full = mod_two_step_full,
       p_two_step_opt = mod_two_step_opt
     ) |> 
@@ -1387,8 +1387,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       !grepl("non", p_seq_opt_s3) ~ p_seq_opt_s3,
       .default = p_seq_opt_s4
     ),
-    Prediction_smote_rf_full = p_smote_rf_full,
-    Prediction_smote_rf_opt = p_smote_rf_opt,
+    Prediction_up_xgb_full = p_up_xgb_full,
+    Prediction_up_xgb_opt = p_up_xgb_opt,
     Prediction_two_step_full = ifelse(!grepl("non", p_two_step_full_s1),
                                       p_two_step_full_s1, p_two_step_full_s2),
     Prediction_two_step_optimal = ifelse(!grepl("non", p_two_step_opt_s1),
@@ -1409,10 +1409,10 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       Method,
       "sequential_full" ~ "Sequential, Full Set",
       "sequential_optimal" ~ "Sequential, Optimal Set",
-      "smote_rf_full" ~ "SMOTE-RF, Full Set",
-      "smote_rf_opt" ~ "SMOTE-RF, Optimal Set",
       "two_step_full" ~ "2-STEP, Full Set",
-      "two_step_optimal" ~ "2-STEP, Optimal Set"
+      "two_step_optimal" ~ "2-STEP, Optimal Set",
+      "up_xgb_full" ~ "Up-XGB, Full Set",
+      "up_xgb_opt" ~ "Up-XGB, Optimal Set"
     )
   ))
 
@@ -1479,8 +1479,8 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
   mutate(
     c(p_seq_full = mod_seq_full,
       p_seq_opt = mod_seq_opt,
-      p_smote_rf_full = list(smote_rf_full = mod_smote_rf_full),
-      p_smote_rf_opt = list(smote_rf_opt = mod_smote_rf_opt),
+      p_up_xgb_full = list(up_xgb_full = mod_up_xgb_full),
+      p_up_xgb_opt = list(up_xgb_opt = mod_up_xgb_opt),
       p_two_step_full = mod_two_step_full,
       p_two_step_opt = mod_two_step_opt
     ) |>
@@ -1507,10 +1507,10 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
       Method,
       "p_seq_full" ~ "Sequential, Full Set",
       "p_seq_opt" ~ "Sequential, Optimal Set",
-      "p_smote_rf_full" ~ "SMOTE-RF, Full Set",
-      "p_smote_rf_opt" ~ "SMOTE-RF, Optimal Set",
       "p_two_step_full" ~ "2-STEP, Full Set",
-      "p_two_step_opt" ~ "2-STEP, Optimal Set"
+      "p_two_step_opt" ~ "2-STEP, Optimal Set",
+      "p_up_xgb_full" ~ "Up-XGB, Full Set",
+      "p_up_xgb_opt" ~ "Up-XGB, Optimal Set"
     )
   )) |>
   inner_join(conf_pred_overall, by = join_by(FileName, Truth, Method)) |>
@@ -1522,7 +1522,7 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
         Prediction == "ENOC" & grepl("s3", Workflow) |
         Prediction %in% c("MUC", "LGSC") & grepl("s4", Workflow)
     )) |
-    grepl("SMOTE-RF", Method) |
+    grepl("Up-XGB", Method) |
     (grepl("2-STEP", Method) & (
       Prediction == "HGSC" & grepl("s1", Workflow) |
         Prediction != "HGSC" & grepl("s2", Workflow)
@@ -1745,28 +1745,30 @@ roc_curve_seq_opt <- mod_seq_opt |>
 print(roc_curve_seq_opt)
 ```
 
-#### SMOTE-RF, Full
+#### Up-XGB, Full
 
 ```{r}
-#| label: fig-roc-curve-smote-rf-full
-#| fig-cap: 'ROC Curves for SMOTE-RF, Full Set Model in Confirmation Set'
+#| label: fig-roc-curve-up-xgb-full
+#| fig-cap: 'ROC Curves for Up-XGB, Full Set Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_smote_rf_full |> 
+preds <- mod_up_xgb_full |> 
   predict(conf_data, type = "prob") |>
   add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 auc <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
-roc_curve_smote_rf_full <-
+roc_curve_up_xgb_full <-
   autoplot(roc_df) +
-  labs(title = "ROC Curve for SMOTE-RF, Full Set Model in Confirmation Set",
+  labs(title = "ROC Curve for Up-XGB, Full Set Model in Confirmation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
   theme(
@@ -1774,31 +1776,33 @@ roc_curve_smote_rf_full <-
     strip.text = element_text(size = 12, face = "bold"),
     axis.title = element_text(size = 12)
   )
-print(roc_curve_smote_rf_full)
+print(roc_curve_up_xgb_full)
 ```
 
-#### SMOTE-RF, Optimal
+#### Up-XGB, Optimal
 
 ```{r}
-#| label: fig-roc-curve-smote-rf-opt
-#| fig-cap: 'ROC Curves for SMOTE-RF, Optimal Set Model in Confirmation Set'
+#| label: fig-roc-curve-up-xgb-opt
+#| fig-cap: 'ROC Curves for Up-XGB, Optimal Set Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_smote_rf_opt |> 
+preds <- mod_up_xgb_opt |> 
   predict(conf_data, type = "prob") |> 
   add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 auc <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
-roc_curve_smote_rf_opt <- 
+roc_curve_up_xgb_opt <- 
   autoplot(roc_df) +
-  labs(title = "ROC Curve for SMOTE-RF, Optimal Set Model in Confirmation Set",
+  labs(title = "ROC Curve for Up-XGB, Optimal Set Model in Confirmation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
   theme(
@@ -1806,7 +1810,7 @@ roc_curve_smote_rf_opt <-
     strip.text = element_text(size = 12, face = "bold"),
     axis.title = element_text(size = 12)
   )
-print(roc_curve_smote_rf_opt)
+print(roc_curve_up_xgb_opt)
 ```
 
 #### 2-STEP, Full
@@ -1910,14 +1914,14 @@ print(roc_curve_two_step_optimal)
 
 ```{r}
 #| label: tbl-val-eval
-#| tbl-cap: 'Evaluation Metrics on Validation Set Model, SMOTE-RF, Optimal Set'
+#| tbl-cap: 'Evaluation Metrics on Validation Set Model, Up-XGB, Full Set'
 #| tbl-pos: 'H'
 
 # Validation set overall predictions
 val_pred_overall <- data.frame(FileName = rownames(val_data),
                                Truth = val_class) |>
   mutate(
-    Prediction_smote_rf_opt = predict(mod_smote_rf_opt, val_data)[[".pred_class"]],
+    Prediction_up_xgb_opt = predict(mod_up_xgb_full, val_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   pivot_longer(
@@ -1928,7 +1932,7 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
   ) |> 
   mutate(across(c(Truth, Prediction),
                 ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))),
-         Method = "SMOTE-RF, Optimal Set")
+         Method = "Up-XGB, Full Set")
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall |>
@@ -1977,8 +1981,8 @@ val_eval |>
 ```
 
 ```{r}
-#| label: fig-val-metrics-smote-rf
-#| fig-cap: 'SMOTE-RF Per-Class Metrics in Validation Set'
+#| label: fig-val-metrics-up-xgb
+#| fig-cap: 'Up-XGB, Full Set, Per-Class Metrics in Validation Set'
 #| fig-width: 8
 #| out-width: '100%'
 
@@ -2011,7 +2015,7 @@ p <- ggplot(val_metrics_top) +
   ) +
   labs(
     y = "Metric Value",
-    title = paste("SMOTE-RF Per-Class Metrics in Validation Set")
+    title = paste("Up-XGB, Full Set, Per-Class Metrics in Validation Set")
   )
 print(p)
 ```
@@ -2041,25 +2045,27 @@ print(val_conf_mat)
 ```
 
 ```{r}
-#| label: fig-val-roc-curve-smote-rf-opt
-#| fig-cap: 'ROC Curves for SMOTE-RF, Optimal Set Model in Validation Set'
+#| label: fig-val-roc-curve-up-xgb-full
+#| fig-cap: 'ROC Curves for Up-XGB, Full Set Model in Validation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_smote_rf_opt |> 
+preds <- mod_up_xgb_full |> 
   predict(val_data, type = "prob") |> 
   add_column(truth = factor(val_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
   roc_curve(truth, matches(".pred")) |> 
   mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 auc <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
-val_roc_curve_smote_rf_opt <- 
+val_roc_curve_up_xgb_full <- 
   autoplot(roc_df) +
-  labs(title = "ROC Curve for SMOTE-RF, Optimal Set Model in Validation Set",
+  labs(title = "ROC Curve for Up-XGB, Full Set Model in Validation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
   theme(
@@ -2067,7 +2073,7 @@ val_roc_curve_smote_rf_opt <-
     strip.text = element_text(size = 12, face = "bold"),
     axis.title = element_text(size = 12)
   )
-print(val_roc_curve_smote_rf_opt)
+print(val_roc_curve_up_xgb_full)
 ```
 
 ```{r}
@@ -2332,7 +2338,7 @@ print(val_all_volcano)
 #| fig-width: 10
 #| out-width: '100%'
 
-val_pred_hgsc_samples <- mod_smote_rf_opt |> 
+val_pred_hgsc_samples <- mod_up_xgb_full |> 
   predict(val_data, type = "class") |> 
   bind_cols(val_data) |> 
   filter(.pred_class == "HGSC") |> 
