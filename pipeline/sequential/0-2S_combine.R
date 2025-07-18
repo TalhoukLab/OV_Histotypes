@@ -1,6 +1,7 @@
 # 2-step algorithm setup
 library(dplyr)
 library(purrr)
+library(here)
 
 # Combine workflows
 seq_top_c5 <- readRDS(here("data/seq_top_c5.rds"))
