@@ -23,6 +23,8 @@ dataSets=(retrain_2)
 
 Do not supply an array to `dataSets` as the results of a later retraining step depends on the previous.
 
+Run L14-16 of `copy_outputs.sh` to copy retraining outputs to this project's data directory.
+
 ## Sequential and Two-Step
 
 First run these two scripts to generate the input data, classes, and workflows for the sequential and two-step methods:
@@ -44,6 +46,8 @@ seqData=(two_step)
 nseq=2
 ```
 
+Run L19-20 of `copy_outputs.sh` to copy sequential outputs to this project's data directory.
+
 ## Gene Optimization
 
 Gene optimization is performed on the confirmation set. First run this script to generate the input data, classes, and workflows for the confirmation set:
@@ -56,7 +60,7 @@ Then run `make gene_opt` with parameters:
 
 ``` bash
 dataSets=(conf)
-gene_opt_wflow="smote_rf"
+gene_opt_wflow="up_xgb"
 ```
 
 to run gene optimization on the entire confirmation set.
