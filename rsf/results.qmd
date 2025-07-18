@@ -1065,103 +1065,6 @@ gene_dist_seq |>
   collapse_rows(columns = 1)
 ```
 
-### Up-XGB
-
-```{r}
-#| label: fig-gene-up-xgb
-#| fig-cap: 'Gene Optimization for Up-XGB Classifier'
-#| fig-height: 5
-#| fig-width: 5
-#| out-width: '100%'
-
-gene_up_xgb_names <- all_vi_train |> 
-  filter(wflow == "up_xgb") |> 
-  rowid_to_column("Genes") |> 
-  select(Genes, Name = Variable) |> 
-  add_row(Genes = 0L, Name = "Base", .before = 1)
-
-dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
-  filter(.metric == "f_meas", class_group == "Overall") |> 
-  mutate(
-    min_estimate = min(.estimate),
-    max_estimate = max(.estimate),
-    .by = Genes
-  ) |>
-  mutate(label = paste0("Workflow: Up-XGB, Measure: ", .metric)) |> 
-  inner_join(gene_up_xgb_names, by = "Genes")
-
-p_gene_up_xgb <- 
-  ggplot(dat_gene_up_xgb, aes(text = Name)) +
-  geom_pointrange(aes(
-    x = Genes,
-    y = mean_estimate,
-    ymin = min_estimate,
-    ymax = max_estimate
-  )) +
-  facet_wrap(~ label, ncol = 1) +
-  theme_bw() +
-  labs(x = "Genes Added",
-       y = "F1-Score",
-       title = "Gene Optimziation for Up-XGB Classifier")
-ggplotly(p_gene_up_xgb, width = 600, height = 400)
-
-n_genes_up_xgb <- 2
-genes_add_up_xgb <- gene_up_xgb_names |> 
-  filter(Genes > 0L) |> 
-  slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
-  pull(Name)
-opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
-```
-
-In the Up-XGB classifier, the mean F1-score is highest when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
-
-```{r}
-#| label: tbl-gene-opt-up-xgb
-#| tbl-cap: 'Gene Profile of Optimal Set in Up-XGB Workflow'
-#| tbl-pos: 'H'
-
-candidates_all <- gene_up_xgb_names |>
-  filter(Genes > 0) |>
-  pull(Name)
-unused_genes_up_xgb <- gene_up_xgb_names |>
-  filter(Genes > 0) |>
-  slice_max(order_by = Genes, n = -n_genes_up_xgb) |> 
-  arrange(Genes) |> 
-  pull(Name)
-gene_order_up_xgb <- c(opt_genes_up_xgb, unused_genes_up_xgb)
-
-gene_dist_up_xgb <-
-  tibble(
-    Genes = gene_order_up_xgb,
-    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
-    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
-    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
-    `Optimal Set` = if_else(
-      Genes %in% opt_genes_up_xgb,
-      symbol$circle_filled,
-      symbol$circle_cross
-    ) |>
-      cell_spec(
-        color = case_when(
-          Genes %in% overlap_all ~ "green",
-          Genes %in% opt_genes_up_xgb ~ "#8B8000",
-          .default = "#FF0000"
-        )
-      ),
-    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
-    )
-  ) |>
-  relocate(Set, .before = Genes)
-
-gene_dist_up_xgb |> 
-  kbl(booktabs = TRUE,
-      longtable = TRUE,
-      linesep = "",
-      escape = FALSE) |> 
-  kable_styling(full_width = FALSE) |> 
-  collapse_rows(columns = 1)
-```
-
 ### 2-STEP
 
 ```{r}
@@ -1253,6 +1156,103 @@ gene_dist_two_step <-
   relocate(Set, .before = Genes)
 
 gene_dist_two_step |> 
+  kbl(booktabs = TRUE,
+      longtable = TRUE,
+      linesep = "",
+      escape = FALSE) |> 
+  kable_styling(full_width = FALSE) |> 
+  collapse_rows(columns = 1)
+```
+
+### Up-XGB
+
+```{r}
+#| label: fig-gene-up-xgb
+#| fig-cap: 'Gene Optimization for Up-XGB Classifier'
+#| fig-height: 5
+#| fig-width: 5
+#| out-width: '100%'
+
+gene_up_xgb_names <- all_vi_train |> 
+  filter(wflow == "up_xgb") |> 
+  rowid_to_column("Genes") |> 
+  select(Genes, Name = Variable) |> 
+  add_row(Genes = 0L, Name = "Base", .before = 1)
+
+dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
+  filter(.metric == "f_meas", class_group == "Overall") |> 
+  mutate(
+    min_estimate = min(.estimate),
+    max_estimate = max(.estimate),
+    .by = Genes
+  ) |>
+  mutate(label = paste0("Workflow: Up-XGB, Measure: ", .metric)) |> 
+  inner_join(gene_up_xgb_names, by = "Genes")
+
+p_gene_up_xgb <- 
+  ggplot(dat_gene_up_xgb, aes(text = Name)) +
+  geom_pointrange(aes(
+    x = Genes,
+    y = mean_estimate,
+    ymin = min_estimate,
+    ymax = max_estimate
+  )) +
+  facet_wrap(~ label, ncol = 1) +
+  theme_bw() +
+  labs(x = "Genes Added",
+       y = "F1-Score",
+       title = "Gene Optimziation for Up-XGB Classifier")
+ggplotly(p_gene_up_xgb, width = 600, height = 400)
+
+n_genes_up_xgb <- 2
+genes_add_up_xgb <- gene_up_xgb_names |> 
+  filter(Genes > 0L) |> 
+  slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
+  pull(Name)
+opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
+```
+
+In the Up-XGB classifier, the mean F1-score is highest when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
+
+```{r}
+#| label: tbl-gene-opt-up-xgb
+#| tbl-cap: 'Gene Profile of Optimal Set in Up-XGB Workflow'
+#| tbl-pos: 'H'
+
+candidates_all <- gene_up_xgb_names |>
+  filter(Genes > 0) |>
+  pull(Name)
+unused_genes_up_xgb <- gene_up_xgb_names |>
+  filter(Genes > 0) |>
+  slice_max(order_by = Genes, n = -n_genes_up_xgb) |> 
+  arrange(Genes) |> 
+  pull(Name)
+gene_order_up_xgb <- c(opt_genes_up_xgb, unused_genes_up_xgb)
+
+gene_dist_up_xgb <-
+  tibble(
+    Genes = gene_order_up_xgb,
+    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
+    `Optimal Set` = if_else(
+      Genes %in% opt_genes_up_xgb,
+      symbol$circle_filled,
+      symbol$circle_cross
+    ) |>
+      cell_spec(
+        color = case_when(
+          Genes %in% overlap_all ~ "green",
+          Genes %in% opt_genes_up_xgb ~ "#8B8000",
+          .default = "#FF0000"
+        )
+      ),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
+    )
+  ) |>
+  relocate(Set, .before = Genes)
+
+gene_dist_up_xgb |> 
   kbl(booktabs = TRUE,
       longtable = TRUE,
       linesep = "",
@@ -1364,10 +1364,10 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   mutate(
     c(p_seq_full = mod_seq_full,
       p_seq_opt = mod_seq_opt,
-      p_up_xgb_full = list(mod_up_xgb_full),
-      p_up_xgb_opt = list(mod_up_xgb_opt),
       p_two_step_full = mod_two_step_full,
-      p_two_step_opt = mod_two_step_opt
+      p_two_step_opt = mod_two_step_opt,
+      p_up_xgb_full = list(mod_up_xgb_full),
+      p_up_xgb_opt = list(mod_up_xgb_opt)
     ) |> 
       map(~ predict(., conf_data)[[".pred_class"]]) |> 
       bind_cols()
@@ -1387,12 +1387,12 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       !grepl("non", p_seq_opt_s3) ~ p_seq_opt_s3,
       .default = p_seq_opt_s4
     ),
-    Prediction_up_xgb_full = p_up_xgb_full,
-    Prediction_up_xgb_opt = p_up_xgb_opt,
     Prediction_two_step_full = ifelse(!grepl("non", p_two_step_full_s1),
                                       p_two_step_full_s1, p_two_step_full_s2),
     Prediction_two_step_optimal = ifelse(!grepl("non", p_two_step_opt_s1),
                                          p_two_step_opt_s1, p_two_step_opt_s2), 
+    Prediction_up_xgb_full = p_up_xgb_full,
+    Prediction_up_xgb_opt = p_up_xgb_opt,
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   select(-starts_with("p", ignore.case = FALSE)) |> 
@@ -1479,10 +1479,10 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
   mutate(
     c(p_seq_full = mod_seq_full,
       p_seq_opt = mod_seq_opt,
-      p_up_xgb_full = list(up_xgb_full = mod_up_xgb_full),
-      p_up_xgb_opt = list(up_xgb_opt = mod_up_xgb_opt),
       p_two_step_full = mod_two_step_full,
-      p_two_step_opt = mod_two_step_opt
+      p_two_step_opt = mod_two_step_opt,
+      p_up_xgb_full = list(up_xgb_full = mod_up_xgb_full),
+      p_up_xgb_opt = list(up_xgb_opt = mod_up_xgb_opt)
     ) |>
       map(~ {
         predict(., conf_data, type = "prob") |>
@@ -1745,74 +1745,6 @@ roc_curve_seq_opt <- mod_seq_opt |>
 print(roc_curve_seq_opt)
 ```
 
-#### Up-XGB, Full
-
-```{r}
-#| label: fig-roc-curve-up-xgb-full
-#| fig-cap: 'ROC Curves for Up-XGB, Full Set Model in Confirmation Set'
-#| fig-height: 7
-#| fig-width: 8
-#| out-width: '100%'
-
-preds <- mod_up_xgb_full |> 
-  predict(conf_data, type = "prob") |>
-  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-roc_df <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
-  roc_curve(truth, matches(".pred")) |> 
-  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-auc <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
-  roc_auc(truth, matches(".pred")) |> 
-  pull(.estimate) |> 
-  number(accuracy = 0.001, prefix = "AUC = ")
-roc_curve_up_xgb_full <-
-  autoplot(roc_df) +
-  labs(title = "ROC Curve for Up-XGB, Full Set Model in Confirmation Set",
-       subtitle = auc) +
-  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
-  theme(
-    panel.grid = element_blank(),
-    strip.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 12)
-  )
-print(roc_curve_up_xgb_full)
-```
-
-#### Up-XGB, Optimal
-
-```{r}
-#| label: fig-roc-curve-up-xgb-opt
-#| fig-cap: 'ROC Curves for Up-XGB, Optimal Set Model in Confirmation Set'
-#| fig-height: 7
-#| fig-width: 8
-#| out-width: '100%'
-
-preds <- mod_up_xgb_opt |> 
-  predict(conf_data, type = "prob") |> 
-  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-roc_df <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
-  roc_curve(truth, matches(".pred")) |> 
-  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
-auc <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
-  roc_auc(truth, matches(".pred")) |> 
-  pull(.estimate) |> 
-  number(accuracy = 0.001, prefix = "AUC = ")
-roc_curve_up_xgb_opt <- 
-  autoplot(roc_df) +
-  labs(title = "ROC Curve for Up-XGB, Optimal Set Model in Confirmation Set",
-       subtitle = auc) +
-  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
-  theme(
-    panel.grid = element_blank(),
-    strip.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 12)
-  )
-print(roc_curve_up_xgb_opt)
-```
-
 #### 2-STEP, Full
 
 ```{r}
@@ -1907,6 +1839,74 @@ roc_curve_two_step_optimal <- mod_two_step_opt |>
     tag_levels = "A"
   )
 print(roc_curve_two_step_optimal)
+```
+
+#### Up-XGB, Full
+
+```{r}
+#| label: fig-roc-curve-up-xgb-full
+#| fig-cap: 'ROC Curves for Up-XGB, Full Set Model in Confirmation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_up_xgb_full |> 
+  predict(conf_data, type = "prob") |>
+  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+roc_df <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+auc <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
+  number(accuracy = 0.001, prefix = "AUC = ")
+roc_curve_up_xgb_full <-
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for Up-XGB, Full Set Model in Confirmation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+print(roc_curve_up_xgb_full)
+```
+
+#### Up-XGB, Optimal
+
+```{r}
+#| label: fig-roc-curve-up-xgb-opt
+#| fig-cap: 'ROC Curves for Up-XGB, Optimal Set Model in Confirmation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_up_xgb_opt |> 
+  predict(conf_data, type = "prob") |> 
+  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+roc_df <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+auc <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
+  number(accuracy = 0.001, prefix = "AUC = ")
+roc_curve_up_xgb_opt <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for Up-XGB, Optimal Set Model in Confirmation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+print(roc_curve_up_xgb_opt)
 ```
 :::
 
