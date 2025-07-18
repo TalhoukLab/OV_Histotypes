@@ -4,16 +4,16 @@
 user="$(whoami)"
 projDir="/home"/$user"/Projects/OV_Histotypes"
 inputDir=$projDir/"data"
-resultsDir="/projects/"$user"_prj/results/OV_Histotypes_v3"
+resultsDir="/projects/"$user"_prj/results/OV_Histotypes_v2"
 outputDir=$resultsDir"/outputs"
 
 # Training pipeline outputs
 cp $outputDir/summarize_results/train/* $inputDir/
 
 # Retraining pipeline outputs
-cp $outputDir/retrain/summarize_results/retrain_4/* $inputDir/
-cp $outputDir/retrain/summarize_results/retrain_3/* $inputDir/
-cp $outputDir/retrain/summarize_results/retrain_2/* $inputDir/
+cp $outputDir/retrain/summarize_results/retrain_4/*metrics* $inputDir/
+cp $outputDir/retrain/summarize_results/retrain_3/*metrics* $inputDir/
+cp $outputDir/retrain/summarize_results/retrain_2/*metrics* $inputDir/
 
 # Sequential pipeline outputs
 cp $outputDir/sequential/summarize_results/seq/* $inputDir/
