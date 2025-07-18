@@ -22,6 +22,7 @@ for dataset in "${dataSets[@]}"; do
         echo "n_folds <- $n_folds" >> $R_file
         echo "ngene <- '$ng'" >> $R_file
         echo 'rank_metric <- "'$rank_metric'"' >> $R_file
+        echo 'gene_opt_wflow <- "'$gene_opt_wflow'"' >> $R_file
         echo 'inputDir <- "'$inputDir'"' >> $R_file
         echo 'outputDir <- "'$outputDir'"' >> $R_file
         echo "ngenes <- '$ngenes'" >> $R_file

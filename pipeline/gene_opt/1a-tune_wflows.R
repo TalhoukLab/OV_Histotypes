@@ -39,6 +39,6 @@ results_file <- file.path(
   "gene_opt",
   "tune_wflows",
   dataset,
-  paste0(top_wflow, "_add", ngene, "_", fold_id, "_", dataset, ".rds")
+  paste0(gene_opt_wflow, "_add", ngene, "_", fold_id, "_", dataset, ".rds")
 )
 saveRDS(tuned_set, results_file)

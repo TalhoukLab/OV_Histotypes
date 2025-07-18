@@ -1,6 +1,7 @@
 # Combine confirmation data for sequential algorithm with gene optimization
+inputDir <- "data"
 
-# Confirmdation data and class
+# Confirmation data and class
 data <- readRDS(file.path(inputDir, "conf_data.rds"))
 class <- readRDS(file.path(inputDir, "conf_class.rds"))
 conf_ref <- cbind(data, class = class)

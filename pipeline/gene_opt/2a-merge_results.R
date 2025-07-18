@@ -105,6 +105,6 @@ metrics_file <- file.path(
   "gene_opt",
   "merge_results",
   dataset,
-  paste0(top_wflow, "_add", ngene, "_metrics_", dataset, ".rds")
+  paste0(gene_opt_wflow, "_add", ngene, "_metrics_", dataset, ".rds")
 )
 saveRDS(all_metrics, metrics_file)
