@@ -28,6 +28,7 @@ library(here)
 library(DESeq2)
 library(tabulapdf)
 library(janitor)
+library(flextable)
 library(conflicted)
 
 # Choose preferences among conflicting functions
@@ -2074,6 +2075,36 @@ val_roc_curve_up_xgb_full <-
     axis.title = element_text(size = 12)
   )
 print(val_roc_curve_up_xgb_full)
+```
+
+```{r}
+#| label: fig-val-summary
+#| fig-cap: 'Validation Summary'
+#| fig-width: 10
+#| fig-height: 6
+
+val_eval_grob <- 
+  flextable(val_eval) |> 
+  colformat_double(j = -1, digits = 3) |> 
+  gen_grob()
+
+val_eval_gg <- ggplot() + 
+  theme_void() + 
+  annotation_custom(val_eval_grob)
+
+val_conf_mat_simp <- val_conf_mat +
+  labs(title = "Confusion Matrix") +
+  plot_annotation(title = NULL)
+
+layout <- "
+AACCCC
+BBCCCC
+BBCCCC
+"
+
+val_conf_mat_simp + val_eval_gg + val_roc_curve_up_xgb_full +
+  plot_layout(design = layout) +
+  plot_annotation(tag_levels = "A")
 ```
 
 ```{r}
