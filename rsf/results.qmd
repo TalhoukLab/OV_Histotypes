@@ -2097,14 +2097,15 @@ val_conf_mat_simp <- val_conf_mat +
   plot_annotation(title = NULL)
 
 layout <- "
-AACCCC
-BBCCCC
-BBCCCC
+AABBBB
+CCBBBB
+CCBBBB
 "
 
-val_conf_mat_simp + val_eval_gg + val_roc_curve_up_xgb_full +
+val_conf_mat_simp + val_roc_curve_up_xgb_full + val_eval_gg +
   plot_layout(design = layout) +
-  plot_annotation(tag_levels = "A")
+  plot_annotation(tag_levels = "A") &
+  theme(plot.tag = element_text(face = "bold"))
 ```
 
 ```{r}
@@ -2454,3 +2455,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
