@@ -125,7 +125,7 @@ if (grepl("rf|xgb", wflow)) {
 
   set.seed(2024)
   tuning_grid <- crossing(
-    grid_latin_hypercube(penalty(), size = 10),
+    grid_space_filling(penalty(), size = 10, type = "latin_hypercube"),
     grid_regular(mixture(), levels = 10)
   )
 }
