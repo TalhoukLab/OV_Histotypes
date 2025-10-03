@@ -973,7 +973,8 @@ Misclassified cases from a previous step of the sequence of classifiers are not 
 ### Top Training Set Workflows
 
 ```{r}
-#| label: conf-metrics
+#| label: tbl-conf-metrics-top
+#| tbl-cap: "Top Workflow Per-Class Evaluation Metrics in Confirmation Set"
 
 all_metrics_conf <- all_metrics_conf |> 
   separate(wflow, c("Subsampling", "Algorithms"), remove = FALSE) |> 
@@ -2572,4 +2573,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
