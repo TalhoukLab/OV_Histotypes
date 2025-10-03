@@ -71,12 +71,19 @@ two_step_data <- readRDS(here("data", "two_step_data.rds"))
 two_step_class <- readRDS(here("data", "two_step_class.rds"))
 
 ## Outputs
-# Metrics
+# Training Set Metrics
 all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
 per_class_metrics_seq <-
   readRDS(here("data/per_class_metrics_seq.rds"))
 per_class_metrics_two_step <-
   readRDS(here("data/per_class_metrics_two_step.rds"))
+
+# Confirmation Set Metrics
+all_metrics_conf <- readRDS(here("data/all_metrics_conf.rds"))
+per_class_metrics_conf_seq <-
+  readRDS(here("data/per_class_metrics_conf_seq.rds"))
+per_class_metrics_conf_two_step <-
+  readRDS(here("data/per_class_metrics_conf_two_step.rds"))
 
 # Models
 wflow_up_xgb_model <- readRDS(here("data/wflow_up_xgb_model_train.rds"))
@@ -960,6 +967,116 @@ print(p)
 ```
 
 Misclassified cases from a previous step of the sequence of classifiers are not included in subsequent steps of the training set CV folds. Thus, we cannot piece together the test set predictions from the sequential and two-step algorithms to obtain overall metrics.
+
+## Confirmation Set
+
+### Top Training Set Workflows
+
+```{r}
+#| label: conf-metrics
+
+all_metrics_conf <- all_metrics_conf |> 
+  separate(wflow, c("Subsampling", "Algorithms"), remove = FALSE) |> 
+  mutate(
+    Subsampling = factor(Subsampling, levels = c("none", "down", "up", "smote", "hybrid")),
+    Algorithms = factor(Algorithms, levels = c("rf", "svm", "xgb", "mr")),
+    class_group = factor(
+      class_group,
+      levels = c("Overall", "HGSC", "CCOC", "ENOC", "LGSC", "MUC")
+    )
+  ) |> 
+  mutate(
+    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
+    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
+    .by = c(wflow, class_group, .metric)
+  ) |>
+  mutate(
+    undefined = case_when(any(is.nan(mean_estimate)) ~ "all",
+                          any(is.na(.estimate)) ~ "some",
+                          .default = "none"),
+    .by = c(wflow, .metric)
+  )
+
+per_class_metrics_conf_seq <- per_class_metrics_conf_seq |>
+  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  mutate(
+    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
+    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
+    .by = c(class_group, .metric)
+  ) |>
+  mutate(undefined = case_when(any(is.nan(mean_estimate)) ~ "all", any(is.na(.estimate)) ~ "some", .default = "none"),
+         .by = .metric) |>
+  add_column(wflow = "sequential", .before = 1)
+
+per_class_metrics_conf_two_step <- per_class_metrics_conf_two_step |>
+  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  mutate(
+    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
+    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
+    .by = c(class_group, .metric)
+  ) |>
+  mutate(undefined = case_when(any(is.nan(mean_estimate)) ~ "all", any(is.na(.estimate)) ~ "some", .default = "none"),
+         .by = .metric) |>
+  add_column(wflow = "two_step", .before = 1)
+
+# Combine all per-class metrics
+per_class_metrics_conf <- bind_rows(all_metrics_conf,
+                                    per_class_metrics_conf_seq,
+                                    per_class_metrics_conf_two_step) |>
+  filter(class_group != "Overall") |>
+  droplevels()
+
+metrics_conf_top <- per_class_metrics_conf |> 
+  distinct(pick(-fold_id, -.estimate)) |> 
+  rename(Workflow = wflow) |> 
+  inner_join(wflow_rank_agg_metrics, by = "Workflow") |> 
+  mutate(
+    Workflow = Workflow |>
+      fct_reorder(Rank) |>
+      fct_recode(
+        `2-STEP` = "two_step",
+        `Up-XGB` = "up_xgb",
+        `Up-RF` = "up_rf",
+        `SMOTE-SVM` = "smote_svm"
+      ), 
+    .metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa",
+      .ptype = factor(
+        levels = c(
+          "Accuracy",
+          "Sensitivity",
+          "Specificity",
+          "F1-Score",
+          "Balanced Accuracy",
+          "Kappa"
+        )
+      )
+    )
+  ) |> 
+  drop_na(.metric) |> 
+  arrange(Rank)
+
+metrics_conf_top_df <- metrics_conf_top |>
+  select(Metric = .metric, Workflow, mean_estimate, lower, upper, class_group) |>
+  mutate(across(where(is.numeric), ~ round(., digits = 3))) |>
+  mutate(Estimate = paste0(mean_estimate, " (", lower, ", ", upper, ")"),
+         .keep = "unused") |> 
+  arrange(Metric, class_group) |> 
+  pivot_wider(names_from = "class_group", values_from = "Estimate")
+
+metrics_conf_top_df |> 
+  kbl(booktabs = TRUE, linesep = "") |> 
+  kable_styling(full_width = FALSE,
+                latex_options = "scale_down") |> 
+  collapse_rows(columns = 1) |> 
+  add_header_above(c(" " = 2, "Histotypes" = 5))
+```
 
 ## Optimal Gene Sets
 
