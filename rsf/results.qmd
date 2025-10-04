@@ -87,6 +87,8 @@ per_class_metrics_conf_two_step <-
 
 # Models
 wflow_up_xgb_model <- readRDS(here("data/wflow_up_xgb_model_train.rds"))
+wflow_up_rf_model <- readRDS(here("data/wflow_up_rf_model_train.rds"))
+wflow_smote_svm_model <- readRDS(here("data/wflow_smote_svm_model_train.rds"))
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
 
@@ -968,117 +970,6 @@ print(p)
 
 Misclassified cases from a previous step of the sequence of classifiers are not included in subsequent steps of the training set CV folds. Thus, we cannot piece together the test set predictions from the sequential and two-step algorithms to obtain overall metrics.
 
-## Confirmation Set
-
-### Top Training Set Workflows
-
-```{r}
-#| label: tbl-conf-metrics-top
-#| tbl-cap: "Top Workflow Per-Class Evaluation Metrics in Confirmation Set"
-
-all_metrics_conf <- all_metrics_conf |> 
-  separate(wflow, c("Subsampling", "Algorithms"), remove = FALSE) |> 
-  mutate(
-    Subsampling = factor(Subsampling, levels = c("none", "down", "up", "smote", "hybrid")),
-    Algorithms = factor(Algorithms, levels = c("rf", "svm", "xgb", "mr")),
-    class_group = factor(
-      class_group,
-      levels = c("Overall", "HGSC", "CCOC", "ENOC", "LGSC", "MUC")
-    )
-  ) |> 
-  mutate(
-    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
-    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
-    .by = c(wflow, class_group, .metric)
-  ) |>
-  mutate(
-    undefined = case_when(any(is.nan(mean_estimate)) ~ "all",
-                          any(is.na(.estimate)) ~ "some",
-                          .default = "none"),
-    .by = c(wflow, .metric)
-  )
-
-per_class_metrics_conf_seq <- per_class_metrics_conf_seq |>
-  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
-  mutate(
-    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
-    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
-    .by = c(class_group, .metric)
-  ) |>
-  mutate(undefined = case_when(any(is.nan(mean_estimate)) ~ "all", any(is.na(.estimate)) ~ "some", .default = "none"),
-         .by = .metric) |>
-  add_column(wflow = "sequential", .before = 1)
-
-per_class_metrics_conf_two_step <- per_class_metrics_conf_two_step |>
-  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
-  mutate(
-    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
-    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
-    .by = c(class_group, .metric)
-  ) |>
-  mutate(undefined = case_when(any(is.nan(mean_estimate)) ~ "all", any(is.na(.estimate)) ~ "some", .default = "none"),
-         .by = .metric) |>
-  add_column(wflow = "two_step", .before = 1)
-
-# Combine all per-class metrics
-per_class_metrics_conf <- bind_rows(all_metrics_conf,
-                                    per_class_metrics_conf_seq,
-                                    per_class_metrics_conf_two_step) |>
-  filter(class_group != "Overall") |>
-  droplevels()
-
-metrics_conf_top <- per_class_metrics_conf |> 
-  distinct(pick(-fold_id, -.estimate)) |> 
-  rename(Workflow = wflow) |> 
-  inner_join(wflow_rank_agg_metrics, by = "Workflow") |> 
-  mutate(
-    Workflow = Workflow |>
-      fct_reorder(Rank) |>
-      fct_recode(
-        `2-STEP` = "two_step",
-        `Up-XGB` = "up_xgb",
-        `Up-RF` = "up_rf",
-        `SMOTE-SVM` = "smote_svm"
-      ), 
-    .metric = case_match(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa",
-      .ptype = factor(
-        levels = c(
-          "Accuracy",
-          "Sensitivity",
-          "Specificity",
-          "F1-Score",
-          "Balanced Accuracy",
-          "Kappa"
-        )
-      )
-    )
-  ) |> 
-  drop_na(.metric) |> 
-  arrange(Rank)
-
-metrics_conf_top_df <- metrics_conf_top |>
-  select(Metric = .metric, Workflow, mean_estimate, lower, upper, class_group) |>
-  mutate(across(where(is.numeric), ~ round(., digits = 3))) |>
-  mutate(Estimate = paste0(mean_estimate, " (", lower, ", ", upper, ")"),
-         .keep = "unused") |> 
-  arrange(Metric, class_group) |> 
-  pivot_wider(names_from = "class_group", values_from = "Estimate")
-
-metrics_conf_top_df |> 
-  kbl(booktabs = TRUE, linesep = "") |> 
-  kable_styling(full_width = FALSE,
-                latex_options = "scale_down") |> 
-  collapse_rows(columns = 1) |> 
-  add_header_above(c(" " = 2, "Histotypes" = 5))
-```
-
 ## Optimal Gene Sets
 
 ### Sequential Algorithm
@@ -1380,97 +1271,54 @@ gene_dist_up_xgb |>
   collapse_rows(columns = 1)
 ```
 
-## Test Set Performance
+## Confirmation Set
 
-Now we'd like to see how our best methods perform in the confirmation and validation sets. The class-specific F1-scores will be used.
-
-The top 2 methods are the sequential, 2-STEP, and Up-XGB classifiers. We can test 2 additional methods by using either the full set of genes or the optimal set of genes for all three these classifiers.
+Now we'd like to see how our best five workflows perform in the confirmation set. The class-specific F1-scores will be used. The top performing method will be selected for gene optimization.
 
 ```{r}
 #| label: top-models
 
-# Sequential full model
-mod_seq_full <- list(all_models_seq,
-                     seq_data,
-                     seq_class) |> 
+# Sequential model
+mod_seq <- list(all_models_seq,
+                seq_data,
+                seq_class) |> 
   pmap(~ {
     set.seed(2024)
     ..1 |> fit(data = cbind(..2, class = factor(..3)))
   })
 
-# Sequential optimal gene list model
-mod_seq_opt <- list(all_models_seq,
-                    seq_data,
-                    seq_class) |> 
+# Two-step model
+mod_two_step <- list(all_models_two_step,
+                     two_step_data,
+                     two_step_class) |> 
   pmap(~ {
     set.seed(2024)
-    wflow <- ..1 |>
-      pluck("pre", "actions", "recipe", "recipe") |>
-      modify_at(c("var_info", "term_info"), \(x) x |>
-                  arrange(match(variable, gene_order_seq)) |>
-                  filter(variable %in% c(opt_genes_seq, "class"))) |> 
-      update_recipe(x = ..1, recipe = _)
-    set.seed(2024)
-    wflow |>
-      fit(data = cbind(..2, class = factor(..3)))
+    ..1 |> fit(data = cbind(..2, class = factor(..3)))
   })
 
 # Training data
 train_ref <- train_data |>
   mutate(class = factor(train_class, levels = c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")))
                                                 
-# up_xgb full model trained
+# Up-XGB model
 set.seed(2024)
-mod_up_xgb_full <- wflow_up_xgb_model |>
+mod_up_xgb <- wflow_up_xgb_model |>
   fit(data = train_ref)
 
-# up_xgb optimal gene list workflow
+# Up-RF model
 set.seed(2024)
-wflow_up_xgb_opt <- wflow_up_xgb_model |>
-  pluck("pre", "actions", "recipe", "recipe") |>
-  modify_at(c("var_info", "term_info"),
-            \(x) x |>
-              filter(variable %in% c(opt_genes_up_xgb, "class")) |>
-              arrange(match(variable, gene_order_up_xgb))) |>
-  update_recipe(x = wflow_up_xgb_model, recipe = _)
-
-# up_xgb optimal gene list model trained
-set.seed(2024)
-mod_up_xgb_opt <- wflow_up_xgb_opt |>
+mod_up_rf <- wflow_up_rf_model |>
   fit(data = train_ref)
 
-# Two-step full model
-mod_two_step_full <- list(all_models_two_step,
-                          two_step_data,
-                          two_step_class) |> 
-  pmap(~ {
-    set.seed(2024)
-    ..1 |> fit(data = cbind(..2, class = factor(..3)))
-  })
-
-# Two-step optimal gene list model
-mod_two_step_opt <- list(all_models_two_step,
-                         two_step_data,
-                         two_step_class) |> 
-  pmap(~ {
-    set.seed(2024)
-    wflow <- ..1 |>
-      pluck("pre", "actions", "recipe", "recipe") |>
-      modify_at(c("var_info", "term_info"), \(x) x |>
-                  arrange(match(variable, gene_order_two_step)) |> 
-                  filter(variable %in% c(opt_genes_two_step, "class"))) |> 
-      update_recipe(x = ..1, recipe = _)
-    set.seed(2024)
-    wflow |>
-      fit(data = cbind(..2, class = factor(..3)))
-  })
+# SMOTE-SVM model
+set.seed(2024)
+mod_smote_svm <- wflow_smote_svm_model |> 
+  fit(data = train_ref)
 
 # Per-class metric set
 per_class_mset <-
   metric_set(accuracy, sensitivity, specificity, f_meas, bal_accuracy, kap)
 ```
-
-### Confirmation Set
 
 ```{r}
 #| label: tbl-conf-eval
@@ -1481,12 +1329,11 @@ per_class_mset <-
 conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                                 Truth = conf_class) |>
   mutate(
-    c(p_seq_full = mod_seq_full,
-      p_seq_opt = mod_seq_opt,
-      p_two_step_full = mod_two_step_full,
-      p_two_step_opt = mod_two_step_opt,
-      p_up_xgb_full = list(mod_up_xgb_full),
-      p_up_xgb_opt = list(mod_up_xgb_opt)
+    c(p_seq = mod_seq,
+      p_two_step = mod_two_step,
+      p_up_xgb = list(mod_up_xgb),
+      p_up_rf = list(mod_up_rf),
+      p_smote_svm = list(mod_smote_svm)
     ) |> 
       map(~ predict(., conf_data)[[".pred_class"]]) |> 
       bind_cols()
@@ -1494,24 +1341,17 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   rename_with(~ gsub("(.*)\\..*_(.*)", "\\1_\\2", .), where(is.factor)) |> 
   mutate(
     across(matches("p"), as.character),
-    Prediction_sequential_full = case_when(
-      !grepl("non", p_seq_full_s1) ~ p_seq_full_s1,
-      !grepl("non", p_seq_full_s2) ~ p_seq_full_s2,
-      !grepl("non", p_seq_full_s3) ~ p_seq_full_s3,
-      .default = p_seq_full_s4
+    Prediction_sequential = case_when(
+      !grepl("non", p_seq_s1) ~ p_seq_s1,
+      !grepl("non", p_seq_s2) ~ p_seq_s2,
+      !grepl("non", p_seq_s3) ~ p_seq_s3,
+      .default = p_seq_s4
     ),
-    Prediction_sequential_optimal = case_when(
-      !grepl("non", p_seq_opt_s1) ~ p_seq_opt_s1,
-      !grepl("non", p_seq_opt_s2) ~ p_seq_opt_s2,
-      !grepl("non", p_seq_opt_s3) ~ p_seq_opt_s3,
-      .default = p_seq_opt_s4
-    ),
-    Prediction_two_step_full = ifelse(!grepl("non", p_two_step_full_s1),
-                                      p_two_step_full_s1, p_two_step_full_s2),
-    Prediction_two_step_optimal = ifelse(!grepl("non", p_two_step_opt_s1),
-                                         p_two_step_opt_s1, p_two_step_opt_s2), 
-    Prediction_up_xgb_full = p_up_xgb_full,
-    Prediction_up_xgb_opt = p_up_xgb_opt,
+    Prediction_two_step = ifelse(!grepl("non", p_two_step_s1),
+                                      p_two_step_s1, p_two_step_s2),
+    Prediction_up_xgb = p_up_xgb,
+    Prediction_up_rf = p_up_rf,
+    Prediction_smote_svm = p_smote_svm,
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   select(-starts_with("p", ignore.case = FALSE)) |> 
@@ -1526,12 +1366,11 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   mutate(Method = fct_inorder(
     case_match(
       Method,
-      "sequential_full" ~ "Sequential, Full Set",
-      "sequential_optimal" ~ "Sequential, Optimal Set",
-      "two_step_full" ~ "2-STEP, Full Set",
-      "two_step_optimal" ~ "2-STEP, Optimal Set",
-      "up_xgb_full" ~ "Up-XGB, Full Set",
-      "up_xgb_opt" ~ "Up-XGB, Optimal Set"
+      "sequential" ~ "Sequential",
+      "two_step" ~ "2-STEP",
+      "up_xgb" ~ "Up-XGB",
+      "up_rf" ~ "Up-RF",
+      "smote_svm" ~ "SMOTE-SVM"
     )
   ))
 
@@ -1596,13 +1435,12 @@ conf_eval |>
 conf_entropy <- data.frame(FileName = rownames(conf_data),
                            Truth = conf_class) |>
   mutate(
-    c(p_seq_full = mod_seq_full,
-      p_seq_opt = mod_seq_opt,
-      p_two_step_full = mod_two_step_full,
-      p_two_step_opt = mod_two_step_opt,
-      p_up_xgb_full = list(up_xgb_full = mod_up_xgb_full),
-      p_up_xgb_opt = list(up_xgb_opt = mod_up_xgb_opt)
-    ) |>
+    c(p_seq = mod_seq,
+      p_two_step = mod_two_step,
+      p_up_xgb = list(up_xgb = mod_up_xgb),
+      p_up_rf = list(up_rf = mod_up_rf),
+      p_smote_svm = list(smote_svm = mod_smote_svm)
+  ) |>
       map(~ {
         predict(., conf_data, type = "prob") |>
           rowwise() |>
@@ -1624,12 +1462,11 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
   mutate(Method = fct_inorder(
     case_match(
       Method,
-      "p_seq_full" ~ "Sequential, Full Set",
-      "p_seq_opt" ~ "Sequential, Optimal Set",
-      "p_two_step_full" ~ "2-STEP, Full Set",
-      "p_two_step_opt" ~ "2-STEP, Optimal Set",
-      "p_up_xgb_full" ~ "Up-XGB, Full Set",
-      "p_up_xgb_opt" ~ "Up-XGB, Optimal Set"
+      "p_seq" ~ "Sequential",
+      "p_two_step" ~ "2-STEP",
+      "p_up_xgb" ~ "Up-XGB",
+      "p_up_rf" ~ "Up-RF",
+      "p_smote_svm" ~ "SMOTE-SVM"
     )
   )) |>
   inner_join(conf_pred_overall, by = join_by(FileName, Truth, Method)) |>
@@ -1642,6 +1479,8 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
         Prediction %in% c("MUC", "LGSC") & grepl("s4", Workflow)
     )) |
     grepl("Up-XGB", Method) |
+      grepl("Up-RF", Method) |
+      grepl("SMOTE-SVM", Method) |
     (grepl("2-STEP", Method) & (
       Prediction == "HGSC" & grepl("s1", Workflow) |
         Prediction != "HGSC" & grepl("s2", Workflow)
@@ -1688,7 +1527,7 @@ p <- ggplot(conf_metrics_top) +
     position = position_dodge()
   ) +
   geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
-  scale_fill_brewer(palette = "Paired") +
+  scale_fill_brewer(palette = "Set1") +
   scale_y_continuous(breaks = seq(0, 1, 0.2)) +
   facet_wrap(vars(Metric), nrow = 1) +
   theme_bw() +
@@ -1778,16 +1617,16 @@ class_groups_two_step <-
   str_replace_all(string = map_chr(map(conf_class_two_step, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
 ```
 
-#### Sequential, Full
+### Sequential
 
 ```{r}
-#| label: fig-roc-curve-seq-full
-#| fig-cap: 'ROC Curves for Sequential Full Model in Confirmation Set'
+#| label: fig-roc-curve-seq
+#| fig-cap: 'ROC Curves for Sequential Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 7
 #| out-width: '100%'
 
-roc_curve_seq_full <- mod_seq_full |> 
+roc_curve_seq <- mod_seq |> 
   set_names(class_groups_seq) |> 
   list(conf_data_seq, conf_class_seq) |> 
   pmap(~ {
@@ -1815,65 +1654,22 @@ roc_curve_seq_full <- mod_seq_full |>
          theme(plot.title = element_markdown(face = "bold"))) |> 
   wrap_plots(widths = c(1, -1)) +
   plot_annotation(
-    title = "ROC Curves for Sequential, Full Set Model in Confirmation Set",
+    title = "ROC Curves for Sequential Model in Confirmation Set",
     tag_levels = "A"
   )
-print(roc_curve_seq_full)
+print(roc_curve_seq)
 ```
 
-#### Sequential, Optimal
+### 2-STEP
 
 ```{r}
-#| label: fig-roc-curve-seq-opt
-#| fig-cap: 'ROC Curves for Sequential, Optimal Model in Confirmation Set'
-#| fig-height: 7
-#| fig-width: 7
-#| out-width: '100%'
-
-roc_curve_seq_opt <- mod_seq_opt |> 
-  set_names(class_groups_seq) |> 
-  list(conf_data_seq, conf_class_seq) |> 
-  pmap(~ {
-    preds <- predict(..1, ..2, type = "prob") |> 
-      add_column(truth = ..3)
-    roc_df <- preds |> 
-      roc_curve(truth, matches(".pred")[1])
-    auc <- preds |> 
-      roc_auc(truth, matches(".pred")[1]) |> 
-      pull(.estimate) |> 
-      number(accuracy = 0.001, prefix = "AUC = ")
-    autoplot(roc_df) +
-      geom_label(
-        x = 1,
-        y = 0,
-        hjust = 1,
-        vjust = 0,
-        label = auc,
-        size = 3
-      ) +
-      theme(panel.grid = element_blank())
-  }) |> 
-  imap(~ .x +
-         labs(title = .y) +
-         theme(plot.title = element_markdown(face = "bold"))) |> 
-  wrap_plots(widths = c(1, -1)) +
-  plot_annotation(
-    title = "ROC Curves for Sequential, Optimal Set Model in Confirmation Set",
-    tag_levels = "A"
-  )
-print(roc_curve_seq_opt)
-```
-
-#### 2-STEP, Full
-
-```{r}
-#| label: fig-roc-curve-two-step-full
-#| fig-cap: 'ROC Curves for 2-STEP Full Model in Confirmation Set'
+#| label: fig-roc-curve-two-step
+#| fig-cap: 'ROC Curves for 2-STEP Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 9
 #| out-width: '100%'
 
-roc_curve_two_step_full <- mod_two_step_full |> 
+roc_curve_two_step <- mod_two_step |> 
   set_names(class_groups_two_step) |> 
   list(conf_data_two_step, conf_class_two_step) |> 
   pmap(~ {
@@ -1906,70 +1702,22 @@ roc_curve_two_step_full <- mod_two_step_full |>
          theme(plot.title = element_markdown(face = "bold"))) |> 
   wrap_plots(widths = c(1, -1)) +
   plot_annotation(
-    title = "ROC Curves for 2-STEP, Full Set Model in Confirmation Set",
+    title = "ROC Curves for 2-STEP Model in Confirmation Set",
     tag_levels = "A"
   )
-print(roc_curve_two_step_full)
+print(roc_curve_two_step)
 ```
 
-#### 2-STEP, Optimal
+### Up-XGB
 
 ```{r}
-#| label: fig-roc-curve-two-step-optimal
-#| fig-cap: 'ROC Curves for 2-STEP Optimal Model in Confirmation Set'
-#| fig-height: 7
-#| fig-width: 9
-#| out-width: '100%'
-
-roc_curve_two_step_optimal <- mod_two_step_opt |> 
-  set_names(class_groups_two_step) |> 
-  list(conf_data_two_step, conf_class_two_step) |> 
-  pmap(~ {
-    preds <- predict(..1, ..2, type = "prob")
-    prob_cols <- if (ncol(preds) == 2) names(preds)[1] else names(preds)
-    preds <- preds |> 
-      add_column(truth = ..3)
-    roc_df <- preds |> 
-      roc_curve(truth, all_of(prob_cols))
-    auc <- preds |> 
-      roc_auc(truth, all_of(prob_cols)) |> 
-      pull(.estimate) |> 
-      number(accuracy = 0.001, prefix = "AUC = ")
-    autoplot(roc_df) +
-      geom_label(
-        x = 1,
-        y = 0,
-        hjust = 1,
-        vjust = 0,
-        label = auc,
-        size = 3
-      ) +
-      theme(panel.grid = element_blank(),
-            strip.text = element_text(face = "bold"))
-  }) |> 
-  map_at(2, ~ .x +
-           facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette[-1])))) |>
-  imap(~ .x +
-         labs(title = .y) +
-         theme(plot.title = element_markdown(face = "bold"))) |> 
-  wrap_plots(widths = c(1, -1)) +
-  plot_annotation(
-    title = "ROC Curves for 2-STEP, Optimal Set Model in Confirmation Set",
-    tag_levels = "A"
-  )
-print(roc_curve_two_step_optimal)
-```
-
-#### Up-XGB, Full
-
-```{r}
-#| label: fig-roc-curve-up-xgb-full
-#| fig-cap: 'ROC Curves for Up-XGB, Full Set Model in Confirmation Set'
+#| label: fig-roc-curve-up-xgb
+#| fig-cap: 'ROC Curves for Up-XGB Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_up_xgb_full |> 
+preds <- mod_up_xgb |> 
   predict(conf_data, type = "prob") |>
   add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds |>
@@ -1981,9 +1729,9 @@ auc <- preds |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
-roc_curve_up_xgb_full <-
+roc_curve_up_xgb <-
   autoplot(roc_df) +
-  labs(title = "ROC Curve for Up-XGB, Full Set Model in Confirmation Set",
+  labs(title = "ROC Curve for Up-XGB Model in Confirmation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
   theme(
@@ -1991,20 +1739,20 @@ roc_curve_up_xgb_full <-
     strip.text = element_text(size = 12, face = "bold"),
     axis.title = element_text(size = 12)
   )
-print(roc_curve_up_xgb_full)
+print(roc_curve_up_xgb)
 ```
 
-#### Up-XGB, Optimal
+### Up-RF
 
 ```{r}
-#| label: fig-roc-curve-up-xgb-opt
-#| fig-cap: 'ROC Curves for Up-XGB, Optimal Set Model in Confirmation Set'
+#| label: fig-roc-curve-up-rf
+#| fig-cap: 'ROC Curves for Up-RF Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_up_xgb_opt |> 
-  predict(conf_data, type = "prob") |> 
+preds <- mod_up_rf |> 
+  predict(conf_data, type = "prob") |>
   add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds |>
   relocate(.pred_HGSC, .before = 1) |>
@@ -2015,9 +1763,9 @@ auc <- preds |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
-roc_curve_up_xgb_opt <- 
+roc_curve_up_rf <-
   autoplot(roc_df) +
-  labs(title = "ROC Curve for Up-XGB, Optimal Set Model in Confirmation Set",
+  labs(title = "ROC Curve for Up-RF Model in Confirmation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
   theme(
@@ -2025,11 +1773,45 @@ roc_curve_up_xgb_opt <-
     strip.text = element_text(size = 12, face = "bold"),
     axis.title = element_text(size = 12)
   )
-print(roc_curve_up_xgb_opt)
+print(roc_curve_up_rf)
+```
+
+### SMOTE-SVM
+
+```{r}
+#| label: fig-roc-curve-smote-svm
+#| fig-cap: 'ROC Curves for SMOTE-SVM Model in Confirmation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_smote_svm |> 
+  predict(conf_data, type = "prob") |>
+  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+roc_df <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+auc <- preds |>
+  relocate(.pred_HGSC, .before = 1) |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
+  number(accuracy = 0.001, prefix = "AUC = ")
+roc_curve_smote_svm <-
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for SMOTE-SVM Model in Confirmation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+print(roc_curve_smote_svm)
 ```
 :::
 
-### Validation Set
+## Validation Set
 
 ```{r}
 #| label: tbl-val-eval
