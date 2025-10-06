@@ -1822,7 +1822,7 @@ print(roc_curve_smote_svm)
 val_pred_overall <- data.frame(FileName = rownames(val_data),
                                Truth = val_class) |>
   mutate(
-    Prediction_up_xgb_opt = predict(mod_up_xgb_full, val_data)[[".pred_class"]],
+    Prediction_up_xgb_opt = predict(mod_up_xgb, val_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   pivot_longer(
@@ -1952,7 +1952,7 @@ print(val_conf_mat)
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_up_xgb_full |> 
+preds <- mod_up_xgb |> 
   predict(val_data, type = "prob") |> 
   add_column(truth = factor(val_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
 roc_df <- preds |>
@@ -2270,7 +2270,7 @@ print(val_all_volcano)
 #| fig-width: 10
 #| out-width: '100%'
 
-val_pred_hgsc_samples <- mod_up_xgb_full |> 
+val_pred_hgsc_samples <- mod_up_xgb |> 
   predict(val_data, type = "class") |> 
   bind_cols(val_data) |> 
   filter(.pred_class == "HGSC") |> 
