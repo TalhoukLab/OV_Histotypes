@@ -13,7 +13,7 @@ source(here("pipeline/gene_opt/0a-setup_data.R"))
 # Combine tuned workflows across folds
 tune_wflows_files <- list.files(
   path = file.path(outputDir, "gene_opt", "tune_wflows", dataset),
-  pattern = paste0("add", ngene, "_"),
+  pattern = paste0(gene_opt_wflow, "_add", ngene, "_"),
   full.names = TRUE
 )
 
