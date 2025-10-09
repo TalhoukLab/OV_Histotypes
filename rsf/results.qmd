@@ -970,206 +970,6 @@ print(p)
 
 Misclassified cases from a previous step of the sequence of classifiers are not included in subsequent steps of the training set CV folds. Thus, we cannot piece together the test set predictions from the sequential and two-step algorithms to obtain overall metrics.
 
-## Optimal Gene Sets
-
-### Up-XGB
-
-```{r}
-#| label: fig-gene-up-xgb
-#| fig-cap: 'Gene Optimization for Up-XGB Classifier'
-#| fig-height: 5
-#| fig-width: 5
-#| out-width: '100%'
-
-gene_up_xgb_names <- all_vi_train |> 
-  filter(wflow == "up_xgb") |> 
-  rowid_to_column("Genes") |> 
-  select(Genes, Name = Variable) |> 
-  add_row(Genes = 0L, Name = "Base", .before = 1)
-
-dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
-  filter(Workflow == "up_xgb",
-         .metric == "f_meas",
-         class_group == "Overall") |> 
-  mutate(
-    min_estimate = min(.estimate),
-    max_estimate = max(.estimate),
-    .by = Genes
-  ) |>
-  mutate(label = paste0("Workflow: Up-XGB, Measure: ", .metric)) |> 
-  inner_join(gene_up_xgb_names, by = "Genes")
-
-p_gene_up_xgb <- 
-  ggplot(dat_gene_up_xgb, aes(text = Name)) +
-  geom_pointrange(aes(
-    x = Genes,
-    y = mean_estimate,
-    ymin = min_estimate,
-    ymax = max_estimate
-  )) +
-  facet_wrap(~ label, ncol = 1) +
-  theme_bw() +
-  labs(x = "Genes Added",
-       y = "F1-Score",
-       title = "Gene Optimziation for Up-XGB Classifier")
-ggplotly(p_gene_up_xgb, width = 600, height = 400)
-
-n_genes_up_xgb <- 2
-genes_add_up_xgb <- gene_up_xgb_names |> 
-  filter(Genes > 0L) |> 
-  slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
-  pull(Name)
-opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
-```
-
-In the Up-XGB classifier, the mean F1-score is highest when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
-
-```{r}
-#| label: tbl-gene-opt-up-xgb
-#| tbl-cap: 'Gene Profile of Optimal Set in Up-XGB Workflow'
-#| tbl-pos: 'H'
-
-candidates_all <- gene_up_xgb_names |>
-  filter(Genes > 0) |>
-  pull(Name)
-unused_genes_up_xgb <- gene_up_xgb_names |>
-  filter(Genes > 0) |>
-  slice_max(order_by = Genes, n = -n_genes_up_xgb) |> 
-  arrange(Genes) |> 
-  pull(Name)
-gene_order_up_xgb <- c(opt_genes_up_xgb, unused_genes_up_xgb)
-
-gene_dist_up_xgb <-
-  tibble(
-    Genes = gene_order_up_xgb,
-    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
-    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
-    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
-    `Optimal Set` = if_else(
-      Genes %in% opt_genes_up_xgb,
-      symbol$circle_filled,
-      symbol$circle_cross
-    ) |>
-      cell_spec(
-        color = case_when(
-          Genes %in% overlap_all ~ "green",
-          Genes %in% opt_genes_up_xgb ~ "#8B8000",
-          .default = "#FF0000"
-        )
-      ),
-    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
-    )
-  ) |>
-  relocate(Set, .before = Genes)
-
-gene_dist_up_xgb |> 
-  kbl(booktabs = TRUE,
-      longtable = TRUE,
-      linesep = "",
-      escape = FALSE) |> 
-  kable_styling(full_width = FALSE) |> 
-  collapse_rows(columns = 1)
-```
-
-### SMOTE-SVM
-
-```{r}
-#| label: fig-gene-smote-svm
-#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier'
-#| fig-height: 5
-#| fig-width: 5
-#| out-width: '100%'
-
-gene_smote_svm_names <- all_vi_train |> 
-  filter(wflow == "smote_svm") |> 
-  rowid_to_column("Genes") |> 
-  select(Genes, Name = Variable) |> 
-  add_row(Genes = 0L, Name = "Base", .before = 1)
-
-dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
-  filter(Workflow == "smote_svm",
-         .metric == "f_meas",
-         class_group == "Overall") |> 
-  mutate(
-    min_estimate = min(.estimate),
-    max_estimate = max(.estimate),
-    .by = Genes
-  ) |>
-  mutate(label = paste0("Workflow: SMOTE-SVM, Measure: ", .metric)) |> 
-  inner_join(gene_smote_svm_names, by = "Genes")
-
-p_gene_smote_svm <- 
-  ggplot(dat_gene_smote_svm, aes(text = Name)) +
-  geom_pointrange(aes(
-    x = Genes,
-    y = mean_estimate,
-    ymin = min_estimate,
-    ymax = max_estimate
-  )) +
-  facet_wrap(~ label, ncol = 1) +
-  theme_bw() +
-  labs(x = "Genes Added",
-       y = "F1-Score",
-       title = "Gene Optimziation for SMOTE-SVM Classifier")
-ggplotly(p_gene_smote_svm, width = 600, height = 400)
-
-n_genes_smote_svm <- 3
-genes_add_smote_svm <- gene_smote_svm_names |> 
-  filter(Genes > 0L) |> 
-  slice_min(order_by = Genes, n = n_genes_smote_svm) |> 
-  pull(Name)
-opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
-```
-
-In the SMOTE-SVM classifier, the mean F1-score is gets close to 0.7 when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
-
-```{r}
-#| label: tbl-gene-opt-smote-svm
-#| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-SVM Workflow'
-#| tbl-pos: 'H'
-
-candidates_all <- gene_smote_svm_names |>
-  filter(Genes > 0) |>
-  pull(Name)
-unused_genes_smote_svm <- gene_smote_svm_names |>
-  filter(Genes > 0) |>
-  slice_max(order_by = Genes, n = -n_genes_smote_svm) |> 
-  arrange(Genes) |> 
-  pull(Name)
-gene_order_smote_svm <- c(opt_genes_smote_svm, unused_genes_smote_svm)
-
-gene_dist_smote_svm <-
-  tibble(
-    Genes = gene_order_smote_svm,
-    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
-    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
-    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
-    `Optimal Set` = if_else(
-      Genes %in% opt_genes_smote_svm,
-      symbol$circle_filled,
-      symbol$circle_cross
-    ) |>
-      cell_spec(
-        color = case_when(
-          Genes %in% overlap_all ~ "green",
-          Genes %in% opt_genes_smote_svm ~ "#8B8000",
-          .default = "#FF0000"
-        )
-      ),
-    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
-    )
-  ) |>
-  relocate(Set, .before = Genes)
-
-gene_dist_smote_svm |> 
-  kbl(booktabs = TRUE,
-      longtable = TRUE,
-      linesep = "",
-      escape = FALSE) |> 
-  kable_styling(full_width = FALSE) |> 
-  collapse_rows(columns = 1)
-```
-
 ## Confirmation Set
 
 Now we'd like to see how our best five workflows perform in the confirmation set. The class-specific F1-scores will be used. The top performing method will be selected for gene optimization.
@@ -1709,6 +1509,206 @@ roc_curve_smote_svm <-
 print(roc_curve_smote_svm)
 ```
 :::
+
+## Optimal Gene Sets
+
+### Up-XGB
+
+```{r}
+#| label: fig-gene-up-xgb
+#| fig-cap: 'Gene Optimization for Up-XGB Classifier'
+#| fig-height: 5
+#| fig-width: 5
+#| out-width: '100%'
+
+gene_up_xgb_names <- all_vi_train |> 
+  filter(wflow == "up_xgb") |> 
+  rowid_to_column("Genes") |> 
+  select(Genes, Name = Variable) |> 
+  add_row(Genes = 0L, Name = "Base", .before = 1)
+
+dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
+  filter(Workflow == "up_xgb",
+         .metric == "f_meas",
+         class_group == "Overall") |> 
+  mutate(
+    min_estimate = min(.estimate),
+    max_estimate = max(.estimate),
+    .by = Genes
+  ) |>
+  mutate(label = paste0("Workflow: Up-XGB, Measure: ", .metric)) |> 
+  inner_join(gene_up_xgb_names, by = "Genes")
+
+p_gene_up_xgb <- 
+  ggplot(dat_gene_up_xgb, aes(text = Name)) +
+  geom_pointrange(aes(
+    x = Genes,
+    y = mean_estimate,
+    ymin = min_estimate,
+    ymax = max_estimate
+  )) +
+  facet_wrap(~ label, ncol = 1) +
+  theme_bw() +
+  labs(x = "Genes Added",
+       y = "F1-Score",
+       title = "Gene Optimziation for Up-XGB Classifier")
+ggplotly(p_gene_up_xgb, width = 600, height = 400)
+
+n_genes_up_xgb <- 2
+genes_add_up_xgb <- gene_up_xgb_names |> 
+  filter(Genes > 0L) |> 
+  slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
+  pull(Name)
+opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
+```
+
+In the Up-XGB classifier, the mean F1-score is highest when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
+
+```{r}
+#| label: tbl-gene-opt-up-xgb
+#| tbl-cap: 'Gene Profile of Optimal Set in Up-XGB Workflow'
+#| tbl-pos: 'H'
+
+candidates_all <- gene_up_xgb_names |>
+  filter(Genes > 0) |>
+  pull(Name)
+unused_genes_up_xgb <- gene_up_xgb_names |>
+  filter(Genes > 0) |>
+  slice_max(order_by = Genes, n = -n_genes_up_xgb) |> 
+  arrange(Genes) |> 
+  pull(Name)
+gene_order_up_xgb <- c(opt_genes_up_xgb, unused_genes_up_xgb)
+
+gene_dist_up_xgb <-
+  tibble(
+    Genes = gene_order_up_xgb,
+    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
+    `Optimal Set` = if_else(
+      Genes %in% opt_genes_up_xgb,
+      symbol$circle_filled,
+      symbol$circle_cross
+    ) |>
+      cell_spec(
+        color = case_when(
+          Genes %in% overlap_all ~ "green",
+          Genes %in% opt_genes_up_xgb ~ "#8B8000",
+          .default = "#FF0000"
+        )
+      ),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
+    )
+  ) |>
+  relocate(Set, .before = Genes)
+
+gene_dist_up_xgb |> 
+  kbl(booktabs = TRUE,
+      longtable = TRUE,
+      linesep = "",
+      escape = FALSE) |> 
+  kable_styling(full_width = FALSE) |> 
+  collapse_rows(columns = 1)
+```
+
+### SMOTE-SVM
+
+```{r}
+#| label: fig-gene-smote-svm
+#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier'
+#| fig-height: 5
+#| fig-width: 5
+#| out-width: '100%'
+
+gene_smote_svm_names <- all_vi_train |> 
+  filter(wflow == "smote_svm") |> 
+  rowid_to_column("Genes") |> 
+  select(Genes, Name = Variable) |> 
+  add_row(Genes = 0L, Name = "Base", .before = 1)
+
+dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
+  filter(Workflow == "smote_svm",
+         .metric == "f_meas",
+         class_group == "Overall") |> 
+  mutate(
+    min_estimate = min(.estimate),
+    max_estimate = max(.estimate),
+    .by = Genes
+  ) |>
+  mutate(label = paste0("Workflow: SMOTE-SVM, Measure: ", .metric)) |> 
+  inner_join(gene_smote_svm_names, by = "Genes")
+
+p_gene_smote_svm <- 
+  ggplot(dat_gene_smote_svm, aes(text = Name)) +
+  geom_pointrange(aes(
+    x = Genes,
+    y = mean_estimate,
+    ymin = min_estimate,
+    ymax = max_estimate
+  )) +
+  facet_wrap(~ label, ncol = 1) +
+  theme_bw() +
+  labs(x = "Genes Added",
+       y = "F1-Score",
+       title = "Gene Optimziation for SMOTE-SVM Classifier")
+ggplotly(p_gene_smote_svm, width = 600, height = 400)
+
+n_genes_smote_svm <- 3
+genes_add_smote_svm <- gene_smote_svm_names |> 
+  filter(Genes > 0L) |> 
+  slice_min(order_by = Genes, n = n_genes_smote_svm) |> 
+  pull(Name)
+opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
+```
+
+In the SMOTE-SVM classifier, the mean F1-score is gets close to 0.7 when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
+
+```{r}
+#| label: tbl-gene-opt-smote-svm
+#| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-SVM Workflow'
+#| tbl-pos: 'H'
+
+candidates_all <- gene_smote_svm_names |>
+  filter(Genes > 0) |>
+  pull(Name)
+unused_genes_smote_svm <- gene_smote_svm_names |>
+  filter(Genes > 0) |>
+  slice_max(order_by = Genes, n = -n_genes_smote_svm) |> 
+  arrange(Genes) |> 
+  pull(Name)
+gene_order_smote_svm <- c(opt_genes_smote_svm, unused_genes_smote_svm)
+
+gene_dist_smote_svm <-
+  tibble(
+    Genes = gene_order_smote_svm,
+    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
+    `Optimal Set` = if_else(
+      Genes %in% opt_genes_smote_svm,
+      symbol$circle_filled,
+      symbol$circle_cross
+    ) |>
+      cell_spec(
+        color = case_when(
+          Genes %in% overlap_all ~ "green",
+          Genes %in% opt_genes_smote_svm ~ "#8B8000",
+          .default = "#FF0000"
+        )
+      ),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
+    )
+  ) |>
+  relocate(Set, .before = Genes)
+
+gene_dist_smote_svm |> 
+  kbl(booktabs = TRUE,
+      longtable = TRUE,
+      linesep = "",
+      escape = FALSE) |> 
+  kable_styling(full_width = FALSE) |> 
+  collapse_rows(columns = 1)
+```
 
 ## Validation Set
 
