@@ -1661,7 +1661,7 @@ genes_add_smote_svm <- gene_smote_svm_names |>
 opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 ```
 
-In the SMOTE-SVM classifier, the mean F1-score is gets close to 0.7 when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
+In the SMOTE-SVM classifier, the mean F1-score is gets close to 0.7 when we reach `r n_genes_smote_svm` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-smote-svm
