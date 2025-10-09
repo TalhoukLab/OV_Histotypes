@@ -1510,7 +1510,7 @@ print(roc_curve_smote_svm)
 ```
 :::
 
-## Optimal Gene Sets
+## Gene Optimization
 
 ### Up-XGB
 
