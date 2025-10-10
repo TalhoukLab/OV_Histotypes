@@ -1529,14 +1529,13 @@ gene_up_xgb_names <- all_vi_train |>
 
 dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "up_xgb",
-         .metric == "f_meas",
+         .metric == "bal_accuracy",
          class_group == "Overall") |> 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
     .by = Genes
   ) |>
-  mutate(label = paste0("Workflow: Up-XGB, Measure: ", .metric)) |> 
   inner_join(gene_up_xgb_names, by = "Genes")
 
 p_gene_up_xgb <- 
@@ -1547,14 +1546,16 @@ p_gene_up_xgb <-
     ymin = min_estimate,
     ymax = max_estimate
   )) +
-  facet_wrap(~ label, ncol = 1) +
   theme_bw() +
-  labs(x = "Genes Added",
-       y = "F1-Score",
-       title = "Gene Optimziation for Up-XGB Classifier")
+  labs(
+    x = "Genes Added",
+    y = "F1-Score",
+    title = "Gene Optimziation for Up-XGB Classifier",
+    subtitle = paste0("Measure: ", unique(dat_gene_up_xgb$.metric))
+  )
 ggplotly(p_gene_up_xgb, width = 600, height = 400)
 
-n_genes_up_xgb <- 2
+n_genes_up_xgb <- 12
 genes_add_up_xgb <- gene_up_xgb_names |> 
   filter(Genes > 0L) |> 
   slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
@@ -1628,14 +1629,13 @@ gene_smote_svm_names <- all_vi_train |>
 
 dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "smote_svm",
-         .metric == "f_meas",
+         .metric == "bal_accuracy",
          class_group == "Overall") |> 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
     .by = Genes
   ) |>
-  mutate(label = paste0("Workflow: SMOTE-SVM, Measure: ", .metric)) |> 
   inner_join(gene_smote_svm_names, by = "Genes")
 
 p_gene_smote_svm <- 
@@ -1646,14 +1646,16 @@ p_gene_smote_svm <-
     ymin = min_estimate,
     ymax = max_estimate
   )) +
-  facet_wrap(~ label, ncol = 1) +
   theme_bw() +
-  labs(x = "Genes Added",
-       y = "F1-Score",
-       title = "Gene Optimziation for SMOTE-SVM Classifier")
+  labs(
+    x = "Genes Added",
+    y = "F1-Score",
+    title = "Gene Optimziation for SMOTE-SVM Classifier",
+    subtitle = paste0("Measure: ", unique(dat_gene_smote_svm$.metric))
+  )
 ggplotly(p_gene_smote_svm, width = 600, height = 400)
 
-n_genes_smote_svm <- 3
+n_genes_smote_svm <- 0
 genes_add_smote_svm <- gene_smote_svm_names |> 
   filter(Genes > 0L) |> 
   slice_min(order_by = Genes, n = n_genes_smote_svm) |> 
@@ -1661,7 +1663,7 @@ genes_add_smote_svm <- gene_smote_svm_names |>
 opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 ```
 
-In the SMOTE-SVM classifier, the mean F1-score is gets close to 0.7 when we reach `r n_genes_smote_svm` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
+In the SMOTE-SVM classifier, the mean F1-score is optimal with `r n_genes_smote_svm` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-smote-svm
