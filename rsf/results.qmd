@@ -1550,8 +1550,7 @@ p_gene_up_xgb <-
   labs(
     x = "Genes Added",
     y = "F1-Score",
-    title = "Gene Optimziation for Up-XGB Classifier",
-    subtitle = paste0("Measure: ", unique(dat_gene_up_xgb$.metric))
+    title = paste0("Gene Optimziation for Up-XGB Classifier ", unique(dat_gene_up_xgb$.metric))
   )
 ggplotly(p_gene_up_xgb, width = 600, height = 400)
 
@@ -1650,8 +1649,7 @@ p_gene_smote_svm <-
   labs(
     x = "Genes Added",
     y = "F1-Score",
-    title = "Gene Optimziation for SMOTE-SVM Classifier",
-    subtitle = paste0("Measure: ", unique(dat_gene_smote_svm$.metric))
+    title = paste0("Gene Optimziation for SMOTE-SVM using ", unique(dat_gene_smote_svm$.metric))
   )
 ggplotly(p_gene_smote_svm, width = 600, height = 400)
 
