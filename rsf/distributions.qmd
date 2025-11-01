@@ -240,11 +240,29 @@ We use an aggregated `QCFlag` that considers a sample to have failed QC if any o
 #| label: tbl-qc-failed
 #| tbl-cap: 'Quality Control Summary'
 
-qc_failed <-
-  bind_rows(cs1_qc, cs2_qc, cs3_qc) |> 
-  droplevels() |> 
+train_coh <- cohorts |>
+  filter(cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL", "OVAR3", "ICON7", "JAPAN")) |> 
+  mutate(cohort = case_match(
+    cohort,
+    "ICON7" ~ "OVAR11",
+    .default = cohort
+  ))
+
+tnco <- cohorts |> filter(cohort == "TNCO")
+dove4 <- cohorts |> filter(cohort == "DOVE4")
+
+combined_cohorts <- bind_rows(Training = train_coh,
+                              Confirmation = tnco,
+                              Validation = dove4, .id = "Cohort") |>
+  mutate(FileName = gsub("^X", "", col_name), .before = col_name) |>
+  mutate(Cohort = fct_inorder(Cohort))
+
+qc_failed <- 
+  bind_rows(cs1_qc, cs2_qc, cs3_qc) |>
+  droplevels() |>
+  inner_join(combined_cohorts, by = "FileName") |>
   tbl_summary(
-    by = CodeSet,
+    by = Cohort,
     label = list(
       linFlag ~ "Linearity",
       imagingFlag ~ "Imaging",
@@ -252,9 +270,11 @@ qc_failed <-
       normFlag ~ "Normality",
       QCFlag ~ "Overall QC"
     ),
-    include = matches("(?<!bd)Flag", perl = TRUE)
-  ) |> 
-  bold_labels() |> 
+    include = matches("(?<!bd)Flag", perl = TRUE),
+    value = list(everything() ~ "Failed")
+  ) |>
+  add_overall(last = TRUE,
+              col_label = "**Total**  \nN = {style_number(N)}") |>
   modify_header(label ~ "**Quality Control Flag**")
 
 qc_failed |> 
