@@ -22,6 +22,10 @@ train_cohort_codeset <- hist_all_mol |>
   filter(FileName %in% gsub("^X", "", c(
     cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
   ))) |>
+  mutate(hist_gr2 = fct_recode(hist_gr2,
+                               HGSOC = "HGSC",
+                               MUOC = "MUC",
+                               LGSOC = "LGSC")) |> 
   droplevels() |>
   describeBy(
     var.names = "hist_gr2",
@@ -42,6 +46,10 @@ train_qc_codeset <- hist_all_mol |>
     cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc
   ))) |> 
   droplevels() |> 
+  mutate(hist_gr2 = fct_recode(hist_gr2,
+                               HGSOC = "HGSC",
+                               MUOC = "MUC",
+                               LGSOC = "LGSC")) |> 
   describeBy(
     var.names = "hist_gr2",
     var.labels = "Histotype",
@@ -58,7 +66,8 @@ train_qc_codeset <- hist_all_mol |>
 
 train_hist_codeset <- hist |>
   mutate(hist_final = factor(hist_final,
-                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                             labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -78,7 +87,8 @@ train_dedup_codeset <- hist |>
     cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name
   ))) |>
   mutate(hist_final = factor(hist_final,
-                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                             labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -94,7 +104,9 @@ train_dedup_codeset <- hist |>
 #| label: train-comb-codeset
 
 train_comb_codeset <- train_ref_comb |> 
-  mutate(hist_final = fct_infreq(hist_final)) |> 
+  mutate(hist_final = factor(hist_final,
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                             labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -110,7 +122,9 @@ train_comb_codeset <- train_ref_comb |>
 #| label: train-derep-codeset
 
 train_derep_codeset <- train_ref |> 
-  mutate(hist_final = fct_infreq(hist_final)) |> 
+  mutate(hist_final = factor(hist_final,
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                             labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -165,7 +179,9 @@ hist_train_conf_val <-
        Validation = val_ref) |> 
   map_dfr(~ select(., hist_final), .id = "Data") |> 
   mutate(Data = factor(Data, levels = c("Training", "Confirmation", "Validation")),
-         hist_final = factor(hist_final, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
+         hist_final = factor(hist_final,
+                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                             labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |>
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",

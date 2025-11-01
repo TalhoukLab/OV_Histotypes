@@ -132,7 +132,8 @@ all_metrics_train <- all_metrics_train |>
     Algorithms = factor(Algorithms, levels = c("rf", "svm", "xgb", "mr")),
     class_group = factor(
       class_group,
-      levels = c("Overall", "HGSC", "CCOC", "ENOC", "LGSC", "MUC")
+      levels = c("Overall", "HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+      labels = c("Overall", "HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
     )
   ) |> 
   mutate(
@@ -473,15 +474,15 @@ print(p)
 Multi-step methods:
 
 -   **sequential**: sequential algorithm sequence of subsampling methods and algorithms used are:
-    -   HGSC vs. non-HGSC using upsubsampling and XGBoost
+    -   HGSOC vs. non-HGSOC using upsubsampling and XGBoost
     -   CCOC vs. non-CCOC using no subsampling and random forest
     -   ENOC vs. non-ENOC using no subsampling and support vector machine
-    -   LGSC vs. MUC using SMOTE subsampling and random forest
+    -   MUOC vs. LGSOC using SMOTE subsampling and random forest
 -   **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
-    -   HGSC vs. non-HGSC using upsampling and XGBoost
-    -   CCOC vs. ENOC vs. MUC vs. LGSC using SMOTE subsampling and support vector machine
+    -   HGSOC vs. non-HGSOC using upsampling and XGBoost
+    -   CCOC vs. ENOC vs. MUOC vs. LGSOC using SMOTE subsampling and support vector machine
 
-We conduct rank aggregation using a two-stage nested appraoch:
+We conduct rank aggregation using a two-stage nested approach:
 
 1.  First we rank aggregate the per-class metrics for F1-score, balanced accuracy and kappa.
 2.  Then we take the aggregated lists from the three metrics and perform a final rank aggregation.
@@ -494,7 +495,7 @@ We conduct rank aggregation using a two-stage nested appraoch:
 
 # Add lower, upper, undefined columns for per-class sequential, two_step
 per_class_metrics_seq <- per_class_metrics_seq |>
-  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"), labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |>
   mutate(
     lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
     upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
@@ -505,7 +506,7 @@ per_class_metrics_seq <- per_class_metrics_seq |>
   add_column(wflow = "sequential", .before = 1)
 
 per_class_metrics_two_step <- per_class_metrics_two_step |>
-  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  mutate(class_group = factor(class_group, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"), labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |>
   mutate(
     lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
     upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
@@ -1061,7 +1062,9 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
     values_to = "Prediction"
   ) |> 
   mutate(across(c(Truth, Prediction),
-                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))) |> 
+                ~ factor(.x,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))) |> 
   mutate(Method = fct_inorder(
     case_match(
       Method,
@@ -1158,31 +1161,36 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
     names_pattern = "(.*)\\.(.*)/(.*)",
     values_to = "Value"
   ) |>
-  mutate(Method = fct_inorder(
-    case_match(
-      Method,
-      "p_seq" ~ "Sequential",
-      "p_two_step" ~ "2-STEP",
-      "p_up_xgb" ~ "Up-XGB",
-      "p_up_rf" ~ "Up-RF",
-      "p_smote_svm" ~ "SMOTE-SVM"
-    )
-  )) |>
+  mutate(
+    Truth = factor(Truth,
+                   levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                   labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+    Method = fct_inorder(
+      case_match(
+        Method,
+        "p_seq" ~ "Sequential",
+        "p_two_step" ~ "2-STEP",
+        "p_up_xgb" ~ "Up-XGB",
+        "p_up_rf" ~ "Up-RF",
+        "p_smote_svm" ~ "SMOTE-SVM"
+        )
+      )
+    ) |>
   inner_join(conf_pred_overall, by = join_by(FileName, Truth, Method)) |>
   filter(Metric %in% c("prob", "entropy")) |>
   filter(
     (grepl("Sequential", Method) & (
-      Prediction == "HGSC" & grepl("s1", Workflow) |
+      Prediction == "HGSOC" & grepl("s1", Workflow) |
         Prediction == "CCOC" & grepl("s2", Workflow) |
         Prediction == "ENOC" & grepl("s3", Workflow) |
-        Prediction %in% c("MUC", "LGSC") & grepl("s4", Workflow)
+        Prediction %in% c("MUOC", "LGSOC") & grepl("s4", Workflow)
     )) |
     grepl("Up-XGB", Method) |
       grepl("Up-RF", Method) |
       grepl("SMOTE-SVM", Method) |
     (grepl("2-STEP", Method) & (
-      Prediction == "HGSC" & grepl("s1", Workflow) |
-        Prediction != "HGSC" & grepl("s2", Workflow)
+      Prediction == "HGSOC" & grepl("s1", Workflow) |
+        Prediction != "HGSOC" & grepl("s2", Workflow)
     ))
   ) |>
   pivot_wider(names_from = Metric, values_from = Value)
@@ -1213,7 +1221,8 @@ conf_metrics_top <- conf_eval_per_class |>
     cols = where(is.numeric),
     names_to = "Class",
     names_ptypes = list(Class = factor(
-      levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")
+      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
     )),
     values_to = "Value"
   ) |>
@@ -1294,7 +1303,7 @@ conf_class_two_step <-
        factor(conf_class[conf_class != "HGSC"]))
 
 class_groups_seq <-
-  set_names(class_palette, paste0("(?<!non_)", c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  set_names(class_palette, paste0("(?<!non_)", c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
   imap_chr(~ paste0(
     "<span style = 'color:",
     .x,
@@ -1302,10 +1311,15 @@ class_groups_seq <-
     gsub("(?<!non_)", "", .y, fixed = TRUE),
     "</span>"
   )) |>
-  str_replace_all(string = map_chr(map(conf_class_seq, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
+  str_replace_all(string = conf_class_seq |> 
+                    map(levels) |> 
+                    map_at(4, rev) |> 
+                    map_chr(~ gsub("-", "_", paste(., collapse = " vs. "))),
+                  pattern = _) |> 
+  str_replace_all(c("HGSC" = "HGSOC", "MUC" = "MUOC", "LGSC" = "LGSOC"))
 
 class_groups_two_step <- 
-    set_names(class_palette, paste0("(?<!non_)", c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))) |>
+  set_names(class_palette, paste0("(?<!non_)", c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"))) |>
   imap_chr(~ paste0(
     "<span style = 'color:",
     .x,
@@ -1313,7 +1327,12 @@ class_groups_two_step <-
     gsub("(?<!non_)", "", .y, fixed = TRUE),
     "</span>"
   )) |>
-  str_replace_all(string = map_chr(map(conf_class_two_step, levels), ~ gsub("-", "_", paste(., collapse = " vs. "))), pattern = _)
+  str_replace_all(string = conf_class_two_step |> 
+                    map(levels) |> 
+                    map_at(2, \(x) x[c(1, 2, 4, 3)]) |> 
+                    map_chr(~ gsub("-", "_", paste(., collapse = " vs. "))),
+                  pattern = _) |> 
+  str_replace_all(c("HGSC" = "HGSOC", "MUC" = "MUOC", "LGSC" = "LGSOC"))
 ```
 
 ### Sequential
@@ -1378,6 +1397,12 @@ roc_curve_two_step <- mod_two_step |>
       add_column(truth = ..3)
     roc_df <- preds |> 
       roc_curve(truth, all_of(prob_cols))
+    if (ncol(preds) > 3) {
+      roc_df <- roc_df |> 
+        mutate(.level = factor(.level,
+                               levels = c("CCOC", "ENOC", "MUC", "LGSC"),
+                               labels = c("CCOC", "ENOC", "MUOC", "LGSOC")))
+    }
     auc <- preds |> 
       roc_auc(truth, all_of(prob_cols)) |> 
       pull(.estimate) |> 
@@ -1418,13 +1443,13 @@ print(roc_curve_two_step)
 
 preds <- mod_up_xgb |> 
   predict(conf_data, type = "prob") |>
-  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  add_column(truth = factor(conf_class))
 roc_df <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
   roc_curve(truth, matches(".pred")) |> 
-  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  mutate(.level = factor(.level,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))
 auc <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
@@ -1452,13 +1477,13 @@ print(roc_curve_up_xgb)
 
 preds <- mod_up_rf |> 
   predict(conf_data, type = "prob") |>
-  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  add_column(truth = factor(conf_class))
 roc_df <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
   roc_curve(truth, matches(".pred")) |> 
-  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  mutate(.level = factor(.level,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))
 auc <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
@@ -1486,13 +1511,13 @@ print(roc_curve_up_rf)
 
 preds <- mod_smote_svm |> 
   predict(conf_data, type = "prob") |>
-  add_column(truth = factor(conf_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  add_column(truth = factor(conf_class))
 roc_df <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
   roc_curve(truth, matches(".pred")) |> 
-  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  mutate(.level = factor(.level,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))
 auc <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
@@ -1731,7 +1756,8 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     values_to = "Prediction"
   ) |> 
   mutate(across(c(Truth, Prediction),
-                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"))),
+                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))),
          Method = "Up-XGB, Full Set")
 
 # Validation set overall metrics
@@ -1791,7 +1817,7 @@ val_metrics_top <- val_eval_per_class |>
     cols = where(is.numeric),
     names_to = "Class",
     names_ptypes = list(Class = factor(
-      levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")
+      levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
     )),
     values_to = "Value"
   ) |> 
@@ -1853,13 +1879,13 @@ print(val_conf_mat)
 
 preds <- mod_up_xgb |> 
   predict(val_data, type = "prob") |> 
-  add_column(truth = factor(val_class, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  add_column(truth = factor(val_class))
 roc_df <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
   roc_curve(truth, matches(".pred")) |> 
-  mutate(.level = factor(.level, levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC")))
+  mutate(.level = factor(.level,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))
 auc <- preds |>
-  relocate(.pred_HGSC, .before = 1) |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
@@ -2034,13 +2060,13 @@ all_gene_ranks <- bind_rows(
     values_from = "Rank"
   )
 
-# LGSC differential gene expression analysis
+# LGSOC differential gene expression analysis
 val_lgsc_condition <- val_pred_overall |>
-  filter(Truth == "LGSC") |>
+  filter(Truth == "LGSOC") |>
   mutate(Prediction_LSGC = fct_other(
     Prediction,
-    keep = "LGSC",
-    other_level = "non_LGSC"
+    keep = "LGSOC",
+    other_level = "non_LGSOC"
   ))
 
 val_lgsc_exp <- cs3 |>
