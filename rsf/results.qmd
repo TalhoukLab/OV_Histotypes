@@ -1541,7 +1541,7 @@ print(roc_curve_smote_svm)
 
 ```{r}
 #| label: fig-gene-up-xgb
-#| fig-cap: 'Gene Optimization for Up-XGB Classifier'
+#| fig-cap: 'Gene Optimization for Up-XGB Classifier using Balanced Accuracy'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
@@ -1574,8 +1574,8 @@ p_gene_up_xgb <-
   theme_bw() +
   labs(
     x = "Genes Added",
-    y = "F1-Score",
-    title = paste0("Gene Optimziation for Up-XGB Classifier ", unique(dat_gene_up_xgb$.metric))
+    y = "Balanced Accuracy",
+    title = "Gene Optimziation for Up-XGB Classifier"
   )
 ggplotly(p_gene_up_xgb, width = 600, height = 400)
 
@@ -1587,7 +1587,7 @@ genes_add_up_xgb <- gene_up_xgb_names |>
 opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
 ```
 
-In the Up-XGB classifier, the mean F1-score is highest when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
+In the Up-XGB classifier, the mean balanced accuracy is highest when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-up-xgb
@@ -1640,7 +1640,7 @@ gene_dist_up_xgb |>
 
 ```{r}
 #| label: fig-gene-smote-svm
-#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier'
+#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using Balanced Accuracy'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
@@ -1673,8 +1673,8 @@ p_gene_smote_svm <-
   theme_bw() +
   labs(
     x = "Genes Added",
-    y = "F1-Score",
-    title = paste0("Gene Optimziation for SMOTE-SVM using ", unique(dat_gene_smote_svm$.metric))
+    y = "Balanced Accuracy",
+    title = "Gene Optimziation for SMOTE-SVM"
   )
 ggplotly(p_gene_smote_svm, width = 600, height = 400)
 
@@ -1686,7 +1686,7 @@ genes_add_smote_svm <- gene_smote_svm_names |>
 opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 ```
 
-In the SMOTE-SVM classifier, the mean F1-score is optimal with `r n_genes_smote_svm` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
+In the SMOTE-SVM classifier, the mean balanced accuracy is optimal with `r n_genes_smote_svm` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-smote-svm
