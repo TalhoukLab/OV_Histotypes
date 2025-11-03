@@ -1933,6 +1933,26 @@ print(val_roc_curve_up_xgb_full)
 ```
 
 ```{r}
+#| label: fig-val-calib-up-xgb-full
+#| fig-cap: 'Calibration Plots for Up-XGB, Full Set Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds |> 
+  cal_plot_logistic(truth = truth) +
+  facet_wrap2(~ factor(truth,
+                      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+              strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank(),
+        strip.text = element_text(face = "bold"),
+        strip.placement = "inside") +
+  labs(title = "Calibration Plots for Up-XGB, Full Set Model in Validation Set")
+```
+
+```{r}
 #| label: fig-val-summary
 #| fig-cap: 'Validation Summary'
 #| fig-width: 10
