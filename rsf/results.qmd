@@ -29,6 +29,7 @@ library(DESeq2)
 library(tabulapdf)
 library(janitor)
 library(flextable)
+library(probably)
 library(conflicted)
 
 # Choose preferences among conflicting functions
@@ -2330,3 +2331,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
