@@ -2246,6 +2246,51 @@ print(val_all_volcano)
 ```
 
 ```{r}
+#| label: fig-bp-diff-exp-genes
+#| fig-cap: 'Boxplot of Most Differentially Expressed Genes'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+bind_rows(
+  Train = train_ref,
+  Confirmation = conf_ref,
+  Validation = val_ref,
+  .id = "Dataset"
+) |>
+  select(Dataset, ottaID, GAD1, LGALS4, hist_gr2) |>
+  mutate(hist_gr2 = fct_recode(
+    hist_gr2,
+    HGSOC = "HGSC",
+    MUOC = "MUC",
+    LGSOC = "LGSC",
+  )) |> 
+  pivot_longer(
+    cols = where(is.double),
+    names_to = "Gene",
+    names_ptypes = list(Gene = factor()),
+    values_to = "Value"
+  ) |>
+  nest(.by = "Dataset") |>
+  pmap(~ {
+    ggboxplot(
+      data = ..2,
+      x = "hist_gr2",
+      y = "Value",
+      fill = "hist_gr2",
+      palette = class_palette,
+      facet.by = "Gene",
+      xlab = "Histotype",
+      ylab = "Normalized Expression",
+      title = ..1,
+      legend = "none"
+    )
+  }) |>
+  wrap_plots(ncol = 1, axes = "collect") +
+  plot_annotation(title = "Boxplot of Most Differentially Expressed Genes")
+```
+
+```{r}
 #| label: fig-val-pred-protype
 #| fig-cap: 'Subtype Prediction Summary among Predicted HGSC Samples'
 #| fig-height: 7
