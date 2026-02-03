@@ -734,7 +734,7 @@ datatable(
 
 ```{r}
 #| label: tbl-rank-agg-comp-metrics
-#| tbl-cap: 'Rank Aggregation Comparison of Metrics Used'
+#| tbl-cap: 'Rank Aggregation Comparison of Metrics Used in Training Set'
 #| tbl-pos: 'H'
 
 rank_agg_metrics <- list(F1 = wflow_rank_agg_f1,
@@ -2331,4 +2331,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
