@@ -43,7 +43,8 @@ conflicts_prefer(
   dplyr::count(),
   purrr::reduce(),
   base::intersect(),
-  base::union()
+  base::union(),
+  flextable::width()
 )
 
 # Run cohort processing
@@ -1961,8 +1962,12 @@ preds |>
 
 val_eval_grob <- 
   flextable(val_eval) |> 
+  fontsize(size = 9, part = "all") |> 
+  fontsize(size = 7, part = "header") |> 
   colformat_double(j = -1, digits = 3) |> 
-  gen_grob()
+  width(j = 1, width = 1.2) |>
+  width(j = 3, width = 0.9) |>
+  gen_grob(fit = "width", scaling = "fixed")
 
 val_eval_gg <- ggplot() + 
   theme_void() + 
@@ -1973,9 +1978,10 @@ val_conf_mat_simp <- val_conf_mat +
   plot_annotation(title = NULL)
 
 layout <- "
-AABBBB
-CCBBBB
-CCBBBB
+AABBB
+AABBB
+CCBBB
+CCBBB
 "
 
 val_conf_mat_simp + val_roc_curve_up_xgb_full + val_eval_gg +
