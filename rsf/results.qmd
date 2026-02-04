@@ -1905,6 +1905,8 @@ ggplot(val_eval_long) +
 ```{r}
 #| label: fig-val-conf-mat
 #| fig-cap: 'Confusion Matrix for Validation Set Model'
+#| fig-width: 8
+#| out-width: '100%'
 
 val_conf_mat <- val_pred_overall |>
   nest(.by = Method) |>
@@ -1921,7 +1923,7 @@ val_conf_mat <- val_pred_overall |>
       )
   ) |> 
   wrap_plots() +
-  plot_annotation(title = "Confusion Matrix for Validation Set Model")
+  plot_annotation(title = "Confusion Matrix for Validation Set Model", tag_levels = "A")
 
 print(val_conf_mat)
 ```
