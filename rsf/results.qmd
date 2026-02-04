@@ -23,6 +23,7 @@ library(RColorBrewer)
 library(ggh4x)
 library(ggtext)
 library(ggrepel)
+library(ggpubr)
 library(randomForest)
 library(here)
 library(DESeq2)
@@ -1370,7 +1371,7 @@ class_groups_two_step <-
 ### Sequential
 
 ```{r}
-#| label: fig-roc-curve-seq
+#| label: fig-conf-roc-seq
 #| fig-cap: 'ROC Curves for Sequential Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 7
@@ -1413,7 +1414,7 @@ print(roc_curve_seq)
 ### 2-STEP
 
 ```{r}
-#| label: fig-roc-curve-two-step
+#| label: fig-conf-roc-two-step
 #| fig-cap: 'ROC Curves for 2-STEP Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 9
@@ -1467,7 +1468,7 @@ print(roc_curve_two_step)
 ### Up-XGB
 
 ```{r}
-#| label: fig-roc-curve-up-xgb
+#| label: fig-conf-roc-up-xgb
 #| fig-cap: 'ROC Curves for Up-XGB Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
@@ -1501,7 +1502,7 @@ print(roc_curve_up_xgb)
 ### Up-RF
 
 ```{r}
-#| label: fig-roc-curve-up-rf
+#| label: fig-conf-roc-up-rf
 #| fig-cap: 'ROC Curves for Up-RF Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
@@ -1535,7 +1536,7 @@ print(roc_curve_up_rf)
 ### SMOTE-SVM
 
 ```{r}
-#| label: fig-roc-curve-smote-svm
+#| label: fig-conf-roc-smote-svm
 #| fig-cap: 'ROC Curves for SMOTE-SVM Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
@@ -1928,8 +1929,11 @@ val_conf_mat <- val_pred_overall |>
 print(val_conf_mat)
 ```
 
+::: {#val-roc-curves .panel-tabset .nav-pills}
+### Up-XGB, Full Set
+
 ```{r}
-#| label: fig-val-roc-curve-up-xgb-full
+#| label: fig-val-roc-up-xgb-full
 #| fig-cap: 'ROC Curves for Up-XGB, Full Set Model in Validation Set'
 #| fig-height: 7
 #| fig-width: 8
@@ -1960,12 +1964,54 @@ val_roc_curve_up_xgb_full <-
 print(val_roc_curve_up_xgb_full)
 ```
 
+### Up-XGB, Optimal Set
+
+```{r}
+#| label: fig-val-roc-up-xgb-opt
+#| fig-cap: 'ROC Curves for Up-XGB, Optimal Set Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_up_xgb_opt |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+roc_df <- preds |>
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))
+auc <- preds |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
+  number(accuracy = 0.001, prefix = "AUC = ")
+val_roc_curve_up_xgb_opt <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curve for Up-XGB, Optimal Set Model in Validation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+print(val_roc_curve_up_xgb_opt)
+```
+:::
+
+::: {#val-calib .panel-tabset .nav-pills}
+### Up-XGB, Full Set
+
 ```{r}
 #| label: fig-val-calib-up-xgb-full
 #| fig-cap: 'Calibration Plots for Up-XGB, Full Set Model in Validation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
+
+preds <- mod_up_xgb |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
 
 preds |> 
   cal_plot_logistic(truth = truth) +
@@ -1980,6 +2026,33 @@ preds |>
   labs(title = "Calibration Plots for Up-XGB, Full Set Model in Validation Set")
 ```
 
+### Up-XGB, Optimal Set
+
+```{r}
+#| label: fig-val-calib-up-xgb-opt
+#| fig-cap: 'Calibration Plots for Up-XGB, Optimal Set Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_up_xgb_opt |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+
+preds |> 
+  cal_plot_logistic(truth = truth) +
+  facet_wrap2(~ factor(truth,
+                      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+              strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank(),
+        strip.text = element_text(face = "bold"),
+        strip.placement = "inside") +
+  labs(title = "Calibration Plots for Up-XGB, Optimal Set Model in Validation Set")
+```
+:::
+
 ```{r}
 #| label: fig-val-summary
 #| fig-cap: 'Validation Summary'
@@ -1987,7 +2060,10 @@ preds |>
 #| fig-height: 6
 
 val_eval_grob <- 
-  flextable(val_eval) |> 
+  val_eval |> 
+  filter(Method == "Up-XGB, Full") |> 
+  select(-Method) |> 
+  flextable() |> 
   fontsize(size = 9, part = "all") |> 
   fontsize(size = 7, part = "header") |> 
   colformat_double(j = -1, digits = 3) |> 
@@ -1999,7 +2075,8 @@ val_eval_gg <- ggplot() +
   theme_void() + 
   annotation_custom(val_eval_grob)
 
-val_conf_mat_simp <- val_conf_mat +
+val_conf_mat_simp <- val_conf_mat |> 
+  pluck(1) +
   labs(title = "Confusion Matrix") +
   plot_annotation(title = NULL)
 
@@ -2024,6 +2101,7 @@ od.otta <- od.otta |>
   mutate(otta_id = as.character(otta_id))
 
 val_pred_enoc_clin <- val_pred_overall |>
+  filter(Method == "Up-XGB, Full") |> 
   inner_join(hist |> select(FileName, ottaID), by = "FileName") |>
   inner_join(od.otta, by = c("ottaID" = "otta_id")) |>
   filter(Truth == "ENOC") |>
@@ -2145,7 +2223,7 @@ all_gene_ranks <- bind_rows(
 
 # LGSOC differential gene expression analysis
 val_lgsc_condition <- val_pred_overall |>
-  filter(Truth == "LGSOC") |>
+  filter(Method == "Up-XGB, Full", Truth == "LGSOC") |>
   mutate(Prediction_LSGC = fct_other(
     Prediction,
     keep = "LGSOC",
@@ -2184,7 +2262,7 @@ res_lgsc <- dds_lgsc |>
 
 # ENOC differential gene expression analysis
 val_enoc_condition <- val_pred_overall |>
-  filter(Truth == "ENOC") |>
+  filter(Method == "Up-XGB, Full", Truth == "ENOC") |>
   mutate(Prediction_ENOC = fct_other(
     Prediction,
     keep = "ENOC",
@@ -2264,7 +2342,7 @@ val_all_volcano <- ggplot(res_all, aes(x = log2FoldChange, y = -log10(padj))) +
   labs(
     x = "Log<sub>2</sub> Fold Change",
     y = "-Log<sub>10</sub> p-value",
-    title = "Volcano Plots of Validation Set Predictions",
+    title = "Volcano Plots of Validation Set Predictions using Up-XGB, Full Set",
     caption = "Significance condition: p<sub>adj</sub> < 0.05 and |log<sub>2</sub>FC| > 2"
   )
 
@@ -2279,17 +2357,17 @@ print(val_all_volcano)
 #| out-width: '100%'
 
 bind_rows(
-  Train = train_ref,
-  Confirmation = conf_ref,
-  Validation = val_ref,
+  Train = bind_cols(train_data, hist_final = train_class),
+  Confirmation = bind_cols(conf_data, hist_final = conf_class),
+  Validation = bind_cols(val_data, hist_final = val_class),
   .id = "Dataset"
 ) |>
-  select(Dataset, ottaID, GAD1, LGALS4, hist_gr2) |>
-  mutate(hist_gr2 = fct_recode(
-    hist_gr2,
-    HGSOC = "HGSC",
-    MUOC = "MUC",
-    LGSOC = "LGSC",
+  rownames_to_column("FileName") |> 
+  select(Dataset, FileName, GAD1, LGALS4, hist_final) |>
+  mutate(hist_final = factor(
+    hist_final,
+    levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+    labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
   )) |> 
   pivot_longer(
     cols = where(is.double),
@@ -2301,9 +2379,9 @@ bind_rows(
   pmap(~ {
     ggboxplot(
       data = ..2,
-      x = "hist_gr2",
+      x = "hist_final",
       y = "Value",
-      fill = "hist_gr2",
+      fill = "hist_final",
       palette = class_palette,
       facet.by = "Gene",
       xlab = "Histotype",
@@ -2408,3 +2486,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
