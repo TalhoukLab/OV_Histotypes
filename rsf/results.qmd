@@ -1770,6 +1770,25 @@ gene_dist_smote_svm |>
 ## Validation Set
 
 ```{r}
+#| label: optimized-models
+
+# Up-XGB optimal gene list workflow
+set.seed(2024)
+wflow_up_xgb_opt <- wflow_up_xgb_model |>
+  pluck("pre", "actions", "recipe", "recipe") |>
+  modify_at(c("var_info", "term_info"),
+            \(x) x |>
+              filter(variable %in% c(opt_genes_up_xgb, "class")) |>
+              arrange(match(variable, gene_order_up_xgb))) |>
+  update_recipe(x = wflow_up_xgb_model, recipe = _)
+
+# Up-XGB optimal gene list model trained
+set.seed(2024)
+mod_up_xgb_opt <- wflow_up_xgb_opt |>
+  fit(data = train_ref)
+```
+
+```{r}
 #| label: tbl-val-eval
 #| tbl-cap: 'Evaluation Metrics on Validation Set Model, Up-XGB, Full Set'
 #| tbl-pos: 'H'
@@ -1778,7 +1797,8 @@ gene_dist_smote_svm |>
 val_pred_overall <- data.frame(FileName = rownames(val_data),
                                Truth = val_class) |>
   mutate(
-    Prediction_up_xgb_opt = predict(mod_up_xgb, val_data)[[".pred_class"]],
+    Prediction_up_xgb_full = predict(mod_up_xgb, val_data)[[".pred_class"]],
+    Prediction_up_xgb_opt = predict(mod_up_xgb_opt, val_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   pivot_longer(
@@ -1787,10 +1807,19 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     names_prefix = "Prediction_",
     values_to = "Prediction"
   ) |> 
-  mutate(across(c(Truth, Prediction),
-                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))),
-         Method = "Up-XGB, Full Set")
+  mutate(
+    across(c(Truth, Prediction), ~ factor(
+      .x,
+      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+    )),
+    Method = fct_inorder(
+      case_match(
+        Method,
+        "up_xgb_full" ~ "Up-XGB, Full",
+        "up_xgb_opt" ~ "Up-XGB, Optimal"
+      )
+    ))
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall |>
@@ -1800,7 +1829,8 @@ val_eval_overall <- val_pred_overall |>
     Specificity = specificity_vec(Truth, Prediction),
     `F1-Score` = f_meas_vec(Truth, Prediction),
     `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
-    Kappa = kap_vec(Truth, Prediction)
+    Kappa = kap_vec(Truth, Prediction),
+    .by = Method
   ) |> 
   pivot_longer(
     cols = where(is.numeric),
@@ -1810,7 +1840,9 @@ val_eval_overall <- val_pred_overall |>
 
 # Validation set per-class metrics
 val_eval_per_class <- val_pred_overall |>
-  ova_metrics(Truth, Prediction, per_class_mset) |>
+  nest(.by = Method) |> 
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
+  unnest(data) |> 
   mutate(
     Metric = case_match(
       .metric,
@@ -1823,19 +1855,21 @@ val_eval_per_class <- val_pred_overall |>
     ),
     .keep = "unused"
   ) |>
-  pivot_wider(id_cols = Metric,
-              names_from = class_group,
-              values_from = .estimate)
+  pivot_wider(
+    id_cols = c(Method, Metric),
+    names_from = class_group,
+    values_from = .estimate
+  )
 
 # Combined all metrics
 val_eval <-
-  inner_join(val_eval_overall, val_eval_per_class, by = "Metric")
+  inner_join(val_eval_overall, val_eval_per_class, by = c("Method", "Metric"))
 
 val_eval |> 
   kbl(booktabs = TRUE, linesep = "", digits = 3) |>
   kable_styling() |> 
   collapse_rows(columns = 1) |> 
-  add_header_above(c(" " = 2, "Histotypes" = 5))
+  add_header_above(c(" " = 3, "Histotypes" = 5))
 ```
 
 ```{r}
