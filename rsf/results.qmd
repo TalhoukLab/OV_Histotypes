@@ -1635,7 +1635,9 @@ res_conf_enoc <- dds_conf_enoc |>
 conf_de_rank <-
   bind_rows(LGSC = res_conf_lgsc, ENOC = res_conf_enoc, .id = "class") |>
   pivot_wider(names_from = "class", values_from = "Rank") |>
-  mutate(Rank = row_number(rowMeans(pick(LGSC, ENOC))), .keep = "unused") |>
+  mutate(Variable = Gene,
+         Rank = row_number(rowMeans(pick(LGSC, ENOC))),
+         .keep = "unused") |>
   arrange(Rank)
 saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 ```
