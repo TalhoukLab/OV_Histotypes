@@ -1569,7 +1569,7 @@ print(roc_curve_smote_svm)
 :::
 
 ```{r}
-#| label: conf-de-vi
+#| label: conf-de-rank
 
 # LGSOC differential gene expression analysis in confirmation set
 conf_lgsc_condition <- conf_pred_overall |>
@@ -1631,12 +1631,13 @@ res_conf_enoc <- dds_conf_enoc |>
   mutate(Rank = seq_along(Gene), .keep = "used") |>
   add_column(wflow = "up_xgb", .before = 1)
 
-# Variable Importance via differential expression in confirmation set
-conf_de_vi <-
+# Gene rank via differential expression in confirmation set
+conf_de_rank <-
   bind_rows(LGSC = res_conf_lgsc, ENOC = res_conf_enoc, .id = "class") |>
   pivot_wider(names_from = "class", values_from = "Rank") |>
   mutate(Rank = row_number(rowMeans(pick(LGSC, ENOC))), .keep = "unused") |>
   arrange(Rank)
+saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 ```
 
 ## Gene Optimization
