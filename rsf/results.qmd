@@ -1655,7 +1655,7 @@ saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 #| fig-width: 5
 #| out-width: '100%'
 
-gene_up_xgb_names <- all_vi_train |> 
+gene_up_xgb_names <- conf_de_rank |> 
   filter(wflow == "up_xgb") |> 
   rowid_to_column("Genes") |> 
   select(Genes, Name = Variable) |> 
