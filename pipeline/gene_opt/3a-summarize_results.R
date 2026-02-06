@@ -15,8 +15,12 @@ metrics_files <- list.files(
 all_wflow_metrics <- metrics_files %>%
   set_names(gsub("(.*)_add(.*)_metrics.*", "\\1_\\2", basename(.))) %>%
   map(readRDS) %>%
-  list_rbind(names_to = "Workflow_Genes") %>%
-  separate(Workflow_Genes, c("Workflow", "Genes"), sep =  "_(?=[^_]+$)") %>%
+  list_rbind(names_to = "Workflow_Method_Genes") %>%
+  separate_wider_regex(
+    cols = Workflow_Method_Genes,
+    patterns = c(Workflow = ".*", "_", Method = ".*", "_", Genes = ".*"),
+    too_few = "align_start"
+  ) %>%
   mutate(Genes = as.integer(Genes))
 
 all_metrics_file <- file.path(
