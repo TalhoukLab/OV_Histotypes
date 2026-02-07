@@ -1601,7 +1601,7 @@ res_conf_lgsc <- dds_conf_lgsc |>
   filter(Gene %in% names(train_data), !Gene %in% overlap_all) |>
   arrange(padj, desc(abs(log2FoldChange))) |>
   mutate(Rank = seq_along(Gene), .keep = "used") |>
-  add_column(wflow = "up_xgb", .before = 1)
+  add_column(wflow = "smote_svm", .before = 1)
 
 # ENOC differential gene expression analysis in confirmation set
 conf_enoc_condition <- conf_pred_overall |>
@@ -1631,7 +1631,7 @@ res_conf_enoc <- dds_conf_enoc |>
   filter(Gene %in% names(train_data), !Gene %in% overlap_all) |>
   arrange(padj, desc(abs(log2FoldChange))) |>
   mutate(Rank = seq_along(Gene), .keep = "used") |>
-  add_column(wflow = "up_xgb", .before = 1)
+  add_column(wflow = "smote_svm", .before = 1)
 
 # Gene rank via differential expression in confirmation set
 conf_de_rank <-
