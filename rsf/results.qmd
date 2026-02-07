@@ -1575,7 +1575,7 @@ print(roc_curve_smote_svm)
 
 # LGSOC differential gene expression analysis in confirmation set
 conf_lgsc_condition <- conf_pred_overall |>
-  filter(Method == "Up-XGB", Truth == "LGSOC") |>
+  filter(Method == "SMOTE-SVM", Truth == "LGSOC") |>
   mutate(Prediction_LSGC = fct_other(
     Prediction,
     keep = "LGSOC",
@@ -1605,7 +1605,7 @@ res_conf_lgsc <- dds_conf_lgsc |>
 
 # ENOC differential gene expression analysis in confirmation set
 conf_enoc_condition <- conf_pred_overall |>
-  filter(Method == "Up-XGB", Truth == "ENOC") |>
+  filter(Method == "SMOTE-SVM", Truth == "ENOC") |>
   mutate(Prediction_ENOC = fct_other(
     Prediction,
     keep = "ENOC",
