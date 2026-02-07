@@ -1655,13 +1655,13 @@ saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 #| fig-width: 5
 #| out-width: '100%'
 
-gene_up_xgb_names <- conf_de_rank |> 
+gene_up_xgb_names <- all_vi_train |> 
   filter(wflow == "up_xgb") |> 
   rowid_to_column("Genes") |> 
   select(Genes, Name = Variable) |> 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_up_xgb <- gene_opt_de_all_metrics_conf |> 
+dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "up_xgb",
          .metric == "bal_accuracy",
          class_group == "Overall") |> 
@@ -1760,7 +1760,7 @@ gene_smote_svm_names <- all_vi_train |>
   select(Genes, Name = Variable) |> 
   add_row(Genes = 0L, Name = "Base", .before = 1)
 
-dat_gene_smote_svm <- gene_opt_de_all_metrics_conf |> 
+dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "smote_svm",
          .metric == "bal_accuracy",
          class_group == "Overall") |> 
