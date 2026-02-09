@@ -89,12 +89,23 @@ per_class_metrics_conf_seq <-
 per_class_metrics_conf_two_step <-
   readRDS(here("data/per_class_metrics_conf_two_step.rds"))
 
-# Models
+# Alternate Confirmation Set Metrics
+all_metrics_conf_opt <- readRDS(here("data/all_metrics_conf_opt.rds"))
+all_metrics_conf_base <- readRDS(here("data/all_metrics_conf_base.rds"))
+all_metrics_conf_full <- readRDS(here("data/all_metrics_conf_full.rds"))
+
+# Training Set Models
 wflow_up_xgb_model <- readRDS(here("data/wflow_up_xgb_model_train.rds"))
 wflow_up_rf_model <- readRDS(here("data/wflow_up_rf_model_train.rds"))
 wflow_smote_svm_model <- readRDS(here("data/wflow_smote_svm_model_train.rds"))
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
+
+# Confirmation Set Models
+wflow_smote_svm_model_conf <- readRDS(here("data/wflow_smote_svm_model_conf.rds"))
+wflow_smote_svm_model_conf_opt <- readRDS(here("data/wflow_smote_svm_model_conf_opt.rds"))
+wflow_smote_svm_model_conf_base <- readRDS(here("data/wflow_smote_svm_model_conf_base.rds"))
+wflow_smote_svm_model_conf_full <- readRDS(here("data/wflow_smote_svm_model_conf_full.rds"))
 
 # Overall Variable Importance
 all_vi_train <- readRDS(here("data/all_vi_train.rds"))
