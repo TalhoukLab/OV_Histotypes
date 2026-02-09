@@ -202,20 +202,20 @@ cs3_train <-
 # Combined Training Set (CS1 + CS2 + CS3), n=241+790+470=1501
 # Common genes n=72
 train_ref_comb <-
-  bind_rows(cs1_train, cs2_train, cs3_train) %>%
-  rownames_to_column("FileName") %>%
-  mutate(col_name = paste0("X", FileName)) %>%
-  inner_join(cohorts, by = "col_name") %>%
-  select(FileName, all_of(common_genes123), cohort) %>%
-  inner_join(hist, by = "FileName") %>%
-  column_to_rownames("FileName")
+  bind_rows(cs1_train, cs2_train, cs3_train) |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = c("FileName", "ottaID")) |>
+  column_to_rownames("FileName") |>
+  select(ottaID, all_of(common_genes123), hist_gr, hist_final)
 
 # Training set removed replicates (CS3 > CS2 > CS1), n=1501-244=1257
 train_ref <- train_ref_comb %>%
   slice_tail(n = 1, by = ottaID)
 
 train_data <- select(train_ref, where(is.double))
-train_class <- train_ref[["hist_final"]]
+train_class <- pull(train_ref)
 
 saveRDS(train_data, here::here("data/train_data.rds"))
 saveRDS(train_class, here::here("data/train_class.rds"))
@@ -302,9 +302,9 @@ saveRDS(val_data, here::here("data/val_data.rds"))
 saveRDS(val_class, here::here("data/val_class.rds"))
 
 
-# Full Confirmation Set ---------------------------------------------------
+# Full PrOTYPE and SPOT Panel ---------------------------------------------
 
-# Uses all PrOTYPE and SPOT genes
+# Confirmation Set with full PrOTYPE and SPOT genes panel
 conf_full_ref <- cs3_X |>
   rownames_to_column("FileName") |>
   mutate(col_name = paste0("X", FileName)) |>
