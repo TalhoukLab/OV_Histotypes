@@ -45,7 +45,8 @@ conflicts_prefer(
   purrr::reduce(),
   base::intersect(),
   base::union(),
-  flextable::width()
+  flextable::width(),
+  plotly::layout
 )
 
 # Run cohort processing
@@ -1749,7 +1750,7 @@ gene_dist_up_xgb |>
 
 ```{r}
 #| label: fig-gene-smote-svm
-#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using Balanced Accuracy'
+#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using F1-Score'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
@@ -1762,32 +1763,43 @@ gene_smote_svm_names <- all_vi_train |>
 
 dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "smote_svm",
-         .metric == "bal_accuracy",
+         .metric == "f_meas",
          class_group == "Overall") |> 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
     .by = Genes
   ) |>
-  inner_join(gene_smote_svm_names, by = "Genes")
+  inner_join(gene_smote_svm_names, by = "Genes") |> 
+  mutate(Optimal = ifelse(Genes == min(Genes[mean_estimate > 0.7]), TRUE, FALSE))
 
 p_gene_smote_svm <- 
   ggplot(dat_gene_smote_svm, aes(text = Name)) +
-  geom_pointrange(aes(
-    x = Genes,
-    y = mean_estimate,
-    ymin = min_estimate,
-    ymax = max_estimate
-  )) +
+  geom_pointrange(
+    aes(
+      x = Genes,
+      y = mean_estimate,
+      ymin = min_estimate,
+      ymax = max_estimate,
+      color = Optimal
+    ),
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = c("black", "red")) +
   theme_bw() +
   labs(
     x = "Genes Added",
-    y = "Balanced Accuracy",
-    title = "Gene Optimziation for SMOTE-SVM"
+    y = "F1-Score",
+    title = "Gene Optimziation for SMOTE-SVM",
+    color = NULL
   )
-ggplotly(p_gene_smote_svm, width = 600, height = 400)
+ggplotly(p_gene_smote_svm, width = 600, height = 400) |> 
+  layout(showlegend = FALSE)
 
-n_genes_smote_svm <- 0
+n_genes_smote_svm <- dat_gene_smote_svm |> 
+  filter(Optimal) |> 
+  pull(Genes) |> 
+  unique()
 genes_add_smote_svm <- gene_smote_svm_names |> 
   filter(Genes > 0L) |> 
   slice_min(order_by = Genes, n = n_genes_smote_svm) |> 
@@ -1795,7 +1807,7 @@ genes_add_smote_svm <- gene_smote_svm_names |>
 opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 ```
 
-In the SMOTE-SVM classifier, the mean balanced accuracy is optimal with `r n_genes_smote_svm` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
+In the SMOTE-SVM classifier, the optimal number of genes is achieved at the fewest genes needed to achieve a mean F1-Score above 0.7 with `r n_genes_smote_svm` genes added, hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-smote-svm
