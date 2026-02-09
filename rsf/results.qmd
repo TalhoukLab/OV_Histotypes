@@ -112,10 +112,9 @@ gene_opt_all_metrics_conf_two_step <-
   readRDS(here("data/gene_opt_all_metrics_conf_two_step.rds"))
 
 # PrOTYPE and SPOT genes
-coefmat <- readRDS(here("data/coefmat.rds"))
-overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
-overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
-overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+overlap_PrOTYPE <- intersect(names(train_data), genes_PrOTYPE)
+overlap_SPOT <- intersect(names(train_data), genes_SPOT)
+overlap_all <- union(overlap_PrOTYPE, overlap_SPOT)
 
 # PrOTYPE final model
 final_model <- readRDS(here("data/final_model.rds"))
@@ -1755,6 +1754,26 @@ gene_dist_smote_svm |>
       escape = FALSE) |> 
   kable_styling(full_width = FALSE) |> 
   collapse_rows(columns = 1)
+```
+
+### Gene List Comparisons in Confirmation Set
+
+```{r}
+#| label: gene-list-comps-conf
+
+conf_base_data <- conf_data |>
+  select(all_of(overlap_all))
+conf_base_class <- conf_class
+
+saveRDS(conf_base_data, here::here("data/conf_base_data.rds"))
+saveRDS(conf_base_class, here::here("data/conf_base_class.rds"))
+
+conf_opt_data <- conf_data |>
+  select(all_of(opt_genes_smote_svm))
+conf_opt_class <- conf_class
+
+saveRDS(conf_opt_data, here::here("data/conf_opt_data.rds"))
+saveRDS(conf_opt_class, here::here("data/conf_opt_class.rds"))
 ```
 
 ## Validation Set

@@ -559,3 +559,21 @@ cs3_usc_X <- cs3_norm_usc %>%
 cs3_usc_R <- cs3_norm_usc %>%
   select(Name, matches("POOL")) %>%
   `rownames<-`(NULL)
+
+
+# PrOTYPE and SPOT genes --------------------------------------------------
+
+# PrOTYPE genes
+genes_PrOTYPE <- cs5 |>
+  filter(Code.Class == "Endogenous") |>
+  pull(Name)
+
+# SPOT genes
+coefmat <- readRDS(here("data/coefmat.rds"))
+genes_SPOT <- coefmat |>
+  filter(!grepl("age|stage", Symbol)) |>
+  pull(Symbol) |>
+  gsub("PD\\.1", "PD-1", x = _)
+
+# Combined PrOTYPE and SPOT genes
+genes_PrOTYPE_SPOT <- union(genes_PrOTYPE, genes_SPOT)

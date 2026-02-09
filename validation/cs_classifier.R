@@ -300,3 +300,22 @@ val_class <- val_ref[["hist_final"]]
 
 saveRDS(val_data, here::here("data/val_data.rds"))
 saveRDS(val_class, here::here("data/val_class.rds"))
+
+
+# Full Confirmation Set ---------------------------------------------------
+
+# Uses all PrOTYPE and SPOT genes
+conf_full_ref <- cs3_X |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = "FileName") |>
+  filter(cohort == "TNCO") |>
+  column_to_rownames("FileName") |>
+  select(all_of(genes_PrOTYPE_SPOT), hist_final)
+
+conf_full_data <- select(conf_full_ref, where(is.double))
+conf_full_class <- conf_full_ref[["hist_final"]]
+
+saveRDS(conf_full_data, here::here("data/conf_full_data.rds"))
+saveRDS(conf_full_class, here::here("data/conf_full_class.rds"))
