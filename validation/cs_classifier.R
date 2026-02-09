@@ -270,33 +270,33 @@ saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 # Construct Test Sets -----------------------------------------------------
 
 # Confirmation set, n=642 (TNCO)
-conf_ref <- cs3_X %>%
-  rownames_to_column("FileName") %>%
-  mutate(col_name = paste0("X", FileName)) %>%
-  inner_join(cohorts, by = "col_name") %>%
-  select(FileName, all_of(common_genes123), cohort) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(cohort == "TNCO") %>%
-  column_to_rownames("FileName")
+conf_ref <- cs3_X |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = "FileName") |>
+  filter(cohort == "TNCO") |>
+  column_to_rownames("FileName") |>
+  select(all_of(common_genes123), hist_final)
 
 conf_data <- select(conf_ref, where(is.double))
-conf_class <- conf_ref[["hist_final"]]
+conf_class <- pull(conf_ref)
 
 saveRDS(conf_data, here::here("data/conf_data.rds"))
 saveRDS(conf_class, here::here("data/conf_class.rds"))
 
 # Validation set, n=894 (DOVE)
-val_ref <- cs3_X %>%
-  rownames_to_column("FileName") %>%
-  mutate(col_name = paste0("X", FileName)) %>%
-  inner_join(cohorts, by = "col_name") %>%
-  select(FileName, all_of(common_genes123), cohort) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(cohort == "DOVE4") %>%
-  column_to_rownames("FileName")
+val_ref <- cs3_X |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = "FileName") |>
+  filter(cohort == "DOVE4") |>
+  column_to_rownames("FileName") |>
+  select(all_of(common_genes123), hist_final)
 
 val_data <- select(val_ref, where(is.double))
-val_class <- val_ref[["hist_final"]]
+val_class <- pull(val_ref)
 
 saveRDS(val_data, here::here("data/val_data.rds"))
 saveRDS(val_class, here::here("data/val_class.rds"))
