@@ -1793,6 +1793,63 @@ conf_opt_class <- conf_class
 
 saveRDS(conf_opt_data, here::here("data/conf_opt_data.rds"))
 saveRDS(conf_opt_class, here::here("data/conf_opt_class.rds"))
+
+gene_list_comps_conf <- bind_rows(
+  All = all_metrics_conf,
+  Optimal = all_metrics_conf_opt,
+  Base = all_metrics_conf_base,
+  Full = all_metrics_conf_full,
+  .id = "Method"
+) |>
+  filter(wflow == "smote_svm") |>
+  mutate(
+    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
+    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
+    .by = c(Method, class_group, .metric)
+  ) |>
+  distinct(pick(-fold_id, -.estimate)) |>
+  rename(Workflow = wflow) |>
+  mutate(
+    class_group = factor(
+      class_group,
+      levels = c("Overall", "HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+      labels = c("Overall", "HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+    ),
+    Method = fct_inorder(Method),
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa",
+      .ptype = factor(
+        levels = c(
+          "Accuracy",
+          "Sensitivity",
+          "Specificity",
+          "F1-Score",
+          "Balanced Accuracy",
+          "Kappa"
+        )
+      )
+    ),
+    .keep = "unused"
+  ) |>
+  drop_na(Metric) |>
+  select(Method, Metric, mean_estimate, lower, upper, class_group) |>
+  mutate(across(where(is.numeric), ~ round(., digits = 3))) |>
+  mutate(Estimate = paste0(mean_estimate, " (", lower, ", ", upper, ")"),
+         .keep = "unused") |>
+  arrange(Method, Metric, class_group) |>
+  pivot_wider(names_from = "class_group", values_from = "Estimate")
+
+gene_list_comps_conf |>
+  kbl(booktabs = TRUE, linesep = "") |>
+  kable_styling(full_width = FALSE, latex_options = "scale_down") |>
+  collapse_rows(columns = 1) |>
+  add_header_above(c(" " = 3, "Histotypes" = 5))
 ```
 
 ## Validation Set
