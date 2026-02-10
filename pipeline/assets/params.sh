@@ -10,6 +10,7 @@ seqData=(seq)
 nseq=4
 ngenes=44
 gene_opt_wflow="up_xgb"
+gene_opt_rank="vi"
 
 # Directory parameters
 user="$(whoami)"

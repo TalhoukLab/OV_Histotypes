@@ -8,11 +8,16 @@ base_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
                 "PDZK1IP1", "FBN1", "HIF1A", "CXCL10", "DUSP4", "SOX17", "MITF",
                 "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9")
 
-# Import ranked variable importance for trained workflows
-ranked_vi <- readRDS(file.path(outputDir, "summarize_results", "train", "all_vi_train.rds"))
+if (gene_opt_rank == "vi") {
+  # Import ranked variable importance for trained workflows
+  ranked_df <- readRDS(file.path(outputDir, "summarize_results", "train", "all_vi_train.rds"))
+} else if (gene_opt_rank == "de") {
+  # Import gene ranks via differential expression analysis in confirmation set
+  ranked_df <- readRDS(file.path(inputDir, "conf_de_rank.rds"))
+}
 
 # Order of candidate genes for specified workflow
-candidate_genes <- ranked_vi %>%
+candidate_genes <- ranked_df %>%
   filter(wflow == gene_opt_wflow) %>%
   slice_head(n = as.numeric(ngene)) %>%
   pull(Variable)

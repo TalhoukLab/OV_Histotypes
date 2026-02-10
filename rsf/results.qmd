@@ -23,6 +23,7 @@ library(RColorBrewer)
 library(ggh4x)
 library(ggtext)
 library(ggrepel)
+library(ggpubr)
 library(randomForest)
 library(here)
 library(DESeq2)
@@ -43,7 +44,9 @@ conflicts_prefer(
   dplyr::count(),
   purrr::reduce(),
   base::intersect(),
-  base::union()
+  base::union(),
+  flextable::width(),
+  plotly::layout
 )
 
 # Run cohort processing
@@ -71,6 +74,14 @@ seq_class <- readRDS(here("data", "seq_class.rds"))
 two_step_data <- readRDS(here("data", "two_step_data.rds"))
 two_step_class <- readRDS(here("data", "two_step_class.rds"))
 
+# Confirmation data with all PrOTYPE and SPOT genes
+conf_full_data <- readRDS(here("data", "conf_full_data.rds"))
+conf_full_class <- readRDS(here("data", "conf_full_class.rds"))
+
+# Validation data with all PrOTYPE and SPOT genes
+val_full_data <- readRDS(here("data", "val_full_data.rds"))
+val_full_class <- readRDS(here("data", "val_full_class.rds"))
+
 ## Outputs
 # Training Set Metrics
 all_metrics_train <- readRDS(here("data/all_metrics_train.rds"))
@@ -86,12 +97,23 @@ per_class_metrics_conf_seq <-
 per_class_metrics_conf_two_step <-
   readRDS(here("data/per_class_metrics_conf_two_step.rds"))
 
-# Models
+# Alternate Confirmation Set Metrics
+all_metrics_conf_opt <- readRDS(here("data/all_metrics_conf_opt.rds"))
+all_metrics_conf_base <- readRDS(here("data/all_metrics_conf_base.rds"))
+all_metrics_conf_full <- readRDS(here("data/all_metrics_conf_full.rds"))
+
+# Training Set Models
 wflow_up_xgb_model <- readRDS(here("data/wflow_up_xgb_model_train.rds"))
 wflow_up_rf_model <- readRDS(here("data/wflow_up_rf_model_train.rds"))
 wflow_smote_svm_model <- readRDS(here("data/wflow_smote_svm_model_train.rds"))
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
+
+# Confirmation Set Models
+wflow_smote_svm_model_conf <- readRDS(here("data/wflow_smote_svm_model_conf.rds"))
+wflow_smote_svm_model_conf_opt <- readRDS(here("data/wflow_smote_svm_model_conf_opt.rds"))
+wflow_smote_svm_model_conf_base <- readRDS(here("data/wflow_smote_svm_model_conf_base.rds"))
+wflow_smote_svm_model_conf_full <- readRDS(here("data/wflow_smote_svm_model_conf_full.rds"))
 
 # Overall Variable Importance
 all_vi_train <- readRDS(here("data/all_vi_train.rds"))
@@ -99,6 +121,8 @@ all_vi_seq <- readRDS(here("data/all_vi_seq.rds"))
 all_vi_two_step <- readRDS(here("data/all_vi_two_step.rds"))
 
 # Gene Optimization
+gene_opt_de_all_metrics_conf <- 
+  readRDS(here("data/gene_opt_de_all_metrics_conf.rds"))
 gene_opt_all_metrics_conf <- 
   readRDS(here("data/gene_opt_all_metrics_conf.rds"))
 gene_opt_all_metrics_conf_seq <-
@@ -107,10 +131,9 @@ gene_opt_all_metrics_conf_two_step <-
   readRDS(here("data/gene_opt_all_metrics_conf_two_step.rds"))
 
 # PrOTYPE and SPOT genes
-coefmat <- readRDS(here("data/coefmat.rds"))
-overlap_PrOTYPE <- intersect(names(train_data), cs5$Name)
-overlap_SPOT <- intersect(names(train_data), coefmat[["Symbol"]])
-overlap_all <- unique(c(overlap_PrOTYPE, overlap_SPOT))
+overlap_PrOTYPE <- intersect(names(train_data), genes_PrOTYPE)
+overlap_SPOT <- intersect(names(train_data), genes_SPOT)
+overlap_all <- union(overlap_PrOTYPE, overlap_SPOT)
 
 # PrOTYPE final model
 final_model <- readRDS(here("data/final_model.rds"))
@@ -734,7 +757,7 @@ datatable(
 
 ```{r}
 #| label: tbl-rank-agg-comp-metrics
-#| tbl-cap: 'Rank Aggregation Comparison of Metrics Used'
+#| tbl-cap: 'Rank Aggregation Comparison of Metrics Used in Training Set'
 #| tbl-pos: 'H'
 
 rank_agg_metrics <- list(F1 = wflow_rank_agg_f1,
@@ -1369,7 +1392,7 @@ class_groups_two_step <-
 ### Sequential
 
 ```{r}
-#| label: fig-roc-curve-seq
+#| label: fig-conf-roc-seq
 #| fig-cap: 'ROC Curves for Sequential Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 7
@@ -1412,7 +1435,7 @@ print(roc_curve_seq)
 ### 2-STEP
 
 ```{r}
-#| label: fig-roc-curve-two-step
+#| label: fig-conf-roc-two-step
 #| fig-cap: 'ROC Curves for 2-STEP Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 9
@@ -1466,7 +1489,7 @@ print(roc_curve_two_step)
 ### Up-XGB
 
 ```{r}
-#| label: fig-roc-curve-up-xgb
+#| label: fig-conf-roc-up-xgb
 #| fig-cap: 'ROC Curves for Up-XGB Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
@@ -1500,7 +1523,7 @@ print(roc_curve_up_xgb)
 ### Up-RF
 
 ```{r}
-#| label: fig-roc-curve-up-rf
+#| label: fig-conf-roc-up-rf
 #| fig-cap: 'ROC Curves for Up-RF Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
@@ -1534,7 +1557,7 @@ print(roc_curve_up_rf)
 ### SMOTE-SVM
 
 ```{r}
-#| label: fig-roc-curve-smote-svm
+#| label: fig-conf-roc-smote-svm
 #| fig-cap: 'ROC Curves for SMOTE-SVM Model in Confirmation Set'
 #| fig-height: 7
 #| fig-width: 8
@@ -1566,112 +1589,87 @@ print(roc_curve_smote_svm)
 ```
 :::
 
+```{r}
+#| label: conf-de-rank
+
+# LGSOC differential gene expression analysis in confirmation set
+conf_lgsc_condition <- conf_pred_overall |>
+  filter(Method == "SMOTE-SVM", Truth == "LGSOC") |>
+  mutate(Prediction_LSGC = fct_other(
+    Prediction,
+    keep = "LGSOC",
+    other_level = "non_LGSOC"
+  ))
+
+conf_lgsc_exp <- cs3 |>
+  rename_all(~ gsub("^X", "", .)) |>
+  select(Name, all_of(conf_lgsc_condition[["FileName"]])) |>
+  column_to_rownames("Name")
+
+dds_conf_lgsc <- DESeqDataSetFromMatrix(countData = conf_lgsc_exp,
+                                        colData = conf_lgsc_condition,
+                                        design = ~ Prediction_LSGC)
+dds_conf_lgsc <- dds_conf_lgsc[rowSums(counts(dds_conf_lgsc)) > 1, ]
+dds_conf_lgsc <- DESeq(dds_conf_lgsc)
+
+res_conf_lgsc <- dds_conf_lgsc |>
+  results() |>
+  as.data.frame() |>
+  rownames_to_column(var = "Gene") |>
+  as_tibble() |>
+  filter(Gene %in% names(train_data), !Gene %in% overlap_all) |>
+  arrange(padj, desc(abs(log2FoldChange))) |>
+  mutate(Rank = seq_along(Gene), .keep = "used") |>
+  add_column(wflow = "smote_svm", .before = 1)
+
+# ENOC differential gene expression analysis in confirmation set
+conf_enoc_condition <- conf_pred_overall |>
+  filter(Method == "SMOTE-SVM", Truth == "ENOC") |>
+  mutate(Prediction_ENOC = fct_other(
+    Prediction,
+    keep = "ENOC",
+    other_level = "non_ENOC"
+  ))
+
+conf_enoc_exp <- cs3 |>
+  rename_all(~ gsub("^X", "", .)) |>
+  select(Name, all_of(conf_enoc_condition[["FileName"]])) |>
+  column_to_rownames("Name")
+
+dds_conf_enoc <- DESeqDataSetFromMatrix(countData = conf_enoc_exp,
+                                        colData = conf_enoc_condition,
+                                        design = ~ Prediction_ENOC)
+dds_conf_enoc <- dds_conf_enoc[rowSums(counts(dds_conf_enoc)) > 1, ]
+dds_conf_enoc <- DESeq(dds_conf_enoc)
+
+res_conf_enoc <- dds_conf_enoc |>
+  results() |>
+  as.data.frame() |>
+  rownames_to_column(var = "Gene") |>
+  as_tibble() |>
+  filter(Gene %in% names(train_data), !Gene %in% overlap_all) |>
+  arrange(padj, desc(abs(log2FoldChange))) |>
+  mutate(Rank = seq_along(Gene), .keep = "used") |>
+  add_column(wflow = "smote_svm", .before = 1)
+
+# Gene rank via differential expression in confirmation set
+conf_de_rank <-
+  bind_rows(LGSC = res_conf_lgsc, ENOC = res_conf_enoc, .id = "class") |>
+  pivot_wider(names_from = "class", values_from = "Rank") |>
+  mutate(Variable = Gene,
+         Rank = row_number(rowMeans(pick(LGSC, ENOC))),
+         .keep = "unused") |>
+  arrange(Rank)
+saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
+```
+
 ## Gene Optimization
-
-### Up-XGB
-
-```{r}
-#| label: fig-gene-up-xgb
-#| fig-cap: 'Gene Optimization for Up-XGB Classifier using Balanced Accuracy'
-#| fig-height: 5
-#| fig-width: 5
-#| out-width: '100%'
-
-gene_up_xgb_names <- all_vi_train |> 
-  filter(wflow == "up_xgb") |> 
-  rowid_to_column("Genes") |> 
-  select(Genes, Name = Variable) |> 
-  add_row(Genes = 0L, Name = "Base", .before = 1)
-
-dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
-  filter(Workflow == "up_xgb",
-         .metric == "bal_accuracy",
-         class_group == "Overall") |> 
-  mutate(
-    min_estimate = min(.estimate),
-    max_estimate = max(.estimate),
-    .by = Genes
-  ) |>
-  inner_join(gene_up_xgb_names, by = "Genes")
-
-p_gene_up_xgb <- 
-  ggplot(dat_gene_up_xgb, aes(text = Name)) +
-  geom_pointrange(aes(
-    x = Genes,
-    y = mean_estimate,
-    ymin = min_estimate,
-    ymax = max_estimate
-  )) +
-  theme_bw() +
-  labs(
-    x = "Genes Added",
-    y = "Balanced Accuracy",
-    title = "Gene Optimziation for Up-XGB Classifier"
-  )
-ggplotly(p_gene_up_xgb, width = 600, height = 400)
-
-n_genes_up_xgb <- 12
-genes_add_up_xgb <- gene_up_xgb_names |> 
-  filter(Genes > 0L) |> 
-  slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
-  pull(Name)
-opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
-```
-
-In the Up-XGB classifier, the mean balanced accuracy is highest when we reach `r n_genes_up_xgb` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)` The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`.
-
-```{r}
-#| label: tbl-gene-opt-up-xgb
-#| tbl-cap: 'Gene Profile of Optimal Set in Up-XGB Workflow'
-#| tbl-pos: 'H'
-
-candidates_all <- gene_up_xgb_names |>
-  filter(Genes > 0) |>
-  pull(Name)
-unused_genes_up_xgb <- gene_up_xgb_names |>
-  filter(Genes > 0) |>
-  slice_max(order_by = Genes, n = -n_genes_up_xgb) |> 
-  arrange(Genes) |> 
-  pull(Name)
-gene_order_up_xgb <- c(opt_genes_up_xgb, unused_genes_up_xgb)
-
-gene_dist_up_xgb <-
-  tibble(
-    Genes = gene_order_up_xgb,
-    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
-    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
-    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
-    `Optimal Set` = if_else(
-      Genes %in% opt_genes_up_xgb,
-      symbol$circle_filled,
-      symbol$circle_cross
-    ) |>
-      cell_spec(
-        color = case_when(
-          Genes %in% overlap_all ~ "green",
-          Genes %in% opt_genes_up_xgb ~ "#8B8000",
-          .default = "#FF0000"
-        )
-      ),
-    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
-    )
-  ) |>
-  relocate(Set, .before = Genes)
-
-gene_dist_up_xgb |> 
-  kbl(booktabs = TRUE,
-      longtable = TRUE,
-      linesep = "",
-      escape = FALSE) |> 
-  kable_styling(full_width = FALSE) |> 
-  collapse_rows(columns = 1)
-```
 
 ### SMOTE-SVM
 
 ```{r}
 #| label: fig-gene-smote-svm
-#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using Balanced Accuracy'
+#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using F1-Score'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
@@ -1684,32 +1682,43 @@ gene_smote_svm_names <- all_vi_train |>
 
 dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "smote_svm",
-         .metric == "bal_accuracy",
+         .metric == "f_meas",
          class_group == "Overall") |> 
   mutate(
     min_estimate = min(.estimate),
     max_estimate = max(.estimate),
     .by = Genes
   ) |>
-  inner_join(gene_smote_svm_names, by = "Genes")
+  inner_join(gene_smote_svm_names, by = "Genes") |> 
+  mutate(Optimal = ifelse(Genes == min(Genes[mean_estimate > 0.7]), TRUE, FALSE))
 
 p_gene_smote_svm <- 
   ggplot(dat_gene_smote_svm, aes(text = Name)) +
-  geom_pointrange(aes(
-    x = Genes,
-    y = mean_estimate,
-    ymin = min_estimate,
-    ymax = max_estimate
-  )) +
+  geom_pointrange(
+    aes(
+      x = Genes,
+      y = mean_estimate,
+      ymin = min_estimate,
+      ymax = max_estimate,
+      color = Optimal
+    ),
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = c("black", "red")) +
   theme_bw() +
   labs(
     x = "Genes Added",
-    y = "Balanced Accuracy",
-    title = "Gene Optimziation for SMOTE-SVM"
+    y = "F1-Score",
+    title = "Gene Optimziation for SMOTE-SVM",
+    color = NULL
   )
-ggplotly(p_gene_smote_svm, width = 600, height = 400)
+ggplotly(p_gene_smote_svm, width = 600, height = 400) |> 
+  layout(showlegend = FALSE)
 
-n_genes_smote_svm <- 0
+n_genes_smote_svm <- dat_gene_smote_svm |> 
+  filter(Optimal) |> 
+  pull(Genes) |> 
+  unique()
 genes_add_smote_svm <- gene_smote_svm_names |> 
   filter(Genes > 0L) |> 
   slice_min(order_by = Genes, n = n_genes_smote_svm) |> 
@@ -1717,7 +1726,7 @@ genes_add_smote_svm <- gene_smote_svm_names |>
 opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 ```
 
-In the SMOTE-SVM classifier, the mean balanced accuracy is optimal with `r n_genes_smote_svm` genes added, hence the optimal number of genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
+In the SMOTE-SVM classifier, the optimal number of genes is achieved at the fewest genes needed to achieve a mean F1-Score above 0.7 with `r n_genes_smote_svm` genes added, hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
 
 ```{r}
 #| label: tbl-gene-opt-smote-svm
@@ -1766,18 +1775,132 @@ gene_dist_smote_svm |>
   collapse_rows(columns = 1)
 ```
 
+### Gene List Comparisons in Confirmation Set
+
+```{r}
+#| label: gene-list-comps-conf
+
+conf_base_data <- conf_data |>
+  select(all_of(overlap_all))
+conf_base_class <- conf_class
+
+saveRDS(conf_base_data, here::here("data/conf_base_data.rds"))
+saveRDS(conf_base_class, here::here("data/conf_base_class.rds"))
+
+conf_opt_data <- conf_data |>
+  select(all_of(opt_genes_smote_svm))
+conf_opt_class <- conf_class
+
+saveRDS(conf_opt_data, here::here("data/conf_opt_data.rds"))
+saveRDS(conf_opt_class, here::here("data/conf_opt_class.rds"))
+
+gene_list_comps_conf <- bind_rows(
+  All = all_metrics_conf,
+  Optimal = all_metrics_conf_opt,
+  Base = all_metrics_conf_base,
+  Full = all_metrics_conf_full,
+  .id = "Method"
+) |>
+  filter(wflow == "smote_svm") |>
+  mutate(
+    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
+    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
+    .by = c(Method, class_group, .metric)
+  ) |>
+  distinct(pick(-fold_id, -.estimate)) |>
+  rename(Workflow = wflow) |>
+  mutate(
+    class_group = factor(
+      class_group,
+      levels = c("Overall", "HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+      labels = c("Overall", "HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+    ),
+    Method = fct_inorder(Method),
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa",
+      .ptype = factor(
+        levels = c(
+          "Accuracy",
+          "Sensitivity",
+          "Specificity",
+          "F1-Score",
+          "Balanced Accuracy",
+          "Kappa"
+        )
+      )
+    ),
+    .keep = "unused"
+  ) |>
+  drop_na(Metric) |>
+  select(Method, Metric, mean_estimate, lower, upper, class_group) |>
+  mutate(across(where(is.numeric), ~ round(., digits = 3))) |>
+  mutate(Estimate = paste0(mean_estimate, " (", lower, ", ", upper, ")"),
+         .keep = "unused") |>
+  arrange(Method, Metric, class_group) |>
+  pivot_wider(names_from = "class_group", values_from = "Estimate")
+
+gene_list_comps_conf |>
+  kbl(booktabs = TRUE, linesep = "") |>
+  kable_styling(full_width = FALSE, latex_options = "scale_down") |>
+  collapse_rows(columns = 1) |>
+  add_header_above(c(" " = 3, "Histotypes" = 5))
+```
+
 ## Validation Set
 
 ```{r}
+#| label: val-models
+
+# Confirmation Set
+conf_ref <- conf_data |>
+  mutate(class = factor(conf_class, levels = c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")))
+
+# Confirmation Set with all PrOTYPE and SPOT genes
+conf_full_ref <- conf_full_data |> 
+  mutate(class = factor(conf_full_class, levels = c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")))
+
+# All overlapping genes model
+set.seed(2024)
+mod_smote_svm_all <- wflow_smote_svm_model_conf |> 
+  fit(data = conf_ref)
+
+# Optimal gene list model trained
+set.seed(2024)
+mod_smote_svm_opt <- wflow_smote_svm_model_conf_opt |>
+  fit(data = conf_ref)
+
+# Base gene list model trained
+set.seed(2024)
+mod_smote_svm_base <- wflow_smote_svm_model_conf_base |> 
+  fit(data = conf_ref)
+
+# Full PrOTYPE and SPOT panel model trained
+set.seed(2024)
+mod_smote_svm_full <- wflow_smote_svm_model_conf_full |> 
+  fit(data = conf_full_ref)
+```
+
+### Evaluation Metrics
+
+```{r}
 #| label: tbl-val-eval
-#| tbl-cap: 'Evaluation Metrics on Validation Set Model, Up-XGB, Full Set'
+#| tbl-cap: 'Evaluation Metrics on SMOTE-SVM Models in Validation Set'
 #| tbl-pos: 'H'
 
 # Validation set overall predictions
 val_pred_overall <- data.frame(FileName = rownames(val_data),
                                Truth = val_class) |>
   mutate(
-    Prediction_up_xgb_opt = predict(mod_up_xgb, val_data)[[".pred_class"]],
+    Prediction_smote_svm_all = predict(mod_smote_svm_all, val_data)[[".pred_class"]],
+    Prediction_smote_svm_opt = predict(mod_smote_svm_opt, val_data)[[".pred_class"]],
+    Prediction_smote_svm_base = predict(mod_smote_svm_base, val_data)[[".pred_class"]],
+    Prediction_smote_svm_full = predict(mod_smote_svm_full, val_full_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   pivot_longer(
@@ -1786,10 +1909,21 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     names_prefix = "Prediction_",
     values_to = "Prediction"
   ) |> 
-  mutate(across(c(Truth, Prediction),
-                ~ factor(.x, levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))),
-         Method = "Up-XGB, Full Set")
+  mutate(
+    across(c(Truth, Prediction), ~ factor(
+      .x,
+      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+    )),
+    Method = fct_inorder(
+      case_match(
+        Method,
+        "smote_svm_all" ~ "SMOTE-SVM, All Overlap",
+        "smote_svm_opt" ~ "SMOTE-SVM, Optimal",
+        "smote_svm_base" ~ "SMOTE-SVM, Base",
+        "smote_svm_full" ~ "SMOTE-SVM, Full Panel"
+      )
+    ))
 
 # Validation set overall metrics
 val_eval_overall <- val_pred_overall |>
@@ -1799,7 +1933,8 @@ val_eval_overall <- val_pred_overall |>
     Specificity = specificity_vec(Truth, Prediction),
     `F1-Score` = f_meas_vec(Truth, Prediction),
     `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
-    Kappa = kap_vec(Truth, Prediction)
+    Kappa = kap_vec(Truth, Prediction),
+    .by = Method
   ) |> 
   pivot_longer(
     cols = where(is.numeric),
@@ -1809,7 +1944,9 @@ val_eval_overall <- val_pred_overall |>
 
 # Validation set per-class metrics
 val_eval_per_class <- val_pred_overall |>
-  ova_metrics(Truth, Prediction, per_class_mset) |>
+  nest(.by = Method) |> 
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
+  unnest(data) |> 
   mutate(
     Metric = case_match(
       .metric,
@@ -1822,64 +1959,60 @@ val_eval_per_class <- val_pred_overall |>
     ),
     .keep = "unused"
   ) |>
-  pivot_wider(id_cols = Metric,
-              names_from = class_group,
-              values_from = .estimate)
+  pivot_wider(
+    id_cols = c(Method, Metric),
+    names_from = class_group,
+    values_from = .estimate
+  )
 
 # Combined all metrics
 val_eval <-
-  inner_join(val_eval_overall, val_eval_per_class, by = "Metric")
+  inner_join(val_eval_overall, val_eval_per_class, by = c("Method", "Metric"))
 
 val_eval |> 
   kbl(booktabs = TRUE, linesep = "", digits = 3) |>
   kable_styling() |> 
   collapse_rows(columns = 1) |> 
-  add_header_above(c(" " = 2, "Histotypes" = 5))
+  add_header_above(c(" " = 3, "Histotypes" = 5))
 ```
 
 ```{r}
-#| label: fig-val-metrics-up-xgb
-#| fig-cap: 'Up-XGB, Full Set, Per-Class Metrics in Validation Set'
-#| fig-width: 8
-#| out-width: '100%'
+#| label: fig-val-eval
+#| fig-cap: 'Evaluation Metrics on Validation Set Models'
+#| fig-height: 5.5
 
-val_metrics_top <- val_eval_per_class |> 
-  pivot_longer(
-    cols = where(is.numeric),
-    names_to = "Class",
-    names_ptypes = list(Class = factor(
-      levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
-    )),
-    values_to = "Value"
-  ) |> 
-  filter(Metric %in% c("F1-Score", "Balanced Accuracy", "Kappa")) |> 
-  mutate(Metric = fct_inorder(Metric))
-  
-p <- ggplot(val_metrics_top) +
-  geom_col(
-    aes(x = Class, y = Value, fill = Class),
-    show.legend = FALSE
-  ) +
-  geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
-  scale_fill_brewer(palette = "Dark2") +
-  scale_y_continuous(breaks = seq(0, 1, 0.2)) +
-  facet_wrap(vars(Metric), nrow = 1) +
-  theme_bw() +
+val_eval_long <- val_eval |>
+  pivot_longer(cols = where(is.double),
+               names_to = "Class",
+               values_to = "Score") |>
+  mutate(Method = fct_rev(Method),
+         Metric = fct_inorder(Metric),
+         Class = fct_inorder(Class))
+
+ggplot(val_eval_long) +
+  geom_tile(aes(x = Class, y = Method, fill = Score)) +
+  geom_text(aes(x = Class, y = Method, label = round(Score, digits = 2)),
+            size = 3) +
+  facet_wrap(vars(Metric)) +
+  scale_fill_viridis_c(option = "plasma", limits = c(0, 1)) +
+  theme_minimal() +
   theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank()
+    axis.title = element_blank(),
+    axis.text.x.bottom = element_text(angle = 45, hjust = 1, vjust = 1),
+    strip.text = element_text(face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal"
   ) +
-  labs(
-    y = "Metric Value",
-    title = paste("Up-XGB, Full Set, Per-Class Metrics in Validation Set")
-  )
-print(p)
+  labs(title = "Evaluation Metrics on Validation Set Models")
 ```
+
+### Confusion Matrices
 
 ```{r}
 #| label: fig-val-conf-mat
 #| fig-cap: 'Confusion Matrix for Validation Set Model'
+#| fig-width: 8
+#| out-width: '100%'
 
 val_conf_mat <- val_pred_overall |>
   nest(.by = Method) |>
@@ -1896,19 +2029,24 @@ val_conf_mat <- val_pred_overall |>
       )
   ) |> 
   wrap_plots() +
-  plot_annotation(title = "Confusion Matrix for Validation Set Model")
+  plot_annotation(title = "Confusion Matrix for Validation Set Model", tag_levels = "A")
 
 print(val_conf_mat)
 ```
 
+### ROC Curves
+
+::: {#val-roc-curves .panel-tabset .nav-pills}
+#### All Overlap
+
 ```{r}
-#| label: fig-val-roc-curve-up-xgb-full
-#| fig-cap: 'ROC Curves for Up-XGB, Full Set Model in Validation Set'
+#| label: fig-val-roc-smote-svm-all
+#| fig-cap: 'ROC Curves for SMOTE-SVM, All Overlap Set Model in Validation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_up_xgb |> 
+preds <- mod_smote_svm_all |> 
   predict(val_data, type = "prob") |> 
   add_column(truth = factor(val_class))
 roc_df <- preds |>
@@ -1920,9 +2058,9 @@ auc <- preds |>
   roc_auc(truth, matches(".pred")) |> 
   pull(.estimate) |> 
   number(accuracy = 0.001, prefix = "AUC = ")
-val_roc_curve_up_xgb_full <- 
+val_roc_curve_smote_svm_all <- 
   autoplot(roc_df) +
-  labs(title = "ROC Curve for Up-XGB, Full Set Model in Validation Set",
+  labs(title = "ROC Curves for SMOTE-SVM, All Overlap Set Model in Validation Set",
        subtitle = auc) +
   facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
   theme(
@@ -1930,15 +2068,127 @@ val_roc_curve_up_xgb_full <-
     strip.text = element_text(size = 12, face = "bold"),
     axis.title = element_text(size = 12)
   )
-print(val_roc_curve_up_xgb_full)
+print(val_roc_curve_smote_svm_all)
 ```
 
+#### Optimal Set
+
 ```{r}
-#| label: fig-val-calib-up-xgb-full
-#| fig-cap: 'Calibration Plots for Up-XGB, Full Set Model in Validation Set'
+#| label: fig-val-roc-smote-svm-opt
+#| fig-cap: 'ROC Curves for SMOTE-SVM, Optimal Set Model in Validation Set'
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
+
+preds <- mod_smote_svm_opt |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+roc_df <- preds |>
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))
+auc <- preds |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
+  number(accuracy = 0.001, prefix = "AUC = ")
+val_roc_curve_smote_svm_opt <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curves for SMOTE-SVM, Optimal Set Model in Validation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+print(val_roc_curve_smote_svm_opt)
+```
+
+#### Base Set
+
+```{r}
+#| label: fig-val-roc-smote-svm-base
+#| fig-cap: 'ROC Curves for SMOTE-SVM, Base Set Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_smote_svm_base |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+roc_df <- preds |>
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))
+auc <- preds |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
+  number(accuracy = 0.001, prefix = "AUC = ")
+val_roc_curve_smote_svm_base <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curves for SMOTE-SVM, Base Set Model in Validation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+print(val_roc_curve_smote_svm_base)
+```
+
+#### Full Panel
+
+```{r}
+#| label: fig-val-roc-smote-svm-full
+#| fig-cap: 'ROC Curves for SMOTE-SVM, Full Panel Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_smote_svm_full |> 
+  predict(val_full_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+roc_df <- preds |>
+  roc_curve(truth, matches(".pred")) |> 
+  mutate(.level = factor(.level,
+                         levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                         labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))
+auc <- preds |>
+  roc_auc(truth, matches(".pred")) |> 
+  pull(.estimate) |> 
+  number(accuracy = 0.001, prefix = "AUC = ")
+val_roc_curve_smote_svm_full <- 
+  autoplot(roc_df) +
+  labs(title = "ROC Curves for SMOTE-SVM, Full Panel Model in Validation Set",
+       subtitle = auc) +
+  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+print(val_roc_curve_smote_svm_full)
+```
+:::
+
+### Calibration Plots
+
+::: {#val-calib .panel-tabset .nav-pills}
+#### All Overlap
+
+```{r}
+#| label: fig-val-calib-smote-svm-all
+#| fig-cap: 'Calibration Plots for SMOTE-SVM, All Overlap Set Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_smote_svm_all |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
 
 preds |> 
   cal_plot_logistic(truth = truth) +
@@ -1950,8 +2200,87 @@ preds |>
   theme(panel.grid.minor = element_blank(),
         strip.text = element_text(face = "bold"),
         strip.placement = "inside") +
-  labs(title = "Calibration Plots for Up-XGB, Full Set Model in Validation Set")
+  labs(title = "Calibration Plots for SMOTE-SVM, All Overlap Set Model in Validation Set")
 ```
+
+#### Optimal Set
+
+```{r}
+#| label: fig-val-calib-smote-svm-opt
+#| fig-cap: 'Calibration Plots for SMOTE-SVM, Optimal Set Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_smote_svm_opt |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+
+preds |> 
+  cal_plot_logistic(truth = truth) +
+  facet_wrap2(~ factor(truth,
+                      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+              strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank(),
+        strip.text = element_text(face = "bold"),
+        strip.placement = "inside") +
+  labs(title = "Calibration Plots for SMOTE-SVM, Optimal Set Model in Validation Set")
+```
+
+#### Base Set
+
+```{r}
+#| label: fig-val-calib-smote-svm-base
+#| fig-cap: 'Calibration Plots for SMOTE-SVM, Base Set Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_smote_svm_base |> 
+  predict(val_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+
+preds |> 
+  cal_plot_logistic(truth = truth) +
+  facet_wrap2(~ factor(truth,
+                      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+              strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank(),
+        strip.text = element_text(face = "bold"),
+        strip.placement = "inside") +
+  labs(title = "Calibration Plots for SMOTE-SVM, Base Set Model in Validation Set")
+```
+
+#### Full Panel
+
+```{r}
+#| label: fig-val-calib-smote-svm-full
+#| fig-cap: 'Calibration Plots for SMOTE-SVM, Full Panel Model in Validation Set'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+preds <- mod_smote_svm_full |> 
+  predict(val_full_data, type = "prob") |> 
+  add_column(truth = factor(val_class))
+
+preds |> 
+  cal_plot_logistic(truth = truth) +
+  facet_wrap2(~ factor(truth,
+                      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+                      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+              strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank(),
+        strip.text = element_text(face = "bold"),
+        strip.placement = "inside") +
+  labs(title = "Calibration Plots for SMOTE-SVM, Full Panel Model in Validation Set")
+```
+:::
 
 ```{r}
 #| label: fig-val-summary
@@ -1960,25 +2289,34 @@ preds |>
 #| fig-height: 6
 
 val_eval_grob <- 
-  flextable(val_eval) |> 
+  val_eval |> 
+  filter(Method == "SMOTE-SVM, All Overlap") |> 
+  select(-Method) |> 
+  flextable() |> 
+  fontsize(size = 9, part = "all") |> 
+  fontsize(size = 7, part = "header") |> 
   colformat_double(j = -1, digits = 3) |> 
-  gen_grob()
+  width(j = 1, width = 1.2) |>
+  width(j = 3, width = 0.9) |>
+  gen_grob(fit = "width", scaling = "fixed")
 
 val_eval_gg <- ggplot() + 
   theme_void() + 
   annotation_custom(val_eval_grob)
 
-val_conf_mat_simp <- val_conf_mat +
+val_conf_mat_simp <- val_conf_mat |> 
+  pluck(1) +
   labs(title = "Confusion Matrix") +
   plot_annotation(title = NULL)
 
 layout <- "
-AABBBB
-CCBBBB
-CCBBBB
+AABBB
+AABBB
+CCBBB
+CCBBB
 "
 
-val_conf_mat_simp + val_roc_curve_up_xgb_full + val_eval_gg +
+val_conf_mat_simp + val_roc_curve_smote_svm_all + val_eval_gg +
   plot_layout(design = layout) +
   plot_annotation(tag_levels = "A") &
   theme(plot.tag = element_text(face = "bold"))
@@ -1992,6 +2330,7 @@ od.otta <- od.otta |>
   mutate(otta_id = as.character(otta_id))
 
 val_pred_enoc_clin <- val_pred_overall |>
+  filter(Method == "SMOTE-SVM, All Overlap") |> 
   inner_join(hist |> select(FileName, ottaID), by = "FileName") |>
   inner_join(od.otta, by = c("ottaID" = "otta_id")) |>
   filter(Truth == "ENOC") |>
@@ -2113,7 +2452,7 @@ all_gene_ranks <- bind_rows(
 
 # LGSOC differential gene expression analysis
 val_lgsc_condition <- val_pred_overall |>
-  filter(Truth == "LGSOC") |>
+  filter(Method == "SMOTE-SVM, All Overlap", Truth == "LGSOC") |>
   mutate(Prediction_LSGC = fct_other(
     Prediction,
     keep = "LGSOC",
@@ -2152,7 +2491,7 @@ res_lgsc <- dds_lgsc |>
 
 # ENOC differential gene expression analysis
 val_enoc_condition <- val_pred_overall |>
-  filter(Truth == "ENOC") |>
+  filter(Method == "SMOTE-SVM, All Overlap", Truth == "ENOC") |>
   mutate(Prediction_ENOC = fct_other(
     Prediction,
     keep = "ENOC",
@@ -2232,11 +2571,56 @@ val_all_volcano <- ggplot(res_all, aes(x = log2FoldChange, y = -log10(padj))) +
   labs(
     x = "Log<sub>2</sub> Fold Change",
     y = "-Log<sub>10</sub> p-value",
-    title = "Volcano Plots of Validation Set Predictions",
+    title = "Volcano Plots of Validation Set Predictions using SMOTE-SVM, All Overlap",
     caption = "Significance condition: p<sub>adj</sub> < 0.05 and |log<sub>2</sub>FC| > 2"
   )
 
 print(val_all_volcano)
+```
+
+```{r}
+#| label: fig-bp-diff-exp-genes
+#| fig-cap: 'Boxplot of Most Differentially Expressed Genes'
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+bind_rows(
+  Train = bind_cols(train_data, hist_final = train_class),
+  Confirmation = bind_cols(conf_data, hist_final = conf_class),
+  Validation = bind_cols(val_data, hist_final = val_class),
+  .id = "Dataset"
+) |>
+  rownames_to_column("FileName") |> 
+  select(Dataset, FileName, DKK4, hist_final) |>
+  mutate(hist_final = factor(
+    hist_final,
+    levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+    labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+  )) |> 
+  pivot_longer(
+    cols = where(is.double),
+    names_to = "Gene",
+    names_ptypes = list(Gene = factor()),
+    values_to = "Value"
+  ) |>
+  nest(.by = "Dataset") |>
+  pmap(~ {
+    ggboxplot(
+      data = ..2,
+      x = "hist_final",
+      y = "Value",
+      fill = "hist_final",
+      palette = class_palette,
+      facet.by = "Gene",
+      xlab = "Histotype",
+      ylab = "Normalized Expression",
+      title = ..1,
+      legend = "none"
+    )
+  }) |>
+  wrap_plots(ncol = 1, axes = "collect") +
+  plot_annotation(title = "Boxplot of Most Differentially Expressed Genes")
 ```
 
 ```{r}
@@ -2246,7 +2630,7 @@ print(val_all_volcano)
 #| fig-width: 10
 #| out-width: '100%'
 
-val_pred_hgsc_samples <- mod_up_xgb |> 
+val_pred_hgsc_samples <- mod_smote_svm_all |> 
   predict(val_data, type = "class") |> 
   bind_cols(val_data) |> 
   filter(.pred_class == "HGSC") |> 
@@ -2331,4 +2715,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-

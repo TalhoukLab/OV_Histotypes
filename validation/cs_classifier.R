@@ -202,20 +202,20 @@ cs3_train <-
 # Combined Training Set (CS1 + CS2 + CS3), n=241+790+470=1501
 # Common genes n=72
 train_ref_comb <-
-  bind_rows(cs1_train, cs2_train, cs3_train) %>%
-  rownames_to_column("FileName") %>%
-  mutate(col_name = paste0("X", FileName)) %>%
-  inner_join(cohorts, by = "col_name") %>%
-  select(FileName, all_of(common_genes123), cohort) %>%
-  inner_join(hist, by = "FileName") %>%
-  column_to_rownames("FileName")
+  bind_rows(cs1_train, cs2_train, cs3_train) |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = c("FileName", "ottaID")) |>
+  column_to_rownames("FileName") |>
+  select(ottaID, all_of(common_genes123), hist_gr, hist_final)
 
 # Training set removed replicates (CS3 > CS2 > CS1), n=1501-244=1257
 train_ref <- train_ref_comb %>%
   slice_tail(n = 1, by = ottaID)
 
 train_data <- select(train_ref, where(is.double))
-train_class <- train_ref[["hist_final"]]
+train_class <- pull(train_ref)
 
 saveRDS(train_data, here::here("data/train_data.rds"))
 saveRDS(train_class, here::here("data/train_class.rds"))
@@ -270,33 +270,68 @@ saveRDS(cs2_all_class, here::here("data/cs2_all_class.rds"))
 # Construct Test Sets -----------------------------------------------------
 
 # Confirmation set, n=642 (TNCO)
-conf_ref <- cs3_X %>%
-  rownames_to_column("FileName") %>%
-  mutate(col_name = paste0("X", FileName)) %>%
-  inner_join(cohorts, by = "col_name") %>%
-  select(FileName, all_of(common_genes123), cohort) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(cohort == "TNCO") %>%
-  column_to_rownames("FileName")
+conf_ref <- cs3_X |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = "FileName") |>
+  filter(cohort == "TNCO") |>
+  column_to_rownames("FileName") |>
+  select(all_of(common_genes123), hist_final)
 
 conf_data <- select(conf_ref, where(is.double))
-conf_class <- conf_ref[["hist_final"]]
+conf_class <- pull(conf_ref)
 
 saveRDS(conf_data, here::here("data/conf_data.rds"))
 saveRDS(conf_class, here::here("data/conf_class.rds"))
 
 # Validation set, n=894 (DOVE)
-val_ref <- cs3_X %>%
-  rownames_to_column("FileName") %>%
-  mutate(col_name = paste0("X", FileName)) %>%
-  inner_join(cohorts, by = "col_name") %>%
-  select(FileName, all_of(common_genes123), cohort) %>%
-  inner_join(hist, by = "FileName") %>%
-  filter(cohort == "DOVE4") %>%
-  column_to_rownames("FileName")
+val_ref <- cs3_X |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = "FileName") |>
+  filter(cohort == "DOVE4") |>
+  column_to_rownames("FileName") |>
+  select(all_of(common_genes123), hist_final)
 
 val_data <- select(val_ref, where(is.double))
-val_class <- val_ref[["hist_final"]]
+val_class <- pull(val_ref)
 
 saveRDS(val_data, here::here("data/val_data.rds"))
 saveRDS(val_class, here::here("data/val_class.rds"))
+
+
+# Full PrOTYPE and SPOT Panel ---------------------------------------------
+
+# Confirmation Set with full PrOTYPE and SPOT genes panel
+conf_full_ref <- cs3_X |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = "FileName") |>
+  filter(cohort == "TNCO") |>
+  column_to_rownames("FileName") |>
+  select(all_of(genes_PrOTYPE_SPOT), hist_final)
+
+conf_full_data <- select(conf_full_ref, where(is.double))
+conf_full_class <- conf_full_ref[["hist_final"]]
+
+saveRDS(conf_full_data, here::here("data/conf_full_data.rds"))
+saveRDS(conf_full_class, here::here("data/conf_full_class.rds"))
+
+# Validation Set with full PrOTYPE and SPOT genes panel
+val_full_ref <- cs3_X |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName)) |>
+  inner_join(cohorts, by = "col_name") |>
+  inner_join(hist, by = "FileName") |>
+  filter(cohort == "DOVE4") |>
+  column_to_rownames("FileName") |>
+  select(all_of(genes_PrOTYPE_SPOT), hist_final)
+
+val_full_data <- select(val_full_ref, where(is.double))
+val_full_class <- val_full_ref[["hist_final"]]
+
+saveRDS(val_full_data, here::here("data/val_full_data.rds"))
+saveRDS(val_full_class, here::here("data/val_full_class.rds"))
