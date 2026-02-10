@@ -2290,7 +2290,7 @@ preds |>
 
 val_eval_grob <- 
   val_eval |> 
-  filter(Method == "Up-XGB, Full") |> 
+  filter(Method == "SMOTE-SVM, All Overlap") |> 
   select(-Method) |> 
   flextable() |> 
   fontsize(size = 9, part = "all") |> 
@@ -2316,7 +2316,7 @@ CCBBB
 CCBBB
 "
 
-val_conf_mat_simp + val_roc_curve_up_xgb_full + val_eval_gg +
+val_conf_mat_simp + val_roc_curve_smote_svm_all + val_eval_gg +
   plot_layout(design = layout) +
   plot_annotation(tag_levels = "A") &
   theme(plot.tag = element_text(face = "bold"))
@@ -2330,7 +2330,7 @@ od.otta <- od.otta |>
   mutate(otta_id = as.character(otta_id))
 
 val_pred_enoc_clin <- val_pred_overall |>
-  filter(Method == "Up-XGB, Full") |> 
+  filter(Method == "SMOTE-SVM, All Overlap") |> 
   inner_join(hist |> select(FileName, ottaID), by = "FileName") |>
   inner_join(od.otta, by = c("ottaID" = "otta_id")) |>
   filter(Truth == "ENOC") |>
@@ -2452,7 +2452,7 @@ all_gene_ranks <- bind_rows(
 
 # LGSOC differential gene expression analysis
 val_lgsc_condition <- val_pred_overall |>
-  filter(Method == "Up-XGB, Full", Truth == "LGSOC") |>
+  filter(Method == "SMOTE-SVM, All Overlap", Truth == "LGSOC") |>
   mutate(Prediction_LSGC = fct_other(
     Prediction,
     keep = "LGSOC",
@@ -2491,7 +2491,7 @@ res_lgsc <- dds_lgsc |>
 
 # ENOC differential gene expression analysis
 val_enoc_condition <- val_pred_overall |>
-  filter(Method == "Up-XGB, Full", Truth == "ENOC") |>
+  filter(Method == "SMOTE-SVM, All Overlap", Truth == "ENOC") |>
   mutate(Prediction_ENOC = fct_other(
     Prediction,
     keep = "ENOC",
@@ -2571,7 +2571,7 @@ val_all_volcano <- ggplot(res_all, aes(x = log2FoldChange, y = -log10(padj))) +
   labs(
     x = "Log<sub>2</sub> Fold Change",
     y = "-Log<sub>10</sub> p-value",
-    title = "Volcano Plots of Validation Set Predictions using Up-XGB, Full Set",
+    title = "Volcano Plots of Validation Set Predictions using SMOTE-SVM, All Overlap",
     caption = "Significance condition: p<sub>adj</sub> < 0.05 and |log<sub>2</sub>FC| > 2"
   )
 
@@ -2592,7 +2592,7 @@ bind_rows(
   .id = "Dataset"
 ) |>
   rownames_to_column("FileName") |> 
-  select(Dataset, FileName, GAD1, LGALS4, hist_final) |>
+  select(Dataset, FileName, DKK4, hist_final) |>
   mutate(hist_final = factor(
     hist_final,
     levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
@@ -2630,7 +2630,7 @@ bind_rows(
 #| fig-width: 10
 #| out-width: '100%'
 
-val_pred_hgsc_samples <- mod_up_xgb |> 
+val_pred_hgsc_samples <- mod_smote_svm_all |> 
   predict(val_data, type = "class") |> 
   bind_cols(val_data) |> 
   filter(.pred_class == "HGSC") |> 
