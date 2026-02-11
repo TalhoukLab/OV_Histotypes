@@ -215,9 +215,9 @@ gene_rank_de <- function(data, preds, method, class, candidates = NULL) {
   condition <- preds |>
     dplyr::filter(.data$Method == method, .data$Truth == class) |>
     dplyr::mutate(dplyr::across(
-      Prediction,
+      "Prediction",
       ~ forcats::fct_other(
-        Prediction,
+        .data$Prediction,
         keep = class,
         other_level = paste0("non_", class)
       ),
