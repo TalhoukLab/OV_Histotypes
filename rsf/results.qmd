@@ -1632,6 +1632,8 @@ saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 
 ## Gene Optimization
 
+From @fig-conf-eval, we see that although Up-XGB has the highest overall evaluation metric scores, SMOTE-SVM is better at predicting the rarest histotype LGSOC. The other four histotypes have relatively lower predictive performance in SMOTE-SVM. With such few cases in LGSOC we decided to select the workflow that is able to discern all histotypes to a fair extent for gene optimization.
+
 ### SMOTE-SVM
 
 ```{r}
