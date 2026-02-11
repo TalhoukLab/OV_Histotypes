@@ -1748,6 +1748,16 @@ gene_dist_smote_svm |>
 
 ### Gene List Comparisons in Confirmation Set
 
+We train the SMOTE-SVM workflow using **four** different gene lists in the confirmation set. Overall and per-class results are shown in @tbl-gene-list-comps-conf. The four gene lists are:
+
+1.  All Overlap (n=72): all genes that are in overlap among the three CodeSets
+
+2.  Base (n=28): among the overlapping genes, the base set from the PrOTYPE and SPOT lists
+
+3.  Optimal (n=50): among the overlapping genes, the base set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-smote-svm
+
+4.  Full Panel (n=151): union of all genes found in PrOTYPE and SPOT lists
+
 ```{r}
 #| label: tbl-gene-list-comps-conf
 #| tbl-cap: 'SMOTE-SVM Model Comparisons using Different Gene Lists in Confirmation Set'
@@ -1768,10 +1778,10 @@ saveRDS(conf_opt_data, here::here("data/conf_opt_data.rds"))
 saveRDS(conf_opt_class, here::here("data/conf_opt_class.rds"))
 
 gene_list_comps_conf <- bind_rows(
-  All = all_metrics_conf,
+  `All Overlap` = all_metrics_conf,
   Optimal = all_metrics_conf_opt,
   Base = all_metrics_conf_base,
-  Full = all_metrics_conf_full,
+  `Full Panel` = all_metrics_conf_full,
   .id = "Method"
 ) |>
   filter(wflow == "smote_svm") |>
@@ -1826,6 +1836,8 @@ gene_list_comps_conf |>
 ```
 
 ## Validation Set
+
+We assess the same four models from @tbl-gene-list-comps-conf by training on the confirmation set, and evaluating the predictions on the validation set.
 
 ```{r}
 #| label: val-models
