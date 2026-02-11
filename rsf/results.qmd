@@ -1592,72 +1592,39 @@ print(roc_curve_smote_svm)
 ```{r}
 #| label: conf-de-rank
 
+# Candidate genes are the ones in the overlap set but not in PrOTYPE or SPOT
+candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
+                "LIN28B", "TFF3", "MUC5B", "FUT3", "STC1", "BCL2", "PAX8", "GCNT3",
+                "GPR64", "ADCYAP1R1", "IGKC", "BRCA1", "IGJ", "TFF1", "MET",
+                "CYP2C18", "CYP4B1", "SLC3A1", "EPAS1", "HNF1B", "IL6", "ATP5G3",
+                "DKK4", "SENP8", "CAPN2", "C1orf173", "CPNE8", "IGFBP1", "WT1",
+                "TP53", "SEMA6A", "SERPINA5", "ZBED1", "TSPAN8", "SCGB1D2", "LGALS4",
+                "MAP1LC3A")
+
 # LGSOC differential gene expression analysis in confirmation set
-conf_lgsc_condition <- conf_pred_overall |>
-  filter(Method == "SMOTE-SVM", Truth == "LGSOC") |>
-  mutate(Prediction_LSGC = fct_other(
-    Prediction,
-    keep = "LGSOC",
-    other_level = "non_LGSOC"
-  ))
-
-conf_lgsc_exp <- cs3 |>
-  rename_all(~ gsub("^X", "", .)) |>
-  select(Name, all_of(conf_lgsc_condition[["FileName"]])) |>
-  column_to_rownames("Name")
-
-dds_conf_lgsc <- DESeqDataSetFromMatrix(countData = conf_lgsc_exp,
-                                        colData = conf_lgsc_condition,
-                                        design = ~ Prediction_LSGC)
-dds_conf_lgsc <- dds_conf_lgsc[rowSums(counts(dds_conf_lgsc)) > 1, ]
-dds_conf_lgsc <- DESeq(dds_conf_lgsc)
-
-res_conf_lgsc <- dds_conf_lgsc |>
-  results() |>
-  as.data.frame() |>
-  rownames_to_column(var = "Gene") |>
-  as_tibble() |>
-  filter(Gene %in% names(train_data), !Gene %in% overlap_all) |>
-  arrange(padj, desc(abs(log2FoldChange))) |>
-  mutate(Rank = seq_along(Gene), .keep = "used") |>
-  add_column(wflow = "smote_svm", .before = 1)
+res_conf_lgsoc <- gene_rank_de(
+  data = cs3,
+  preds = conf_pred_overall,
+  method = "SMOTE-SVM",
+  class = "LGSOC",
+  candidates = candidates
+)
 
 # ENOC differential gene expression analysis in confirmation set
-conf_enoc_condition <- conf_pred_overall |>
-  filter(Method == "SMOTE-SVM", Truth == "ENOC") |>
-  mutate(Prediction_ENOC = fct_other(
-    Prediction,
-    keep = "ENOC",
-    other_level = "non_ENOC"
-  ))
-
-conf_enoc_exp <- cs3 |>
-  rename_all(~ gsub("^X", "", .)) |>
-  select(Name, all_of(conf_enoc_condition[["FileName"]])) |>
-  column_to_rownames("Name")
-
-dds_conf_enoc <- DESeqDataSetFromMatrix(countData = conf_enoc_exp,
-                                        colData = conf_enoc_condition,
-                                        design = ~ Prediction_ENOC)
-dds_conf_enoc <- dds_conf_enoc[rowSums(counts(dds_conf_enoc)) > 1, ]
-dds_conf_enoc <- DESeq(dds_conf_enoc)
-
-res_conf_enoc <- dds_conf_enoc |>
-  results() |>
-  as.data.frame() |>
-  rownames_to_column(var = "Gene") |>
-  as_tibble() |>
-  filter(Gene %in% names(train_data), !Gene %in% overlap_all) |>
-  arrange(padj, desc(abs(log2FoldChange))) |>
-  mutate(Rank = seq_along(Gene), .keep = "used") |>
-  add_column(wflow = "smote_svm", .before = 1)
+res_conf_enoc <- gene_rank_de(
+  data = cs3,
+  preds = conf_pred_overall,
+  method = "SMOTE-SVM",
+  class = "ENOC",
+  candidates = candidates
+)
 
 # Gene rank via differential expression in confirmation set
 conf_de_rank <-
-  bind_rows(LGSC = res_conf_lgsc, ENOC = res_conf_enoc, .id = "class") |>
+  bind_rows(LGSOC = res_conf_lgsoc, ENOC = res_conf_enoc, .id = "class") |>
   pivot_wider(names_from = "class", values_from = "Rank") |>
   mutate(Variable = Gene,
-         Rank = row_number(rowMeans(pick(LGSC, ENOC))),
+         Rank = row_number(rowMeans(pick(LGSOC, ENOC))),
          .keep = "unused") |>
   arrange(Rank)
 saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))

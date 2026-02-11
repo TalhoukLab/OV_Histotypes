@@ -201,3 +201,58 @@ summarize_metrics <- function(x, metric, highlight = TRUE, digits = 3) {
     )
   return(df)
 }
+
+#' Gene ranks from differential expression of a predicted class
+#' using a particular method
+#'
+#' @param data expression data
+#' @param preds prediction data frame
+#' @param method prediction workflow
+#' @param class class of interest to compare differential expression
+#' @param candidates optional; smaller gene list of candidates to consider
+#' for gene ranks
+gene_rank_de <- function(data, preds, method, class, candidates = NULL) {
+  condition <- preds |>
+    dplyr::filter(.data$Method == method, .data$Truth == class) |>
+    dplyr::mutate(dplyr::across(
+      Prediction,
+      ~ forcats::fct_other(
+        Prediction,
+        keep = class,
+        other_level = paste0("non_", class)
+      ),
+      .names = "{.col}_{class}"
+    ))
+
+  exp <- data |>
+    dplyr::rename_all(~ gsub("^X", "", .)) |>
+    dplyr::select("Name", dplyr::all_of(condition[["FileName"]])) |>
+    tibble::column_to_rownames("Name")
+
+  desds <- DESeq2::DESeqDataSetFromMatrix(
+    countData = exp,
+    colData = condition,
+    design = rlang::new_formula(NULL, rlang::sym(paste0(
+      "Prediction_", class
+    )))
+  )
+  desds <- desds[rowSums(BiocGenerics::counts(desds)) > 1, ]
+  desds <- DESeq2::DESeq(desds)
+
+  res <- desds |>
+    DESeq2::results() |>
+    as.data.frame() |>
+    tibble::rownames_to_column(var = "Gene") |>
+    tibble::as_tibble() |>
+    dplyr::arrange(.data$padj, dplyr::desc(abs(.data$log2FoldChange))) |>
+    dplyr::mutate(Rank = seq_along(.data$Gene), .keep = "used") |>
+    dplyr::mutate(wflow = gsub("-", "_", tolower(method)), .before = 1)
+
+  if (!is.null(candidates)) {
+    res |>
+      dplyr::filter(.data$Gene %in% candidates) |>
+      dplyr::mutate(Rank = seq_along(.data$Gene))
+  } else {
+    res
+  }
+}
