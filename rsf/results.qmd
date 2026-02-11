@@ -1695,7 +1695,9 @@ genes_add_smote_svm <- gene_smote_svm_names |>
 opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 ```
 
-In the SMOTE-SVM classifier, the optimal number of genes is achieved at the fewest genes needed to achieve a mean F1-Score above 0.7 with `r n_genes_smote_svm` genes added, hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)` The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`.
+In the SMOTE-SVM classifier, the optimal number of genes is achieved at the fewest genes needed to achieve a mean F1-Score above 0.7 with `r n_genes_smote_svm` genes added, highlighted in red in @fig-gene-smote-svm. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)`.
+
+The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-smote-svm. Base genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`. Unused genes are annotated with red crosses.
 
 ```{r}
 #| label: tbl-gene-opt-smote-svm
@@ -1747,7 +1749,9 @@ gene_dist_smote_svm |>
 ### Gene List Comparisons in Confirmation Set
 
 ```{r}
-#| label: gene-list-comps-conf
+#| label: tbl-gene-list-comps-conf
+#| tbl-cap: 'SMOTE-SVM Model Comparisons using Different Gene Lists in Confirmation Set'
+#| tbl-pos: 'H'
 
 conf_base_data <- conf_data |>
   select(all_of(overlap_all))
