@@ -2283,6 +2283,10 @@ preds |>
 ```
 :::
 
+### Summary
+
+The SMOTE-SVM, All Overlap model has the highest overall F1-Score. A summary of pertinent results are shown in @fig-val-summary.
+
 ```{r}
 #| label: fig-val-summary
 #| fig-cap: 'Validation Summary'
@@ -2322,6 +2326,8 @@ val_conf_mat_simp + val_roc_curve_smote_svm_all + val_eval_gg +
   plot_annotation(tag_levels = "A") &
   theme(plot.tag = element_text(face = "bold"))
 ```
+
+### Additional Explorations
 
 ```{r}
 #| label: tbl-val-pred-enoc-clin
@@ -2454,7 +2460,7 @@ all_gene_ranks <- bind_rows(
 # LGSOC differential gene expression analysis
 val_lgsc_condition <- val_pred_overall |>
   filter(Method == "SMOTE-SVM, All Overlap", Truth == "LGSOC") |>
-  mutate(Prediction_LSGC = fct_other(
+  mutate(Prediction_LSGOC = fct_other(
     Prediction,
     keep = "LGSOC",
     other_level = "non_LGSOC"
@@ -2467,7 +2473,7 @@ val_lgsc_exp <- cs3 |>
 
 dds_lgsc <- DESeqDataSetFromMatrix(countData = val_lgsc_exp,
                                    colData = val_lgsc_condition,
-                                   design = ~ Prediction_LSGC)
+                                   design = ~ Prediction_LSGOC)
 dds_lgsc <- dds_lgsc[rowSums(counts(dds_lgsc)) > 1, ]
 dds_lgsc <- DESeq(dds_lgsc)
 
@@ -2538,7 +2544,7 @@ val_all_volcano <- ggplot(res_all, aes(x = log2FoldChange, y = -log10(padj))) +
     vars(Histotype),
     nrow = 1,
     scales = "free",
-    strip = strip_themed(background_x = elem_list_rect(fill = class_palette[c(4, 3)]))
+    strip = strip_themed(background_x = elem_list_rect(fill = class_palette[c(5, 3)]))
   ) +
   annotate("rect", xmin = 2, xmax = Inf, ymin = -log10(0.05), ymax = Inf,
            alpha = 0.2) +
