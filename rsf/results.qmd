@@ -2536,7 +2536,8 @@ res_enoc <- dds_enoc |>
   ungroup()
 
 # Combined volcano plot
-res_all <- bind_rows(LGSC = res_lgsc, ENOC = res_enoc, .id = "Histotype") |>
+res_all <-
+  bind_rows(LGSOC = res_lgsc, ENOC = res_enoc, .id = "Histotype") |>
   mutate(Histotype = fct_inorder(Histotype))
 
 val_all_volcano <- ggplot(res_all, aes(x = log2FoldChange, y = -log10(padj))) +
@@ -2722,3 +2723,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
