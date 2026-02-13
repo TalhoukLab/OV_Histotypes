@@ -1822,17 +1822,64 @@ gene_list_comps_conf <- bind_rows(
   ) |>
   drop_na(Metric) |>
   select(Method, Metric, mean_estimate, lower, upper, class_group) |>
-  mutate(across(where(is.numeric), ~ round(., digits = 3))) |>
+  mutate(across(where(is.numeric), ~ round(., digits = 3)))
+
+gene_list_comps_conf_df <- gene_list_comps_conf |>
   mutate(Estimate = paste0(mean_estimate, " (", lower, ", ", upper, ")"),
          .keep = "unused") |>
   arrange(Method, Metric, class_group) |>
   pivot_wider(names_from = "class_group", values_from = "Estimate")
 
-gene_list_comps_conf |>
+gene_list_comps_conf_df |>
   kbl(booktabs = TRUE, linesep = "") |>
   kable_styling(full_width = FALSE, latex_options = "scale_down") |>
   collapse_rows(columns = 1) |>
   add_header_above(c(" " = 3, "Histotypes" = 5))
+```
+
+```{r}
+#| label: fig-gene-list-comps-conf
+#| fig-cap: 'SMOTE-SVM Gene Lists Per-Class Evaluation Metrics by Metric'
+#| fig-width: 10
+#| fig-height: 6
+#| out-width: '100%'
+
+p <- gene_list_comps_conf |> 
+  filter(Metric %in% c("F1-Score", "Balanced Accuracy", "Kappa"),
+         class_group != "Overall") |> 
+  mutate(Metric = droplevels(Metric)) |> 
+  ggplot() +
+  geom_pointrange(
+    aes(
+      x = class_group,
+      y = mean_estimate,
+      ymin = lower,
+      ymax = upper,
+      color = Method
+    ),
+    position = position_dodge(width = 0.5),
+    fatten = 1
+  ) +
+  geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
+  scale_color_brewer(palette = "Dark2") +
+  scale_y_continuous(breaks = seq(0, 1, 0.2)) +
+  facet_wrap(vars(Metric), nrow = 1) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    legend.position = "inside",
+    legend.position.inside = c(0.01, 0.01),
+    legend.justification.inside = c(0, 0)
+  ) +
+  labs(
+    x = "Method",
+    y = "Metric Value",
+    color = "Gene List",
+    title = "SMOTE-SVM Gene Lists Per-Class Evaluation Metrics by Metric"
+  )
+print(p)
 ```
 
 ## Validation Set
