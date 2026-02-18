@@ -8,3 +8,5 @@
 *.tex
 
 **/*.quarto_ipynb
+
+/data-raw/CT14-05_Scores-Deconvoluted-Summarized_MA27SEPT2016/*.xlsx

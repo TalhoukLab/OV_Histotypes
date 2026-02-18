@@ -138,6 +138,9 @@ overlap_all <- union(overlap_PrOTYPE, overlap_SPOT)
 # PrOTYPE final model
 final_model <- readRDS(here("data/final_model.rds"))
 
+# DOVE consolidated IHC scores
+final_scores <- read_excel(here("data-raw/CT14-05_Scores-Deconvoluted-Summarized_MA27SEPT2016/outputs/final_scores.xlsx"))
+
 # Histotypes colour palette
 class_palette <- brewer.pal(n = 5, name = "Dark2")
 ```
@@ -2387,6 +2390,7 @@ val_pred_enoc_clin <- val_pred_overall |>
   filter(Method == "SMOTE-SVM, All Overlap") |> 
   inner_join(hist |> select(FileName, ottaID), by = "FileName") |>
   inner_join(od.otta, by = c("ottaID" = "otta_id")) |>
+  inner_join(final_scores, by = "ottaID") |> 
   filter(Truth == "ENOC") |>
   mutate(
     Prediction_ENOC = factor(
@@ -2419,9 +2423,14 @@ val_pred_enoc_clin |>
       grade ~ "Tumour grade",
       stage_b1v234 ~ "FIGO tumour stage",
       race_white ~ "Race",
-      arid1a_gr ~ "ARID1A"
+      arid1a_gr ~ "ARID1A",
+      WT1 ~ "WT1",
+      P53 ~ "TP53",
+      PR ~ "PR",
+      P16 ~ "P16",
+      `NAPSIN A` ~ "NAPSIN A"
     ),
-    include = c(age_dx, grade, stage_b1v234, race_white, arid1a_gr)
+    include = c(age_dx, grade, stage_b1v234, race_white, arid1a_gr, WT1, P53, PR, P16, `NAPSIN A`)
   ) |>
   add_p() |>
   bold_labels() |>
@@ -2770,4 +2779,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
