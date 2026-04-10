@@ -9,6 +9,7 @@ library(forcats)
 library(scales)
 library(patchwork)
 library(kableExtra)
+library(epiR)
 library(here)
 source(here("validation/cs_classifier.R"))
 ```
@@ -337,7 +338,7 @@ p_gd_snr_all <- wrap_plots(list(p1, p2, p3), ncol = 1) +
   labs(x = "SNR", y = "% GD") &
   geom_vline(xintercept = 100, color = "grey20", linetype = "dashed") &
   geom_hline(yintercept = 50, color = "grey20", linetype = "dashed") &
-  scale_x_continuous(labels = scales::label_comma()) &
+  scale_x_continuous(labels = label_comma()) &
   theme(panel.grid.minor = element_blank(),
         legend.justification = "top")
 print(p_gd_snr_all)
@@ -385,7 +386,7 @@ genes_cs13_rand1 <- train_ref_comb |>
     values_from = c("Value", "FileName")
   ) |>
   group_by(Gene) |>
-  mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) |>
+  mutate(Rc = epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) |>
   ungroup() |>
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
          Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
@@ -445,7 +446,7 @@ genes_cs23_rand1 <- train_ref_comb |>
     values_from = c("Value", "FileName")
   ) |>
   group_by(Gene) |>
-  mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) |>
+  mutate(Rc = epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) |>
   ungroup() |>
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
          Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
@@ -502,7 +503,7 @@ genes_cs13_hkgenes <-
          suffix = c("_CS1", "_CS3")) |>
   select(ottaID, Gene = Name, everything()) |>
   group_by(Gene) |>
-  mutate(Rc = epiR::epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) |>
+  mutate(Rc = epi.ccc(Value_CS1, Value_CS3)[["rho.c"]][["est"]]) |>
   ungroup() |>
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
          Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
@@ -560,7 +561,7 @@ genes_cs23_hkgenes <-
          suffix = c("_CS2", "_CS3")) |>
   select(ottaID, Gene = Name, everything()) |>
   group_by(Gene) |>
-  mutate(Rc = epiR::epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) |>
+  mutate(Rc = epi.ccc(Value_CS2, Value_CS3)[["rho.c"]][["est"]]) |>
   ungroup() |>
   mutate(Gene = fct_reorder(Gene, Rc, .desc = TRUE),
          Rc_label = paste0("Rc = ", round(Rc, digits = 3)))
@@ -640,7 +641,7 @@ genes_comp_test <-
     include = c(CS1, CS2)
   ) |>
   bold_labels() |>
-  gtsummary::modify_header(label ~ "**Correlation**") |>
+  modify_header(label ~ "**Correlation**") |>
   add_p(
     test = all_continuous() ~ "paired.wilcox.test",
     pvalue_fun = label_style_pvalue(digits = 3),
@@ -649,3 +650,4 @@ genes_comp_test <-
 
 genes_comp_test
 ```
+
