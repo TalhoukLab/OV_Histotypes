@@ -625,7 +625,7 @@ Instead, we only reported ROC curves and their associated AUCs for test set perf
 
 ## Rank Aggregation
 
-To select the best algorithm, we implemented a two-stage rank aggregation procedure using the Genetic Algorithm. First, we ranked all workflows based on per-class F1-scores, balanced accuracy, and kappa to see which workflows performed well in predicting all five histotypes. Then, we took the ranks from these three performance metrics and performed a second run of rank aggregation. The top 5 workflows were determined from the final rank aggregation result.
+To select the best algorithm, we implemented a two-stage rank aggregation procedure using the Genetic Algorithm @pihur2009rankaggreg. First, we ranked all workflows based on per-class F1-scores, balanced accuracy, and kappa to see which workflows performed well in predicting all five histotypes. Then, we took the ranks from these three performance metrics and performed a second run of rank aggregation. The top 5 workflows were determined from the final rank aggregation result.
 
 ## Gene Optimization
 
