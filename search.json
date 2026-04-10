@@ -84,7 +84,7 @@
     "href": "rsf/methods.html#rank-aggregation",
     "title": "2  Methods",
     "section": "2.6 Rank Aggregation",
-    "text": "2.6 Rank Aggregation\nTo select the best algorithm, we implemented a two-stage rank aggregation procedure using the Genetic Algorithm Pihur et al. (2009). First, we ranked all workflows based on per-class F1-scores, balanced accuracy, and kappa to see which workflows performed well in predicting all five histotypes. Then, we took the ranks from these three performance metrics and performed a second run of rank aggregation. The top 5 workflows were determined from the final rank aggregation result.",
+    "text": "2.6 Rank Aggregation\nTo select the best algorithm, we implemented a two-stage rank aggregation procedure using the Genetic Algorithm (Pihur et al. 2009). First, we ranked all workflows based on per-class F1-scores, balanced accuracy, and kappa to see which workflows performed well in predicting all five histotypes. Then, we took the ranks from these three performance metrics and performed a second run of rank aggregation. The top 5 workflows were determined from the final rank aggregation result.",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Methods</span>"
     ]

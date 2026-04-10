@@ -581,7 +581,7 @@ F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times p
 </section>
 <section id="rank-aggregation" class="level2" data-number="2.6">
 <h2 data-number="2.6" class="anchored" data-anchor-id="rank-aggregation"><span class="header-section-number">2.6</span> Rank Aggregation</h2>
-<p>To select the best algorithm, we implemented a two-stage rank aggregation procedure using the Genetic Algorithm <span class="citation" data-cites="pihur2009rankaggreg">Pihur et al. (<a href="references.html#ref-pihur2009rankaggreg" role="doc-biblioref">2009</a>)</span>. First, we ranked all workflows based on per-class F1-scores, balanced accuracy, and kappa to see which workflows performed well in predicting all five histotypes. Then, we took the ranks from these three performance metrics and performed a second run of rank aggregation. The top 5 workflows were determined from the final rank aggregation result.</p>
+<p>To select the best algorithm, we implemented a two-stage rank aggregation procedure using the Genetic Algorithm <span class="citation" data-cites="pihur2009rankaggreg">(<a href="references.html#ref-pihur2009rankaggreg" role="doc-biblioref">Pihur et al. 2009</a>)</span>. First, we ranked all workflows based on per-class F1-scores, balanced accuracy, and kappa to see which workflows performed well in predicting all five histotypes. Then, we took the ranks from these three performance metrics and performed a second run of rank aggregation. The top 5 workflows were determined from the final rank aggregation result.</p>
 </section>
 <section id="gene-optimization" class="level2" data-number="2.7">
 <h2 data-number="2.7" class="anchored" data-anchor-id="gene-optimization"><span class="header-section-number">2.7</span> Gene Optimization</h2>
