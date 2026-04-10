@@ -208,7 +208,7 @@ train_ref_comb <-
   inner_join(cohorts, by = "col_name") |>
   inner_join(hist, by = c("FileName", "ottaID")) |>
   column_to_rownames("FileName") |>
-  select(ottaID, all_of(common_genes123), hist_gr, hist_final)
+  select(ottaID, CodeSet, all_of(common_genes123), hist_gr, hist_final)
 
 # Training set removed replicates (CS3 > CS2 > CS1), n=1501-244=1257
 train_ref <- train_ref_comb %>%
