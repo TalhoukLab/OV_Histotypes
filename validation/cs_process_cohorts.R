@@ -456,7 +456,7 @@ hist_rand1 <- hist |>
   filter(FileName %in% c(cs1_clean$FileName, cs2_clean$FileName, cs3_clean$FileName)) |>
   inner_join(annot_all, by = c("FileName", "CodeSet", "ottaID")) |>
   select(CodeSet, ottaID, hist_final, tissue.source, sample.type) |>
-  filter(sample.type != "Rep.BIO", .by = c(ottaID, CodeSet)) |>
+  filter(sample.type != "Rep.BIO") |>
   filter(n_distinct(CodeSet) == 3, .by = ottaID) |>
   distinct(ottaID, hist_final) |>
   slice_sample(n = 1, by = hist_final)
