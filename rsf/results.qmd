@@ -2779,3 +2779,112 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
+### Training Set Models
+
+```{r}
+#| label: tbl-val-eval-train
+#| tbl-cap: 'Evaluation Metrics on Training Set Models in Validation Set'
+#| tbl-pos: 'H'
+
+# Validation set overall predictions
+val_pred_overall <- data.frame(FileName = rownames(val_data),
+                               Truth = val_class) |>
+  mutate(
+    Prediction_up_xgb = predict(mod_up_xgb, val_data)[[".pred_class"]], 
+    Prediction_smote_svm = predict(mod_smote_svm, val_data)[[".pred_class"]],
+    across(c("Truth", matches("Prediction")), factor)
+  ) |> 
+  pivot_longer(
+    cols = matches("Prediction"),
+    names_to = "Method",
+    names_prefix = "Prediction_",
+    values_to = "Prediction"
+  ) |> 
+  mutate(across(c(Truth, Prediction), ~ factor(
+    .x,
+    levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"),
+    labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+  ))) |> 
+  mutate(Method = fct_inorder(
+    case_match(
+      Method,
+      "up_xgb" ~ "Up-XGB",
+      "smote_svm" ~ "SMOTE-SVM"
+    )
+  ))
+
+# Validation set overall metrics
+val_eval_overall <- val_pred_overall |>
+  summarize(
+    Accuracy = accuracy_vec(Truth, Prediction),
+    Sensitivity = sensitivity_vec(Truth, Prediction),
+    Specificity = specificity_vec(Truth, Prediction),
+    `F1-Score` = f_meas_vec(Truth, Prediction),
+    `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
+    Kappa = kap_vec(Truth, Prediction),
+    .by = Method
+  ) |> 
+  pivot_longer(cols = where(is.numeric),
+               names_to = "Metric",
+               values_to = "Overall")
+
+# Validation set per-class metrics
+val_eval_per_class <- val_pred_overall |>
+  nest(.by = Method) |> 
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
+  unnest(data) |> 
+  mutate(
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa"
+    ),
+    .keep = "unused"
+  ) |> 
+  pivot_wider(
+    id_cols = c(Method, Metric),
+    names_from = class_group,
+    values_from = .estimate
+  )
+
+# Combined all metrics
+val_eval <-
+  inner_join(val_eval_overall, val_eval_per_class, by = c("Method", "Metric"))
+
+val_eval |> 
+  kbl(booktabs = TRUE, linesep = "", digits = 3) |>
+  kable_styling() |> 
+  collapse_rows(columns = 1) |> 
+  add_header_above(c(" " = 3, "Histotypes" = 5))
+```
+
+```{r}
+#| label: fig-val-conf-mat-train
+#| fig-cap: 'Confusion Matrix for Training Set Models evaluated on Validation Data'
+#| fig-width: 8
+#| out-width: '100%'
+
+val_conf_mat <- val_pred_overall |>
+  nest(.by = Method) |>
+  deframe() |>
+  imap(
+    ~ conf_mat(.x, Truth, Prediction) |>
+      autoplot(type = "heatmap") +
+      scale_fill_distiller(palette = "YlOrBr", direction = 1) +
+      labs(title = .y) +
+      theme(
+        axis.ticks = element_blank(),
+        axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
+        axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
+      )
+  ) |> 
+  wrap_plots() +
+  plot_annotation(title = "Confusion Matrix for Training Set Models evaluated on Validation Data")
+
+print(val_conf_mat)
+```
