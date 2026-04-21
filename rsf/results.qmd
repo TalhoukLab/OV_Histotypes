@@ -1650,7 +1650,8 @@ gene_smote_svm_names <- all_vi_train |>
   filter(wflow == "smote_svm") |> 
   rowid_to_column("Genes") |> 
   select(Genes, Name = Variable) |> 
-  add_row(Genes = 0L, Name = "Base", .before = 1)
+  add_row(Genes = 0L, Name = "Base", .before = 1) |> 
+  slice_min(order_by = Genes, n = -1)
 
 dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "smote_svm",
@@ -1762,7 +1763,8 @@ gene_up_xgb_names <- all_vi_train |>
   filter(wflow == "up_xgb") |> 
   rowid_to_column("Genes") |> 
   select(Genes, Name = Variable) |> 
-  add_row(Genes = 0L, Name = "Base", .before = 1)
+  add_row(Genes = 0L, Name = "Base", .before = 1) |> 
+  slice_min(order_by = Genes, n = -1)
 
 dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "up_xgb",
