@@ -1635,7 +1635,7 @@ saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 
 ## Gene Optimization
 
-From @fig-conf-eval, we see that although Up-XGB has the highest overall evaluation metric scores, SMOTE-SVM is better at predicting the rarest histotype LGSOC. The other four histotypes have relatively lower predictive performance in SMOTE-SVM. With such few cases in LGSOC we decided to select the workflow that is able to discern all histotypes to a fair extent for gene optimization.
+From @fig-conf-eval, we see that although Up-XGB has the highest overall evaluation metric scores, SMOTE-SVM is better at predicting the rarest histotype LGSOC. Thus we choose both of these two workflows for gene optimization in the confirmation set.
 
 ### SMOTE-SVM
 
@@ -1741,6 +1741,118 @@ gene_dist_smote_svm <-
   relocate(Set, .before = Genes)
 
 gene_dist_smote_svm |> 
+  kbl(booktabs = TRUE,
+      longtable = TRUE,
+      linesep = "",
+      escape = FALSE) |> 
+  kable_styling(full_width = FALSE) |> 
+  collapse_rows(columns = 1)
+```
+
+### Up-XGB
+
+```{r}
+#| label: fig-gene-up-xgb
+#| fig-cap: 'Gene Optimization for Up-XGB Classifier using Balanced Accuracy'
+#| fig-height: 5
+#| fig-width: 5
+#| out-width: '100%'
+
+gene_up_xgb_names <- all_vi_train |> 
+  filter(wflow == "up_xgb") |> 
+  rowid_to_column("Genes") |> 
+  select(Genes, Name = Variable) |> 
+  add_row(Genes = 0L, Name = "Base", .before = 1)
+
+dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
+  filter(Workflow == "up_xgb",
+         .metric == "bal_accuracy",
+         class_group == "Overall") |> 
+  mutate(
+    min_estimate = min(.estimate),
+    max_estimate = max(.estimate),
+    .by = Genes
+  ) |>
+  inner_join(gene_up_xgb_names, by = "Genes") |> 
+  mutate(Optimal = ifelse(mean_estimate == max(mean_estimate), TRUE, FALSE))
+
+p_gene_up_xgb <- 
+  ggplot(dat_gene_up_xgb, aes(text = Name)) +
+  geom_pointrange(
+    aes(
+      x = Genes,
+      y = mean_estimate,
+      ymin = min_estimate,
+      ymax = max_estimate,
+      color = Optimal
+    ),
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = c("black", "red")) +
+  theme_bw() +
+  labs(
+    x = "Genes Added",
+    y = "Balanced Accuracy",
+    title = "Gene Optimziation for Up-XGB",
+    color = NULL
+  )
+ggplotly(p_gene_up_xgb, width = 600, height = 400) |> 
+  layout(showlegend = FALSE)
+
+n_genes_up_xgb <- dat_gene_up_xgb |> 
+  filter(Optimal) |> 
+  pull(Genes) |> 
+  unique()
+genes_add_up_xgb <- gene_up_xgb_names |> 
+  filter(Genes > 0L) |> 
+  slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
+  pull(Name)
+opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
+```
+
+In the Up-XGB classifier, the optimal number of genes is achieved at the highest mean balanced accuracy with `r n_genes_up_xgb` genes added, highlighted in red in @fig-gene-up-xgb. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)`.
+
+The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-up-xgb. Base genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`. Unused genes are annotated with red crosses.
+
+```{r}
+#| label: tbl-gene-opt-up-xgb
+#| tbl-cap: 'Gene Profile of Optimal Set in Up-XGB Workflow'
+#| tbl-pos: 'H'
+
+candidates_all <- gene_up_xgb_names |>
+  filter(Genes > 0) |>
+  pull(Name)
+unused_genes_up_xgb <- gene_up_xgb_names |>
+  filter(Genes > 0) |>
+  slice_max(order_by = Genes, n = -n_genes_up_xgb) |> 
+  arrange(Genes) |> 
+  pull(Name)
+gene_order_up_xgb <- c(opt_genes_up_xgb, unused_genes_up_xgb)
+
+gene_dist_up_xgb <-
+  tibble(
+    Genes = gene_order_up_xgb,
+    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
+    SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
+    `Optimal Set` = if_else(
+      Genes %in% opt_genes_up_xgb,
+      symbol$circle_filled,
+      symbol$circle_cross
+    ) |>
+      cell_spec(
+        color = case_when(
+          Genes %in% overlap_all ~ "green",
+          Genes %in% opt_genes_up_xgb ~ "#8B8000",
+          .default = "#FF0000"
+        )
+      ),
+    `Candidate Rank` = ifelse(Genes %in% overlap_all, "", match(Genes, candidates_all)
+    )
+  ) |>
+  relocate(Set, .before = Genes)
+
+gene_dist_up_xgb |> 
   kbl(booktabs = TRUE,
       longtable = TRUE,
       linesep = "",
