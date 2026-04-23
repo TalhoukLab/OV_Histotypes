@@ -2142,7 +2142,7 @@ val_roc_curve_smote_svm_base <-
     data = val_data,
     class = val_class,
     title = "ROC Curves for SMOTE-SVM, Base Set Model in Validation Set",
-    cols = class_palett
+    cols = class_palette
   )
 
 print(val_roc_curve_smote_svm_base)
@@ -2653,4 +2653,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
