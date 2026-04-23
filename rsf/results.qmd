@@ -1865,191 +1865,85 @@ gene_dist_up_xgb |>
 
 ### Gene List Comparisons in Confirmation Set
 
-We train the SMOTE-SVM workflow using **four** different gene lists in the confirmation set. Overall and per-class results are shown in @tbl-gene-list-comps-conf. The four gene lists are:
+We train the SMOTE-SVM and Up-XGB workflows using the base and optimal gene lists in the training set. The models are evaluated on the confirmation set. Overall and per-class results are shown in @tbl-gene-list-comps-conf. The gene lists are:
 
-1.  All Overlap (n=72): all genes that are in overlap among the three CodeSets
+1.  Base (n=28): among the overlapping genes, the base set from the PrOTYPE and SPOT lists
 
-2.  Base (n=28): among the overlapping genes, the base set from the PrOTYPE and SPOT lists
-
-3.  Optimal (n=50): among the overlapping genes, the base set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-smote-svm
-
-4.  Full Panel (n=151): union of all genes found in PrOTYPE and SPOT lists
+2.  Optimal (n=40,50): among the overlapping genes, the base set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-smote-svm and @fig-gene-up-xgb
 
 ```{r}
 #| label: tbl-gene-list-comps-conf
-#| tbl-cap: 'SMOTE-SVM Model Comparisons using Different Gene Lists in Confirmation Set'
+#| tbl-cap: 'Model Comparisons using Different Gene Lists in Confirmation Set'
 #| tbl-pos: 'H'
 
-conf_base_data <- conf_data |>
-  select(all_of(overlap_all))
-conf_base_class <- conf_class
+# Up-XGB optimal workflow
+set.seed(2024)
+wflow_up_xgb_opt <- wflow_up_xgb_model |>
+  pluck("pre", "actions", "recipe", "recipe") |>
+  modify_at(c("var_info", "term_info"),
+            \(x) x |>
+              filter(variable %in% c(opt_genes_up_xgb, "class")) |>
+              arrange(match(variable, gene_order_up_xgb))) |>
+  update_recipe(x = wflow_up_xgb_model, recipe = _)
 
-saveRDS(conf_base_data, here::here("data/conf_base_data.rds"))
-saveRDS(conf_base_class, here::here("data/conf_base_class.rds"))
+# Up-XGB optimal model
+set.seed(2024)
+mod_up_xgb_opt <- wflow_up_xgb_opt |>
+  fit(data = train_ref)
 
-conf_opt_data <- conf_data |>
-  select(all_of(opt_genes_smote_svm))
-conf_opt_class <- conf_class
+# Up-XGB base workflow
+set.seed(2024)
+wflow_up_xgb_base <- wflow_up_xgb_model |>
+  pluck("pre", "actions", "recipe", "recipe") |>
+  modify_at(c("var_info", "term_info"),
+            \(x) x |>
+              filter(variable %in% c(overlap_all, "class")) |>
+              arrange(match(variable, gene_order_up_xgb))) |>
+  update_recipe(x = wflow_up_xgb_model, recipe = _)
 
-saveRDS(conf_opt_data, here::here("data/conf_opt_data.rds"))
-saveRDS(conf_opt_class, here::here("data/conf_opt_class.rds"))
+# Up-XGB base model
+set.seed(2024)
+mod_up_xgb_base <- wflow_up_xgb_base |>
+  fit(data = train_ref)
 
-gene_list_comps_conf <- bind_rows(
-  `All Overlap` = all_metrics_conf,
-  Optimal = all_metrics_conf_opt,
-  Base = all_metrics_conf_base,
-  `Full Panel` = all_metrics_conf_full,
-  .id = "Method"
-) |>
-  filter(wflow == "smote_svm") |>
+# SMOTE-SVM optimal workflow
+set.seed(2024)
+wflow_smote_svm_opt <- wflow_smote_svm_model |>
+  pluck("pre", "actions", "recipe", "recipe") |>
+  modify_at(c("var_info", "term_info"),
+            \(x) x |>
+              filter(variable %in% c(opt_genes_smote_svm, "class")) |>
+              arrange(match(variable, gene_order_smote_svm))) |>
+  update_recipe(x = wflow_smote_svm_model, recipe = _)
+
+# SMOTE-SVM optimal model
+set.seed(2024)
+mod_smote_svm_opt <- wflow_smote_svm_opt |>
+  fit(data = train_ref)
+
+# SMOTE-SVM base workflow
+set.seed(2024)
+wflow_smote_svm_base <- wflow_smote_svm_model |>
+  pluck("pre", "actions", "recipe", "recipe") |>
+  modify_at(c("var_info", "term_info"),
+            \(x) x |>
+              filter(variable %in% c(overlap_all, "class")) |>
+              arrange(match(variable, gene_order_smote_svm))) |>
+  update_recipe(x = wflow_smote_svm_model, recipe = _)
+
+# SMOTE-SVM base model
+set.seed(2024)
+mod_smote_svm_base <- wflow_smote_svm_base |>
+  fit(data = train_ref)
+
+# Confirmation set overall predictions
+conf_pred_overall <- data.frame(FileName = rownames(conf_data),
+                                Truth = conf_class) |>
   mutate(
-    lower = ifelse(all(is.na(.estimate)), NA, min(.estimate, na.rm = TRUE)),
-    upper = ifelse(all(is.na(.estimate)), NA, max(.estimate, na.rm = TRUE)),
-    .by = c(Method, class_group, .metric)
-  ) |>
-  distinct(pick(-fold_id, -.estimate)) |>
-  rename(Workflow = wflow) |>
-  mutate(
-    class_group = factor(
-      class_group,
-      levels = c("Overall", "HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-      labels = c("Overall", "HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
-    ),
-    Method = fct_inorder(Method),
-    Metric = case_match(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa",
-      .ptype = factor(
-        levels = c(
-          "Accuracy",
-          "Sensitivity",
-          "Specificity",
-          "F1-Score",
-          "Balanced Accuracy",
-          "Kappa"
-        )
-      )
-    ),
-    .keep = "unused"
-  ) |>
-  drop_na(Metric) |>
-  select(Method, Metric, mean_estimate, lower, upper, class_group) |>
-  mutate(across(where(is.numeric), ~ round(., digits = 3)))
-
-gene_list_comps_conf_df <- gene_list_comps_conf |>
-  mutate(Estimate = paste0(mean_estimate, " (", lower, ", ", upper, ")"),
-         .keep = "unused") |>
-  arrange(Method, Metric, class_group) |>
-  pivot_wider(names_from = "class_group", values_from = "Estimate")
-
-gene_list_comps_conf_df |>
-  kbl(booktabs = TRUE, linesep = "") |>
-  kable_styling(full_width = FALSE, latex_options = "scale_down") |>
-  collapse_rows(columns = 1) |>
-  add_header_above(c(" " = 3, "Histotypes" = 5))
-```
-
-```{r}
-#| label: fig-gene-list-comps-conf
-#| fig-cap: 'SMOTE-SVM Gene Lists Per-Class Evaluation Metrics by Metric'
-#| fig-width: 10
-#| fig-height: 6
-#| out-width: '100%'
-
-p <- gene_list_comps_conf |> 
-  filter(Metric %in% c("F1-Score", "Balanced Accuracy", "Kappa"),
-         class_group != "Overall") |> 
-  mutate(Metric = droplevels(Metric)) |> 
-  ggplot() +
-  geom_pointrange(
-    aes(
-      x = class_group,
-      y = mean_estimate,
-      ymin = lower,
-      ymax = upper,
-      color = Method
-    ),
-    position = position_dodge(width = 0.5),
-    fatten = 1
-  ) +
-  geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
-  scale_color_brewer(palette = "Dark2") +
-  scale_y_continuous(breaks = seq(0, 1, 0.2)) +
-  facet_wrap(vars(Metric), nrow = 1) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank(),
-    legend.position = "inside",
-    legend.position.inside = c(0.01, 0.01),
-    legend.justification.inside = c(0, 0)
-  ) +
-  labs(
-    x = "Method",
-    y = "Metric Value",
-    color = "Gene List",
-    title = "SMOTE-SVM Gene Lists Per-Class Evaluation Metrics by Metric"
-  )
-print(p)
-```
-
-## Validation Set
-
-We assess the same four models from @tbl-gene-list-comps-conf by training on the confirmation set, and evaluating the predictions on the validation set.
-
-```{r}
-#| label: val-models
-
-# Confirmation Set
-conf_ref <- conf_data |>
-  mutate(class = factor(conf_class, levels = c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")))
-
-# Confirmation Set with all PrOTYPE and SPOT genes
-conf_full_ref <- conf_full_data |> 
-  mutate(class = factor(conf_full_class, levels = c("CCOC", "ENOC", "HGSC", "LGSC", "MUC")))
-
-# All overlapping genes model
-set.seed(2024)
-mod_smote_svm_all <- wflow_smote_svm_model_conf |> 
-  fit(data = conf_ref)
-
-# Optimal gene list model trained
-set.seed(2024)
-mod_smote_svm_opt <- wflow_smote_svm_model_conf_opt |>
-  fit(data = conf_ref)
-
-# Base gene list model trained
-set.seed(2024)
-mod_smote_svm_base <- wflow_smote_svm_model_conf_base |> 
-  fit(data = conf_ref)
-
-# Full PrOTYPE and SPOT panel model trained
-set.seed(2024)
-mod_smote_svm_full <- wflow_smote_svm_model_conf_full |> 
-  fit(data = conf_full_ref)
-```
-
-### Evaluation Metrics
-
-```{r}
-#| label: tbl-val-eval
-#| tbl-cap: 'Evaluation Metrics on SMOTE-SVM Models in Validation Set'
-#| tbl-pos: 'H'
-
-# Validation set overall predictions
-val_pred_overall <- data.frame(FileName = rownames(val_data),
-                               Truth = val_class) |>
-  mutate(
-    Prediction_smote_svm_all = predict(mod_smote_svm_all, val_data)[[".pred_class"]],
-    Prediction_smote_svm_opt = predict(mod_smote_svm_opt, val_data)[[".pred_class"]],
-    Prediction_smote_svm_base = predict(mod_smote_svm_base, val_data)[[".pred_class"]],
-    Prediction_smote_svm_full = predict(mod_smote_svm_full, val_full_data)[[".pred_class"]],
+    Prediction_smote_svm_opt = predict(mod_smote_svm_opt, conf_data)[[".pred_class"]],
+    Prediction_smote_svm_base = predict(mod_smote_svm_base, conf_data)[[".pred_class"]],
+    Prediction_up_xgb_opt = predict(mod_up_xgb_opt, conf_data)[[".pred_class"]],
+    Prediction_up_xgb_base = predict(mod_up_xgb_base, conf_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   pivot_longer(
@@ -2067,15 +1961,15 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     Method = fct_inorder(
       case_match(
         Method,
-        "smote_svm_all" ~ "SMOTE-SVM, All Overlap",
         "smote_svm_opt" ~ "SMOTE-SVM, Optimal",
         "smote_svm_base" ~ "SMOTE-SVM, Base",
-        "smote_svm_full" ~ "SMOTE-SVM, Full Panel"
+        "up_xgb_opt" ~ "Up-XGB, Optimal",
+        "up_xgb_base" ~ "Up-XGB, Base",
       )
     ))
 
-# Validation set overall metrics
-val_eval_overall <- val_pred_overall |>
+# Confirmation set overall metrics
+conf_eval_overall <- conf_pred_overall |>
   summarize(
     Accuracy = accuracy_vec(Truth, Prediction),
     Sensitivity = sensitivity_vec(Truth, Prediction),
@@ -2090,6 +1984,126 @@ val_eval_overall <- val_pred_overall |>
     names_to = "Metric",
     values_to = "Overall"
   )
+
+# Confirmation set per-class metrics
+conf_eval_per_class <- conf_pred_overall |>
+  nest(.by = Method) |> 
+  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
+  unnest(data) |> 
+  mutate(
+    Metric = case_match(
+      .metric,
+      "accuracy" ~ "Accuracy",
+      "sensitivity" ~ "Sensitivity",
+      "specificity" ~ "Specificity",
+      "f_meas" ~ "F1-Score",
+      "bal_accuracy" ~ "Balanced Accuracy",
+      "kap" ~ "Kappa"
+    ),
+    .keep = "unused"
+  ) |>
+  pivot_wider(
+    id_cols = c(Method, Metric),
+    names_from = class_group,
+    values_from = .estimate
+  )
+
+# Combined all metrics
+conf_eval <-
+  inner_join(conf_eval_overall, conf_eval_per_class, by = c("Method", "Metric"))
+
+conf_eval |> 
+  kbl(booktabs = TRUE, linesep = "", digits = 3) |>
+  kable_styling() |> 
+  collapse_rows(columns = 1) |> 
+  add_header_above(c(" " = 3, "Histotypes" = 5))
+```
+
+```{r}
+#| label: fig-gene-list-comps-conf
+#| fig-cap: 'Gene List Comparisons of Evaluation Metrics in Confirmation Set'
+#| fig-width: 10
+#| out-width: '100%'
+
+conf_eval_long <- conf_eval |>
+  pivot_longer(cols = where(is.double),
+               names_to = "Class",
+               values_to = "Score") |>
+  mutate(Method = fct_rev(Method),
+         Metric = fct_inorder(Metric),
+         Class = fct_inorder(Class))
+
+ggplot(conf_eval_long) +
+  geom_tile(aes(x = Class, y = Method, fill = Score)) +
+  geom_text(aes(x = Class, y = Method, label = round(Score, digits = 2)),
+            size = 3) +
+  facet_wrap(vars(Metric)) +
+  scale_fill_viridis_c(option = "plasma", limits = c(0, 1)) +
+  theme_minimal() +
+  theme(
+    axis.title = element_blank(),
+    axis.text.x.bottom = element_text(angle = 45, hjust = 1, vjust = 1),
+    strip.text = element_text(face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal"
+  ) +
+  labs(title = "Gene List Comparisons of Evaluation Metrics in Confirmation Set")
+```
+
+## Validation Set
+
+Based on the results in @fig-gene-list-comps-conf, we assess the SMOTE-SVM model trained on the training set for the optimal and all overlap gene lists, evaluating in the validation set.
+
+### Evaluation Metrics
+
+```{r}
+#| label: tbl-val-eval
+#| tbl-cap: 'Evaluation Metrics on Training Set Models in Validation Set'
+#| tbl-pos: 'H'
+
+# Validation set overall predictions
+val_pred_overall <- data.frame(FileName = rownames(val_data),
+                               Truth = val_class) |>
+  mutate(
+    Prediction_smote_svm_all = predict(mod_smote_svm, val_data)[[".pred_class"]], 
+    Prediction_smote_svm_opt = predict(mod_smote_svm_opt, val_data)[[".pred_class"]],
+    Prediction_smote_svm_base = predict(mod_smote_svm_base, val_data)[[".pred_class"]],
+    across(c("Truth", matches("Prediction")), factor)
+  ) |> 
+  pivot_longer(
+    cols = matches("Prediction"),
+    names_to = "Method",
+    names_prefix = "Prediction_",
+    values_to = "Prediction"
+  ) |> 
+  mutate(across(c(Truth, Prediction), ~ factor(
+    .x,
+    levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"),
+    labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+  ))) |> 
+  mutate(Method = fct_inorder(
+    case_match(
+      Method,
+      "smote_svm_all" ~ "SMOTE-SVM, All Overlap",
+      "smote_svm_opt" ~ "SMOTE-SVM, Optimal",
+      "smote_svm_base" ~ "SMOTE-SVM, Base"
+    )
+  ))
+
+# Validation set overall metrics
+val_eval_overall <- val_pred_overall |>
+  summarize(
+    Accuracy = accuracy_vec(Truth, Prediction),
+    Sensitivity = sensitivity_vec(Truth, Prediction),
+    Specificity = specificity_vec(Truth, Prediction),
+    `F1-Score` = f_meas_vec(Truth, Prediction),
+    `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
+    Kappa = kap_vec(Truth, Prediction),
+    .by = Method
+  ) |> 
+  pivot_longer(cols = where(is.numeric),
+               names_to = "Metric",
+               values_to = "Overall")
 
 # Validation set per-class metrics
 val_eval_per_class <- val_pred_overall |>
@@ -2107,7 +2121,7 @@ val_eval_per_class <- val_pred_overall |>
       "kap" ~ "Kappa"
     ),
     .keep = "unused"
-  ) |>
+  ) |> 
   pivot_wider(
     id_cols = c(Method, Metric),
     names_from = class_group,
@@ -2159,8 +2173,8 @@ ggplot(val_eval_long) +
 
 ```{r}
 #| label: fig-val-conf-mat
-#| fig-cap: 'Confusion Matrix for Validation Set Model'
-#| fig-width: 8
+#| fig-cap: 'Confusion Matrix for Training Set Models evaluated on Validation Data'
+#| fig-width: 10
 #| out-width: '100%'
 
 val_conf_mat <- val_pred_overall |>
@@ -2178,7 +2192,8 @@ val_conf_mat <- val_pred_overall |>
       )
   ) |> 
   wrap_plots() +
-  plot_annotation(title = "Confusion Matrix for Validation Set Model", tag_levels = "A")
+  plot_annotation(title = "Confusion Matrix for Training Set Models evaluated on Validation Data",
+                  tag_levels = "A")
 
 print(val_conf_mat)
 ```
@@ -2195,7 +2210,7 @@ print(val_conf_mat)
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_smote_svm_all |>
+preds <- mod_smote_svm |>
   predict(val_data, type = "prob") |>
   add_column(truth = factor(val_class))
 roc_df <- preds |>
@@ -2294,41 +2309,6 @@ val_roc_curve_smote_svm_base <-
 print(val_roc_curve_smote_svm_base)
 ```
 
-#### Full Panel
-
-```{r}
-#| label: fig-val-roc-smote-svm-full
-#| fig-cap: 'ROC Curves for SMOTE-SVM, Full Panel Model in Validation Set'
-#| fig-height: 7
-#| fig-width: 8
-#| out-width: '100%'
-
-preds <- mod_smote_svm_full |> 
-  predict(val_full_data, type = "prob") |> 
-  add_column(truth = factor(val_full_class))
-roc_df <- preds |>
-  roc_curve(truth, matches(".pred")) |> 
-  mutate(.level = factor(
-    .level,
-    levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-    labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
-  ))
-auc <- preds |>
-  roc_auc(truth, matches(".pred")) |> 
-  pull(.estimate) |> 
-  number(accuracy = 0.001, prefix = "AUC = ")
-val_roc_curve_smote_svm_full <- 
-  autoplot(roc_df) +
-  labs(title = "ROC Curves for SMOTE-SVM, Full Panel Model in Validation Set",
-       subtitle = auc) +
-  facet_wrap2(~ .level, strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
-  theme(
-    panel.grid = element_blank(),
-    strip.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 12)
-  )
-print(val_roc_curve_smote_svm_full)
-```
 :::
 
 ### Calibration Plots
@@ -2343,7 +2323,7 @@ print(val_roc_curve_smote_svm_full)
 #| fig-width: 8
 #| out-width: '100%'
 
-preds <- mod_smote_svm_all |> 
+preds <- mod_smote_svm |> 
   predict(val_data, type = "prob") |> 
   add_column(truth = factor(val_class))
 
@@ -2416,34 +2396,6 @@ preds |>
         strip.text = element_text(size = 12, face = "bold"),
         axis.title = element_text(size = 12)) +
   labs(title = "Calibration Plots for SMOTE-SVM, Base Set Model in Validation Set")
-```
-
-#### Full Panel
-
-```{r}
-#| label: fig-val-calib-smote-svm-full
-#| fig-cap: 'Calibration Plots for SMOTE-SVM, Full Panel Model in Validation Set'
-#| fig-height: 7
-#| fig-width: 8
-#| out-width: '100%'
-
-preds <- mod_smote_svm_full |> 
-  predict(val_full_data, type = "prob") |> 
-  add_column(truth = factor(val_class))
-
-preds |> 
-  cal_plot_logistic(truth = truth) +
-  facet_wrap2(~ factor(
-    truth,
-    levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-    labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
-  ),
-  strip = strip_themed(background_x = elem_list_rect(fill = class_palette))) +
-  theme_minimal() +
-  theme(panel.grid.minor = element_blank(),
-        strip.text = element_text(size = 12, face = "bold"),
-        axis.title = element_text(size = 12)) +
-  labs(title = "Calibration Plots for SMOTE-SVM, Full Panel Model in Validation Set")
 ```
 :::
 
@@ -2892,113 +2844,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
   )
 
 print(p)
-```
-
-### Training Set Models
-
-```{r}
-#| label: tbl-val-eval-train
-#| tbl-cap: 'Evaluation Metrics on Training Set Models in Validation Set'
-#| tbl-pos: 'H'
-
-# Validation set overall predictions
-val_pred_overall <- data.frame(FileName = rownames(val_data),
-                               Truth = val_class) |>
-  mutate(
-    Prediction_up_xgb = predict(mod_up_xgb, val_data)[[".pred_class"]], 
-    Prediction_smote_svm = predict(mod_smote_svm, val_data)[[".pred_class"]],
-    across(c("Truth", matches("Prediction")), factor)
-  ) |> 
-  pivot_longer(
-    cols = matches("Prediction"),
-    names_to = "Method",
-    names_prefix = "Prediction_",
-    values_to = "Prediction"
-  ) |> 
-  mutate(across(c(Truth, Prediction), ~ factor(
-    .x,
-    levels = c("HGSC", "CCOC", "ENOC", "LGSC", "MUC"),
-    labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
-  ))) |> 
-  mutate(Method = fct_inorder(
-    case_match(
-      Method,
-      "up_xgb" ~ "Up-XGB",
-      "smote_svm" ~ "SMOTE-SVM"
-    )
-  ))
-
-# Validation set overall metrics
-val_eval_overall <- val_pred_overall |>
-  summarize(
-    Accuracy = accuracy_vec(Truth, Prediction),
-    Sensitivity = sensitivity_vec(Truth, Prediction),
-    Specificity = specificity_vec(Truth, Prediction),
-    `F1-Score` = f_meas_vec(Truth, Prediction),
-    `Balanced Accuracy` = bal_accuracy_vec(Truth, Prediction),
-    Kappa = kap_vec(Truth, Prediction),
-    .by = Method
-  ) |> 
-  pivot_longer(cols = where(is.numeric),
-               names_to = "Metric",
-               values_to = "Overall")
-
-# Validation set per-class metrics
-val_eval_per_class <- val_pred_overall |>
-  nest(.by = Method) |> 
-  mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
-  unnest(data) |> 
-  mutate(
-    Metric = case_match(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa"
-    ),
-    .keep = "unused"
-  ) |> 
-  pivot_wider(
-    id_cols = c(Method, Metric),
-    names_from = class_group,
-    values_from = .estimate
-  )
-
-# Combined all metrics
-val_eval <-
-  inner_join(val_eval_overall, val_eval_per_class, by = c("Method", "Metric"))
-
-val_eval |> 
-  kbl(booktabs = TRUE, linesep = "", digits = 3) |>
-  kable_styling() |> 
-  collapse_rows(columns = 1) |> 
-  add_header_above(c(" " = 3, "Histotypes" = 5))
-```
-
-```{r}
-#| label: fig-val-conf-mat-train
-#| fig-cap: 'Confusion Matrix for Training Set Models evaluated on Validation Data'
-#| fig-width: 8
-#| out-width: '100%'
-
-val_conf_mat <- val_pred_overall |>
-  nest(.by = Method) |>
-  deframe() |>
-  imap(
-    ~ conf_mat(.x, Truth, Prediction) |>
-      autoplot(type = "heatmap") +
-      scale_fill_distiller(palette = "YlOrBr", direction = 1) +
-      labs(title = .y) +
-      theme(
-        axis.ticks = element_blank(),
-        axis.text.y = element_markdown(colour = rev(class_palette), margin = margin(r = -5)),
-        axis.text.x = element_markdown(colour = class_palette, margin = margin(t = -3))
-      )
-  ) |> 
-  wrap_plots() +
-  plot_annotation(title = "Confusion Matrix for Training Set Models evaluated on Validation Data")
-
-print(val_conf_mat)
 ```
