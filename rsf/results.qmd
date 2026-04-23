@@ -1312,7 +1312,7 @@ print(p)
 
 ```{r}
 #| label: fig-conf-conf-mat
-#| fig-cap: !expr ggplot2::last_plot()$patches$annotation$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 9
 #| fig-width: 8
 #| out-width: '100%'
@@ -1387,7 +1387,7 @@ class_groups_two_step <-
 
 ```{r}
 #| label: fig-conf-roc-seq
-#| fig-cap: !expr ggplot2::last_plot()$patches$annotation$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 7
 #| out-width: '100%'
@@ -1410,7 +1410,7 @@ print(roc_curve_seq)
 
 ```{r}
 #| label: fig-conf-roc-two-step
-#| fig-cap: !expr ggplot2::last_plot()$patches$annotation$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 9
 #| out-width: '100%'
@@ -1436,7 +1436,7 @@ print(roc_curve_two_step)
 
 ```{r}
 #| label: fig-conf-roc-up-xgb
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -1454,7 +1454,7 @@ plot_roc_curve(
 
 ```{r}
 #| label: fig-conf-roc-up-rf
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -1472,7 +1472,7 @@ plot_roc_curve(
 
 ```{r}
 #| label: fig-conf-roc-smote-svm
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -2068,7 +2068,7 @@ ggplot(val_eval_long) +
 
 ```{r}
 #| label: fig-val-conf-mat
-#| fig-cap: !expr ggplot2::last_plot()$patches$annotation$title
+#| fig-cap: !expr get_plot_title()
 #| fig-width: 10
 #| out-width: '100%'
 
@@ -2089,7 +2089,7 @@ print(val_conf_mat)
 
 ```{r}
 #| label: fig-val-roc-smote-svm-all
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -2110,7 +2110,7 @@ print(val_roc_curve_smote_svm_all)
 
 ```{r}
 #| label: fig-val-roc-smote-svm-opt
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -2131,7 +2131,7 @@ print(val_roc_curve_smote_svm_opt)
 
 ```{r}
 #| label: fig-val-roc-smote-svm-base
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -2156,7 +2156,7 @@ print(val_roc_curve_smote_svm_base)
 
 ```{r}
 #| label: fig-val-calib-smote-svm-all
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -2174,7 +2174,7 @@ plot_calib_curve(
 
 ```{r}
 #| label: fig-val-calib-smote-svm-opt
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -2192,7 +2192,7 @@ plot_calib_curve(
 
 ```{r}
 #| label: fig-val-calib-smote-svm-base
-#| fig-cap: !expr ggplot2::last_plot()$labels$title
+#| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
@@ -2568,7 +2568,7 @@ bind_rows(
 #| fig-width: 10
 #| out-width: '100%'
 
-val_pred_hgsc_samples <- mod_smote_svm_all |> 
+val_pred_hgsc_samples <- mod_smote_svm |> 
   predict(val_data, type = "class") |> 
   bind_cols(val_data) |> 
   filter(.pred_class == "HGSC") |> 

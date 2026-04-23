@@ -364,3 +364,15 @@ plot_calib_curve <- function(model, data, class, title, cols = NULL) {
     ) +
     ggplot2::labs(title = title)
 }
+
+#' Get plot title to use as figure caption
+#'
+#' Extract the plot title from `ggplot2` or `patchwork` object and
+#' use as figure caption by passing dynamic expression to `fig-cap`.
+get_plot_title <- function(p = ggplot2::last_plot()) {
+  if (inherits(p, "patchwork")) {
+    p$patches$annotation$title
+  } else {
+    p$labels$title
+  }
+}
