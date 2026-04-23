@@ -2094,13 +2094,16 @@ print(val_conf_mat)
 #| fig-width: 8
 #| out-width: '100%'
 
-plot_roc_curve(
-  model = mod_smote_svm,
-  data = val_data,
-  class = val_class,
-  title = "ROC Curves for SMOTE-SVM, All Overlap Set Model in Validation Set",
-  cols = class_palette
-)
+val_roc_curve_smote_svm_all <-
+  plot_roc_curve(
+    model = mod_smote_svm,
+    data = val_data,
+    class = val_class,
+    title = "ROC Curves for SMOTE-SVM, All Overlap Set Model in Validation Set",
+    cols = class_palette
+  )
+
+print(val_roc_curve_smote_svm_all)
 ```
 
 #### Optimal Set
@@ -2112,13 +2115,16 @@ plot_roc_curve(
 #| fig-width: 8
 #| out-width: '100%'
 
-plot_roc_curve(
-  model = mod_smote_svm_opt,
-  data = val_data,
-  class = val_class,
-  title = "ROC Curves for SMOTE-SVM, Optimal Set Model in Validation Set",
-  cols = class_palette
-)
+val_roc_curve_smote_svm_opt <- 
+  plot_roc_curve(
+    model = mod_smote_svm_opt,
+    data = val_data,
+    class = val_class,
+    title = "ROC Curves for SMOTE-SVM, Optimal Set Model in Validation Set",
+    cols = class_palette
+  )
+
+print(val_roc_curve_smote_svm_opt)
 ```
 
 #### Base Set
@@ -2130,13 +2136,16 @@ plot_roc_curve(
 #| fig-width: 8
 #| out-width: '100%'
 
-plot_roc_curve(
-  model = mod_smote_svm_base,
-  data = val_data,
-  class = val_class,
-  title = "ROC Curves for SMOTE-SVM, Base Set Model in Validation Set",
-  cols = class_palette
-)
+val_roc_curve_smote_svm_base <- 
+  plot_roc_curve(
+    model = mod_smote_svm_base,
+    data = val_data,
+    class = val_class,
+    title = "ROC Curves for SMOTE-SVM, Base Set Model in Validation Set",
+    cols = class_palett
+  )
+
+print(val_roc_curve_smote_svm_base)
 ```
 :::
 
@@ -2644,3 +2653,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
