@@ -1312,7 +1312,7 @@ print(p)
 
 ```{r}
 #| label: fig-conf-conf-mat
-#| fig-cap: 'Confusion Matrices for Confirmation Set Models'
+#| fig-cap: !expr ggplot2::last_plot()$patches$annotation$title
 #| fig-height: 9
 #| fig-width: 8
 #| out-width: '100%'
@@ -1387,7 +1387,7 @@ class_groups_two_step <-
 
 ```{r}
 #| label: fig-conf-roc-seq
-#| fig-cap: !expr roc_curve_seq$patches$annotation$title
+#| fig-cap: !expr ggplot2::last_plot()$patches$annotation$title
 #| fig-height: 7
 #| fig-width: 7
 #| out-width: '100%'
@@ -1410,7 +1410,7 @@ print(roc_curve_seq)
 
 ```{r}
 #| label: fig-conf-roc-two-step
-#| fig-cap: !expr roc_curve_two_step$patches$annotation$title
+#| fig-cap: !expr ggplot2::last_plot()$patches$annotation$title
 #| fig-height: 7
 #| fig-width: 9
 #| out-width: '100%'
@@ -2068,7 +2068,7 @@ ggplot(val_eval_long) +
 
 ```{r}
 #| label: fig-val-conf-mat
-#| fig-cap: 'Confusion Matrix for Training Set Models evaluated on Validation Data'
+#| fig-cap: !expr ggplot2::last_plot()$patches$annotation$title
 #| fig-width: 10
 #| out-width: '100%'
 
@@ -2138,7 +2138,6 @@ plot_roc_curve(
   cols = class_palette
 )
 ```
-
 :::
 
 ### Calibration Plots
