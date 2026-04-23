@@ -50,17 +50,6 @@ split_hist <- function(data, hist_df) {
     purrr::map(dplyr::select, -"revHist")
 }
 
-# Plot internal validitiy measures
-plot_measure <- function(data) {
-  p <-
-    ggplot(data, aes(x = algorithm, y = percentile_50, color = sampling)) +
-    geom_pointrange(aes(ymin = percentile_5, ymax = percentile_95),
-                    position = position_dodge(width = 0.4)) +
-    theme_bw() +
-    theme(plot.title = element_text(face = "bold")) +
-    xlab("Algorithm")
-}
-
 # Geometric mean, implemented in yardstick format
 gmean_vec <- function(truth,
                       estimate,
@@ -255,4 +244,123 @@ gene_rank_de <- function(data, preds, method, class, candidates = NULL) {
   } else {
     res
   }
+}
+
+
+# Plotting Functions ------------------------------------------------------
+
+#' Plot confusion matrix from observed and predicted classes
+#'
+#' @param data data with columns `Truth` and `Prediction`
+#' @param title plot title
+#' @param cols vector of colours to use for classes
+plot_conf_mat <- function(data, title, cols) {
+  data |>
+    yardstick::conf_mat(Truth, Prediction) |>
+    ggplot2::autoplot(type = "heatmap") +
+    ggplot2::scale_fill_distiller(palette = "YlOrBr", direction = 1) +
+    ggplot2::labs(title = title) +
+    ggplot2::theme(
+      axis.ticks = ggplot2::element_blank(),
+      axis.text.y = ggtext::element_markdown(colour = rev(cols), margin = ggplot2::margin(r = -5)),
+      axis.text.x = ggtext::element_markdown(colour = cols, margin = ggplot2::margin(t = -3))
+    )
+}
+
+#' Plot ROC curve and report AUC
+#'
+#' @param model model object
+#' @param data data used to evaluate `model`
+#' @param class class labels for `data`
+#' @param title plot title
+#' @param cols optional vector of colours to use for classes
+plot_roc_curve <- function(model, data, class, title, cols = NULL) {
+  preds <- stats::predict(model, data, type = "prob") |>
+    tibble::add_column(truth = factor(class))
+  n_class <- length(model$fit$fit$lvl)
+  prob_cols <- names(dplyr::select(preds, dplyr::matches(".pred")))
+  if (n_class == 2) {
+    prob_cols <- prob_cols[1]
+  }
+  roc_df <- preds |>
+    yardstick::roc_curve(truth, dplyr::all_of(prob_cols))
+  if (n_class == 4) {
+    roc_df <- roc_df |>
+      dplyr::mutate(.level = factor(
+        .level,
+        levels = c("CCOC", "ENOC", "MUC", "LGSC"),
+        labels = c("CCOC", "ENOC", "MUOC", "LGSOC")
+      ))
+  } else if (n_class == 5) {
+    roc_df <- roc_df |>
+      dplyr::mutate(.level = factor(
+        .level,
+        levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+        labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+      ))
+  }
+  auc <- preds |>
+    yardstick::roc_auc(truth, dplyr::all_of(prob_cols)) |>
+    dplyr::pull(.estimate) |>
+    scales::number(accuracy = 0.001, prefix = "AUC = ")
+
+  p <- ggplot2::autoplot(roc_df) +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      strip.text = ggplot2::element_text(size = 12, face = "bold"),
+      axis.title = ggplot2::element_text(size = 12)
+    ) +
+    ggplot2::labs(title = title)
+
+  if (any(grepl("span style", title))) {
+    p <- p +
+      ggplot2::theme(plot.title = ggtext::element_markdown(face = "bold"))
+  }
+
+  if (n_class > 2) {
+    if (is.null(cols)) {
+      cols <- title |>
+        stringr::str_split_1(pattern = " vs. ") |>
+        gsub(".*color:(.*);.*", "\\1", x = _)
+    }
+    p +
+      ggplot2::labs(subtitle = auc) +
+      ggh4x::facet_wrap2(~ .level,
+                         strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = cols)))
+  } else {
+    p +
+      ggplot2::geom_label(
+        x = 1,
+        y = 0,
+        hjust = 1,
+        vjust = 0,
+        label = auc,
+        size = 3
+      )
+  }
+}
+
+#' Plot calibration curve
+#'
+#' @inheritParams plot_roc_curve
+plot_calib_curve <- function(model, data, class, title, cols = NULL) {
+  preds <- model |>
+    stats::predict(data, type = "prob") |>
+    tibble::add_column(truth = factor(class))
+
+  preds |>
+    probably::cal_plot_logistic(truth = truth) +
+    ggh4x::facet_wrap2(~ factor(
+      truth,
+      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
+      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+    ),
+    strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = cols))) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      strip.text = ggplot2::element_text(size = 12, face = "bold"),
+      axis.title = ggplot2::element_text(size = 12)
+    ) +
+    ggplot2::labs(title = title)
 }
