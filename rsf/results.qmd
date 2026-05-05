@@ -1549,15 +1549,20 @@ gene_smote_svm_names <- all_vi_train |>
   slice_min(order_by = Genes, n = -1)
 
 dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
-  filter(Workflow == "smote_svm",
-         .metric == "f_meas",
-         class_group == "Overall") |> 
+  filter(Workflow == "smote_svm", .metric == "f_meas") |> 
   mutate(
-    min_estimate = min(.estimate),
-    max_estimate = max(.estimate),
-    .by = Genes
+    min_estimate = min(.estimate, na.rm = TRUE),
+    max_estimate = max(.estimate, na.rm = TRUE),
+    .by = c(Genes, class_group)
   ) |>
   inner_join(gene_smote_svm_names, by = "Genes") |> 
+  summarize(
+    Name = unique(Name),
+    mean_estimate = mean(mean_estimate),
+    min_estimate = mean(min_estimate),
+    max_estimate = mean(max_estimate),
+    .by = Genes
+  ) |> 
   mutate(Optimal = ifelse(Genes == min(Genes[mean_estimate > 0.7]), TRUE, FALSE))
 
 p_gene_smote_svm <- 
@@ -1662,16 +1667,21 @@ gene_up_xgb_names <- all_vi_train |>
   slice_min(order_by = Genes, n = -1)
 
 dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
-  filter(Workflow == "up_xgb",
-         .metric == "bal_accuracy",
-         class_group == "Overall") |> 
+  filter(Workflow == "up_xgb", .metric == "f_meas") |> 
   mutate(
-    min_estimate = min(.estimate),
-    max_estimate = max(.estimate),
-    .by = Genes
+    min_estimate = min(.estimate, na.rm = TRUE),
+    max_estimate = max(.estimate, na.rm = TRUE),
+    .by = c(Genes, class_group)
   ) |>
   inner_join(gene_up_xgb_names, by = "Genes") |> 
-  mutate(Optimal = ifelse(mean_estimate == max(mean_estimate), TRUE, FALSE))
+  summarize(
+    Name = unique(Name),
+    mean_estimate = mean(mean_estimate),
+    min_estimate = mean(min_estimate),
+    max_estimate = mean(max_estimate),
+    .by = Genes
+  ) |> 
+  mutate(Optimal = ifelse(Genes == min(Genes[mean_estimate > 0.7]), TRUE, FALSE))
 
 p_gene_up_xgb <- 
   ggplot(dat_gene_up_xgb, aes(text = Name)) +
@@ -1689,7 +1699,7 @@ p_gene_up_xgb <-
   theme_bw() +
   labs(
     x = "Genes Added",
-    y = "Balanced Accuracy",
+    y = "F1-Score",
     title = "Gene Optimziation for Up-XGB",
     color = NULL
   )
