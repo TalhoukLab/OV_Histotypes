@@ -1774,7 +1774,7 @@ We train the SMOTE-SVM and Up-XGB workflows using the base and optimal gene list
 
 1.  Base (n=28): among the overlapping genes, the base set from the PrOTYPE and SPOT lists
 
-2.  Optimal (n=40,50): among the overlapping genes, the base set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-smote-svm and @fig-gene-up-xgb
+2.  Optimal (n=53, 48): among the overlapping genes, the base set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-smote-svm and @fig-gene-up-xgb
 
 ```{r}
 #| label: tbl-gene-list-comps-conf
