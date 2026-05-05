@@ -1530,7 +1530,7 @@ saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 
 ## Gene Optimization
 
-From @fig-conf-eval, we see that although Up-XGB has the highest overall evaluation metric scores, SMOTE-SVM is better at predicting the rarest histotype LGSOC. Thus we choose both of these two workflows for gene optimization in the confirmation set.
+From @fig-conf-eval, we see that although Up-XGB has the highest overall evaluation metric scores, SMOTE-SVM is better at predicting the rarest histotype LGSOC. Thus we choose both of these two workflows for gene optimization in the confirmation set. The optimal number of genes is determined by the fewest genes needed to achieve an average F1-Score across classes above 0.7, including the overall metric in the average.
 
 ### SMOTE-SVM
 
@@ -1599,7 +1599,7 @@ genes_add_smote_svm <- gene_smote_svm_names |>
 opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 ```
 
-In the SMOTE-SVM classifier, the optimal number of genes is achieved at the fewest genes needed to achieve a mean F1-Score above 0.7 with `r n_genes_smote_svm` genes added, highlighted in red in @fig-gene-smote-svm. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)`.
+In the SMOTE-SVM classifier, the optimal number of genes is highlighted in red in @fig-gene-smote-svm. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)`.
 
 The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-smote-svm. Base genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`. Unused genes are annotated with red crosses.
 
