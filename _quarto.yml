@@ -3,6 +3,7 @@ project:
 
 book:
   title: "Ovarian Cancer Histotypes: Report of Statistical Findings"
+  output-file: "OV_Histotypes_RSF"
   author: "Derek Chiu"
   description: "This report of statistical findings summarizes results for the classification of ovarian cancer histotypes."
   date: today
