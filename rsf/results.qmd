@@ -501,14 +501,14 @@ print(p)
 
 Multi-step methods:
 
--   **sequential**: sequential algorithm sequence of subsampling methods and algorithms used are:
-    -   HGSOC vs. non-HGSOC using upsubsampling and XGBoost
-    -   CCOC vs. non-CCOC using no subsampling and random forest
-    -   ENOC vs. non-ENOC using no subsampling and support vector machine
-    -   MUOC vs. LGSOC using SMOTE subsampling and random forest
--   **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
-    -   HGSOC vs. non-HGSOC using upsampling and XGBoost
-    -   CCOC vs. ENOC vs. MUOC vs. LGSOC using SMOTE subsampling and support vector machine
+- **sequential**: sequential algorithm sequence of subsampling methods and algorithms used are:
+  - HGSOC vs. non-HGSOC using upsubsampling and XGBoost
+  - CCOC vs. non-CCOC using no subsampling and random forest
+  - ENOC vs. non-ENOC using no subsampling and support vector machine
+  - MUOC vs. LGSOC using SMOTE subsampling and random forest
+- **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
+  - HGSOC vs. non-HGSOC using upsampling and XGBoost
+  - CCOC vs. ENOC vs. MUOC vs. LGSOC using SMOTE subsampling and support vector machine
 
 We conduct rank aggregation using a two-stage nested approach:
 
@@ -1530,13 +1530,13 @@ saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 
 ## Gene Optimization
 
-From @fig-conf-eval, we see that although Up-XGB has the highest overall evaluation metric scores, SMOTE-SVM is better at predicting the rarest histotype LGSOC. Thus we choose both of these two workflows for gene optimization in the confirmation set. The optimal number of genes is determined by the fewest genes needed to achieve an average F1-Score across classes above 0.7, including the overall metric in the average.
+From @fig-conf-eval, we see that although Up-XGB has the highest overall evaluation metric scores, SMOTE-SVM is better at predicting the rarest histotype LGSOC. Thus we choose both of these two workflows for gene optimization in the confirmation set. The optimal number of genes is determined by the fewest genes needed to achieve an average F1-Score across classes above 0.7, including the overall metric in the average. We use an F1-score that is averaged across cross-validation folds (5) and class groups (6: Overall, HGSOC, CCOC, ENOC, MUOC, LGSOC) to compare performance between different number of genes selected.
 
 ### SMOTE-SVM
 
 ```{r}
 #| label: fig-gene-smote-svm
-#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using F1-Score'
+#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using Averaged F1-Score'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
@@ -1550,12 +1550,12 @@ gene_smote_svm_names <- all_vi_train |>
 
 dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "smote_svm", .metric == "f_meas") |> 
+  inner_join(gene_smote_svm_names, by = "Genes") |> 
   mutate(
     min_estimate = min(.estimate, na.rm = TRUE),
     max_estimate = max(.estimate, na.rm = TRUE),
     .by = c(Genes, class_group)
   ) |>
-  inner_join(gene_smote_svm_names, by = "Genes") |> 
   summarize(
     Name = unique(Name),
     mean_estimate = mean(mean_estimate),
@@ -1581,7 +1581,7 @@ p_gene_smote_svm <-
   theme_bw() +
   labs(
     x = "Genes Added",
-    y = "F1-Score",
+    y = "Averaged F1-Score",
     title = "Gene Optimziation for SMOTE-SVM",
     color = NULL
   )
@@ -1654,7 +1654,7 @@ gene_dist_smote_svm |>
 
 ```{r}
 #| label: fig-gene-up-xgb
-#| fig-cap: 'Gene Optimization for Up-XGB Classifier using Balanced Accuracy'
+#| fig-cap: 'Gene Optimization for Up-XGB Classifier using Averaged F1-Score'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
@@ -1668,12 +1668,12 @@ gene_up_xgb_names <- all_vi_train |>
 
 dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
   filter(Workflow == "up_xgb", .metric == "f_meas") |> 
+  inner_join(gene_up_xgb_names, by = "Genes") |> 
   mutate(
     min_estimate = min(.estimate, na.rm = TRUE),
     max_estimate = max(.estimate, na.rm = TRUE),
     .by = c(Genes, class_group)
   ) |>
-  inner_join(gene_up_xgb_names, by = "Genes") |> 
   summarize(
     Name = unique(Name),
     mean_estimate = mean(mean_estimate),
@@ -1699,7 +1699,7 @@ p_gene_up_xgb <-
   theme_bw() +
   labs(
     x = "Genes Added",
-    y = "F1-Score",
+    y = "Averaged F1-Score",
     title = "Gene Optimziation for Up-XGB",
     color = NULL
   )
@@ -1717,7 +1717,7 @@ genes_add_up_xgb <- gene_up_xgb_names |>
 opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
 ```
 
-In the Up-XGB classifier, the optimal number of genes is achieved at the highest mean balanced accuracy with `r n_genes_up_xgb` genes added, highlighted in red in @fig-gene-up-xgb. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)`.
+In the Up-XGB classifier, the optimal number of genes is achieved at the highest averaged F1-score with `r n_genes_up_xgb` genes added, highlighted in red in @fig-gene-up-xgb. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)`.
 
 The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-up-xgb. Base genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`. Unused genes are annotated with red crosses.
 
