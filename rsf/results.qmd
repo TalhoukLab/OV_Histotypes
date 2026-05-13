@@ -1159,6 +1159,7 @@ conf_eval |>
 #| label: fig-conf-eval
 #| fig-cap: 'Evaluation Metrics on Confirmation Set Models'
 #| fig-height: 7
+#| fig-width: 9
 
 conf_eval_long <- conf_eval |>
   pivot_longer(cols = where(is.double),
@@ -1173,7 +1174,7 @@ ggplot(conf_eval_long) +
   geom_text(aes(x = Class, y = Method, label = round(Score, digits = 2)),
             size = 3) +
   facet_wrap(vars(Metric)) +
-  scale_fill_viridis_c(option = "plasma", limits = c(0, 1)) +
+  scale_fill_viridis_c(option = "plasma", breaks = c(0, 1), limits = c(0, 1)) +
   theme_minimal() +
   theme(
     axis.title = element_blank(),
