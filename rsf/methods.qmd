@@ -53,8 +53,9 @@ The full training set (n=`r nrow(train_data)`) comprised of data from three Code
 
 Each CodeSet was first normalized to housekeeping genes: *ACTB*, *RPL19*, *POLR1B*, *SDHA*, and *PGK1*. Housekeeping genes encode proteins responsible for basic cell function and have consistent expression in all cells. All expression values were log2 transformed. Normalization to housekeeping genes corrects the viable RNA from each sample. This is achieved by subtracting the average log (base 2)-transformed expression of the housekeeping genes from the log (base 2)-transformed expression of each gene:
 
-$$log_2(\text{endogenous gene expression}) - \text{average(}log_2(\text{housekeeping gene expresssion})) = \text{relative expression}$$
- {#eq-norm-hkgenes}
+$$
+log_2(\text{endogenous gene expression}) - \text{average(}log_2(\text{housekeeping gene expresssion})) = \text{relative expression}
+$$ {#eq-norm-hkgenes}
 
 ### Between CodeSet and Site Normalization
 
@@ -62,27 +63,30 @@ To normalize between CodeSets, we randomly selected five specimens, one from eac
 
 A reference-based approach (@talhouk2016) was used to normalize CS1 to CS3 and CS2 to CS3 across their common genes:
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 \text{X-Norm}_{\text{CS1}} = X_{\text{CS1}} + {\bar{R}_{\text{CS3}}} - {\bar{R}_{\text{CS1}}} \\
 \text{X-Norm}_{\text{CS2}} = X_{\text{CS2}} + {\bar{R}_{\text{CS3}}} - {\bar{R}_{\text{CS2}}}
-\end{aligned}$$
- {#eq-rand1-cs1-cs2}
+\end{aligned}
+$$ {#eq-rand1-cs1-cs2}
 
 Samples in CS3 were processed at three different locations; we also had to normalize for “site” in this CodeSet. Finally, the CS3 expression samples were included in the training set without further normalization:
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 \text{X-Norm}_{\text{CS3-USC}} = X_{\text{CS3-USC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-USC}}} \\
 \text{X-Norm}_{\text{CS3-AOC}} = X_{\text{CS3-AOC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-AOC}}}
-\end{aligned}$$
- {#eq-rand1-cs3-sites}
+\end{aligned}
+$$ {#eq-rand1-cs3-sites}
 
 Finally, the CS3 expression samples were included in the training set without further normalization. The initial training set is assembled by combining all four of the previously mentioned normalized datasets along with the two CS3 expression subsets not used in normalization:
 
-$$\begin{aligned} 
+$$
+\begin{aligned} 
 \text{Training Set} &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X-Norm}_{\text{CS3-USC}} + \text{X-Norm}_{\text{CS3-AOC}} + \text{X-Norm}_{\text{CS3}} + \text{X-Norm}_{\text{CS3-VAN}} \\
                         &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X-Norm}_{\text{CS3}}
-\end{aligned}$$
- {#eq-training-set}
+\end{aligned}
+$$ {#eq-training-set}
 
 ```{r}
 #| label: fig-venn-genes
@@ -338,12 +342,13 @@ The HGSOC histotype comprises of approximately 80% of cases among ovarian carcin
 
 Let
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 & X_k = \text{Training data with k classes}  \\
 & C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
 & W_k = \text{Workflow associated with}\;C_k
-\end{aligned}$$
- {#eq-sequential}
+\end{aligned}
+$$ {#eq-sequential}
 
 @fig-two-step-flowchart shows how the two-step algorithm works:
 
@@ -558,34 +563,39 @@ We use the accuracy, sensitivity, specificity, F1-score, kappa, balanced accurac
 
 The accuracy is defined as the proportion of correct predictions out of all cases:
 
-$$\text{accuracy} = \frac{TP}{TP + FP + FN + TN}$$
- {#eq-accuracy}
+$$
+\text{accuracy} = \frac{TP}{TP + FP + FN + TN}
+$$ {#eq-accuracy}
 
 #### Sensitivity
 
 Sensitivity is the proportional of correctly predicted positive cases, out of all cases that were truly positive
 
-$$\text{sensitivity} = \frac{TP}{TP + FN}$$
- {#eq-sens}
+$$
+\text{sensitivity} = \frac{TP}{TP + FN}
+$$ {#eq-sens}
 
 #### Specificity
 
 Specificity is the proportional of correctly predicted negative cases, out of all cases that were truly negative.
 
-$$\text{specificity} = \frac{TN}{TN + FP}$$
- {#eq-spec}
+$$
+\text{specificity} = \frac{TN}{TN + FP}
+$$ {#eq-spec}
 
 #### F1-Score
 
 The F-measure can be thought of as a harmonic mean between precision and recall:
 
-$$F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times precision) + recall}$$
- {#eq-f1}
+$$
+F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times precision) + recall}
+$$ {#eq-f1}
 
 The $\beta$ value can be adjusted to place more weight upon precision or recall. The most common value is $\beta$ is 1, which is also commonly known as the F1-score. A multiclass extension doesn't exist for the F1-score, so we use macro-averaging to calculate this metric when there are more than two classes. For example, with $k$ classes, the macro-averaged F1-score is equal to:
 
-$${F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}$$
- {#eq-f1-macro}
+$$
+{F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i}
+$$ {#eq-f1-macro}
 
 where each ${F_1}_{i}$ is the F1-score computed frrom recoding classes into $k=i$ vs. $k \neq i$.
 
@@ -595,15 +605,17 @@ In situations where there is not at least one predicted case for each of the cla
 
 Balanced accuracy is the arithmetic mean of sensitivity and specificity.
 
-$$\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2}$$
- {#eq-bal-accuracy}
+$$
+\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2}
+$$ {#eq-bal-accuracy}
 
 #### Kappa
 
 Kappa is the defined as:
 
-$$\text{kappa} = \frac{p_0 - p_e}{1 - p_e}$$
- {#eq-kappa}
+$$
+\text{kappa} = \frac{p_0 - p_e}{1 - p_e}
+$$ {#eq-kappa}
 
 where $p_0$ is the observed agreement among raters and $p_e$ is the hypothetical probability of agreement due to random chance.
 
@@ -674,4 +686,3 @@ The variable importance measures are:
 - SVM: permutation based p-values
 
 - Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value
-
