@@ -823,6 +823,7 @@ metrics_top <- per_class_metrics |>
     Workflow = Workflow |>
       fct_reorder(Rank) |>
       fct_recode(
+        Sequential = "sequential",
         `2-STEP` = "two_step",
         `Up-XGB` = "up_xgb",
         `Up-RF` = "up_rf",
@@ -918,6 +919,7 @@ metrics_3_top_ranks <- bind_rows(
     Workflow = Workflow |>
       fct_inorder() |>
       fct_recode(
+        Sequential = "sequential",
         `2-STEP` = "two_step",
         `Up-XGB` = "up_xgb",
         `Up-RF` = "up_rf",
