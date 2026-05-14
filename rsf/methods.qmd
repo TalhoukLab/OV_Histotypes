@@ -352,45 +352,40 @@ $$ {#eq-sequential}
 
 @fig-two-step-flowchart shows how the two-step algorithm works:
 
-```{r}
-#| label: fig-two-step-flowchart
-#| fig-cap: 'Two-Step Algorithm'
-#| out-width: '100%'
+```{dot}
+//| label: fig-two-step-flowchart
+//| fig-cap: 'Two-Step Algorithm'
+//| fig-height: 2.5
+//| out-height: '100%'
+digraph two_step_algorithm {
+  layout = dot
+  overlap = true
+  
+  // node definitions
+  node [fontname = "Helvetica", shape = box];
+  a [label = <X<SUB>5</SUB>>]
+  b1 [label = "Store HGSOC predictions"]
+  b2 [label = <Select W<SUB>5</SUB>&nbsp;for HGSOC>]
+  c [label = <X<SUB>4</SUB>>]
+  d1 [label = "Store remaining predictions"]
+  d2 [label = "Select best workflow with highest overall F1-score"]
+  
+  // edge definitions
+  a -> b1 [xlabel = <Train HGSOC vs. all using W<SUB>5</SUB>&nbsp;>]
+  a -> b2 [label = "Train multinomial classes"]
 
-grViz(
-  paste0(
-    "digraph sequential_algorithm {
+  b1 -> c [xlabel = <Remove HGSOC cases from X<SUB>5</SUB>&nbsp;>]
+  c -> d1 [xlabel = "Train multinomial classes with best workflow"]
+  c -> d2 [label = "Retrain multinomial classes"]
 
-    # layout
-    graph [layout = dot overlap = TRUE]
-
-    # node definitions
-    node [fontname = Helvetica, shape = box]
-    a [label = 'X@_{5}']
-    b1 [label = 'Store HGSOC predictions']
-    b2 [label = 'Select W@_{5} for HGSOC']
-    c [label = 'X@_{4}']
-    d1 [label = 'Store remaining predictions']
-    d2 [label = 'Select best workflow with highest overall F1-score']
-
-    # edge definitions
-    a -> b1 [xlabel = '  Train HGSOC vs. all using W@_{5}']
-    a -> b2 [label = 'Train multinomial classes']
-
-    b1 -> c [xlabel = '  Remove HGSOC cases from X@_{5}']
-    c -> d1 [xlabel = 'Train multinomial classes with best workflow']
-    c -> d2 [label = 'Retrain multinomial classes']
-
-    j [label = 'Aggregate all predictions']
-
-    {b1 d1} -> j
-
-    # subgraph definitions
-    subgraph {rank = same; b1; b2}
-    subgraph {rank = same; d1; d2}
-    }"
-  )
-)
+  j [label = "Aggregate all predictions"]
+  
+  {b1 d1} -> j
+  
+  // subgraph definitions
+  subgraph {rank = same; b1; b2}
+  subgraph {rank = same; d1; d2}
+}
 ```
 
 ### Aggregating Predictions
@@ -400,40 +395,36 @@ The aggregation for two-step predictions is quite straightforward:
 1.  Predict HGSOC vs. non-HGSOC
 2.  Among all non-HGSOC cases, predict CCOC vs. LGSOC vs. MUOC vs. ENOC
 
-```{r}
-#| label: fig-two-step-predictions
-#| fig-cap: 'Aggregating Predictions for Two-Step Algorithm'
-#| out-width: '100%'
+```{dot}
+//| label: fig-two-step-predictions
+//| fig-cap: 'Aggregating Predictions for Two-Step Algorithm'
+//| fig-height: 2
+//| out-height: '100%'
 
-grViz(
-  paste0(
-    "digraph two_step_predictions {
+digraph two_step_predictions {
+  layout = dot
+  overlap = true
+  
+  // node definitions
+  node [fontname = "Helvetica", shape = box];
     
-    # layout
-    graph [layout = dot overlap = TRUE]
-
-    # node definitions
-    node [fontname = Helvetica, shape = box]
-    
-    a [label = 'Predict HGSOC vs. non-HGSOC']
-    b1 [label = 'HGSOC']
-    b2 [label = 'non-HGSOC']
-    c [label = 'Predict CCOC vs. LGSOC vs. MUOC vs. ENOC']
-    d1 [label = 'CCOC']
-    f1 [label = 'LGSOC']
-    h1 [label = 'MUOC']
-    h2 [label = 'ENOC']
-    
-    # edge definitions
-    a -> {b1 b2}
-    b2 -> c
-    c -> {d1 f1 h1 h2}
-    
-     # subgraph definitions
-    subgraph {rank = same; b2; c}
-    }"
-  )
-)
+  a [label = "Predict HGSOC vs. non-HGSOC"]
+  b1 [label = "HGSOC"]
+  b2 [label = "non-HGSOC"]
+  c [label = "Predict CCOC vs. LGSOC vs. MUOC vs. ENOC"]
+  d1 [label = "CCOC"]
+  f1 [label = "LGSOC"]
+  h1 [label = "MUOC"]
+  h2 [label = "ENOC"]
+  
+  // edge definitions
+  a -> {b1 b2}
+  b2 -> c
+  c -> {d1 f1 h1 h2}
+  
+  // subgraph definitions
+  subgraph {rank = same; b2; c}
+}
 ```
 
 ## Sequential Algorithm
@@ -444,61 +435,55 @@ The order of classes and workflows to use at each step in the sequential algorit
 
 @fig-sequential-flowchart illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
 
-```{r}
-#| label: fig-sequential-flowchart
-#| fig-cap: 'Sequential Algorithm'
-#| out-width: '100%'
-
-grViz(
-  paste0(
-    "digraph sequential_algorithm {
-
-    # layout
-    graph [layout = dot overlap = TRUE]
-
-    # node definitions
-    node [fontname = Helvetica, shape = box]
-    a [label = 'X@_{5}']
-    b1 [label = 'Store X@_{5}  predictions']
-    b2 [label = 'Select W@_{5}  and C@_{5}']
-    c [label = 'X@_{4}']
-    d1 [label = 'Store X@_{4}  predictions']
-    d2 [label = 'Select W@_{4}  and C@_{4}']
-    f [label = 'X@_{3}']
-    g1 [label = 'Store X@_{3}  predictions']
-    g2 [label = 'Select W@_{3}  and C@_{3}']
-    h [label = 'X@_{2}']
-    i1 [label = 'Store X@_{2}  predictions']
-    i2 [label = 'Select W@_{2}  and C@_{2}']
-    j [label = 'Aggregate all predictions']
-
-    # edge definitions
-    a -> b1 [xlabel = '  Train C@_{5}  vs. all using W@_{5}']
-    a -> b2 [label = 'Train multinomial classes']
-    #b2 -> b1
-    b1 -> c [label = '  Remove C@_{5}  cases from X@_{5}']
-    c -> d1 [xlabel = '  Train C@_{4}  vs. all using W@_{4}']
-    c -> d2 [label = 'Retrain multinomial classes']
-    #d2 -> d1
-    d1 -> f [label = '  Remove C@_{4}  cases from X@_{4}']
-    f -> g1 [xlabel = '  Train C@_{3}  vs. all using W@_{3}']
-    f -> g2 [label = 'Retrain multinomial classes']
-    #g2 -> g1
-    g1 -> h [label = '  Remove C@_{3}  cases from X@_{3}']
-    h -> i1 [xlabel = '  Train C@_{2}  vs. all using W@_{2}']
-    h -> i2 [label = 'Retrain multinomial classes']
-
-    {b1 d1 g1 i1} -> j
-
-    # subgraph definitions
-    subgraph {rank = same; b1; b2}
-    subgraph {rank = same; d1; d2}
-    subgraph {rank = same; g1; g2}
-    subgraph {rank = same; i1; i2}
-    subgraph {rank = same; }
-    }"
-  )
-)
+```{dot}
+//| label: fig-sequential-flowchart
+//| fig-cap: 'Sequential Algorithm'
+//| fig-height: 6
+//| out-height: '100%'
+digraph sequential_algorithm {
+  layout = dot
+  overlap = true
+  
+  // node definitions
+  node [fontname = "Helvetica", shape = box];
+  a [label = <X<SUB>5</SUB>>]
+  b1 [label = <Store X<SUB>5</SUB>&nbsp;predictions>]
+  b2 [label = <Select W<SUB>5</SUB>&nbsp;and C<SUB>5</SUB>>]
+  c [label = <X<SUB>4</SUB>>]
+  d1 [label = <Store X<SUB>4</SUB>&nbsp;predictions>]
+  d2 [label = <Select W<SUB>4</SUB>&nbsp;and C<SUB>4</SUB>>]
+  f [label = <X<SUB>3</SUB>>]
+  g1 [label = <Store X<SUB>3</SUB>&nbsp;predictions>]
+  g2 [label = <Select W<SUB>3</SUB>&nbsp;and C<SUB>3</SUB>>]
+  h [label = <X<SUB>2</SUB>>]
+  i1 [label = <Store X<SUB>2</SUB>&nbsp;predictions>]
+  i2 [label = <Select W<SUB>2</SUB>&nbsp;and C<SUB>2</SUB>>]
+  j [label = "Aggregate all predictions"]
+  
+  // edge definitions
+  a -> b1 [xlabel = <Train C<SUB>5</SUB>&nbsp;vs. all using W<SUB>5</SUB>&nbsp;>]
+  a -> b2 [label = "Train multinomial classes"]
+  
+  b1 -> c [label = <Remove C<SUB>5</SUB>&nbsp;cases from X<SUB>5</SUB>>]
+  c -> d1 [xlabel = <Train C<SUB>4</SUB>&nbsp;vs. all using W<SUB>4</SUB>&nbsp;>]
+  c -> d2 [label = "Retrain multinomial classes"]
+  
+  d1 -> f [label = <Remove C<SUB>4</SUB>&nbsp;cases from X<SUB>4</SUB>>]
+  f -> g1 [xlabel = <Train C<SUB>3</SUB>&nbsp;vs. all using W<SUB>3</SUB>&nbsp;>]
+  f -> g2 [label = "Retrain multinomial classes"]
+  
+  g1 -> h [label = <Remove C<SUB>3</SUB>&nbsp;cases from X<SUB>3</SUB>>]
+  h -> i1 [xlabel = <Train C<SUB>2</SUB>&nbsp;vs. all using W<SUB>2</SUB>&nbsp;>]
+  h -> i2 [label = "Retrain multinomial classes"]
+  
+  {b1 d1 g1 i1} -> j
+  
+  // subgraph definitions
+  subgraph {rank = same; b1; b2}
+  subgraph {rank = same; d1; d2}
+  subgraph {rank = same; g1; g2}
+  subgraph {rank = same; i1; i2}
+}
 ```
 
 The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.
@@ -507,50 +492,46 @@ The subsampling method used in the first step of the sequential algorithm is use
 
 We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the "all" class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSOC vs. non-HGSOC, CCOC vs. non-CCOC, LGSOC vs. non-LGSOC, and then MUOC vs. ENOC. @fig-sequential-predictions illustrates how the final predictions are assigned:
 
-```{r}
-#| label: fig-sequential-predictions
-#| fig-cap: 'Aggregating Predictions for Sequential Algorithm'
-#| out-width: '100%'
+```{dot}
+//| label: fig-sequential-predictions
+//| fig-cap: "Aggregating Predictions for Sequential Algorithm"
+//| fig-height: 3
+//| out-height: "100%"
 
-grViz(
-  paste0(
-    "digraph sequential_predictions {
+digraph sequential_predictions {
+  layout = dot
+  overlap = true
+  
+  // node definitions
+  node [fontname = "Helvetica", shape = box];
     
-    # layout
-    graph [layout = dot overlap = TRUE]
-
-    # node definitions
-    node [fontname = Helvetica, shape = box]
-    
-    a [label = 'Predicted HGSOC vs. non-HGSOC']
-    b1 [label = 'HGSOC']
-    b2 [label = 'non-HGSOC']
-    c [label = 'Predicted CCOC vs. non-CCOC']
-    d1 [label = 'CCOC']
-    d2 [label = 'non-CCOC']
-    e [label = 'Predicted LGSOC vs. non-LGSOC']
-    f1 [label = 'LGSOC']
-    f2 [label = 'non-LGSOC']
-    g [label = 'Predicted MUOC vs. ENOC']
-    h1 [label = 'MUOC']
-    h2 [label = 'ENOC']
-    
-    # edge definitions
-    a -> {b1 b2}
-    b2 -> c
-    c -> {d1 d2}
-    d2 -> e
-    e -> {f1 f2}
-    f2 -> g
-    g -> {h1 h2}
-    
-     # subgraph definitions
-    subgraph {rank = same; b2; c}
-    subgraph {rank = same; d2; e}
-    subgraph {rank = same; f2; g}
-    }"
-  )
-)
+  a [label = "Predicted HGSOC vs. non-HGSOC"]
+  b1 [label = "HGSOC"]
+  b2 [label = "non-HGSOC"]
+  c [label = "Predicted CCOC vs. non-CCOC"]
+  d1 [label = "CCOC"]
+  d2 [label = "non-CCOC"]
+  e [label = "Predicted LGSOC vs. non-LGSOC"]
+  f1 [label = "LGSOC"]
+  f2 [label = "non-LGSOC"]
+  g [label = "Predicted MUOC vs. ENOC"]
+  h1 [label = "MUOC"]
+  h2 [label = "ENOC"]
+  
+  // edge definitions
+  a -> {b1 b2}
+  b2 -> c
+  c -> {d1 d2}
+  d2 -> e
+  e -> {f1 f2}
+  f2 -> g
+  g -> {h1 h2}
+  
+  // subgraph definitions
+  subgraph {rank = same; b2; c}
+  subgraph {rank = same; d2; e}
+  subgraph {rank = same; f2; g}
+}
 ```
 
 ## Performance Evaluation
