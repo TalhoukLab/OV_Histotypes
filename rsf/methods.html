@@ -449,17 +449,122 @@ Figure&nbsp;2.3: Visualization of Subsampling Techniques
 \end{aligned}
 \tag{2.5}\]</span></span></p>
 <p><a href="#fig-two-step-flowchart" class="quarto-xref">Figure&nbsp;<span>2.4</span></a> shows how the two-step algorithm works:</p>
-<div class="cell">
-<div id="fig-two-step-flowchart" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<div class="cell" data-fig-height="2.5" data-out-height="100%" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-two-step-flowchart" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-two-step-flowchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-2072fa785c028e1b8820" style="width:100%;height:1500px;"></div>
-<script type="application/json" data-for="htmlwidget-2072fa785c028e1b8820">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = \"Store HGSOC predictions\"]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT> for HGSOC>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = \"Store remaining predictions\"]\n    d2 [label = \"Select best workflow with highest overall F1-score\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train HGSOC vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n\n    b1 -> c [xlabel = <  Remove HGSOC cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = \"Train multinomial classes with best workflow\"]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n\n    j [label = \"Aggregate all predictions\"]\n\n    {b1 d1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div>
+<svg width="672" height="240" viewbox="0.00 0.00 776.16 367.60" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 363.6)">
+<title>two_step_algorithm</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-363.6 772.16,-363.6 772.16,4 -4,4"></polygon>
+<!-- a -->
+<g id="node1" class="node">
+<title>a</title>
+<polygon fill="none" stroke="black" points="595.52,-359.6 541.52,-359.6 541.52,-323.6 595.52,-323.6 595.52,-359.6"></polygon>
+<text text-anchor="start" x="559.96" y="-338.4" font-family="Helvetica,sans-Serif" font-size="14.00">X</text>
+<text text-anchor="start" x="569.3" y="-338.4" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">5</text>
+</g>
+<!-- b1 -->
+<g id="node2" class="node">
+<title>b1</title>
+<polygon fill="none" stroke="black" points="563.8,-270.8 387.24,-270.8 387.24,-234.8 563.8,-234.8 563.8,-270.8"></polygon>
+<text text-anchor="middle" x="475.52" y="-248.6" font-family="Helvetica,sans-Serif" font-size="14.00">Store HGSOC predictions</text>
+</g>
+<!-- a&#45;&gt;b1 -->
+<g id="edge1" class="edge">
+<title>a-&gt;b1</title>
+<path fill="none" stroke="black" d="M550.15,-323.45C536.26,-310.49 517.02,-292.53 501.55,-278.1"></path>
+<polygon fill="black" stroke="black" points="503.55,-275.18 493.86,-270.91 498.78,-280.3 503.55,-275.18"></polygon>
+<text text-anchor="start" x="339.29" y="-302.44" font-family="Times,serif" font-size="14.00">Train HGSOC vs. all using W</text>
+<text text-anchor="start" x="508.06" y="-302.44" font-family="Times,serif" baseline-shift="sub" font-size="14.00">5</text>
+<text text-anchor="start" x="515.06" y="-302.44" font-family="Times,serif" font-size="14.00">&nbsp;</text>
+</g>
+<!-- b2 -->
+<g id="node3" class="node">
+<title>b2</title>
+<polygon fill="none" stroke="black" points="741.17,-270.8 581.88,-270.8 581.88,-234.8 741.17,-234.8 741.17,-270.8"></polygon>
+<text text-anchor="start" x="589.95" y="-249.6" font-family="Helvetica,sans-Serif" font-size="14.00">Select W</text>
+<text text-anchor="start" x="645.96" y="-249.6" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">5</text>
+<text text-anchor="start" x="653.75" y="-249.6" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;for HGSOC</text>
+</g>
+<!-- a&#45;&gt;b2 -->
+<g id="edge2" class="edge">
+<title>a-&gt;b2</title>
+<path fill="none" stroke="black" d="M586.89,-323.45C600.78,-310.49 620.02,-292.53 635.49,-278.1"></path>
+<polygon fill="black" stroke="black" points="638.26,-280.3 643.18,-270.91 633.49,-275.18 638.26,-280.3"></polygon>
+<text text-anchor="middle" x="695.84" y="-293" font-family="Times,serif" font-size="14.00">Train multinomial classes</text>
+</g>
+<!-- c -->
+<g id="node4" class="node">
+<title>c</title>
+<polygon fill="none" stroke="black" points="407.52,-197.8 353.52,-197.8 353.52,-161.8 407.52,-161.8 407.52,-197.8"></polygon>
+<text text-anchor="start" x="371.96" y="-176.6" font-family="Helvetica,sans-Serif" font-size="14.00">X</text>
+<text text-anchor="start" x="381.3" y="-176.6" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">4</text>
+</g>
+<!-- b1&#45;&gt;c -->
+<g id="edge3" class="edge">
+<title>b1-&gt;c</title>
+<path fill="none" stroke="black" d="M452.52,-234.61C440.15,-225.37 424.73,-213.84 411.34,-203.83"></path>
+<polygon fill="black" stroke="black" points="413.41,-201.01 403.31,-197.83 409.22,-206.62 413.41,-201.01"></polygon>
+<text text-anchor="start" x="239.02" y="-221.48" font-family="Times,serif" font-size="14.00">Remove HGSOC cases from X</text>
+<text text-anchor="start" x="413.99" y="-221.48" font-family="Times,serif" baseline-shift="sub" font-size="14.00">5</text>
+<text text-anchor="start" x="420.99" y="-221.48" font-family="Times,serif" font-size="14.00">&nbsp;</text>
+</g>
+<!-- j -->
+<g id="node7" class="node">
+<title>j</title>
+<polygon fill="none" stroke="black" points="423.62,-36 253.42,-36 253.42,0 423.62,0 423.62,-36"></polygon>
+<text text-anchor="middle" x="338.52" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00">Aggregate all predictions</text>
+</g>
+<!-- b1&#45;&gt;j -->
+<g id="edge6" class="edge">
+<title>b1-&gt;j</title>
+<path fill="none" stroke="black" d="M493.71,-234.78C527.48,-201.13 592.92,-124.86 552.52,-73 537.4,-53.59 483.58,-40.06 433.71,-31.4"></path>
+<polygon fill="black" stroke="black" points="434.24,-27.94 423.8,-29.73 433.08,-34.85 434.24,-27.94"></polygon>
+</g>
+<!-- d1 -->
+<g id="node5" class="node">
+<title>d1</title>
+<polygon fill="none" stroke="black" points="199.94,-109 13.1,-109 13.1,-73 199.94,-73 199.94,-109"></polygon>
+<text text-anchor="middle" x="106.52" y="-86.8" font-family="Helvetica,sans-Serif" font-size="14.00">Store remaining predictions</text>
+</g>
+<!-- c&#45;&gt;d1 -->
+<g id="edge4" class="edge">
+<title>c-&gt;d1</title>
+<path fill="none" stroke="black" d="M353.25,-170.16C310.89,-156.74 228.16,-130.53 170.22,-112.18"></path>
+<polygon fill="black" stroke="black" points="171.01,-108.76 160.42,-109.08 168.9,-115.43 171.01,-108.76"></polygon>
+<text text-anchor="middle" x="128.51" y="-143.87" font-family="Times,serif" font-size="14.00">Train multinomial classes with best workflow</text>
+</g>
+<!-- d2 -->
+<g id="node6" class="node">
+<title>d2</title>
+<polygon fill="none" stroke="black" points="543.2,-109 217.84,-109 217.84,-73 543.2,-73 543.2,-109"></polygon>
+<text text-anchor="middle" x="380.52" y="-86.8" font-family="Helvetica,sans-Serif" font-size="14.00">Select best workflow with highest overall F1-score</text>
+</g>
+<!-- c&#45;&gt;d2 -->
+<g id="edge5" class="edge">
+<title>c-&gt;d2</title>
+<path fill="none" stroke="black" d="M380.52,-161.65C380.52,-149.52 380.52,-133.02 380.52,-119.12"></path>
+<polygon fill="black" stroke="black" points="384.02,-119.11 380.52,-109.11 377.02,-119.11 384.02,-119.11"></polygon>
+<text text-anchor="middle" x="458.28" y="-131.2" font-family="Times,serif" font-size="14.00">Retrain multinomial classes</text>
+</g>
+<!-- d1&#45;&gt;j -->
+<g id="edge7" class="edge">
+<title>d1-&gt;j</title>
+<path fill="none" stroke="black" d="M162.09,-72.99C195.42,-62.79 237.98,-49.77 272.95,-39.07"></path>
+<polygon fill="black" stroke="black" points="274.06,-42.39 282.6,-36.11 272.01,-35.69 274.06,-42.39"></polygon>
+</g>
+</g>
+</svg>
+</div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-two-step-flowchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2.4: Two-Step Algorithm
 </figcaption>
 </figure>
+</div>
 </div>
 </div>
 <section id="aggregating-predictions" class="level3" data-number="2.3.1">
@@ -469,17 +574,115 @@ Figure&nbsp;2.4: Two-Step Algorithm
 <li>Predict HGSOC vs.&nbsp;non-HGSOC</li>
 <li>Among all non-HGSOC cases, predict CCOC vs.&nbsp;LGSOC vs.&nbsp;MUOC vs.&nbsp;ENOC</li>
 </ol>
-<div class="cell">
-<div id="fig-two-step-predictions" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<div class="cell" data-fig-height="2" data-out-height="100%" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-two-step-predictions" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-two-step-predictions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-0d9652a87a01d5bb80c7" style="width:100%;height:1500px;"></div>
-<script type="application/json" data-for="htmlwidget-0d9652a87a01d5bb80c7">{"x":{"diagram":"digraph two_step_predictions {\n    \n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    \n    a [label = \"Predict HGSOC vs. non-HGSOC\"]\n    b1 [label = \"HGSOC\"]\n    b2 [label = \"non-HGSOC\"]\n    c [label = \"Predict CCOC vs. LGSOC vs. MUOC vs. ENOC\"]\n    d1 [label = \"CCOC\"]\n    f1 [label = \"LGSOC\"]\n    h1 [label = \"MUOC\"]\n    h2 [label = \"ENOC\"]\n    \n    # edge definitions\n    a -> {b1 b2}\n    b2 -> c\n    c -> {d1 f1 h1 h2}\n    \n     # subgraph definitions\n    subgraph {rank = same; b2; c}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div>
+<svg width="672" height="192" viewbox="0.00 0.00 547.88 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
+<title>two_step_predictions</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-184 543.88,-184 543.88,4 -4,4"></polygon>
+<!-- a -->
+<g id="node1" class="node">
+<title>a</title>
+<polygon fill="none" stroke="black" points="219.74,-180 0.09,-180 0.09,-144 219.74,-144 219.74,-180"></polygon>
+<text text-anchor="middle" x="109.91" y="-157.8" font-family="Helvetica,sans-Serif" font-size="14.00">Predict HGSOC vs. non-HGSOC</text>
+</g>
+<!-- b1 -->
+<g id="node2" class="node">
+<title>b1</title>
+<polygon fill="none" stroke="black" points="94.75,-108 27.07,-108 27.07,-72 94.75,-72 94.75,-108"></polygon>
+<text text-anchor="middle" x="60.91" y="-85.8" font-family="Helvetica,sans-Serif" font-size="14.00">HGSOC</text>
+</g>
+<!-- a&#45;&gt;b1 -->
+<g id="edge1" class="edge">
+<title>a-&gt;b1</title>
+<path fill="none" stroke="black" d="M97.8,-143.7C92.05,-135.47 85.05,-125.48 78.71,-116.42"></path>
+<polygon fill="black" stroke="black" points="81.49,-114.29 72.89,-108.1 75.75,-118.3 81.49,-114.29"></polygon>
+</g>
+<!-- b2 -->
+<g id="node3" class="node">
+<title>b2</title>
+<polygon fill="none" stroke="black" points="207.77,-108 112.05,-108 112.05,-72 207.77,-72 207.77,-108"></polygon>
+<text text-anchor="middle" x="159.91" y="-85.8" font-family="Helvetica,sans-Serif" font-size="14.00">non-HGSOC</text>
+</g>
+<!-- a&#45;&gt;b2 -->
+<g id="edge2" class="edge">
+<title>a-&gt;b2</title>
+<path fill="none" stroke="black" d="M122.27,-143.7C128.15,-135.47 135.28,-125.48 141.76,-116.42"></path>
+<polygon fill="black" stroke="black" points="144.73,-118.28 147.7,-108.1 139.04,-114.21 144.73,-118.28"></polygon>
+</g>
+<!-- c -->
+<g id="node4" class="node">
+<title>c</title>
+<polygon fill="none" stroke="black" points="539.84,-108 225.99,-108 225.99,-72 539.84,-72 539.84,-108"></polygon>
+<text text-anchor="middle" x="382.91" y="-85.8" font-family="Helvetica,sans-Serif" font-size="14.00">Predict CCOC vs. LGSOC vs. MUOC vs. ENOC</text>
+</g>
+<!-- b2&#45;&gt;c -->
+<g id="edge3" class="edge">
+<title>b2-&gt;c</title>
+<path fill="none" stroke="black" d="M207.82,-90C210.47,-90 213.11,-90 215.75,-90"></path>
+<polygon fill="black" stroke="black" points="215.95,-93.5 225.95,-90 215.95,-86.5 215.95,-93.5"></polygon>
+</g>
+<!-- d1 -->
+<g id="node5" class="node">
+<title>d1</title>
+<polygon fill="none" stroke="black" points="292.63,-36 235.19,-36 235.19,0 292.63,0 292.63,-36"></polygon>
+<text text-anchor="middle" x="263.91" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00">CCOC</text>
+</g>
+<!-- c&#45;&gt;d1 -->
+<g id="edge4" class="edge">
+<title>c-&gt;d1</title>
+<path fill="none" stroke="black" d="M353.8,-71.88C338.13,-62.66 318.61,-51.17 301.76,-41.26"></path>
+<polygon fill="black" stroke="black" points="303.12,-38 292.72,-35.95 299.57,-44.03 303.12,-38"></polygon>
+</g>
+<!-- f1 -->
+<g id="node6" class="node">
+<title>f1</title>
+<polygon fill="none" stroke="black" points="375.43,-36 310.4,-36 310.4,0 375.43,0 375.43,-36"></polygon>
+<text text-anchor="middle" x="342.91" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00">LGSOC</text>
+</g>
+<!-- c&#45;&gt;f1 -->
+<g id="edge5" class="edge">
+<title>c-&gt;f1</title>
+<path fill="none" stroke="black" d="M373.03,-71.7C368.42,-63.64 362.85,-53.89 357.76,-44.98"></path>
+<polygon fill="black" stroke="black" points="360.69,-43.05 352.69,-36.1 354.61,-46.52 360.69,-43.05"></polygon>
+</g>
+<!-- h1 -->
+<g id="node7" class="node">
+<title>h1</title>
+<polygon fill="none" stroke="black" points="452.19,-36 393.64,-36 393.64,0 452.19,0 452.19,-36"></polygon>
+<text text-anchor="middle" x="422.91" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00">MUOC</text>
+</g>
+<!-- c&#45;&gt;h1 -->
+<g id="edge6" class="edge">
+<title>c-&gt;h1</title>
+<path fill="none" stroke="black" d="M392.8,-71.7C397.4,-63.64 402.97,-53.89 408.07,-44.98"></path>
+<polygon fill="black" stroke="black" points="411.22,-46.52 413.14,-36.1 405.14,-43.05 411.22,-46.52"></polygon>
+</g>
+<!-- h2 -->
+<g id="node8" class="node">
+<title>h2</title>
+<polygon fill="none" stroke="black" points="527.36,-36 470.46,-36 470.46,0 527.36,0 527.36,-36"></polygon>
+<text text-anchor="middle" x="498.91" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00">ENOC</text>
+</g>
+<!-- c&#45;&gt;h2 -->
+<g id="edge7" class="edge">
+<title>c-&gt;h2</title>
+<path fill="none" stroke="black" d="M411.29,-71.88C426.46,-62.72 445.32,-51.34 461.65,-41.48"></path>
+<polygon fill="black" stroke="black" points="463.67,-44.35 470.43,-36.19 460.06,-38.36 463.67,-44.35"></polygon>
+</g>
+</g>
+</svg>
+</div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-two-step-predictions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2.5: Aggregating Predictions for Two-Step Algorithm
 </figcaption>
 </figure>
+</div>
 </div>
 </div>
 </section>
@@ -489,12 +692,247 @@ Figure&nbsp;2.5: Aggregating Predictions for Two-Step Algorithm
 <p>Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs.&nbsp;all other classes, where the classes that make up the “other” class are those not equal to the current “one” class and excluding all “one” classes from previous steps. For example, if the “one” class in step 1 was HGSOC, the “other” classes would include CCOC, ENOC, LGSOC, and MUOC. If the “one” class in step 2 was CCOC, the “other” classes include ENOC, LGSOC, and MUOC.</p>
 <p>The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g.&nbsp;F1-score).</p>
 <p><a href="#fig-sequential-flowchart" class="quarto-xref">Figure&nbsp;<span>2.6</span></a> illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.</p>
-<div class="cell">
-<div id="fig-sequential-flowchart" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<div class="cell" data-fig-height="6" data-out-height="100%" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-sequential-flowchart" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sequential-flowchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-fab84e04eb70d68648fe" style="width:100%;height:1500px;"></div>
-<script type="application/json" data-for="htmlwidget-fab84e04eb70d68648fe">{"x":{"diagram":"digraph sequential_algorithm {\n\n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    a [label = <X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    b1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  predictions>]\n    b2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c [label = <X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    d1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  predictions>]\n    d2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f [label = <X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    g1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  predictions>]\n    g2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h [label = <X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    i1 [label = <Store X<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  predictions>]\n    i2 [label = <Select W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  and C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    j [label = \"Aggregate all predictions\"]\n\n    # edge definitions\n    a -> b1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    a -> b2 [label = \"Train multinomial classes\"]\n    #b2 -> b1\n    b1 -> c [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>5<\/SUB><\/FONT>>]\n    c -> d1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    c -> d2 [label = \"Retrain multinomial classes\"]\n    #d2 -> d1\n    d1 -> f [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>4<\/SUB><\/FONT>>]\n    f -> g1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    f -> g2 [label = \"Retrain multinomial classes\"]\n    #g2 -> g1\n    g1 -> h [label = <  Remove C<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>  cases from X<FONT POINT-SIZE=\"8\"><SUB>3<\/SUB><\/FONT>>]\n    h -> i1 [xlabel = <  Train C<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>  vs. all using W<FONT POINT-SIZE=\"8\"><SUB>2<\/SUB><\/FONT>>]\n    h -> i2 [label = \"Retrain multinomial classes\"]\n\n    {b1 d1 g1 i1} -> j\n\n    # subgraph definitions\n    subgraph {rank = same; b1; b2}\n    subgraph {rank = same; d1; d2}\n    subgraph {rank = same; g1; g2}\n    subgraph {rank = same; i1; i2}\n    subgraph {rank = same; }\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div>
+<svg width="672" height="576" viewbox="0.00 0.00 696.42 738.60" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 734.6)">
+<title>sequential_algorithm</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-734.6 692.42,-734.6 692.42,4 -4,4"></polygon>
+<!-- a -->
+<g id="node1" class="node">
+<title>a</title>
+<polygon fill="none" stroke="black" points="523.79,-730.6 469.79,-730.6 469.79,-694.6 523.79,-694.6 523.79,-730.6"></polygon>
+<text text-anchor="start" x="488.23" y="-709.4" font-family="Helvetica,sans-Serif" font-size="14.00">X</text>
+<text text-anchor="start" x="497.57" y="-709.4" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">5</text>
+</g>
+<!-- b1 -->
+<g id="node2" class="node">
+<title>b1</title>
+<polygon fill="none" stroke="black" points="491.75,-641.8 345.83,-641.8 345.83,-605.8 491.75,-605.8 491.75,-641.8"></polygon>
+<text text-anchor="start" x="353.81" y="-620.6" font-family="Helvetica,sans-Serif" font-size="14.00">Store X</text>
+<text text-anchor="start" x="400.5" y="-620.6" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">5</text>
+<text text-anchor="start" x="408.29" y="-620.6" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;predictions</text>
+</g>
+<!-- a&#45;&gt;b1 -->
+<g id="edge1" class="edge">
+<title>a-&gt;b1</title>
+<path fill="none" stroke="black" d="M481.38,-694.45C469.84,-681.61 453.89,-663.86 440.98,-649.49"></path>
+<polygon fill="black" stroke="black" points="443.45,-647.01 434.17,-641.91 438.25,-651.69 443.45,-647.01"></polygon>
+<text text-anchor="start" x="302.57" y="-673.32" font-family="Times,serif" font-size="14.00">Train C</text>
+<text text-anchor="start" x="345.73" y="-673.32" font-family="Times,serif" baseline-shift="sub" font-size="14.00">5</text>
+<text text-anchor="start" x="352.73" y="-673.32" font-family="Times,serif" font-size="14.00">&nbsp;vs. all using W</text>
+<text text-anchor="start" x="443.72" y="-673.32" font-family="Times,serif" baseline-shift="sub" font-size="14.00">5</text>
+<text text-anchor="start" x="450.72" y="-673.32" font-family="Times,serif" font-size="14.00">&nbsp;</text>
+</g>
+<!-- b2 -->
+<g id="node3" class="node">
+<title>b2</title>
+<polygon fill="none" stroke="black" points="642.01,-641.8 509.57,-641.8 509.57,-605.8 642.01,-605.8 642.01,-641.8"></polygon>
+<text text-anchor="start" x="517.43" y="-620.6" font-family="Helvetica,sans-Serif" font-size="14.00">Select W</text>
+<text text-anchor="start" x="573.44" y="-620.6" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">5</text>
+<text text-anchor="start" x="581.23" y="-620.6" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;and C</text>
+<text text-anchor="start" x="626.36" y="-620.6" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">5</text>
+</g>
+<!-- a&#45;&gt;b2 -->
+<g id="edge2" class="edge">
+<title>a-&gt;b2</title>
+<path fill="none" stroke="black" d="M512.4,-694.45C524.08,-681.61 540.24,-663.86 553.31,-649.49"></path>
+<polygon fill="black" stroke="black" points="556.07,-651.66 560.21,-641.91 550.89,-646.95 556.07,-651.66"></polygon>
+<text text-anchor="middle" x="616.11" y="-664" font-family="Times,serif" font-size="14.00">Train multinomial classes</text>
+</g>
+<!-- c -->
+<g id="node4" class="node">
+<title>c</title>
+<polygon fill="none" stroke="black" points="360.79,-553 306.79,-553 306.79,-517 360.79,-517 360.79,-553"></polygon>
+<text text-anchor="start" x="325.23" y="-531.8" font-family="Helvetica,sans-Serif" font-size="14.00">X</text>
+<text text-anchor="start" x="334.57" y="-531.8" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">4</text>
+</g>
+<!-- b1&#45;&gt;c -->
+<g id="edge3" class="edge">
+<title>b1-&gt;c</title>
+<path fill="none" stroke="black" d="M356.46,-605.63C348.65,-601.02 341.6,-595.19 336.43,-587.8 331.57,-580.85 329.93,-571.99 329.8,-563.58"></path>
+<polygon fill="black" stroke="black" points="333.31,-563.5 330.31,-553.34 326.32,-563.16 333.31,-563.5"></polygon>
+<text text-anchor="start" x="336.79" y="-576.2" font-family="Times,serif" font-size="14.00">Remove C</text>
+<text text-anchor="start" x="396.28" y="-576.2" font-family="Times,serif" baseline-shift="sub" font-size="14.00">5</text>
+<text text-anchor="start" x="403.28" y="-576.2" font-family="Times,serif" font-size="14.00">&nbsp;cases from X</text>
+<text text-anchor="start" x="484.14" y="-576.2" font-family="Times,serif" baseline-shift="sub" font-size="14.00">5</text>
+</g>
+<!-- j -->
+<g id="node13" class="node">
+<title>j</title>
+<polygon fill="none" stroke="black" points="514.89,-36 344.69,-36 344.69,0 514.89,0 514.89,-36"></polygon>
+<text text-anchor="middle" x="429.79" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00">Aggregate all predictions</text>
+</g>
+<!-- b1&#45;&gt;j -->
+<g id="edge12" class="edge">
+<title>b1-&gt;j</title>
+<path fill="none" stroke="black" d="M468.5,-605.68C476.86,-600.97 484.76,-595.08 490.79,-587.8 505.99,-569.42 504.79,-559.85 504.79,-536 504.79,-536 504.79,-536 504.79,-90 504.79,-69.85 490.33,-53.7 474.11,-41.93"></path>
+<polygon fill="black" stroke="black" points="475.79,-38.84 465.53,-36.18 471.89,-44.66 475.79,-38.84"></polygon>
+</g>
+<!-- d1 -->
+<g id="node5" class="node">
+<title>d1</title>
+<polygon fill="none" stroke="black" points="317.75,-464.2 171.83,-464.2 171.83,-428.2 317.75,-428.2 317.75,-464.2"></polygon>
+<text text-anchor="start" x="179.81" y="-443" font-family="Helvetica,sans-Serif" font-size="14.00">Store X</text>
+<text text-anchor="start" x="226.5" y="-443" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">4</text>
+<text text-anchor="start" x="234.29" y="-443" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;predictions</text>
+</g>
+<!-- c&#45;&gt;d1 -->
+<g id="edge4" class="edge">
+<title>c-&gt;d1</title>
+<path fill="none" stroke="black" d="M316.21,-516.85C302.92,-503.89 284.5,-485.93 269.7,-471.5"></path>
+<polygon fill="black" stroke="black" points="271.94,-468.79 262.34,-464.31 267.05,-473.8 271.94,-468.79"></polygon>
+<text text-anchor="start" x="134.18" y="-495.84" font-family="Times,serif" font-size="14.00">Train C</text>
+<text text-anchor="start" x="177.33" y="-495.84" font-family="Times,serif" baseline-shift="sub" font-size="14.00">4</text>
+<text text-anchor="start" x="184.33" y="-495.84" font-family="Times,serif" font-size="14.00">&nbsp;vs. all using W</text>
+<text text-anchor="start" x="275.33" y="-495.84" font-family="Times,serif" baseline-shift="sub" font-size="14.00">4</text>
+<text text-anchor="start" x="282.33" y="-495.84" font-family="Times,serif" font-size="14.00">&nbsp;</text>
+</g>
+<!-- d2 -->
+<g id="node6" class="node">
+<title>d2</title>
+<polygon fill="none" stroke="black" points="468.01,-464.2 335.57,-464.2 335.57,-428.2 468.01,-428.2 468.01,-464.2"></polygon>
+<text text-anchor="start" x="343.43" y="-443" font-family="Helvetica,sans-Serif" font-size="14.00">Select W</text>
+<text text-anchor="start" x="399.44" y="-443" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">4</text>
+<text text-anchor="start" x="407.23" y="-443" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;and C</text>
+<text text-anchor="start" x="452.36" y="-443" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">4</text>
+</g>
+<!-- c&#45;&gt;d2 -->
+<g id="edge5" class="edge">
+<title>c-&gt;d2</title>
+<path fill="none" stroke="black" d="M330.13,-516.89C328.78,-506.14 328.89,-492.43 335.26,-482.2 338.04,-477.75 341.59,-473.83 345.59,-470.39"></path>
+<polygon fill="black" stroke="black" points="347.81,-473.1 353.78,-464.34 343.66,-467.47 347.81,-473.1"></polygon>
+<text text-anchor="middle" x="413.55" y="-486.4" font-family="Times,serif" font-size="14.00">Retrain multinomial classes</text>
+</g>
+<!-- f -->
+<g id="node7" class="node">
+<title>f</title>
+<polygon fill="none" stroke="black" points="271.79,-375.4 217.79,-375.4 217.79,-339.4 271.79,-339.4 271.79,-375.4"></polygon>
+<text text-anchor="start" x="236.23" y="-354.2" font-family="Helvetica,sans-Serif" font-size="14.00">X</text>
+<text text-anchor="start" x="245.57" y="-354.2" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">3</text>
+</g>
+<!-- d1&#45;&gt;f -->
+<g id="edge6" class="edge">
+<title>d1-&gt;f</title>
+<path fill="none" stroke="black" d="M244.79,-428.05C244.79,-415.92 244.79,-399.42 244.79,-385.52"></path>
+<polygon fill="black" stroke="black" points="248.29,-385.51 244.79,-375.51 241.29,-385.51 248.29,-385.51"></polygon>
+<text text-anchor="start" x="244.79" y="-398.6" font-family="Times,serif" font-size="14.00">Remove C</text>
+<text text-anchor="start" x="304.28" y="-398.6" font-family="Times,serif" baseline-shift="sub" font-size="14.00">4</text>
+<text text-anchor="start" x="311.28" y="-398.6" font-family="Times,serif" font-size="14.00">&nbsp;cases from X</text>
+<text text-anchor="start" x="392.14" y="-398.6" font-family="Times,serif" baseline-shift="sub" font-size="14.00">4</text>
+</g>
+<!-- d1&#45;&gt;j -->
+<g id="edge13" class="edge">
+<title>d1-&gt;j</title>
+<path fill="none" stroke="black" d="M318.18,-429.98C357.54,-421.64 398.82,-412.53 402.79,-410.2 429.33,-394.6 448.79,-389.19 448.79,-358.4 448.79,-358.4 448.79,-358.4 448.79,-90 448.79,-75.1 444.84,-59.02 440.54,-45.93"></path>
+<polygon fill="black" stroke="black" points="443.71,-44.43 437.08,-36.16 437.11,-46.76 443.71,-44.43"></polygon>
+</g>
+<!-- g1 -->
+<g id="node8" class="node">
+<title>g1</title>
+<polygon fill="none" stroke="black" points="261.75,-286.6 115.83,-286.6 115.83,-250.6 261.75,-250.6 261.75,-286.6"></polygon>
+<text text-anchor="start" x="123.81" y="-265.4" font-family="Helvetica,sans-Serif" font-size="14.00">Store X</text>
+<text text-anchor="start" x="170.5" y="-265.4" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">3</text>
+<text text-anchor="start" x="178.29" y="-265.4" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;predictions</text>
+</g>
+<!-- f&#45;&gt;g1 -->
+<g id="edge7" class="edge">
+<title>f-&gt;g1</title>
+<path fill="none" stroke="black" d="M233.73,-339.25C225.67,-326.77 214.62,-309.64 205.5,-295.5"></path>
+<polygon fill="black" stroke="black" points="208.19,-293.22 199.83,-286.71 202.31,-297.01 208.19,-293.22"></polygon>
+<text text-anchor="start" x="61.63" y="-318.18" font-family="Times,serif" font-size="14.00">Train C</text>
+<text text-anchor="start" x="104.79" y="-318.18" font-family="Times,serif" baseline-shift="sub" font-size="14.00">3</text>
+<text text-anchor="start" x="111.79" y="-318.18" font-family="Times,serif" font-size="14.00">&nbsp;vs. all using W</text>
+<text text-anchor="start" x="202.78" y="-318.18" font-family="Times,serif" baseline-shift="sub" font-size="14.00">3</text>
+<text text-anchor="start" x="209.78" y="-318.18" font-family="Times,serif" font-size="14.00">&nbsp;</text>
+</g>
+<!-- g2 -->
+<g id="node9" class="node">
+<title>g2</title>
+<polygon fill="none" stroke="black" points="412.01,-286.6 279.57,-286.6 279.57,-250.6 412.01,-250.6 412.01,-286.6"></polygon>
+<text text-anchor="start" x="287.43" y="-265.4" font-family="Helvetica,sans-Serif" font-size="14.00">Select W</text>
+<text text-anchor="start" x="343.44" y="-265.4" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">3</text>
+<text text-anchor="start" x="351.23" y="-265.4" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;and C</text>
+<text text-anchor="start" x="396.36" y="-265.4" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">3</text>
+</g>
+<!-- f&#45;&gt;g2 -->
+<g id="edge8" class="edge">
+<title>f-&gt;g2</title>
+<path fill="none" stroke="black" d="M253.49,-338.93C259.57,-328.03 268.52,-314.3 279.26,-304.6 284.41,-299.96 290.28,-295.74 296.35,-291.96"></path>
+<polygon fill="black" stroke="black" points="298.44,-294.8 305.34,-286.75 294.93,-288.74 298.44,-294.8"></polygon>
+<text text-anchor="middle" x="357.55" y="-308.8" font-family="Times,serif" font-size="14.00">Retrain multinomial classes</text>
+</g>
+<!-- h -->
+<g id="node10" class="node">
+<title>h</title>
+<polygon fill="none" stroke="black" points="215.79,-197.8 161.79,-197.8 161.79,-161.8 215.79,-161.8 215.79,-197.8"></polygon>
+<text text-anchor="start" x="180.23" y="-176.6" font-family="Helvetica,sans-Serif" font-size="14.00">X</text>
+<text text-anchor="start" x="189.57" y="-176.6" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">2</text>
+</g>
+<!-- g1&#45;&gt;h -->
+<g id="edge9" class="edge">
+<title>g1-&gt;h</title>
+<path fill="none" stroke="black" d="M188.79,-250.45C188.79,-238.32 188.79,-221.82 188.79,-207.92"></path>
+<polygon fill="black" stroke="black" points="192.29,-207.91 188.79,-197.91 185.29,-207.91 192.29,-207.91"></polygon>
+<text text-anchor="start" x="188.79" y="-221" font-family="Times,serif" font-size="14.00">Remove C</text>
+<text text-anchor="start" x="248.28" y="-221" font-family="Times,serif" baseline-shift="sub" font-size="14.00">3</text>
+<text text-anchor="start" x="255.28" y="-221" font-family="Times,serif" font-size="14.00">&nbsp;cases from X</text>
+<text text-anchor="start" x="336.14" y="-221" font-family="Times,serif" baseline-shift="sub" font-size="14.00">3</text>
+</g>
+<!-- g1&#45;&gt;j -->
+<g id="edge14" class="edge">
+<title>g1-&gt;j</title>
+<path fill="none" stroke="black" d="M261.86,-252.09C302.34,-243.38 344.91,-233.99 346.79,-232.6 407.13,-187.87 423.61,-92.94 428.11,-46.18"></path>
+<polygon fill="black" stroke="black" points="431.6,-46.44 428.95,-36.18 424.62,-45.85 431.6,-46.44"></polygon>
+</g>
+<!-- i1 -->
+<g id="node11" class="node">
+<title>i1</title>
+<polygon fill="none" stroke="black" points="194.75,-109 48.83,-109 48.83,-73 194.75,-73 194.75,-109"></polygon>
+<text text-anchor="start" x="56.81" y="-87.8" font-family="Helvetica,sans-Serif" font-size="14.00">Store X</text>
+<text text-anchor="start" x="103.5" y="-87.8" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">2</text>
+<text text-anchor="start" x="111.29" y="-87.8" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;predictions</text>
+</g>
+<!-- h&#45;&gt;i1 -->
+<g id="edge10" class="edge">
+<title>h-&gt;i1</title>
+<path fill="none" stroke="black" d="M175.55,-161.65C165.73,-148.93 152.19,-131.39 141.16,-117.09"></path>
+<polygon fill="black" stroke="black" points="143.88,-114.89 135,-109.11 138.34,-119.17 143.88,-114.89"></polygon>
+<text text-anchor="start" x="0" y="-140.42" font-family="Times,serif" font-size="14.00">Train C</text>
+<text text-anchor="start" x="43.16" y="-140.42" font-family="Times,serif" baseline-shift="sub" font-size="14.00">2</text>
+<text text-anchor="start" x="50.16" y="-140.42" font-family="Times,serif" font-size="14.00">&nbsp;vs. all using W</text>
+<text text-anchor="start" x="141.15" y="-140.42" font-family="Times,serif" baseline-shift="sub" font-size="14.00">2</text>
+<text text-anchor="start" x="148.15" y="-140.42" font-family="Times,serif" font-size="14.00">&nbsp;</text>
+</g>
+<!-- i2 -->
+<g id="node12" class="node">
+<title>i2</title>
+<polygon fill="none" stroke="black" points="345.01,-109 212.57,-109 212.57,-73 345.01,-73 345.01,-109"></polygon>
+<text text-anchor="start" x="220.43" y="-87.8" font-family="Helvetica,sans-Serif" font-size="14.00">Select W</text>
+<text text-anchor="start" x="276.44" y="-87.8" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">2</text>
+<text text-anchor="start" x="284.23" y="-87.8" font-family="Helvetica,sans-Serif" font-size="14.00">&nbsp;and C</text>
+<text text-anchor="start" x="329.36" y="-87.8" font-family="Helvetica,sans-Serif" baseline-shift="sub" font-size="14.00">2</text>
+</g>
+<!-- h&#45;&gt;i2 -->
+<g id="edge11" class="edge">
+<title>h-&gt;i2</title>
+<path fill="none" stroke="black" d="M206.16,-161.41C216.32,-151.29 229.44,-138.34 241.26,-127 244.85,-123.56 248.66,-119.95 252.42,-116.42"></path>
+<polygon fill="black" stroke="black" points="255.07,-118.73 259.99,-109.34 250.29,-113.62 255.07,-118.73"></polygon>
+<text text-anchor="middle" x="319.55" y="-131.2" font-family="Times,serif" font-size="14.00">Retrain multinomial classes</text>
+</g>
+<!-- i1&#45;&gt;j -->
+<g id="edge15" class="edge">
+<title>i1-&gt;j</title>
+<path fill="none" stroke="black" d="M194.78,-73.17C240.2,-62.7 298.77,-49.2 346.07,-38.3"></path>
+<polygon fill="black" stroke="black" points="347.03,-41.67 355.99,-36.01 345.46,-34.85 347.03,-41.67"></polygon>
+</g>
+</g>
+</svg>
+</div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sequential-flowchart-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2.6: Sequential Algorithm
@@ -502,21 +940,168 @@ Figure&nbsp;2.6: Sequential Algorithm
 </figure>
 </div>
 </div>
+</div>
 <p>The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.</p>
 <section id="aggregating-predictions-1" class="level3" data-number="2.4.1">
 <h3 data-number="2.4.1" class="anchored" data-anchor-id="aggregating-predictions-1"><span class="header-section-number">2.4.1</span> Aggregating Predictions</h3>
 <p>We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the “all” class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSOC vs.&nbsp;non-HGSOC, CCOC vs.&nbsp;non-CCOC, LGSOC vs.&nbsp;non-LGSOC, and then MUOC vs.&nbsp;ENOC. <a href="#fig-sequential-predictions" class="quarto-xref">Figure&nbsp;<span>2.7</span></a> illustrates how the final predictions are assigned:</p>
-<div class="cell">
-<div id="fig-sequential-predictions" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<div class="cell" data-fig-height="3" data-out-height="100%" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-sequential-predictions" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sequential-predictions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-50d640974e77fd6ff88c" style="width:100%;height:1500px;"></div>
-<script type="application/json" data-for="htmlwidget-50d640974e77fd6ff88c">{"x":{"diagram":"digraph sequential_predictions {\n    \n    # layout\n    graph [layout = dot overlap = TRUE]\n\n    # node definitions\n    node [fontname = Helvetica, shape = box]\n    \n    a [label = \"Predicted HGSOC vs. non-HGSOC\"]\n    b1 [label = \"HGSOC\"]\n    b2 [label = \"non-HGSOC\"]\n    c [label = \"Predicted CCOC vs. non-CCOC\"]\n    d1 [label = \"CCOC\"]\n    d2 [label = \"non-CCOC\"]\n    e [label = \"Predicted LGSOC vs. non-LGSOC\"]\n    f1 [label = \"LGSOC\"]\n    f2 [label = \"non-LGSOC\"]\n    g [label = \"Predicted MUOC vs. ENOC\"]\n    h1 [label = \"MUOC\"]\n    h2 [label = \"ENOC\"]\n    \n    # edge definitions\n    a -> {b1 b2}\n    b2 -> c\n    c -> {d1 d2}\n    d2 -> e\n    e -> {f1 f2}\n    f2 -> g\n    g -> {h1 h2}\n    \n     # subgraph definitions\n    subgraph {rank = same; b2; c}\n    subgraph {rank = same; d2; e}\n    subgraph {rank = same; f2; g}\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div>
+<svg width="672" height="288" viewbox="0.00 0.00 869.66 332.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 328)">
+<title>sequential_predictions</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-328 865.66,-328 865.66,4 -4,4"></polygon>
+<!-- a -->
+<g id="node1" class="node">
+<title>a</title>
+<polygon fill="none" stroke="black" points="235.6,-324 -0.2,-324 -0.2,-288 235.6,-288 235.6,-324"></polygon>
+<text text-anchor="middle" x="117.7" y="-301.8" font-family="Helvetica,sans-Serif" font-size="14.00">Predicted HGSOC vs. non-HGSOC</text>
+</g>
+<!-- b1 -->
+<g id="node2" class="node">
+<title>b1</title>
+<polygon fill="none" stroke="black" points="102.54,-252 34.86,-252 34.86,-216 102.54,-216 102.54,-252"></polygon>
+<text text-anchor="middle" x="68.7" y="-229.8" font-family="Helvetica,sans-Serif" font-size="14.00">HGSOC</text>
+</g>
+<!-- a&#45;&gt;b1 -->
+<g id="edge1" class="edge">
+<title>a-&gt;b1</title>
+<path fill="none" stroke="black" d="M105.59,-287.7C99.83,-279.47 92.84,-269.48 86.49,-260.42"></path>
+<polygon fill="black" stroke="black" points="89.27,-258.29 80.67,-252.1 83.54,-262.3 89.27,-258.29"></polygon>
+</g>
+<!-- b2 -->
+<g id="node3" class="node">
+<title>b2</title>
+<polygon fill="none" stroke="black" points="215.56,-252 119.84,-252 119.84,-216 215.56,-216 215.56,-252"></polygon>
+<text text-anchor="middle" x="167.7" y="-229.8" font-family="Helvetica,sans-Serif" font-size="14.00">non-HGSOC</text>
+</g>
+<!-- a&#45;&gt;b2 -->
+<g id="edge2" class="edge">
+<title>a-&gt;b2</title>
+<path fill="none" stroke="black" d="M130.06,-287.7C135.93,-279.47 143.07,-269.48 149.54,-260.42"></path>
+<polygon fill="black" stroke="black" points="152.52,-262.28 155.48,-252.1 146.82,-258.21 152.52,-262.28"></polygon>
+</g>
+<!-- c -->
+<g id="node4" class="node">
+<title>c</title>
+<polygon fill="none" stroke="black" points="448.36,-252 233.03,-252 233.03,-216 448.36,-216 448.36,-252"></polygon>
+<text text-anchor="middle" x="340.7" y="-229.8" font-family="Helvetica,sans-Serif" font-size="14.00">Predicted CCOC vs. non-CCOC</text>
+</g>
+<!-- b2&#45;&gt;c -->
+<g id="edge3" class="edge">
+<title>b2-&gt;c</title>
+<path fill="none" stroke="black" d="M215.68,-234C217.99,-234 220.31,-234 222.62,-234"></path>
+<polygon fill="black" stroke="black" points="222.77,-237.5 232.77,-234 222.77,-230.5 222.77,-237.5"></polygon>
+</g>
+<!-- d1 -->
+<g id="node5" class="node">
+<title>d1</title>
+<polygon fill="none" stroke="black" points="325.42,-180 267.98,-180 267.98,-144 325.42,-144 325.42,-180"></polygon>
+<text text-anchor="middle" x="296.7" y="-157.8" font-family="Helvetica,sans-Serif" font-size="14.00">CCOC</text>
+</g>
+<!-- c&#45;&gt;d1 -->
+<g id="edge4" class="edge">
+<title>c-&gt;d1</title>
+<path fill="none" stroke="black" d="M329.82,-215.7C324.71,-207.56 318.5,-197.69 312.85,-188.7"></path>
+<polygon fill="black" stroke="black" points="315.74,-186.71 307.45,-180.1 309.81,-190.43 315.74,-186.71"></polygon>
+</g>
+<!-- d2 -->
+<g id="node6" class="node">
+<title>d2</title>
+<polygon fill="none" stroke="black" points="428.44,-180 342.96,-180 342.96,-144 428.44,-144 428.44,-180"></polygon>
+<text text-anchor="middle" x="385.7" y="-157.8" font-family="Helvetica,sans-Serif" font-size="14.00">non-CCOC</text>
+</g>
+<!-- c&#45;&gt;d2 -->
+<g id="edge5" class="edge">
+<title>c-&gt;d2</title>
+<path fill="none" stroke="black" d="M351.82,-215.7C357.05,-207.56 363.4,-197.69 369.18,-188.7"></path>
+<polygon fill="black" stroke="black" points="372.24,-190.41 374.7,-180.1 366.35,-186.62 372.24,-190.41"></polygon>
+</g>
+<!-- e -->
+<g id="node7" class="node">
+<title>e</title>
+<polygon fill="none" stroke="black" points="676.95,-180 446.45,-180 446.45,-144 676.95,-144 676.95,-180"></polygon>
+<text text-anchor="middle" x="561.7" y="-157.8" font-family="Helvetica,sans-Serif" font-size="14.00">Predicted LGSOC vs. non-LGSOC</text>
+</g>
+<!-- d2&#45;&gt;e -->
+<g id="edge6" class="edge">
+<title>d2-&gt;e</title>
+<path fill="none" stroke="black" d="M428.32,-162C430.95,-162 433.57,-162 436.19,-162"></path>
+<polygon fill="black" stroke="black" points="436.3,-165.5 446.3,-162 436.3,-158.5 436.3,-165.5"></polygon>
+</g>
+<!-- f1 -->
+<g id="node8" class="node">
+<title>f1</title>
+<polygon fill="none" stroke="black" points="545.21,-108 480.19,-108 480.19,-72 545.21,-72 545.21,-108"></polygon>
+<text text-anchor="middle" x="512.7" y="-85.8" font-family="Helvetica,sans-Serif" font-size="14.00">LGSOC</text>
+</g>
+<!-- e&#45;&gt;f1 -->
+<g id="edge7" class="edge">
+<title>e-&gt;f1</title>
+<path fill="none" stroke="black" d="M549.59,-143.7C543.83,-135.47 536.84,-125.48 530.49,-116.42"></path>
+<polygon fill="black" stroke="black" points="533.27,-114.29 524.67,-108.1 527.54,-118.3 533.27,-114.29"></polygon>
+</g>
+<!-- f2 -->
+<g id="node9" class="node">
+<title>f2</title>
+<polygon fill="none" stroke="black" points="656.23,-108 563.17,-108 563.17,-72 656.23,-72 656.23,-108"></polygon>
+<text text-anchor="middle" x="609.7" y="-85.8" font-family="Helvetica,sans-Serif" font-size="14.00">non-LGSOC</text>
+</g>
+<!-- e&#45;&gt;f2 -->
+<g id="edge8" class="edge">
+<title>e-&gt;f2</title>
+<path fill="none" stroke="black" d="M573.56,-143.7C579.2,-135.47 586.05,-125.48 592.27,-116.42"></path>
+<polygon fill="black" stroke="black" points="595.2,-118.33 597.97,-108.1 589.43,-114.37 595.2,-118.33"></polygon>
+</g>
+<!-- g -->
+<g id="node10" class="node">
+<title>g</title>
+<polygon fill="none" stroke="black" points="861.62,-108 673.78,-108 673.78,-72 861.62,-72 861.62,-108"></polygon>
+<text text-anchor="middle" x="767.7" y="-85.8" font-family="Helvetica,sans-Serif" font-size="14.00">Predicted MUOC vs. ENOC</text>
+</g>
+<!-- f2&#45;&gt;g -->
+<g id="edge9" class="edge">
+<title>f2-&gt;g</title>
+<path fill="none" stroke="black" d="M656.3,-90C658.75,-90 661.19,-90 663.64,-90"></path>
+<polygon fill="black" stroke="black" points="663.7,-93.5 673.7,-90 663.7,-86.5 663.7,-93.5"></polygon>
+</g>
+<!-- h1 -->
+<g id="node11" class="node">
+<title>h1</title>
+<polygon fill="none" stroke="black" points="758.97,-36 700.43,-36 700.43,0 758.97,0 758.97,-36"></polygon>
+<text text-anchor="middle" x="729.7" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00">MUOC</text>
+</g>
+<!-- g&#45;&gt;h1 -->
+<g id="edge10" class="edge">
+<title>g-&gt;h1</title>
+<path fill="none" stroke="black" d="M758.31,-71.7C753.93,-63.64 748.64,-53.89 743.8,-44.98"></path>
+<polygon fill="black" stroke="black" points="746.83,-43.22 738.98,-36.1 740.68,-46.56 746.83,-43.22"></polygon>
+</g>
+<!-- h2 -->
+<g id="node12" class="node">
+<title>h2</title>
+<polygon fill="none" stroke="black" points="834.15,-36 777.25,-36 777.25,0 834.15,0 834.15,-36"></polygon>
+<text text-anchor="middle" x="805.7" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00">ENOC</text>
+</g>
+<!-- g&#45;&gt;h2 -->
+<g id="edge11" class="edge">
+<title>g-&gt;h2</title>
+<path fill="none" stroke="black" d="M777.09,-71.7C781.46,-63.64 786.76,-53.89 791.59,-44.98"></path>
+<polygon fill="black" stroke="black" points="794.72,-46.56 796.41,-36.1 788.57,-43.22 794.72,-46.56"></polygon>
+</g>
+</g>
+</svg>
+</div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sequential-predictions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2.7: Aggregating Predictions for Sequential Algorithm
 </figcaption>
 </figure>
+</div>
 </div>
 </div>
 </section>
