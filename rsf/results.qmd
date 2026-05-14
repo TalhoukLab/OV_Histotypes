@@ -2230,6 +2230,14 @@ A summary of the SMOTE-SVM, Optimal model results are shown in @fig-val-summary.
 #| fig-width: 10
 #| fig-height: 6
 
+val_conf_mat_simp <- val_conf_mat |> 
+  pluck(2) +
+  labs(title = "Confusion Matrix") +
+  plot_annotation(title = NULL)
+
+val_roc_curve_simp <- val_roc_curve_smote_svm_opt +
+  labs(title = "ROC Curves")
+
 val_eval_grob <- 
   val_eval |> 
   filter(Method == "SMOTE-SVM, Optimal") |> 
@@ -2246,11 +2254,6 @@ val_eval_gg <- ggplot() +
   theme_void() + 
   annotation_custom(val_eval_grob)
 
-val_conf_mat_simp <- val_conf_mat |> 
-  pluck(2) +
-  labs(title = "Confusion Matrix") +
-  plot_annotation(title = NULL)
-
 layout <- "
 AABBB
 AABBB
@@ -2258,9 +2261,9 @@ CCBBB
 CCBBB
 "
 
-val_conf_mat_simp + val_roc_curve_smote_svm_opt + val_eval_gg +
+val_conf_mat_simp + val_roc_curve_simp + val_eval_gg +
   plot_layout(design = layout) +
-  plot_annotation(tag_levels = "A") &
+  plot_annotation(title = "SMOTE-SVM, Optimal Set Summary in Validation Set", tag_levels = "A") &
   theme(plot.tag = element_text(face = "bold"))
 ```
 
