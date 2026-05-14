@@ -164,7 +164,7 @@ train4_cs <- train4 |>
   mutate(CodeSet = toupper(file_source)) |>
   count(CodeSet) |>
   mutate(Nx = n - 5, Nr = 5, .keep = "unused") |>
-  pmap_chr(~ paste0(..1, "\nNx = ", ..2, "\nNr = ", ..3))
+  pmap_chr(~ paste0(..1, "\nExpression Samples = ", ..2, "\nReference Samples = ", ..3))
 
 train5 <- train_ref
 
@@ -205,39 +205,41 @@ grViz(
     JAPAN [label = '", train1[["JAPAN"]], "', color = 'black']
     intermediate_1 [shape = point, width = 0.01, height = 0.01]
     train_1 [label = 'n = ", nrow(train_coh), "', style = 'filled', fillcolor = 'grey90']
-    train_2 [label = 'Training Cohort\nn = ", nrow(train2),"', style = 'filled', fillcolor = '#7BB369']
+    train_2 [label = 'Training Set\nn = ", nrow(train2),"', style = 'filled', fillcolor = '#7BB369']
     train_3 [label = 'n = ", nrow(train3), "', style = 'filled', fillcolor = 'grey90']
     train_cs1 [label = '", train4_cs[1], "', fillcolor = '#607C8E']
     train_cs2 [label = '", train4_cs[2], "', fillcolor = '#FFA756']
     train_cs3 [label = '", train4_cs[3], "', fillcolor = '#259FED']
-    train_5 [label = 'Training Cohort\nn = ", nrow(train_ref), "', style = 'filled', fillcolor = '#7BB369']
+    train_5 [label = 'Training Set\nn = ", nrow(train_ref), "', style = 'filled', fillcolor = '#7BB369']
 
     conf1 [label = '", conf1, "', color = 'black']
-    conf2 [label = 'Confirmation\nCohort\nn = ", nrow(conf2), "', style = 'filled', fillcolor = '#B19CD7']
-    conf3 [label = 'Confirmation\nCohort\nn = ", nrow(conf3), "', style = 'filled', fillcolor = '#B19CD7']
-    conf5 [label = 'Confirmation\nCohort\nn = ", nrow(conf5), "', style = 'filled', fillcolor = '#B19CD7']
+    conf2 [label = 'Confirmation Set\nn = ", nrow(conf2), "', style = 'filled', fillcolor = '#B19CD7']
+    conf3 [label = 'Confirmation Set\nn = ", nrow(conf3), "', style = 'filled', fillcolor = '#B19CD7']
+    conf5 [label = 'Confirmation Set\nn = ", nrow(conf5), "', style = 'filled', fillcolor = '#B19CD7']
 
     val1 [label = '", val1, "', color = 'black']
-    val2 [label = 'Validation\nCohort\nn = ", nrow(val2), "', style = 'filled', fillcolor = '#04D9FF']
-    val3 [label = 'Validation\nCohort\nn = ", nrow(val3), "', style = 'filled', fillcolor = '#04D9FF']
-    val5 [label = 'Validation\nCohort\nn = ", nrow(val5), "', style = 'filled', fillcolor = '#04D9FF']
+    val2 [label = 'Validation Set\nn = ", nrow(val2), "', style = 'filled', fillcolor = '#04D9FF']
+    intermediate_2 [shape = point, width = 0.01, height = 0.01]
+    val3 [label = 'Validation Set\nn = ", nrow(val3), "', style = 'filled', fillcolor = '#04D9FF']
+    val5 [label = 'Validation Set\nn = ", nrow(val5), "', style = 'filled', fillcolor = '#04D9FF']
 
     # edge definitions
     edge [minlen = 4, arrowsize = 0.75]
     {MAYO OOU OOUE VOA MTL OVAR3 OVAR11 JAPAN} -> intermediate_1 [dir = none]
     intermediate_1 -> train_1
-    train_1 -> train_2 [xlabel = 'Exclude QC Fails: ", nrow(train_coh) - nrow(train2), "']
+    train_1 -> train_2 [xlabel = 'Exclude Quality Control Fails: ", nrow(train_coh) - nrow(train2), "']
     train_2 -> train_3 [xlabel = 'Exclude Other Histotypes: ", nrow(train2) - nrow(train3), "']
     train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]
-    train_cs1 -> train_5 [xlabel = 'Exclude Replicates: ", nrow(train4) - 15 - nrow(train5), "']
+    train_cs1 -> train_5 [xlabel = 'Exclude Replicates: ", nrow(train4) - 15 - nrow(train5), "      ']
     {train_cs2 train_cs3} -> train_5
 
-    conf1 -> conf2 [xlabel = 'Exclude QC\nFails: ", nrow(tnco) - nrow(conf2), "']
+    conf1 -> conf2 [xlabel = 'Exclude Quality\nControl Fails: ", nrow(tnco) - nrow(conf2), "']
     conf2 -> conf3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(conf2) - nrow(conf3), "']
     conf3 -> conf5 [xlabel = 'Exclude non-Vancouver: ", nrow(conf3) - nrow(conf4), "\nExclude Replicates: ", nrow(conf4) - nrow(conf5), "', minlen = 7]
 
-    val1 -> val2 [xlabel = 'Exclude QC\nFails: ", nrow(dove4) - nrow(val2), "']
-    val2 -> val3 [xlabel = 'Exclude Other\nHistotypes: ", nrow(val2) - nrow(val3), "']
+    val1 -> val2 [xlabel = 'Exclude Quality\nControl Fails: ", nrow(dove4) - nrow(val2), "']
+    val2 -> intermediate_2 [xlabel = 'Exclude Other\nHistotypes: ", nrow(val2) - nrow(val3), "', dir = none]
+    intermediate_2 -> val3
     val3 -> val5 [xlabel = 'Exclude non-Vancouver: ", nrow(val3) - nrow(val4), "\nExclude Replicates: ", nrow(val4) - nrow(val5), "', minlen = 7]
 
     # subgraph definitions
