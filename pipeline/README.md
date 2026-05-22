@@ -90,3 +90,7 @@ Results are stored at `resultsDir` specified in `pipeline/assets/params.sh`. It 
 -   `outputDir`: contains the outputs for the submitted jobs
 
 The outputs in `outputDir` are structured first within the name of the task and within that subdirectories will use the data object name.
+
+# Debugging
+
+To debug errors that occur, use `debug.R` to interactively run one example job from the various pipelines. Once the inputs are assigned as they would have in the compute nodes, the corresponding R scripts can be run to emulate the supposed output. The job submission log files only indicate the error message, but not where the error occurred. This interactive debugging method will help the user find the exact location in the R script where a fix is required.
