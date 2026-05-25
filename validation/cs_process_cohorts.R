@@ -128,7 +128,7 @@ hist_all_mol <- hist_all |>
       "0" ~ "OTHER",
       "20" ~ "MUC LMP",
       "99" ~ "SC LMP",
-      .default = histology_mol_v3
+      default = histology_mol_v3
     ),
     hist_rev_v2_mapped = case_when(
       hist_rev_v2 == "clear cell" ~ "CCOC",
