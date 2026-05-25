@@ -44,11 +44,11 @@ all_xsites <- combn(sites, 2) |>
 annot_all <- annot |>
   replace_with_na(list(ottaID = c("", "N/A"))) |>
   mutate(
-    CodeSet = recode_factor(
+    CodeSet = fct_recode(
       RCC.geneRLF,
-      `OvCa2103_C953` = "CS1",
-      `PrOTYPE2_v2_C1645` = "CS2",
-      `OTTA2014_C2822` = "CS3"
+      CS1 = "OvCa2103_C953",
+      CS2 = "PrOTYPE2_v2_C1645",
+      CS3 = "OTTA2014_C2822"
     )
   ) |>
   rename_with(~ gsub("^RCC\\.", "", .)) |>
@@ -305,11 +305,11 @@ annotNEW <- annotNEW |>
   mutate(
     ottaID = gsub(".*_(.*)_[0-9]{2}$", "\\1", File.Name) |>
       gsub("-(N1|R)$", "", x = _),
-    CodeSet = recode_factor(
+    CodeSet = fct_recode(
       geneRLF,
-      OTTA2017_C6082 = "CS4",
-      OTTA2018_C6830 = "CS5",
-      OTTA2018_C8440 = "CS6"
+      CS4 = "OTTA2017_C6082",
+      CS5 = "OTTA2018_C6830",
+      CS6 = "OTTA2018_C8440"
     )
   )
 

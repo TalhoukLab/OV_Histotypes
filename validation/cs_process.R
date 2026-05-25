@@ -30,11 +30,11 @@ annot_cs_all <- annot %>%
   replace_with_na(list(ottaID = c("", "N/A"))) %>%
   filter(RCC.geneRLF %in% c("OvCa2103_C953", "PrOTYPE2_v2_C1645", "OTTA2014_C2822")) %>%
   mutate(
-    CodeSet = recode_factor(
+    CodeSet = fct_recode(
       RCC.geneRLF,
-      `OvCa2103_C953` = "CS1",
-      `PrOTYPE2_v2_C1645` = "CS2",
-      `OTTA2014_C2822` = "CS3"
+      CS1 = "OvCa2103_C953",
+      CS2 = "PrOTYPE2_v2_C1645",
+      CS3 = "OTTA2014_C2822"
     )
   )
 
