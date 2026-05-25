@@ -837,7 +837,7 @@ metrics_top <- per_class_metrics |>
       "f_meas" ~ "F1-Score",
       "bal_accuracy" ~ "Balanced Accuracy",
       "kap" ~ "Kappa",
-      .ptype = factor(
+      ptype = factor(
         levels = c(
           "Accuracy",
           "Sensitivity",
