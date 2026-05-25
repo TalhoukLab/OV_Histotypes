@@ -829,7 +829,7 @@ metrics_top <- per_class_metrics |>
         `Up-RF` = "up_rf",
         `SMOTE-SVM` = "smote_svm"
       ), 
-    .metric = case_match(
+    .metric = recode_values(
       .metric,
       "accuracy" ~ "Accuracy",
       "sensitivity" ~ "Sensitivity",
@@ -1096,7 +1096,7 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                          levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
                          labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")))) |> 
   mutate(Method = fct_inorder(
-    case_match(
+    recode_values(
       Method,
       "sequential" ~ "Sequential",
       "two_step" ~ "2-STEP",
@@ -1127,7 +1127,7 @@ conf_eval_per_class <- conf_pred_overall |>
   mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
   unnest(data) |> 
   mutate(
-    Metric = case_match(
+    Metric = recode_values(
       .metric,
       "accuracy" ~ "Accuracy",
       "sensitivity" ~ "Sensitivity",
@@ -1230,7 +1230,7 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
                    levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
                    labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
     Method = fct_inorder(
-      case_match(
+      recode_values(
         Method,
         "p_seq" ~ "Sequential",
         "p_two_step" ~ "2-STEP",
@@ -1870,7 +1870,7 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
     )),
     Method = fct_inorder(
-      case_match(
+      recode_values(
         Method,
         "smote_svm_opt" ~ "SMOTE-SVM, Optimal",
         "smote_svm_base" ~ "SMOTE-SVM, Base",
@@ -1902,7 +1902,7 @@ conf_eval_per_class <- conf_pred_overall |>
   mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
   unnest(data) |> 
   mutate(
-    Metric = case_match(
+    Metric = recode_values(
       .metric,
       "accuracy" ~ "Accuracy",
       "sensitivity" ~ "Sensitivity",
@@ -1996,7 +1996,7 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
     labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
   ))) |> 
   mutate(Method = fct_inorder(
-    case_match(
+    recode_values(
       Method,
       "smote_svm_all" ~ "SMOTE-SVM, All Overlap",
       "smote_svm_opt" ~ "SMOTE-SVM, Optimal",
@@ -2025,7 +2025,7 @@ val_eval_per_class <- val_pred_overall |>
   mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
   unnest(data) |> 
   mutate(
-    Metric = case_match(
+    Metric = recode_values(
       .metric,
       "accuracy" ~ "Accuracy",
       "sensitivity" ~ "Sensitivity",

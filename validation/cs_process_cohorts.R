@@ -116,7 +116,7 @@ hist_all_mol <- hist_all |>
   left_join(bc_1965_ihc_data, by = "FileName") |>
   left_join(cosp_df, by = "FileName") |>
   mutate(
-    histology_mol_v3_mapped = case_match(
+    histology_mol_v3_mapped = recode_values(
       histology_mol_v3,
       "1H" ~ "HGSC",
       "1L" ~ "LGSC",
@@ -163,7 +163,7 @@ hist_all_mol <- hist_all |>
       !is.na(hist_cosp_mapped) ~ "hist_cosp",
       !is.na(revHist) ~ "revHist"
     ),
-    hist_final = case_match(
+    hist_final = recode_values(
       hist_final_source,
       "histology_mol_v3" ~ histology_mol_v3_mapped,
       "hist_rev_v2" ~ hist_rev_v2_mapped,

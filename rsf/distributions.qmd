@@ -248,10 +248,10 @@ cohorts_dist |>
 
 We use an aggregated `QCFlag` that considers a sample to have failed QC if any of the following QC conditions are flagged:
 
--   Linearity
--   Imaging
--   Smallest Positive Control
--   Normality
+- Linearity
+- Imaging
+- Smallest Positive Control
+- Normality
 
 ```{r}
 #| label: tbl-qc-failed
@@ -259,7 +259,7 @@ We use an aggregated `QCFlag` that considers a sample to have failed QC if any o
 
 train_coh <- cohorts |>
   filter(cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL", "OVAR3", "ICON7", "JAPAN")) |> 
-  mutate(cohort = case_match(
+  mutate(cohort = recode_values(
     cohort,
     "ICON7" ~ "OVAR11",
     .default = cohort
