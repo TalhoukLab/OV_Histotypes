@@ -247,11 +247,7 @@ We use an aggregated `QCFlag` that considers a sample to have failed QC if any o
 
 train_coh <- cohorts |>
   filter(cohort %in% c("MAYO", "OOU", "OOUE", "VOA", "MTL", "OVAR3", "ICON7", "JAPAN")) |> 
-  mutate(cohort = recode_values(
-    cohort,
-    "ICON7" ~ "OVAR11",
-    .default = cohort
-  ))
+  mutate(cohort = replace_values(cohort, "ICON7" ~ "OVAR11"))
 
 tnco <- cohorts |> filter(cohort == "TNCO")
 dove4 <- cohorts |> filter(cohort == "DOVE4")
