@@ -3,31 +3,31 @@
 # Select samples from CodeSets and transpose to standard format:
 # Rows: Samples, Columns: Genes, Rownames: Sample FileName
 select_samples <- function(cs_norm, samples) {
-  cs_norm %>%
+  cs_norm |>
     tidyr::pivot_longer(
       cols = dplyr::all_of(samples),
       names_to = "FileName",
       names_prefix = "X",
       values_to = "value"
-    ) %>%
+    ) |>
     tidyr::pivot_wider(id_cols = FileName,
                        names_from = Name,
-                       values_from = value) %>%
+                       values_from = value) |>
     tibble::column_to_rownames("FileName")
 }
 
 # Join histotypes to codeset and keep or discard the common ids and average
 # the duplicate samples
-join_avg <- function(cs, hist, id, type = c("keep", "discard")) {
+join_avg <- function(x, y, id, type = c("keep", "discard")) {
   type <- match.arg(type)
   join_fun <- switch(type,
                      keep = dplyr::semi_join,
                      discard = dplyr::anti_join)
-  cs %>%
-    join_fun(hist, by = id) %>%
-    dplyr::group_by(!!rlang::sym(id)) %>%
-    dplyr::summarize_if(is.double, mean) %>%
-    dplyr::ungroup() %>%
+  x |>
+    join_fun(y, by = id) |>
+    dplyr::summarize(dplyr::across(dplyr::where(is.double), mean),
+                     .by = !!rlang::sym(id)) |>
+    dplyr::arrange(!!rlang::sym(id)) |>
     tibble::column_to_rownames(id)
 }
 
@@ -38,91 +38,6 @@ cor_stats <- function(x, y) {
   Ca <- purrr::pluck(ccc, "C.b")
   Rc <- purrr::pluck(ccc, "rho.c", "est")
   tibble::lst(R2, Ca, Rc)
-}
-
-# Split gene expression data by histotype
-split_hist <- function(data, hist_df) {
-  data %>%
-    tibble::rownames_to_column("ottaID") %>%
-    dplyr::inner_join(hist_df, by = "ottaID") %>%
-    tibble::column_to_rownames("ottaID")%>%
-    split(.$revHist) %>%
-    purrr::map(dplyr::select, -"revHist")
-}
-
-# Geometric mean, implemented in yardstick format
-gmean_vec <- function(truth,
-                      estimate,
-                      estimator = NULL,
-                      na_rm = TRUE,
-                      case_weights = NULL,
-                      event_level = "first",
-                      ...) {
-  estimator <-
-    yardstick::finalize_estimator(truth, estimator, metric_class = "gmean")
-  yardstick::check_class_metric(truth, estimate, case_weights, estimator)
-
-  if (na_rm) {
-    result <-
-      yardstick::yardstick_remove_missing(truth, estimate, case_weights)
-
-    truth <- result$truth
-    estimate <- result$estimate
-    case_weights <- result$case_weights
-  } else if (yardstick::yardstick_any_missing(truth, estimate, case_weights)) {
-    return(NA_real_)
-  }
-  gmean_impl(truth, estimate, estimator, event_level)
-}
-
-finalize_estimator_internal.gmean <- function(metric_dispatcher, x, estimator, call) {
-
-  validate_estimator(estimator, estimator_override = c("binary", "multiclass"))
-  if (!is.null(estimator)) {
-    return(estimator)
-  }
-
-  lvls <- levels(x)
-  if (length(lvls) > 2) {
-    "multiclass"
-  } else {
-    "binary"
-  }
-}
-
-gmean_impl <- function(truth, estimate, estimator, event_level) {
-  xtab <- table(estimate, truth)
-  p <- colSums(xtab)
-  tp <- diag(xtab)
-  sens <- tp / p
-  purrr::reduce(sens, `*`) ^ (1 / length(sens))
-}
-
-gmean <- function(data, ...) {
-  UseMethod("gmean")
-}
-
-gmean <- yardstick::new_class_metric(gmean, direction = "maximize")
-
-gmean.data.frame <- function(data,
-                             truth,
-                             estimate,
-                             estimator = NULL,
-                             na_rm = TRUE,
-                             case_weights = NULL,
-                             event_level = "first",
-                             ...) {
-  yardstick::class_metric_summarizer(
-    name = "gmean",
-    fn = gmean_vec,
-    data = data,
-    truth = !!rlang::enquo(truth),
-    estimate = !!rlang::enquo(estimate),
-    estimator = estimator,
-    na_rm = na_rm,
-    case_weights = !!rlang::enquo(case_weights),
-    event_level = event_level
-  )
 }
 
 # Compute one-vs-all metrics
