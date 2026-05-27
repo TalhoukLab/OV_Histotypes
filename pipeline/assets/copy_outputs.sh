@@ -4,7 +4,7 @@
 user="$(whoami)"
 projDir="/home"/$user"/Projects/OV_Histotypes"
 inputDir=$projDir/"data"
-resultsDir="/projects/"$user"_prj/results/OV_Histotypes_v2"
+resultsDir="/projects/"$user"_prj/results/OV_Histotypes"
 outputDir=$resultsDir"/outputs"
 
 # Training pipeline outputs

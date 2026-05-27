@@ -8,6 +8,8 @@ To run the ML pipeline on the **training set**, execute `make all` with paramete
 dataSets=(train)
 ```
 
+Run L11 of `copy_outputs.sh` to copy training outputs to this project's data directory.
+
 ## Retraining
 
 To find the sequence of workflows to use in the sequential and two-step methods, we need to retrain the ML pipeline after each class is removed. This allows us to obtain an unbiased estimate of the internal validation score to use when assessing the next workflow to use.
@@ -65,6 +67,8 @@ gene_opt_wflow="up_xgb"
 
 to run gene optimization on the entire confirmation set.
 
+Run L23 of `copy_outputs.sh` to copy gene optimization outputs to this project's data directory.
+
 Run `make gene_opt_seq` with parameters:
 
 ``` bash
@@ -80,6 +84,8 @@ nseq=2
 ```
 
 to run gene optimization for the sequential and two-step methods on the confirmation set.
+
+Run L26-27 of `copy_outputs.sh` to copy gene optimization outputs for the sequential and two-step methods to this project's data directory.
 
 # Obtaining Results
 
