@@ -288,15 +288,13 @@ plot_roc_curve <- function(model, data, class, title, cols = NULL) {
     roc_df <- roc_df |>
       dplyr::mutate(.level = factor(
         .level,
-        levels = c("CCOC", "ENOC", "MUC", "LGSC"),
-        labels = c("CCOC", "ENOC", "MUOC", "LGSOC")
+        levels = c("CCOC", "ENOC", "MUOC", "LGSOC")
       ))
   } else if (n_class == 5) {
     roc_df <- roc_df |>
       dplyr::mutate(.level = factor(
         .level,
-        levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-        labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+        levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
       ))
   }
   auc <- preds |>
@@ -352,8 +350,7 @@ plot_calib_curve <- function(model, data, class, title, cols = NULL) {
     probably::cal_plot_logistic(truth = truth) +
     ggh4x::facet_wrap2(~ factor(
       truth,
-      levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-      labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
+      levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")
     ),
     strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = cols))) +
     ggplot2::theme_minimal() +

@@ -227,10 +227,10 @@ saveRDS(train_class, here::here("data/train_class.rds"))
 train_step1_data <- train_data
 train_step1_class <- train_ref |> pull(hist_gr)
 train_step2_data <- train_ref |>
-  filter(hist_gr != "HGSC") |>
+  filter(hist_gr != "HGSOC") |>
   select(where(is.double))
 train_step2_class <- train_ref |>
-  filter(hist_gr != "HGSC") |>
+  filter(hist_gr != "HGSOC") |>
   pull(hist_final)
 
 two_step_data <- list(train_step1_data, train_step2_data)
