@@ -57,19 +57,19 @@ annot_all <- annot |>
 # Gold standard histotypes for OVAR3 and ICON7 cohorts
 hist_stan <- od.otta |>
   filter(cohort %in% c("OVAR3", "ICON7")) |>
-  transmute(
+  mutate(
     ottaID = as.character(otta_id),
-    cohort,
-    hist_rev = case_when(
-      hist_rev == "high-grade serous" ~ "HGSC",
-      hist_rev == "low-grade serous" ~ "LGSC",
-      hist_rev == "mucinous" ~ "MUC",
-      hist_rev == "endometrioid" ~ "ENOC",
-      hist_rev == "clear cell" ~ "CCOC",
-      hist_rev == "serous borderline tumour" ~ "SBOT",
-      TRUE ~ NA_character_
+    hist_rev = recode_values(
+      hist_rev,
+      "high-grade serous" ~ "HGSOC",
+      "low-grade serous" ~ "LGSOC",
+      "mucinous" ~ "MUOC",
+      "endometrioid" ~ "ENOC",
+      "clear cell" ~ "CCOC",
+      "serous borderline tumour" ~ "SBOT"
     )
-  )
+  ) |>
+  select(ottaID, cohort, hist_rev)
 
 # histology_mol_v3 histotypes (from Susan)
 histology_mol_v3_df <- read_excel(
@@ -95,19 +95,19 @@ cosp_df <- cohorts |>
 # Original reviewed histotypes
 hist_all <- annot_all |>
   left_join(hist_stan, by = "ottaID") |>
-  transmute(
-    FileName,
-    ottaID,
-    CodeSet,
+  mutate(
     revHist = case_when(
       !is.na(cohort) ~ hist_rev,
       is.na(cohort) & revHist == "CCC" ~ "CCOC",
       is.na(cohort) & revHist == "ENOCa" ~ "ENOC",
+      revHist == "HGSC" ~ "HGSOC",
+      revHist == "LGSC" ~ "LGSOC",
+      revHist == "MUC" ~ "MUOC",
       revHist %in% c("", "UNK") ~ NA_character_,
-      TRUE ~ revHist
-    ),
-    site
-  )
+      .default = revHist
+    )
+  ) |>
+  select(FileName, ottaID, CodeSet, revHist, site)
 
 # Add molecular-based histotypes on top of revHist
 # Priority: histology_mol_v3 > hist_rev_v2 > hist_cosp
@@ -118,10 +118,10 @@ hist_all_mol <- hist_all |>
   mutate(
     histology_mol_v3_mapped = recode_values(
       histology_mol_v3,
-      "1H" ~ "HGSC",
-      "1L" ~ "LGSC",
+      "1H" ~ "HGSOC",
+      "1L" ~ "LGSOC",
       "1" ~ "SC",
-      "2" ~ "MUC",
+      "2" ~ "MUOC",
       "3" ~ "ENOC",
       "4" ~ "CCOC",
       "6" ~ "Other specified epithelial ovarian cancer",
@@ -133,18 +133,18 @@ hist_all_mol <- hist_all |>
     hist_rev_v2_mapped = case_when(
       hist_rev_v2 == "clear cell" ~ "CCOC",
       hist_rev_v2 == "endometrioid" ~ "ENOC",
-      hist_rev_v2 == "high-grade serous" ~ "HGSC",
-      hist_rev_v2 == "low-grade serous" ~ "LGSC",
-      hist_rev_v2 == "mucinous" ~ "MUC",
+      hist_rev_v2 == "high-grade serous" ~ "HGSOC",
+      hist_rev_v2 == "low-grade serous" ~ "LGSOC",
+      hist_rev_v2 == "mucinous" ~ "MUOC",
       hist_rev_v2 == "serous" & hist_rev_v2_source == "CB-81" ~ revHist,
       .default = hist_rev_v2
     ),
     hist_cosp_mapped = case_when(
-      hist_cosp %in% c("HGSOC", "high-grade serous") ~ "HGSC",
-      hist_cosp %in% c("LGSOC", "low-grade serous") ~ "LGSC",
+      hist_cosp %in% c("HGSOC", "high-grade serous") ~ "HGSOC",
+      hist_cosp %in% c("LGSOC", "low-grade serous") ~ "LGSOC",
       hist_cosp == "clear cell" ~ "CCOC",
       hist_cosp == "endometrioid" ~ "ENOC",
-      hist_cosp == "mucinous" ~ "MUC",
+      hist_cosp == "mucinous" ~ "MUOC",
       hist_cosp == "serous" & hist_cosp_details == "CB-81" ~ revHist,
       .default = hist_cosp
     ),
@@ -170,17 +170,17 @@ hist_all_mol <- hist_all |>
       "hist_cosp" ~ hist_cosp_mapped,
       "revHist" ~ revHist
     ),
-    hist_gr = if_else(hist_final == "HGSC", "HGSC", "non-HGSC"),
+    hist_gr = if_else(hist_final == "HGSOC", "HGSOC", "non-HGSOC"),
     hist_gr2 = hist_final |>
-      factor(levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC")) |>
-      fct_na_value_to_level(level = "Other")
+      factor(levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")) |>
+      fct_other(keep = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"),
+                other_level = "Other")
   ) |>
   relocate(hist_final_source, .after = hist_gr2) |>
   select(-matches("mapped"))
 
-# Main Histotypes: "CCOC", "ENOC", "HGSC", "LGSC", "MUC"
-hist_main <- hist_all_mol |>
-  filter(hist_final %in% c("CCOC", "ENOC", "HGSC", "LGSC", "MUC"))
+# Main Histotypes: "CCOC", "ENOC", "HGSOC", "LGSOC", "MUOC"
+hist_main <- filter(hist_all_mol, !hist_gr2 %in% c("Other", NA))
 
 # CS1/2/3 annotations
 cs1_exp <- filter(annot_all, CodeSet == "CS1")
@@ -567,9 +567,7 @@ cs3_aoc <- cs3_norm_aoc |>
 
 cs3_aoc_X <- cs3_norm_aoc |>
   select(Name, !matches(paste0("POOL|", paste(hist_rand1$ottaID, collapse = "|"))))
-cs3_aoc_R <- cs3_norm_aoc |>
-  select(Name, matches("POOL")) |>
-  `rownames<-`(NULL)
+cs3_aoc_R <- cs3_norm_aoc |> select(Name, matches("POOL"))
 
 ## USC
 cs3_usc <- cs3_norm_usc |>
@@ -583,9 +581,7 @@ cs3_usc <- cs3_norm_usc |>
 
 cs3_usc_X <- cs3_norm_usc |>
   select(Name, !matches(paste0("POOL|", paste(hist_rand1$ottaID, collapse = "|"))))
-cs3_usc_R <- cs3_norm_usc |>
-  select(Name, matches("POOL")) |>
-  `rownames<-`(NULL)
+cs3_usc_R <- cs3_norm_usc |> select(Name, matches("POOL"))
 
 
 # PrOTYPE and SPOT genes --------------------------------------------------
