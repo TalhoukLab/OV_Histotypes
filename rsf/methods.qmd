@@ -29,23 +29,23 @@ coefmat <- readRDS(here("data/coefmat.rds"))
 
 Prior to pre-processing, samples were split into a training, a confirmation, and a validation set.
 
--   Training
-    -   CS1: OOU, OOUE, VOA, MAYO, MTL
-    -   CS2: OOU, OOUE, VOA, MAYO, OVAR3, OVAR11, JAPAN, MTL, POOL-CTRL
-    -   CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
--   Confirmation:
-    -   CS3: TNCO
--   Validation:
-    -   CS3: DOVE4
+- Training
+  - CS1: OOU, OOUE, VOA, MAYO, MTL
+  - CS2: OOU, OOUE, VOA, MAYO, OVAR3, OVAR11, JAPAN, MTL, POOL-CTRL
+  - CS3: OOU, OOUE, VOA, POOL-1, POOL-2, POOL-3
+- Confirmation:
+  - CS3: TNCO
+- Validation:
+  - CS3: DOVE4
 
 ### Quality Control
 
 Before normalization, we calculated several quality control measures and excluded samples that failed to achieve sample quality in one or more of these measures.
 
--   **Linearity of positive control genes**: If the R-squared from a linear model of positive controls and their concentrations is less than 0.95 or missing, then the sample is flagged.
--   **Imaging quality**: The sample is flagged if the field of view percentage is less than 75%.
--   **Positive Control flag**: We consider the two smallest positive controls at concentrations 0.5 and 1. If these two controls are less than the lower limit of detection (defined as two standard deviations below the mean of the negative control expression), or if the mean negative control expression is 0, the sample is flagged.
--   **The signal-to-noise ratio or percent of genes detected**: These two measures are defined as the ratio of the average housekeeping gene expression over the upper limit of detection, defined as two standard deviations above the mean of the negative control expression (or 0 if this limit is less than 0.001), and the proportion of endogenous genes with expression greater than the upper limit of detection. These measures are flagged if they are below a pre-specified threshold, which is determined visually by considering their bivariate distribution in a scatterplot. In this case, we used 100 for the SNR threshold and 50% for the threshold for genes detected. Note: these thresholds were determined by examining the relationship in @sec-gd-vs-nr.
+- **Linearity of positive control genes**: If the R-squared from a linear model of positive controls and their concentrations is less than 0.95 or missing, then the sample is flagged.
+- **Imaging quality**: The sample is flagged if the field of view percentage is less than 75%.
+- **Positive Control flag**: We consider the two smallest positive controls at concentrations 0.5 and 1. If these two controls are less than the lower limit of detection (defined as two standard deviations below the mean of the negative control expression), or if the mean negative control expression is 0, the sample is flagged.
+- **The signal-to-noise ratio or percent of genes detected**: These two measures are defined as the ratio of the average housekeeping gene expression over the upper limit of detection, defined as two standard deviations above the mean of the negative control expression (or 0 if this limit is less than 0.001), and the proportion of endogenous genes with expression greater than the upper limit of detection. These measures are flagged if they are below a pre-specified threshold, which is determined visually by considering their bivariate distribution in a scatterplot. In this case, we used 100 for the SNR threshold and 50% for the threshold for genes detected. Note: these thresholds were determined by examining the relationship in @sec-gd-vs-nr.
 
 ### Housekeeping Genes Normalization
 
@@ -73,11 +73,11 @@ $$\begin{aligned}
 \text{X-Norm}_{\text{CS3-AOC}} = X_{\text{CS3-AOC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-AOC}}}
 \end{aligned}$$ {#eq-rand1-cs3-sites}
 
-Finally, the CS3 expression samples were included in the training set without further normalization. The initial training set is assembled by combining all four of the previously mentioned normalized datasets along with the two CS3 expression subsets not used in normalization:
+The CS3 expression samples were included in the training set without further normalization. CS3 cross-site replicates were all chosen from Vancouver, thus we did not retain any samples from USC or AOC. Finally, the initial training set is assembled by combining the normalized datasets for CS1 and CS2 along with the CS3 expression not used in normalization:
 
 $$\begin{aligned} 
-\text{Training Set} &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X-Norm}_{\text{CS3-USC}} + \text{X-Norm}_{\text{CS3-AOC}} + \text{X-Norm}_{\text{CS3}} + \text{X-Norm}_{\text{CS3-VAN}} \\
-                        &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X-Norm}_{\text{CS3}}
+\text{Training Set} &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3-VAN}} + \text{X-Norm}_{\text{CS3-USC}} + \text{X-Norm}_{\text{CS3-AOC}} \\
+                        &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3}}
 \end{aligned}$$ {#eq-training-set}
 
 ```{r}
@@ -243,40 +243,62 @@ grViz(
 
 ## Classifiers
 
-We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the `tidymodels` suite of packages. The classifiers we used are:
+We used a supervised learning framework to train four multinomial classification algorithms in the Training Set. The full prediction model pipeline was run using SLURM batch jobs submitted to a partition on a Rocky 9 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the tidymodels suite of packages in R (v4.5.2). The classifiers we used are:
 
--   Random Forest (`rf`)
--   Support Vector Machine (`svm`)
--   XGBoost (`xgb`)
--   Regularized Multinomial Regression (`mr`)
+- Random Forest (`rf`)
+- Support Vector Machine (`svm`)
+- XGBoost (`xgb`)
+- Regularized Multinomial Regression (`mr`)
 
 ### Resampling of Training Set
 
-We used a nested cross-validation design to assess each classifier while also performing hyperparameter tuning. An outer 5-fold CV stratified by histotype was used together with an inner 5-fold CV with 2 repeats stratified by histotype. This design was chosen such that the test sets of the inner resamples would still have a reasonable number of samples belonging to the smallest minority class.
+We used a nested cross-validation design to evaluate each classifier and perform hyperparameter tuning. An outer 5-fold CV stratified by histotype, along with an inner 5-fold CV with two repeats also stratified by histotype, ensured that the test sets of the inner dataset contained a reasonable number of cases from the smallest minority class.
 
-The outer resampling method cannot be the bootstrap, because the inner training and inner test sets will likely contain the same samples as a result of sampling with replacement in the outer training set. This phenomenon might result in inflated performance as some observations are used both to train and evaluate the hyperparameter tuning in the inner loop.
+The hyperparameter combination that yielded the highest average F1 score across the inner training sets was selected for assessing prediction performance in the outer training loop. We avoided using the bootstrap method for outer resampling to prevent overlap between the training and test sets caused by sampling with replacement. This overlap could lead to inflated performance estimates, as some observations would be used for both training and evaluation in the inner loop.
 
 ### Hyperparameter Tuning
 
 The following specifications for each classifier were used for tuning hyperparameters:
 
--   `rf` and `xgb`: The number of trees were fixed at 500. Other hyperparameters were tuned across 10 randomly selected points in a latin hypercube design.
--   `svm`: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design. We tuned the cost parameter in the range \[1, 8\]. The range for tuning the sigma parameter was obtained from the 10% and 90% quantiles of the estimation using the `kernlab::sigest()` function.
--   `mr`: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in \[0, 1\] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.
+- **rf:** The number of trees was fixed at 500. Two other hyperparameters were tuned across 10 randomly selected points in a space-filling parameter grid design: 
+
+  - mtry: number of randomly selected predictors 
+
+  - min_n: minimal node size
+
+- **xgb**: The number of trees was fixed at 500. Seven other hyperparameters were tuned across 10 randomly selected points in a space-filling parameter grid design:
+
+  - mtry: number of randomly selected predictors 
+
+  - min_n: minimal node size 
+
+  - tree_depth: maximum depth of the tree (splits) 
+
+  - learn_rate: rate at which the boosting algorithm adapts from iteration-to-iteration (shrinkage parameter) 
+
+  - loss_reduction: reduction in the loss function required to split further 
+
+  - sample_size: proportion of observations exposed to fitting routine 
+
+  - stop_iter: number of iterations without improvement before stopping
+
+- **svm**: The cost and sigma hyperparameters were tuned across 10 randomly selected points in a space-filling parameter grid design. We tuned the cost parameter in the range \[1, 8\]. The range for tuning the sigma parameter was obtained from the 10% and 90% quantiles of the estimates from the [kernlab::sigest()](https://rdrr.io/pkg/kernlab/man/sigest.html) function.
+
+- **mr**: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in \[0, 1\] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points. 
 
 The hyperparameter combination that resulted in the highest average F1-score across the inner training sets was selected for each classifier to use as the model for assessing prediction performance in the outer training loop.
 
 ### Subsampling
 
-Here are the specifications of the subsampling methods used to handle class imbalance:
+One of the main concerns in the analysis is that the distribution of the five main histotypes is highly imbalanced, which has implications for the accuracy of the classifier. To mitigate this, we investigated several strategies based on subsampling approaches:
 
--   None: No subsampling is performed
--   Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class
--   Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class
--   SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class
--   Hybrid: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.
+- **None**: No subsampling is performed
+- **Down-sampling**: All levels except the minority class are sampled down to the same frequency as the minority class
+- **Up-sampling**: All levels except the majority class are sampled up to the same frequency as the majority class
+- **SMOTE**: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class
+- **Hybrid**: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.
 
-The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
+@fig-sampling helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
 
 ```{r}
 #| label: fig-sampling
@@ -319,16 +341,19 @@ p_sampling <-
 print(p_sampling)
 ```
 
+All subsampling methods to mitigate class imbalance were applied within the inner CV loop.
+
 ### Workflows
 
-The 4 **algorithms** and 5 **subsampling** methods are crossed to create 20 different classification **workflows**. For example, the `hybrid_xgb` workflow is a classifier that first pre-processes a training set by applying a hybrid subsampling method, and then proceeds to use the XGBoost algorithm to classify ovarian histotypes.
+The four **algorithms** and five **subsampling** methods created 20 unique classification **workflows**. For example, the `hybrid_xgb` workflow pre-processes the training set by applying a hybrid subsampling method and subsequently uses the XGBoost algorithm to classify ovarian histotypes. We additionally tested two ensemble algorithms, the two-step, and the sequential algorithms described in the following sections.
 
 ## Two-Step Algorithm
 
-The HGSOC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, MUOC, and LGSOC histotypes. We can implement a two-step algorithm as such:
+The HGSOC histotype comprises most cases among ovarian carcinoma patients, while the remaining patients are uniformly split across ENOC, CCOC, MUOC, and LGSOC histotypes. We can implement a two-step algorithm as such:
 
--   Step 1: use binary classification for HGSOC vs. non-HGSOC
--   Step 2: use multinomial classification for the remaining non-HGSOC classes
+- Step 1: Select the best classifier to predict HGSOC vs. non-HGSOC, using the workflow with the best per-class F1-score for HGSOC when fit to a 5-class prediction model
+
+- Step 2: remove HGSOCs from the dataset and re-train a 4-class multinomial classifier to predict the four remaining non-HGSOC histotypes. Select the workflow with the best macro-averaged F1-score when fit to a 4-class prediction model. 
 
 Let
 
@@ -417,9 +442,9 @@ digraph two_step_predictions {
 
 ## Sequential Algorithm
 
-Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the "other" class are those not equal to the current "one" class and excluding all "one" classes from previous steps. For example, if the "one" class in step 1 was HGSOC, the "other" classes would include CCOC, ENOC, LGSOC, and MUOC. If the "one" class in step 2 was CCOC, the "other" classes include ENOC, LGSOC, and MUOC.
+Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that iteratively performs one-vs-all binary classifications k-1 times to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs. all other classes, where the classes that make up the “other” class are those not equal to the current “one” class and exclude all “one” classes from previous steps. For example, if the “one” class in step 1 was HGSOC, the “other” classes would include CCOC, ENOC, LGSOC, and MUOC. If the “one” class in step 2 was CCOC, the “other” classes would include ENOC, LGSOC, and MUOC. 
 
-The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g. F1-score).
+The order of classes and workflows to use at each step in the sequential algorithm is determined after removing the data associated with an already classified class and retraining using the remaining data multinomial classifiers, as described before. The class and workflow to use for the next step in the sequence are selected based on the best per-class evaluation metric value (e.g., F1-score). 
 
 @fig-sequential-flowchart illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.
 
@@ -474,11 +499,9 @@ digraph sequential_algorithm {
 }
 ```
 
-The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.
-
 ### Aggregating Predictions
 
-We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the "all" class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSOC vs. non-HGSOC, CCOC vs. non-CCOC, LGSOC vs. non-LGSOC, and then MUOC vs. ENOC. @fig-sequential-predictions illustrates how the final predictions are assigned:
+We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the “other” class from a previous step of the sequence are eventually assigned to a predicted class. For example, if based on certain class-specific metrics, we determined that the order of classes in the sequential algorithm was to predict HGSC vs. non-HGSC, CCOC vs. non-CCOC, LGSOC vs. non-LGSOC, and then MUOC vs. ENOC. @fig-sequential-predictions illustrates how the final predictions are assigned:
 
 ```{dot}
 //| label: fig-sequential-predictions
@@ -526,7 +549,7 @@ digraph sequential_predictions {
 
 ### Class Metrics
 
-We use the accuracy, sensitivity, specificity, F1-score, kappa, balanced accuracy, and geometric mean, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class.
+We use accuracy, sensitivity, specificity, F1-score, kappa, and balanced accuracy, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class. 
 
 #### Accuracy
 
@@ -600,11 +623,11 @@ candidates <- setdiff(genes_all, overlap_all)
 
 We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of `r length(genes_all)` genes are used in the classifier training set.
 
-There are `r length(overlap_PrOTYPE)` genes in the classifier set that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`.
+The classifier set includes `r length(overlap_PrOTYPE)` genes that overlap with the PrOTYPE classifier: `r paste(overlap_PrOTYPE, collapse = ", ")`.
 
-There are also `r length(overlap_SPOT)` genes in the classifier set that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
+The classifier set also includes `r length(overlap_SPOT)` genes that overlap with the SPOT signature: `r paste(overlap_SPOT, collapse = ", ")`.
 
-We obtain a total of `r length(overlap_all)` genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining `r length(candidates)` candidate genes based on a variable importance rank to the set of `r length(overlap_all)` base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.
+We obtain `r length(overlap_all)` genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining `r length(candidates)` candidate genes based on a variable importance rank to the set of `r length(overlap_all)` base genes and recalculate performance metrics. The optimal number of genes is determined by the number of genes needed to achieve the highest average F1-Score across classes, including the overall metric in the average. We use an F1-score that is averaged across cross-validation folds (5) and class groups (6: Overall, HGSOC, CCOC, ENOC, MUOC, LGSOC) to compare performance between different number of genes selected. 
 
 Here is the breakdown of genes used and whether they belong to the PrOTYPE and/or SPOT sets:
 
@@ -628,16 +651,16 @@ gene_dist |>
 
 ### Variable Importance
 
-Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
+Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g., for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.
 
 For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.
 
 The variable importance measures are:
 
--   Random Forest: impurity measure (Gini index)
+- Random Forest: impurity measure (Gini index)
 
--   XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features's splits)
+- XGBoost: gain (fractional contribution of each feature to the model based on the total gain of the corresponding features's splits)
 
--   SVM: permutation based p-values
+- SVM: permutation based p-values
 
--   Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value
+- Multinomial regression: absolute value of estimated coefficients at cross-validated lambda value
