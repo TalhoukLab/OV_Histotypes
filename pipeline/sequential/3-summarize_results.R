@@ -14,8 +14,8 @@ model_files <- list.files(
   full.names = TRUE
 )
 model_order <- order(gsub(".*_s([0-9])_model.*", "\\1", model_files))
-all_models <- model_files[model_order] %>%
-  set_names(gsub("_model.*", "", basename(.))) %>%
+all_models <- model_files[model_order] |>
+  (\(x) set_names(x, gsub("_model.*", "", basename(x))))() |>
   map(readRDS)
 
 all_models_file <- file.path(
@@ -33,9 +33,9 @@ metrics_files <- list.files(
   pattern = "per_class_metrics",
   full.names = TRUE
 )
-per_class_metrics <- metrics_files %>%
-  set_names(gsub("_metrics.*", "", basename(.))) %>%
-  map(readRDS) %>%
+per_class_metrics <- metrics_files |>
+  (\(x) set_names(x, gsub("_metrics.*", "", basename(x))))() |>
+  map(readRDS) |>
   list_rbind()
 
 per_class_metrics_file <- file.path(

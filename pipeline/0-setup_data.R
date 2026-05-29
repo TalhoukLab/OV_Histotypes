@@ -9,7 +9,7 @@ folds <- nested_cv(
   train_ref,
   outside = vfold_cv(v = n_folds, strata = class),
   inside = vfold_cv(v = n_folds, repeats = 2, strata = class, pool = 0)
-) %>%
+) |>
   suppressWarnings()
 
 # Metrics

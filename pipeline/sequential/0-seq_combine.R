@@ -5,7 +5,7 @@ library(purrr)
 # Combine workflows
 seq_top <- map(5:2, ~ {
   readRDS(here("data", paste0("seq_top_c", .x, ".rds")))
-}) %>%
+}) |>
   list_rbind()
 seq_wflows <- seq_top[["wflow"]]
 saveRDS(seq_wflows, here("data/seq_wflows.rds"))
@@ -31,7 +31,7 @@ seq_class <- map(
     "retrain_2_class"
   ),
   ~ readRDS(here("data", paste0(.x, ".rds")))
-) %>%
+) |>
   map2(seq_top[["class_group"]], ~ {
     if (n_distinct(.x) > 2) {
       ifelse(.x == .y, .x, paste0("non_", .y))

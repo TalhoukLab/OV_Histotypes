@@ -7,8 +7,8 @@ none_samp <- rec
 down_samp <- step_downsample(rec, class, seed = 2024)
 up_samp <- step_upsample(rec, class, seed = 2024)
 smote_samp <- step_smote(rec, class, seed = 2024)
-hybrid_samp <- rec %>%
-  step_smote(class, over_ratio = 0.5, seed = 2024) %>%
+hybrid_samp <- rec |>
+  step_smote(class, over_ratio = 0.5, seed = 2024) |>
   step_downsample(class, under_ratio = 1, seed = 2024)
 
 preproc <- list(
@@ -36,7 +36,7 @@ rf_model <-
     mtry = tune(),
     min_n = tune(),
     trees = 500
-  ) %>%
+  ) |>
   set_engine("ranger", importance = "impurity")
 
 ## XGBoost
@@ -97,7 +97,7 @@ if (exists("nseq") & exists("seq_data")) {
 
 ## Algorithm-specific tuning setup
 if (grepl("rf|xgb", wflow)) {
-  wflow_set <- wflow_sets %>%
+  wflow_set <- wflow_sets |>
     filter(wflow_id == wflow)
 
   tuning_grid <- 10
@@ -107,20 +107,20 @@ if (grepl("rf|xgb", wflow)) {
   sigma_range <- as.vector(kernlab::sigest(as.matrix(data))[-2])
 
   svm_params <-
-    parameters(cost(), rbf_sigma()) %>%
+    parameters(cost(), rbf_sigma()) |>
     update(
       cost = cost(c(0, 3)),
       rbf_sigma = rbf_sigma(sigma_range, trans = NULL)
     )
 
-  wflow_set <- wflow_sets %>%
-    filter(wflow_id == wflow) %>%
+  wflow_set <- wflow_sets |>
+    filter(wflow_id == wflow) |>
     option_add(param_info = svm_params)
 
   tuning_grid <- 10
 
 } else if (grepl("mr", wflow)) {
-  wflow_set <- wflow_sets %>%
+  wflow_set <- wflow_sets |>
     filter(wflow_id == wflow)
 
   set.seed(2024)

@@ -18,26 +18,26 @@ tune_wflows_files <- list.files(
   full.names = TRUE
 )
 
-tuned_set <- tune_wflows_files %>%
-  map(readRDS) %>%
-  do.call(rbind, .)
+tuned_set <- tune_wflows_files |>
+  map(readRDS) |>
+  do.call(rbind, args = _)
 tuned_set$wflow_id <- paste0(tuned_set$wflow_id, seq_len(n_folds))
 
-ranking <- tuned_set %>%
-  rank_results(rank_metric = rank_metric, select_best = TRUE) %>%
+ranking <- tuned_set |>
+  rank_results(rank_metric = rank_metric, select_best = TRUE) |>
   filter(.metric == rank_metric)
 
 # Best workflow
 best_wflow <- ranking[["wflow_id"]][1]
 
 # Best tuning parameters of workflow with highest metric
-best_params <- tuned_set %>%
-  extract_workflow_set_result(best_wflow) %>%
+best_params <- tuned_set |>
+  extract_workflow_set_result(best_wflow) |>
   select_best(metric = rank_metric)
 
 # Finalize model with best set of tuning parameters
-best_model <- tuned_set %>%
-  extract_workflow(best_wflow) %>%
+best_model <- tuned_set |>
+  extract_workflow(best_wflow) |>
   finalize_workflow(best_params)
 
 # Train best model on outer training sets, evaluate on outer test sets
@@ -47,38 +47,38 @@ test_results <- map(outer_folds, ~ {
 })
 
 # Test set predictions
-test_preds <- test_results %>%
-  map(collect_predictions) %>%
+test_preds <- test_results |>
+  map(collect_predictions) |>
   list_rbind(names_to = "fold_id")
 
 # Select predicted probability columns for multiclass/binary AUC
-prob_cols <- test_preds %>%
-  select(matches(".pred(?!_class)", perl = TRUE)) %>%
+prob_cols <- test_preds |>
+  select(matches(".pred(?!_class)", perl = TRUE)) |>
   names()
 if (n_distinct(class) == 2) {
   prob_cols <- prob_cols[1]
 }
 
 # Calculate average of overall metrics across folds
-overall_metrics <- test_preds %>%
-  nest(.by = fold_id) %>%
+overall_metrics <- test_preds |>
+  nest(.by = fold_id) |>
   mutate(
-    metrics = data %>%
+    metrics = data |>
       map(~ {
-        .x %>%
-          mset(truth = class, prob_cols, estimate = .pred_class) %>%
+        .x |>
+          mset(truth = class, prob_cols, estimate = .pred_class) |>
           suppressWarnings()
       }),
     .keep = "unused"
-  ) %>%
-  unnest(cols = metrics) %>%
+  ) |>
+  unnest(cols = metrics) |>
   mutate(mean_estimate = mean(.estimate),
-         .by = c(.metric, .estimator)) %>%
+         .by = c(.metric, .estimator)) |>
   add_column(class_group = "Overall")
 
 # Calculate average of per-class metrics across folds using one-vs-all predictions
-per_class_metrics <- test_preds %>%
-  nest(.by = fold_id) %>%
+per_class_metrics <- test_preds |>
+  nest(.by = fold_id) |>
   mutate(metrics = map(
     data,
     ~ ova_metrics(
@@ -88,8 +88,8 @@ per_class_metrics <- test_preds %>%
       metric_set = per_class_mset
     )
   ),
-  .keep = "unused") %>%
-  unnest(cols = metrics) %>%
+  .keep = "unused") |>
+  unnest(cols = metrics) |>
   mutate(
     mean_estimate = mean(.estimate, na.rm = TRUE),
     .by = c(.metric, .estimator, class_group)
@@ -97,22 +97,22 @@ per_class_metrics <- test_preds %>%
 
 # Combine all metrics
 all_metrics <-
-  bind_rows(overall_metrics, per_class_metrics) %>%
+  bind_rows(overall_metrics, per_class_metrics) |>
   arrange(fold_id, .metric)
 
 # Variable importance metrics
 ## Use model-specific metrics if available, otherwise calculate
 ## permutation-based variable importance
 if (grepl("_(rf|xgb|mr)", best_wflow)) {
-  vi_ranked <- test_results %>%
+  vi_ranked <- test_results |>
     map(~ {
-      .x %>%
-        extract_fit_parsnip() %>%
+      .x |>
+        extract_fit_parsnip() |>
         vip::vi()
-    }) %>%
-    list_rbind(names_to = "fold_id") %>%
-    summarize(Mean_Importance = mean(Importance), .by = "Variable") %>%
-    mutate(Rank = dense_rank(-Mean_Importance)) %>%
+    }) |>
+    list_rbind(names_to = "fold_id") |>
+    summarize(Mean_Importance = mean(Importance), .by = "Variable") |>
+    mutate(Rank = dense_rank(-Mean_Importance)) |>
     arrange(Rank)
 } else if (grepl("_svm", best_wflow)) {
   svm_pfun <- function(object, newdata) {
@@ -121,8 +121,8 @@ if (grepl("_(rf|xgb|mr)", best_wflow)) {
   set.seed(2024)
   vi_ranked <-
     map2(test_results, outer_folds, ~ {
-      .x %>%
-        extract_fit_parsnip() %>%
+      .x |>
+        extract_fit_parsnip() |>
         vip::vi(
           train = analysis(.y),
           method = "permute",
@@ -131,10 +131,10 @@ if (grepl("_(rf|xgb|mr)", best_wflow)) {
           nsim = 5,
           pred_wrapper = svm_pfun
         )
-    }) %>%
-    list_rbind(names_to = "fold_id") %>%
-    summarize(Mean_Importance = mean(Importance), .by = "Variable") %>%
-    mutate(Rank = dense_rank(-Mean_Importance)) %>%
+    }) |>
+    list_rbind(names_to = "fold_id") |>
+    summarize(Mean_Importance = mean(Importance), .by = "Variable") |>
+    mutate(Rank = dense_rank(-Mean_Importance)) |>
     arrange(Rank)
 }
 
@@ -147,7 +147,7 @@ candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
                 "TP53", "SEMA6A", "SERPINA5", "ZBED1", "TSPAN8", "SCGB1D2", "LGALS4",
                 "MAP1LC3A")
 
-vi_ranked_candidates <- vi_ranked %>%
+vi_ranked_candidates <- vi_ranked |>
   filter(Variable %in% candidates)
 
 # Write best models to file
