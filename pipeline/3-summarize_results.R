@@ -1,7 +1,5 @@
 # Load packages and data
 suppressPackageStartupMessages({
-  library(dplyr)
-  library(purrr)
   library(tidymodels)
   library(here)
 })

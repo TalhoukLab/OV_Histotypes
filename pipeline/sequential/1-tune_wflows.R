@@ -1,12 +1,12 @@
 # Load packages and data
 suppressPackageStartupMessages({
+  library(tidymodels)
+  library(themis)
+  library(vip)
   library(rlang)
   library(parallel)
   library(doParallel)
   library(future)
-  library(themis)
-  library(tidymodels)
-  library(vip)
   library(here)
 })
 source(here("src/funs.R"))
