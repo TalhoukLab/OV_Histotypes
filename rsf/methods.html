@@ -96,7 +96,7 @@ div.csl-indent {
 <script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <script src="../site_libs/viz-1.8.2/viz.js"></script>
 <link href="../site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
-<script src="../site_libs/grViz-binding-1.0.11/grViz.js"></script>
+<script src="../site_libs/grViz-binding-1.0.12/grViz.js"></script>
 <script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
@@ -330,10 +330,10 @@ window.Quarto = {
 \text{X-Norm}_{\text{CS3-USC}} = X_{\text{CS3-USC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-USC}}} \\
 \text{X-Norm}_{\text{CS3-AOC}} = X_{\text{CS3-AOC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-AOC}}}
 \end{aligned} \tag{2.3}\]</span></span></p>
-<p>Finally, the CS3 expression samples were included in the training set without further normalization. The initial training set is assembled by combining all four of the previously mentioned normalized datasets along with the two CS3 expression subsets not used in normalization:</p>
+<p>The CS3 expression samples were included in the training set without further normalization. CS3 cross-site replicates were all chosen from Vancouver, thus we did not retain any samples from USC or AOC. Finally, the initial training set is assembled by combining the normalized datasets for CS1 and CS2 along with the CS3 expression not used in normalization:</p>
 <p><span id="eq-training-set"><span class="math display">\[\begin{aligned}
-\text{Training Set} &amp;= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X-Norm}_{\text{CS3-USC}} + \text{X-Norm}_{\text{CS3-AOC}} + \text{X-Norm}_{\text{CS3}} + \text{X-Norm}_{\text{CS3-VAN}} \\
-                        &amp;= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X-Norm}_{\text{CS3}}
+\text{Training Set} &amp;= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3-VAN}} + \text{X-Norm}_{\text{CS3-USC}} + \text{X-Norm}_{\text{CS3-AOC}} \\
+                        &amp;= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3}}
 \end{aligned} \tag{2.4}\]</span></span></p>
 <div class="cell">
 <div class="cell-output-display">
@@ -372,7 +372,7 @@ Figure&nbsp;2.2: Cohorts Selection
 </section>
 <section id="classifiers" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="classifiers"><span class="header-section-number">2.2</span> Classifiers</h2>
-<p>We use 4 classification algorithms in the supervised learning framework for the Training Set. The pipeline was run using SLURM batch jobs submitted to a partition on a CentOS 7 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the <code>tidymodels</code> suite of packages. The classifiers we used are:</p>
+<p>We used a supervised learning framework to train four multinomial classification algorithms in the Training Set. The full prediction model pipeline was run using SLURM batch jobs submitted to a partition on a Rocky 9 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the tidymodels suite of packages in R (v4.5.2). The classifiers we used are:</p>
 <ul>
 <li>Random Forest (<code>rf</code>)</li>
 <li>Support Vector Machine (<code>svm</code>)</li>
@@ -381,30 +381,44 @@ Figure&nbsp;2.2: Cohorts Selection
 </ul>
 <section id="resampling-of-training-set" class="level3" data-number="2.2.1">
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="resampling-of-training-set"><span class="header-section-number">2.2.1</span> Resampling of Training Set</h3>
-<p>We used a nested cross-validation design to assess each classifier while also performing hyperparameter tuning. An outer 5-fold CV stratified by histotype was used together with an inner 5-fold CV with 2 repeats stratified by histotype. This design was chosen such that the test sets of the inner resamples would still have a reasonable number of samples belonging to the smallest minority class.</p>
-<p>The outer resampling method cannot be the bootstrap, because the inner training and inner test sets will likely contain the same samples as a result of sampling with replacement in the outer training set. This phenomenon might result in inflated performance as some observations are used both to train and evaluate the hyperparameter tuning in the inner loop.</p>
+<p>We used a nested cross-validation design to evaluate each classifier and perform hyperparameter tuning. An outer 5-fold CV stratified by histotype, along with an inner 5-fold CV with two repeats also stratified by histotype, ensured that the test sets of the inner dataset contained a reasonable number of cases from the smallest minority class.</p>
+<p>The hyperparameter combination that yielded the highest average F1 score across the inner training sets was selected for assessing prediction performance in the outer training loop. We avoided using the bootstrap method for outer resampling to prevent overlap between the training and test sets caused by sampling with replacement. This overlap could lead to inflated performance estimates, as some observations would be used for both training and evaluation in the inner loop.</p>
 </section>
 <section id="hyperparameter-tuning" class="level3" data-number="2.2.2">
 <h3 data-number="2.2.2" class="anchored" data-anchor-id="hyperparameter-tuning"><span class="header-section-number">2.2.2</span> Hyperparameter Tuning</h3>
 <p>The following specifications for each classifier were used for tuning hyperparameters:</p>
 <ul>
-<li><code>rf</code> and <code>xgb</code>: The number of trees were fixed at 500. Other hyperparameters were tuned across 10 randomly selected points in a latin hypercube design.</li>
-<li><code>svm</code>: Both the cost and sigma hyperparameters were tuned across 10 randomly selected points in a latin hypercube design. We tuned the cost parameter in the range [1, 8]. The range for tuning the sigma parameter was obtained from the 10% and 90% quantiles of the estimation using the <code>kernlab::sigest()</code> function.</li>
-<li><code>mr</code>: We generated 10 randomly selected points in a latin hypercube design for the penalty (lambda) parameter. Then, we generated 10 evenly spaced points in [0, 1] for the mixture (alpha) parameter in the regularized multinomial regression model. These two sets of 10 points were crossed to generate a tuning grid of 100 points.</li>
+<li><p><strong>rf:</strong> The number of trees was fixed at 500. Two other hyperparameters were tuned across 10 randomly selected points in a space-filling parameter grid design:&nbsp;</p>
+<ul>
+<li><p>mtry: number of randomly selected predictors&nbsp;</p></li>
+<li><p>min_n: minimal node size</p></li>
+</ul></li>
+<li><p><strong>xgb</strong>: The number of trees was fixed at 500. Seven other hyperparameters were tuned across 10 randomly selected points in a space-filling parameter grid design:</p>
+<ul>
+<li><p>mtry: number of randomly selected predictors&nbsp;</p></li>
+<li><p>min_n: minimal node size&nbsp;</p></li>
+<li><p>tree_depth: maximum depth of the tree (splits)&nbsp;</p></li>
+<li><p>learn_rate: rate at which the boosting algorithm adapts from iteration-to-iteration (shrinkage parameter)&nbsp;</p></li>
+<li><p>loss_reduction: reduction in the loss function required to split further&nbsp;</p></li>
+<li><p>sample_size: proportion of observations exposed to fitting routine&nbsp;</p></li>
+<li><p>stop_iter: number of iterations without improvement before stopping</p></li>
+</ul></li>
+<li><p><strong>svm</strong>: The cost and sigma hyperparameters were tuned across 10 randomly selected points in a space-filling parameter grid design. We tuned the cost parameter in the range [1, 8]. The range for tuning the sigma parameter was obtained from the 10% and 90% quantiles of the estimates from the <a href="https://rdrr.io/pkg/kernlab/man/sigest.html">kernlab::sigest()</a> function.</p></li>
+<li><p><strong>mr</strong>: The penalty (lambda) and mixture (alpha) hyperparameters were tuned across 100 randomly selected points in a space-filling parameter grid design.</p></li>
 </ul>
 <p>The hyperparameter combination that resulted in the highest average F1-score across the inner training sets was selected for each classifier to use as the model for assessing prediction performance in the outer training loop.</p>
 </section>
 <section id="subsampling" class="level3" data-number="2.2.3">
 <h3 data-number="2.2.3" class="anchored" data-anchor-id="subsampling"><span class="header-section-number">2.2.3</span> Subsampling</h3>
-<p>Here are the specifications of the subsampling methods used to handle class imbalance:</p>
+<p>One of the main concerns in the analysis is that the distribution of the five main histotypes is highly imbalanced, which has implications for the accuracy of the classifier. To mitigate this, we investigated several strategies based on subsampling approaches:</p>
 <ul>
-<li>None: No subsampling is performed</li>
-<li>Down-sampling: All levels except the minority class are sampled down to the same frequency as the minority class</li>
-<li>Up-sampling: All levels except the majority class are sampled up to the same frequency as the majority class</li>
-<li>SMOTE: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class</li>
-<li>Hybrid: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.</li>
+<li><strong>None</strong>: No subsampling is performed</li>
+<li><strong>Down-sampling</strong>: All levels except the minority class are sampled down to the same frequency as the minority class</li>
+<li><strong>Up-sampling</strong>: All levels except the majority class are sampled up to the same frequency as the majority class</li>
+<li><strong>SMOTE</strong>: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class</li>
+<li><strong>Hybrid</strong>: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.</li>
 </ul>
-<p>The figure below helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:</p>
+<p><a href="#fig-sampling" class="quarto-xref">Figure&nbsp;<span>2.3</span></a> helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sampling" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -419,18 +433,19 @@ Figure&nbsp;2.3: Visualization of Subsampling Techniques
 </div>
 </div>
 </div>
+<p>All subsampling methods to mitigate class imbalance were applied within the inner CV loop.</p>
 </section>
 <section id="workflows" class="level3" data-number="2.2.4">
 <h3 data-number="2.2.4" class="anchored" data-anchor-id="workflows"><span class="header-section-number">2.2.4</span> Workflows</h3>
-<p>The 4 <strong>algorithms</strong> and 5 <strong>subsampling</strong> methods are crossed to create 20 different classification <strong>workflows</strong>. For example, the <code>hybrid_xgb</code> workflow is a classifier that first pre-processes a training set by applying a hybrid subsampling method, and then proceeds to use the XGBoost algorithm to classify ovarian histotypes.</p>
+<p>The four <strong>algorithms</strong> and five <strong>subsampling</strong> methods created 20 unique classification <strong>workflows</strong>. For example, the <code>hybrid_xgb</code> workflow pre-processes the training set by applying a hybrid subsampling method and subsequently uses the XGBoost algorithm to classify ovarian histotypes. We additionally tested two ensemble algorithms, the two-step, and the sequential algorithms described in the following sections.</p>
 </section>
 </section>
 <section id="two-step-algorithm" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="two-step-algorithm"><span class="header-section-number">2.3</span> Two-Step Algorithm</h2>
-<p>The HGSOC histotype comprises of approximately 80% of cases among ovarian carcinoma patients, while the remaining 20% of cases are relatively, evenly distributed among ENOC, CCOC, MUOC, and LGSOC histotypes. We can implement a two-step algorithm as such:</p>
+<p>The HGSOC histotype comprises most cases among ovarian carcinoma patients, while the remaining patients are uniformly split across ENOC, CCOC, MUOC, and LGSOC histotypes. We can implement a two-step algorithm as such:</p>
 <ul>
-<li>Step 1: use binary classification for HGSOC vs.&nbsp;non-HGSOC</li>
-<li>Step 2: use multinomial classification for the remaining non-HGSOC classes</li>
+<li><p>Step 1: Select the best classifier to predict HGSOC vs.&nbsp;non-HGSOC, using the workflow with the best per-class F1-score for HGSOC when fit to a 5-class prediction model</p></li>
+<li><p>Step 2: remove HGSOCs from the dataset and re-train a 4-class multinomial classifier to predict the four remaining non-HGSOC histotypes. Select the workflow with the best macro-averaged F1-score when fit to a 4-class prediction model.&nbsp;</p></li>
 </ul>
 <p>Let</p>
 <p><span id="eq-sequential"><span class="math display">\[\begin{aligned}
@@ -679,8 +694,8 @@ Figure&nbsp;2.5: Aggregating Predictions for Two-Step Algorithm
 </section>
 <section id="sequential-algorithm" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="sequential-algorithm"><span class="header-section-number">2.4</span> Sequential Algorithm</h2>
-<p>Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that performs k-1 one-vs-all binary classifications iteratively to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs.&nbsp;all other classes, where the classes that make up the “other” class are those not equal to the current “one” class and excluding all “one” classes from previous steps. For example, if the “one” class in step 1 was HGSOC, the “other” classes would include CCOC, ENOC, LGSOC, and MUOC. If the “one” class in step 2 was CCOC, the “other” classes include ENOC, LGSOC, and MUOC.</p>
-<p>The order of classes and workflows to use at each step in the sequential algorithm must be determined using a retraining procedure. After removing the data associated with a particular class, we retrain using the remaining data using multinomial classifiers as described before. The class and workflow to use for the next step in the sequence is selected based on the best per-class evaluation metric value (e.g.&nbsp;F1-score).</p>
+<p>Instead of training on k classes simultaneously using multinomial classifiers, we can use a sequential algorithm that iteratively performs one-vs-all binary classifications k-1 times to obtain a final prediction of all cases. At each step in the sequence, we classify one class vs.&nbsp;all other classes, where the classes that make up the “other” class are those not equal to the current “one” class and exclude all “one” classes from previous steps. For example, if the “one” class in step 1 was HGSOC, the “other” classes would include CCOC, ENOC, LGSOC, and MUOC. If the “one” class in step 2 was CCOC, the “other” classes would include ENOC, LGSOC, and MUOC.&nbsp;</p>
+<p>The order of classes and workflows to use at each step in the sequential algorithm is determined after removing the data associated with an already classified class and retraining using the remaining data multinomial classifiers, as described before. The class and workflow to use for the next step in the sequence are selected based on the best per-class evaluation metric value (e.g., F1-score).&nbsp;</p>
 <p><a href="#fig-sequential-flowchart" class="quarto-xref">Figure&nbsp;<span>2.6</span></a> illustrates how the sequential algorithm works for K=5, using ovarian histotypes as an example for the classes.</p>
 <div class="cell" data-fig-height="6" data-out-height="100%" data-layout-align="default">
 <div class="cell-output-display">
@@ -931,10 +946,9 @@ Figure&nbsp;2.6: Sequential Algorithm
 </div>
 </div>
 </div>
-<p>The subsampling method used in the first step of the sequential algorithm is used in all subsequent steps in order to maintain data pre-processing consistency. As a result, we are only comparing classification algorithms within one subsampling method across the entire sequential algorithm.</p>
 <section id="aggregating-predictions-1" class="level3" data-number="2.4.1">
 <h3 data-number="2.4.1" class="anchored" data-anchor-id="aggregating-predictions-1"><span class="header-section-number">2.4.1</span> Aggregating Predictions</h3>
-<p>We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the “all” class from a previous step of the sequence are eventually assigned a predicted class. For example, say that based on certain class-specific metrics we determined that the order of classes in the sequential algorithm was to predict HGSOC vs.&nbsp;non-HGSOC, CCOC vs.&nbsp;non-CCOC, LGSOC vs.&nbsp;non-LGSOC, and then MUOC vs.&nbsp;ENOC. <a href="#fig-sequential-predictions" class="quarto-xref">Figure&nbsp;<span>2.7</span></a> illustrates how the final predictions are assigned:</p>
+<p>We have to aggregate the one-vs-all predictions from each of the sequential algorithm workflows in order to obtain a final class prediction on a holdout test set. Each sequential workflow has to be assessed on every sample to ensure that cases classified into the “other” class from a previous step of the sequence are eventually assigned to a predicted class. For example, if based on certain class-specific metrics, we determined that the order of classes in the sequential algorithm was to predict HGSC vs.&nbsp;non-HGSC, CCOC vs.&nbsp;non-CCOC, LGSOC vs.&nbsp;non-LGSOC, and then MUOC vs.&nbsp;ENOC. <a href="#fig-sequential-predictions" class="quarto-xref">Figure&nbsp;<span>2.7</span></a> illustrates how the final predictions are assigned:</p>
 <div class="cell" data-fig-height="3" data-out-height="100%" data-layout-align="default">
 <div class="cell-output-display">
 <div id="fig-sequential-predictions" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1100,7 +1114,7 @@ Figure&nbsp;2.7: Aggregating Predictions for Sequential Algorithm
 <h2 data-number="2.5" class="anchored" data-anchor-id="performance-evaluation"><span class="header-section-number">2.5</span> Performance Evaluation</h2>
 <section id="class-metrics" class="level3" data-number="2.5.1">
 <h3 data-number="2.5.1" class="anchored" data-anchor-id="class-metrics"><span class="header-section-number">2.5.1</span> Class Metrics</h3>
-<p>We use the accuracy, sensitivity, specificity, F1-score, kappa, balanced accuracy, and geometric mean, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class.</p>
+<p>We use accuracy, sensitivity, specificity, F1-score, kappa, and balanced accuracy, as class metrics to measure both training and test performance between different workflows. Multiclass extensions of these metrics can be calculated except for F1-score, where we use macro-averaging to obtain an overall metric. Class-specific metrics are calculated by recoding classes into one-vs-all categories for each class.&nbsp;</p>
 <section id="accuracy" class="level4" data-number="2.5.1.1">
 <h4 data-number="2.5.1.1" class="anchored" data-anchor-id="accuracy"><span class="header-section-number">2.5.1.1</span> Accuracy</h4>
 <p>The accuracy is defined as the proportion of correct predictions out of all cases:</p>
@@ -1151,9 +1165,9 @@ Figure&nbsp;2.7: Aggregating Predictions for Sequential Algorithm
 <section id="gene-optimization" class="level2" data-number="2.7">
 <h2 data-number="2.7" class="anchored" data-anchor-id="gene-optimization"><span class="header-section-number">2.7</span> Gene Optimization</h2>
 <p>We want to discover an optimal set of genes for the classifiers while including specific genes from other studies such as PrOTYPE and SPOT. A total of 72 genes are used in the classifier training set.</p>
-<p>There are 16 genes in the classifier set that overlap with the PrOTYPE classifier: COL11A1, CD74, CD2, TIMP3, LUM, CYTIP, COL3A1, THBS2, TCF7L1, HMGA2, FN1, POSTN, COL1A2, COL5A2, PDZK1IP1, FBN1.</p>
-<p>There are also 13 genes in the classifier set that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.</p>
-<p>We obtain a total of 28 genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining 44 candidate genes based on a variable importance rank to the set of 28 base genes and recalculate performance metrics. The number of genes at which the performance peaks or starts to plateau may indicate an optimal gene set model for us to compare with the full set model.</p>
+<p>The classifier set includes 16 genes that overlap with the PrOTYPE classifier: COL11A1, CD74, CD2, TIMP3, LUM, CYTIP, COL3A1, THBS2, TCF7L1, HMGA2, FN1, POSTN, COL1A2, COL5A2, PDZK1IP1, FBN1.</p>
+<p>The classifier set also includes 13 genes that overlap with the SPOT signature: HIF1A, CXCL10, DUSP4, SOX17, MITF, CDKN3, BRCA2, CEACAM5, ANXA4, SERPINE1, TCF7L1, CRABP2, DNAJC9.</p>
+<p>We obtain 28 genes from the union of PrOTYPE and SPOT genes that we want to include in the final classifier, regardless of model performance. We then incrementally add genes one at a time from the remaining 44 candidate genes based on a variable importance rank to the set of 28 base genes and recalculate performance metrics. The optimal number of genes is determined by the number of genes needed to achieve the highest average F1-Score across classes, including the overall metric in the average. We use an F1-score that is averaged across cross-validation folds (5) and class groups (6: Overall, HGSOC, CCOC, ENOC, MUOC, LGSOC) to compare performance between different number of genes selected.&nbsp;</p>
 <p>Here is the breakdown of genes used and whether they belong to the PrOTYPE and/or SPOT sets:</p>
 <div class="cell" data-tbl-pos="H">
 <div id="tbl-gene-dist" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-pos="H">
@@ -1542,7 +1556,7 @@ Table&nbsp;2.1: Gene Distribution
 </div>
 <section id="variable-importance" class="level3" data-number="2.7.1">
 <h3 data-number="2.7.1" class="anchored" data-anchor-id="variable-importance"><span class="header-section-number">2.7.1</span> Variable Importance</h3>
-<p>Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise. The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.</p>
+<p>Variable importance is calculated using either a model-based approach if it is available, or a permutation-based VI score otherwise (e.g., for SVM). The variable importance scores are averaged across the outer training folds, and then ranked from highest to lowest.</p>
 <p>For the sequential and two-step classifiers, we calculate an overall VI rank by taking the cumulative union of genes at each variable importance rank across all sequences, until all genes have been included.</p>
 <p>The variable importance measures are:</p>
 <ul>
