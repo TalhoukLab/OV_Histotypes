@@ -495,14 +495,14 @@ print(p)
 
 Multi-step methods:
 
--   **sequential**: sequential algorithm sequence of subsampling methods and algorithms used are:
-    -   HGSOC vs. non-HGSOC using upsampling and XGBoost
-    -   CCOC vs. non-CCOC using SMOTE subsampling and XGBoost
-    -   ENOC vs. non-ENOC using no subsampling and support vector machine
-    -   MUOC vs. LGSOC using SMOTE subsampling and random forest
--   **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
-    -   HGSOC vs. non-HGSOC using upsampling and XGBoost
-    -   CCOC vs. ENOC vs. MUOC vs. LGSOC using SMOTE subsampling and support vector machine
+- **sequential**: sequential algorithm sequence of subsampling methods and algorithms used are:
+  - HGSOC vs. non-HGSOC using upsampling and XGBoost
+  - CCOC vs. non-CCOC using SMOTE subsampling and XGBoost
+  - ENOC vs. non-ENOC using no subsampling and support vector machine
+  - MUOC vs. LGSOC using SMOTE subsampling and random forest
+- **two_step**: two-step algorithm sequence of subsampling methods and algorithms used are:
+  - HGSOC vs. non-HGSOC using upsampling and XGBoost
+  - CCOC vs. ENOC vs. MUOC vs. LGSOC using SMOTE subsampling and support vector machine
 
 We conduct rank aggregation using a two-stage nested approach:
 
