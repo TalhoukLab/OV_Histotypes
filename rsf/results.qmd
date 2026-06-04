@@ -105,8 +105,8 @@ all_metrics_conf_base <- readRDS(here("data/all_metrics_conf_base.rds"))
 all_metrics_conf_full <- readRDS(here("data/all_metrics_conf_full.rds"))
 
 # Training Set Models
-wflow_up_xgb_model <- readRDS(here("data/wflow_up_xgb_model_train.rds"))
 wflow_up_rf_model <- readRDS(here("data/wflow_up_rf_model_train.rds"))
+wflow_smote_svm_model <- readRDS(here("data/wflow_smote_svm_model_train.rds"))
 wflow_hybrid_xgb_model <- readRDS(here("data/wflow_hybrid_xgb_model_train.rds"))
 all_models_seq <- readRDS(here("data/all_models_seq.rds"))
 all_models_two_step <- readRDS(here("data/all_models_two_step.rds"))
@@ -819,8 +819,8 @@ metrics_top <- per_class_metrics |>
       fct_recode(
         Sequential = "sequential",
         `2-STEP` = "two_step",
-        `Up-XGB` = "up_xgb",
         `Up-RF` = "up_rf",
+        `SMOTE-SVM` = "smote_svm",
         `Hybrid-XGB` = "hybrid_xgb"
       ), 
     .metric = recode_values(
@@ -915,8 +915,8 @@ metrics_3_top_ranks <- bind_rows(
       fct_recode(
         Sequential = "sequential",
         `2-STEP` = "two_step",
-        `Up-XGB` = "up_xgb",
         `Up-RF` = "up_rf",
+        `SMOTE-SVM` = "smote_svm",
         `Hybrid-XGB` = "hybrid_xgb"
       )
   )
@@ -1023,15 +1023,15 @@ mod_two_step <- list(all_models_two_step,
 # Training data
 train_ref <- train_data |>
   mutate(class = factor(train_class, levels = c("CCOC", "ENOC", "HGSOC", "LGSOC", "MUOC")))
-                                                
-# Up-XGB model
-set.seed(2024)
-mod_up_xgb <- wflow_up_xgb_model |>
-  fit(data = train_ref)
 
 # Up-RF model
 set.seed(2024)
 mod_up_rf <- wflow_up_rf_model |>
+  fit(data = train_ref)
+
+# SMOTE-SVM model
+set.seed(2024)
+mod_smote_svm <- wflow_smote_svm_model |> 
   fit(data = train_ref)
 
 # Hybrid-XGB model
@@ -1055,8 +1055,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   mutate(
     c(p_seq = mod_seq,
       p_two_step = mod_two_step,
-      p_up_xgb = list(mod_up_xgb),
       p_up_rf = list(mod_up_rf),
+      p_smote_svm = list(mod_smote_svm),
       p_hybrid_xgb = list(mod_hybrid_xgb)
     ) |> 
       map(~ predict(., conf_data)[[".pred_class"]]) |> 
@@ -1073,8 +1073,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
     ),
     Prediction_two_step = ifelse(!grepl("non", p_two_step_s1),
                                       p_two_step_s1, p_two_step_s2),
-    Prediction_up_xgb = p_up_xgb,
     Prediction_up_rf = p_up_rf,
+    Prediction_smote_svm = p_smote_svm,
     Prediction_hybrid_xgb = p_hybrid_xgb,
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
@@ -1093,8 +1093,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       Method,
       "sequential" ~ "Sequential",
       "two_step" ~ "2-STEP",
-      "up_xgb" ~ "Up-XGB",
       "up_rf" ~ "Up-RF",
+      "smote_svm" ~ "SMOTE-SVM",
       "hybrid_xgb" ~ "Hybrid-XGB"
     )
   ))
@@ -1196,8 +1196,8 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
   mutate(
     c(p_seq = mod_seq,
       p_two_step = mod_two_step,
-      p_up_xgb = list(up_xgb = mod_up_xgb),
       p_up_rf = list(up_rf = mod_up_rf),
+      p_smote_svm = list(smote_svm = mod_smote_svm),
       p_hybrid_xgb = list(hybrid_xgb = mod_hybrid_xgb)
   ) |>
       map(~ {
@@ -1226,8 +1226,8 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
         Method,
         "p_seq" ~ "Sequential",
         "p_two_step" ~ "2-STEP",
-        "p_up_xgb" ~ "Up-XGB",
         "p_up_rf" ~ "Up-RF",
+        "p_smote_svm" ~ "SMOTE-SVM",
         "p_hybrid_xgb" ~ "Hybrid-XGB"
         )
       )
@@ -1241,8 +1241,8 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
         Prediction == "ENOC" & grepl("s3", Workflow) |
         Prediction %in% c("MUOC", "LGSOC") & grepl("s4", Workflow)
     )) |
-    grepl("Up-XGB", Method) |
       grepl("Up-RF", Method) |
+      grepl("SMOTE-SVM", Method) |
       grepl("Hybrid-XGB", Method) |
     (grepl("2-STEP", Method) & (
       Prediction == "HGSOC" & grepl("s1", Workflow) |
@@ -1425,24 +1425,6 @@ roc_curve_two_step <-
 print(roc_curve_two_step)
 ```
 
-### Up-XGB
-
-```{r}
-#| label: fig-conf-roc-up-xgb
-#| fig-cap: !expr get_plot_title()
-#| fig-height: 7
-#| fig-width: 8
-#| out-width: '100%'
-
-plot_roc_curve(
-  model = mod_up_xgb,
-  data = conf_data,
-  class = conf_class,
-  title = "ROC Curve for Up-XGB Model in Confirmation Set",
-  cols = class_palette
-)
-```
-
 ### Up-RF
 
 ```{r}
@@ -1457,6 +1439,24 @@ plot_roc_curve(
   data = conf_data,
   class = conf_class,
   title = "ROC Curve for Up-RF Model in Confirmation Set",
+  cols = class_palette
+)
+```
+
+### SMOTE-SVM
+
+```{r}
+#| label: fig-conf-roc-smote-svm
+#| fig-cap: !expr get_plot_title()
+#| fig-height: 7
+#| fig-width: 8
+#| out-width: '100%'
+
+plot_roc_curve(
+  model = mod_smote_svm,
+  data = conf_data,
+  class = conf_class,
+  title = "ROC Curve for SMOTE-SVM Model in Confirmation Set",
   cols = class_palette
 )
 ```
@@ -1523,7 +1523,7 @@ saveRDS(conf_de_rank, here("data/conf_de_rank.rds"))
 
 ## Gene Optimization
 
-From @fig-conf-eval, we see that although Up-XGB has the highest overall accuracy, Hybrid-XGB is better at predicting the rarest histotype LGSOC. Thus we choose both of these two workflows for gene optimization in the confirmation set. The optimal number of genes is determined by the highest average F1-Score across classes, including the overall metric in the average. We use an F1-score that is averaged across cross-validation folds (5) and class groups (6: Overall, HGSOC, CCOC, ENOC, MUOC, LGSOC) to compare performance between different number of genes selected.
+From @fig-conf-eval, we see that both Hybrid-XGB and SMOTE-SVM have the highest overall F1-Score and are relatively better at predicting the rarest histotype LGSOC (sensitivity = 0.42). Thus we choose both of these two workflows for gene optimization in the confirmation set. The optimal number of genes is determined by the highest average F1-Score across classes, including the overall metric in the average. We use an F1-score that is averaged across cross-validation folds (5) and class groups (6: Overall, HGSOC, CCOC, ENOC, MUOC, LGSOC) to compare performance between different number of genes selected.
 
 ### Hybrid-XGB
 
@@ -1643,25 +1643,25 @@ gene_dist_hybrid_xgb |>
   collapse_rows(columns = 1)
 ```
 
-### Up-XGB
+### SMOTE-SVM
 
 ```{r}
-#| label: fig-gene-up-xgb
-#| fig-cap: 'Gene Optimization for Up-XGB Classifier using Averaged F1-Score'
+#| label: fig-gene-smote-svm
+#| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using Averaged F1-Score'
 #| fig-height: 5
 #| fig-width: 5
 #| out-width: '100%'
 
-gene_up_xgb_names <- all_vi_train |> 
-  filter(wflow == "up_xgb") |> 
+gene_smote_svm_names <- all_vi_train |> 
+  filter(wflow == "smote_svm") |> 
   rowid_to_column("Genes") |> 
   select(Genes, Name = Variable) |> 
   add_row(Genes = 0L, Name = "Base", .before = 1) |> 
   slice_min(order_by = Genes, n = -1)
 
-dat_gene_up_xgb <- gene_opt_all_metrics_conf |> 
-  filter(Workflow == "up_xgb", .metric == "f_meas") |> 
-  inner_join(gene_up_xgb_names, by = "Genes") |> 
+dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
+  filter(Workflow == "smote_svm", .metric == "f_meas") |> 
+  inner_join(gene_smote_svm_names, by = "Genes") |> 
   mutate(
     min_estimate = min(.estimate, na.rm = TRUE),
     max_estimate = max(.estimate, na.rm = TRUE),
@@ -1676,8 +1676,8 @@ dat_gene_up_xgb <- gene_opt_all_metrics_conf |>
   ) |> 
   mutate(Optimal = ifelse(Genes == Genes[which.max(mean_estimate)], TRUE, FALSE))
 
-p_gene_up_xgb <- 
-  ggplot(dat_gene_up_xgb, aes(text = Name)) +
+p_gene_smote_svm <- 
+  ggplot(dat_gene_smote_svm, aes(text = Name)) +
   geom_pointrange(
     aes(
       x = Genes,
@@ -1693,57 +1693,57 @@ p_gene_up_xgb <-
   labs(
     x = "Genes Added",
     y = "Averaged F1-Score",
-    title = "Gene Optimziation for Up-XGB",
+    title = "Gene Optimziation for SMOTE-SVM",
     color = NULL
   )
-ggplotly(p_gene_up_xgb, width = 600, height = 400) |> 
+ggplotly(p_gene_smote_svm, width = 600, height = 400) |> 
   layout(showlegend = FALSE)
 
-n_genes_up_xgb <- dat_gene_up_xgb |> 
+n_genes_smote_svm <- dat_gene_smote_svm |> 
   filter(Optimal) |> 
   pull(Genes) |> 
   unique()
-genes_add_up_xgb <- gene_up_xgb_names |> 
+genes_add_smote_svm <- gene_smote_svm_names |> 
   filter(Genes > 0L) |> 
-  slice_min(order_by = Genes, n = n_genes_up_xgb) |> 
+  slice_min(order_by = Genes, n = n_genes_smote_svm) |> 
   pull(Name)
-opt_genes_up_xgb <- c(overlap_all, genes_add_up_xgb)
+opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 ```
 
-In the Up-XGB classifier, the optimal number of genes is achieved at the highest averaged F1-score with `r n_genes_up_xgb` genes added, highlighted in red in @fig-gene-up-xgb. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_up_xgb`=`r length(opt_genes_up_xgb)`.
+In the SMOTE-svm classifier, the optimal number of genes is achieved at the highest averaged F1-score with `r n_genes_smote_svm` genes added, highlighted in red in @fig-gene-smote-svm. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)`.
 
-The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-up-xgb. Base genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_up_xgb, last = " and ")`. Unused genes are annotated with red crosses.
+The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-smote-svm. Base genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`. Unused genes are annotated with red crosses.
 
 ```{r}
-#| label: tbl-gene-opt-up-xgb
-#| tbl-cap: 'Gene Profile of Optimal Set in Up-XGB Workflow'
+#| label: tbl-gene-opt-smote-svm
+#| tbl-cap: 'Gene Profile of Optimal Set in SMOTE-SVM Workflow'
 #| tbl-pos: 'H'
 
-candidates_all <- gene_up_xgb_names |>
+candidates_all <- gene_smote_svm_names |>
   filter(Genes > 0) |>
   pull(Name)
-unused_genes_up_xgb <- gene_up_xgb_names |>
+unused_genes_smote_svm <- gene_smote_svm_names |>
   filter(Genes > 0) |>
-  slice_max(order_by = Genes, n = -n_genes_up_xgb) |> 
+  slice_max(order_by = Genes, n = -n_genes_smote_svm) |> 
   arrange(Genes) |> 
   pull(Name)
-gene_order_up_xgb <- c(opt_genes_up_xgb, unused_genes_up_xgb)
+gene_order_smote_svm <- c(opt_genes_smote_svm, unused_genes_smote_svm)
 
-gene_dist_up_xgb <-
+gene_dist_smote_svm <-
   tibble(
-    Genes = gene_order_up_xgb,
+    Genes = gene_order_smote_svm,
     Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
     PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
     SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
     `Optimal Set` = if_else(
-      Genes %in% opt_genes_up_xgb,
+      Genes %in% opt_genes_smote_svm,
       symbol$circle_filled,
       symbol$circle_cross
     ) |>
       cell_spec(
         color = case_when(
           Genes %in% overlap_all ~ "green",
-          Genes %in% opt_genes_up_xgb ~ "#8B8000",
+          Genes %in% opt_genes_smote_svm ~ "#8B8000",
           .default = "#FF0000"
         )
       ),
@@ -1752,7 +1752,7 @@ gene_dist_up_xgb <-
   ) |>
   relocate(Set, .before = Genes)
 
-gene_dist_up_xgb |> 
+gene_dist_smote_svm |> 
   kbl(booktabs = TRUE,
       longtable = TRUE,
       linesep = "",
@@ -1763,48 +1763,19 @@ gene_dist_up_xgb |>
 
 ### Gene List Comparisons in Confirmation Set
 
-We train the Hybrid-XGB and Up-XGB workflows using the base and optimal gene lists in the training set. The models are evaluated on the confirmation set. Overall and per-class results are shown in @tbl-gene-list-comps-conf. The gene lists are:
+We train the Hybrid-XGB and SMOTE-SVM workflows using the base and optimal gene lists in the training set. The models are evaluated on the confirmation set. Overall and per-class results are shown in @tbl-gene-list-comps-conf. The gene lists are:
 
 1.  Base (n=28): among the overlapping genes, the base set from the PrOTYPE and SPOT lists
 
-2.  Optimal (n=47, 50): among the overlapping genes, the base set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-hybrid-xgb and @fig-gene-up-xgb
+2.  Optimal (n=47, 69): among the overlapping genes, the base set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-hybrid-xgb and @fig-gene-smote-svm
 
 ```{r}
 #| label: tbl-gene-list-comps-conf
 #| tbl-cap: 'Model Comparisons using Different Gene Lists in Confirmation Set'
 #| tbl-pos: 'H'
 
-# Up-XGB optimal workflow
-set.seed(2024)
-wflow_up_xgb_opt <- wflow_up_xgb_model |>
-  pluck("pre", "actions", "recipe", "recipe") |>
-  modify_at(c("var_info", "term_info"),
-            \(x) x |>
-              filter(variable %in% c(opt_genes_up_xgb, "class")) |>
-              arrange(match(variable, gene_order_up_xgb))) |>
-  update_recipe(x = wflow_up_xgb_model, recipe = _)
-
-# Up-XGB optimal model
-set.seed(2024)
-mod_up_xgb_opt <- wflow_up_xgb_opt |>
-  fit(data = train_ref)
-
-# Up-XGB base workflow
-set.seed(2024)
-wflow_up_xgb_base <- wflow_up_xgb_model |>
-  pluck("pre", "actions", "recipe", "recipe") |>
-  modify_at(c("var_info", "term_info"),
-            \(x) x |>
-              filter(variable %in% c(overlap_all, "class")) |>
-              arrange(match(variable, gene_order_up_xgb))) |>
-  update_recipe(x = wflow_up_xgb_model, recipe = _)
-
-# Up-XGB base model
-set.seed(2024)
-mod_up_xgb_base <- wflow_up_xgb_base |>
-  fit(data = train_ref)
-
-# Hybrid-XGB optimal workflow
+## Hybrid-XGB
+# Optimal workflow
 set.seed(2024)
 wflow_hybrid_xgb_opt <- wflow_hybrid_xgb_model |>
   pluck("pre", "actions", "recipe", "recipe") |>
@@ -1814,12 +1785,12 @@ wflow_hybrid_xgb_opt <- wflow_hybrid_xgb_model |>
               arrange(match(variable, gene_order_hybrid_xgb))) |>
   update_recipe(x = wflow_hybrid_xgb_model, recipe = _)
 
-# Hybrid-XGB optimal model
+# Optimal model
 set.seed(2024)
 mod_hybrid_xgb_opt <- wflow_hybrid_xgb_opt |>
   fit(data = train_ref)
 
-# Hybrid-XGB base workflow
+# Base workflow
 set.seed(2024)
 wflow_hybrid_xgb_base <- wflow_hybrid_xgb_model |>
   pluck("pre", "actions", "recipe", "recipe") |>
@@ -1829,9 +1800,40 @@ wflow_hybrid_xgb_base <- wflow_hybrid_xgb_model |>
               arrange(match(variable, gene_order_hybrid_xgb))) |>
   update_recipe(x = wflow_hybrid_xgb_model, recipe = _)
 
-# Hybrid-XGB base model
+# Base model
 set.seed(2024)
 mod_hybrid_xgb_base <- wflow_hybrid_xgb_base |>
+  fit(data = train_ref)
+
+## SMOTE-SVM
+# Optimal workflow
+set.seed(2024)
+wflow_smote_svm_opt <- wflow_smote_svm_model |>
+  pluck("pre", "actions", "recipe", "recipe") |>
+  modify_at(c("var_info", "term_info"),
+            \(x) x |>
+              filter(variable %in% c(opt_genes_smote_svm, "class")) |>
+              arrange(match(variable, gene_order_smote_svm))) |>
+  update_recipe(x = wflow_smote_svm_model, recipe = _)
+
+# Optimal model
+set.seed(2024)
+mod_smote_svm_opt <- wflow_smote_svm_opt |>
+  fit(data = train_ref)
+
+# Base workflow
+set.seed(2024)
+wflow_smote_svm_base <- wflow_smote_svm_model |>
+  pluck("pre", "actions", "recipe", "recipe") |>
+  modify_at(c("var_info", "term_info"),
+            \(x) x |>
+              filter(variable %in% c(overlap_all, "class")) |>
+              arrange(match(variable, gene_order_smote_svm))) |>
+  update_recipe(x = wflow_smote_svm_model, recipe = _)
+
+# Base model
+set.seed(2024)
+mod_smote_svm_base <- wflow_smote_svm_base |>
   fit(data = train_ref)
 
 # Confirmation set overall predictions
@@ -1840,8 +1842,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
   mutate(
     Prediction_hybrid_xgb_opt = predict(mod_hybrid_xgb_opt, conf_data)[[".pred_class"]],
     Prediction_hybrid_xgb_base = predict(mod_hybrid_xgb_base, conf_data)[[".pred_class"]],
-    Prediction_up_xgb_opt = predict(mod_up_xgb_opt, conf_data)[[".pred_class"]],
-    Prediction_up_xgb_base = predict(mod_up_xgb_base, conf_data)[[".pred_class"]],
+    Prediction_smote_svm_opt = predict(mod_smote_svm_opt, conf_data)[[".pred_class"]],
+    Prediction_smote_svm_base = predict(mod_smote_svm_base, conf_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   pivot_longer(
@@ -1857,8 +1859,8 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
         Method,
         "hybrid_xgb_opt" ~ "Hybrid-XGB, Optimal",
         "hybrid_xgb_base" ~ "Hybrid-XGB, Base",
-        "up_xgb_opt" ~ "Up-XGB, Optimal",
-        "up_xgb_base" ~ "Up-XGB, Base",
+        "smote_svm_opt" ~ "SMOTE-SVM, Optimal",
+        "smote_svm_base" ~ "SMOTE-SVM, Base",
       )
     ))
 
@@ -1949,7 +1951,7 @@ ggplot(conf_eval_long) +
 
 ## Validation Set
 
-Based on the results in @fig-gene-list-comps-conf, we assess the Hybrid-XGB model trained on the training set for the optimal and all overlap gene lists, evaluating in the validation set.
+From the results in @tbl-gene-list-comps-conf and @fig-gene-list-comps-conf, we see that the Hybrid-XGB, optimal workflow as the highest overall F1-Score and balanced accuracy. Thus, we choose the Hybrid-XGB model trained on the training set for the all overlap, optimal, and base gene lists, and evaluate performance in the validation set.
 
 ### Evaluation Metrics
 
