@@ -8,7 +8,9 @@ To run the ML pipeline on the **training set**, execute `make all` with paramete
 dataSets=(train)
 ```
 
-Run L11 of `copy_outputs.sh` to copy training outputs to this project's data directory.
+Edit L11-13 of `copy_outputs.sh` to copy over the top workflows to this project's data directory.
+
+Run L14 of `copy_outputs.sh` to copy training outputs to this project's data directory.
 
 ## Retraining
 
@@ -25,7 +27,7 @@ dataSets=(retrain_2)
 
 Do not supply an array to `dataSets` as the results of a later retraining step depends on the previous.
 
-Run L14-16 of `copy_outputs.sh` to copy retraining outputs to this project's data directory.
+Run L17-19 of `copy_outputs.sh` to copy retraining outputs to this project's data directory.
 
 ## Sequential and Two-Step
 
@@ -48,7 +50,7 @@ seqData=(two_step)
 nseq=2
 ```
 
-Run L19-20 of `copy_outputs.sh` to copy sequential outputs to this project's data directory.
+Run L22-23 of `copy_outputs.sh` to copy sequential outputs to this project's data directory.
 
 ## Gene Optimization
 
@@ -67,7 +69,7 @@ gene_opt_wflow="up_xgb"
 
 to run gene optimization on the entire confirmation set.
 
-Run L23 of `copy_outputs.sh` to copy gene optimization outputs to this project's data directory.
+Run L26 of `copy_outputs.sh` to copy gene optimization outputs to this project's data directory.
 
 Run `make gene_opt_seq` with parameters:
 
@@ -85,7 +87,7 @@ nseq=2
 
 to run gene optimization for the sequential and two-step methods on the confirmation set.
 
-Run L26-27 of `copy_outputs.sh` to copy gene optimization outputs for the sequential and two-step methods to this project's data directory.
+Run L29-30 of `copy_outputs.sh` to copy gene optimization outputs for the sequential and two-step methods to this project's data directory.
 
 # Obtaining Results
 
