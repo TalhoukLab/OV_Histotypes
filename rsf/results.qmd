@@ -848,7 +848,7 @@ metrics_top <- per_class_metrics |>
 
 metrics_top_df <- metrics_top |>
   select(Metric = .metric, Workflow, mean_estimate, lower, upper, class_group) |>
-  mutate(across(where(is.numeric), ~ round(., digits = 3))) |>
+  mutate(across(where(is.numeric), ~ round(., digits = 2))) |>
   mutate(Estimate = paste0(mean_estimate, " (", lower, ", ", upper, ")"),
          .keep = "unused") |> 
   arrange(Metric, class_group) |> 
@@ -1530,7 +1530,7 @@ From @fig-conf-eval, we see that both Hybrid-XGB and SMOTE-SVM have the highest 
 ```{r}
 #| label: fig-gene-hybrid-xgb
 #| fig-cap: 'Gene Optimization for Hybrid-XGB Classifier using Averaged F1-Score'
-#| fig-height: 5
+#| fig-height: 2
 #| fig-width: 5
 #| out-width: '100%'
 
@@ -1648,7 +1648,7 @@ gene_dist_hybrid_xgb |>
 ```{r}
 #| label: fig-gene-smote-svm
 #| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using Averaged F1-Score'
-#| fig-height: 5
+#| fig-height: 2
 #| fig-width: 5
 #| out-width: '100%'
 
