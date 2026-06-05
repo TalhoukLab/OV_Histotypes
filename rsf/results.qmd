@@ -1578,7 +1578,7 @@ p_gene_hybrid_xgb <-
     title = "Gene Optimziation for Hybrid-XGB",
     color = NULL
   )
-ggplotly(p_gene_hybrid_xgb, width = 600, height = 400) |> 
+ggplotly(p_gene_hybrid_xgb, width = 600, height = 600) |> 
   layout(showlegend = FALSE)
 
 n_genes_hybrid_xgb <- dat_gene_hybrid_xgb |> 
@@ -1696,7 +1696,7 @@ p_gene_smote_svm <-
     title = "Gene Optimziation for SMOTE-SVM",
     color = NULL
   )
-ggplotly(p_gene_smote_svm, width = 600, height = 400) |> 
+ggplotly(p_gene_smote_svm, width = 600, height = 600) |> 
   layout(showlegend = FALSE)
 
 n_genes_smote_svm <- dat_gene_smote_svm |> 
