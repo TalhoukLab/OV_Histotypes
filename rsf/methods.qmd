@@ -295,8 +295,8 @@ One of the main concerns in the analysis is that the distribution of the five ma
 - **None**: No subsampling is performed
 - **Down-sampling**: All levels except the minority class are sampled down to the same frequency as the minority class
 - **Up-sampling**: All levels except the majority class are sampled up to the same frequency as the majority class
-- **SMOTE**: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class
-- **Hybrid**: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.
+- **SMOTE**: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class [@chawla2002smote]
+- **Hybrid**: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class (i.e. SMOTE with 0.5 ratio of minority to majority), then the majority class is down-sampled to the same frequency as the rest.
 
 @fig-sampling helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:
 
