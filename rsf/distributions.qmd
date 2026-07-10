@@ -230,6 +230,36 @@ cohorts_dist |>
   kable_styling()
 ```
 
+## Tissue Source
+
+```{r}
+#| label: tbl-tissue-src
+#| tbl-cap: 'Tissue Source by Cohort'
+
+all_ref <-
+  bind_rows(Training = train_ref,
+            Confirmation = conf_ref,
+            Validation = val_ref,
+            .id = "Data") |>
+  rownames_to_column("FileName") |>
+  mutate(col_name = paste0("X", FileName),
+         Data = factor(Data, levels = c("Training", "Confirmation", "Validation")))
+
+tissue_src <- cs_all_df |> 
+  inner_join(all_ref, by = "col_name") |> 
+  count(Data, Cohort = cohort, tissue.source) |>
+  pivot_wider(
+    names_from = "tissue.source",
+    values_from = "n",
+    values_fill = list(n = 0)
+  )
+
+tissue_src |> 
+  kbl(booktabs = TRUE, linesep = "") |> 
+  kable_styling() |> 
+  collapse_rows(columns = 1)
+```
+
 ## Quality Control
 
 ### Failed Samples

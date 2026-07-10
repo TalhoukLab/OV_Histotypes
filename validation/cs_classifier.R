@@ -27,8 +27,7 @@ cs_all_df <-
   full_join(hist_rand1, by = "ottaID") |>
   inner_join(tissue_df, by = "col_name") |>
   filter(!is.na(hist_final) & tissue.source == "FFPE" | is.na(hist_final)) |>
-  filter(!duplicated(ottaID, fromLast = TRUE), .by = file_source) |>
-  select(-c(hist_final, tissue.source))
+  filter(!duplicated(ottaID, fromLast = TRUE), .by = file_source)
 
 # CS1: 246, CS2: 795, CS3: 2011
 cs1_dedup <- cs_all_df |> filter(file_source == "cs1")
