@@ -293,8 +293,8 @@ The hyperparameter combination that resulted in the highest average F1-score acr
 One of the main concerns in the analysis is that the distribution of the five main histotypes is highly imbalanced, which has implications for the accuracy of the classifier. To mitigate this, we investigated several strategies based on subsampling approaches:
 
 - **None**: No subsampling is performed
-- **Down-sampling**: All levels except the minority class are sampled down to the same frequency as the minority class
-- **Up-sampling**: All levels except the majority class are sampled up to the same frequency as the majority class
+- **Down-sampling**: All levels except the minority class are sampled down to the same frequency as the minority class [@themis]
+- **Up-sampling**: All levels except the majority class are sampled up to the same frequency as the majority class [@themis]
 - **SMOTE**: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class [@chawla2002smote]
 - **Hybrid**: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class (i.e. SMOTE with 0.5 ratio of minority to majority), then the majority class is down-sampled to the same frequency as the rest.
 
