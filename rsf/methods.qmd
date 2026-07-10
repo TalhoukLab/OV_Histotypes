@@ -245,10 +245,10 @@ grViz(
 
 We used a supervised learning framework to train four multinomial classification algorithms in the Training Set. The full prediction model pipeline was run using SLURM batch jobs submitted to a partition on a Rocky 9 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the tidymodels suite of packages in R (v4.5.2). The classifiers we used are:
 
-- Random Forest (`rf`)
-- Support Vector Machine (`svm`)
-- XGBoost (`xgb`)
-- Regularized Multinomial Regression (`mr`)
+- Random Forest (`rf`) [@wright2017]
+- Support Vector Machine (`svm`) [@platt1999probabilistic]
+- XGBoost (`xgb`) [@chen2016]
+- Regularized Multinomial Regression (`mr`) [@hastie2015statistical]
 
 ### Resampling of Training Set
 
