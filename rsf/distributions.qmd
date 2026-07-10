@@ -247,7 +247,8 @@ all_ref <-
 
 tissue_src <- cs_all_df |> 
   inner_join(all_ref, by = "col_name") |> 
-  count(Data, Cohort = cohort, tissue.source) |>
+  mutate(Cohort = fct_recode(cohort, OVAR11 = "ICON7")) |> 
+  count(Data, Cohort, tissue.source) |>
   pivot_wider(
     names_from = "tissue.source",
     values_from = "n",
