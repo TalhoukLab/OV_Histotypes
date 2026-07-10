@@ -879,7 +879,7 @@ p <-
       color = class_group
     ),
     position = position_dodge(width = 0.25),
-    fatten = 1
+    size = 0.2
   ) +
   scale_color_brewer(palette = "Dark2") + 
   facet_wrap(vars(.metric), ncol = 1, scales = "free_y") +
@@ -970,7 +970,7 @@ p <-
       color = Workflow
     ),
     position = position_dodge(width = 0.5),
-    fatten = 1
+    size = 0.2
   ) +
   geom_hline(yintercept = 0.8, color = "grey20", alpha = 0.5, linetype = "dashed") +
   scale_color_brewer(palette = "Set1") +
