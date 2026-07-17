@@ -64,10 +64,10 @@ Then run `make gene_opt` with parameters:
 
 ``` bash
 dataSets=(conf)
-gene_opt_wflow="up_xgb"
+gene_opt_wflow="hybrid_xgb"
 ```
 
-to run gene optimization on the entire confirmation set.
+to run gene optimization for Hybrid-XGB on the entire confirmation set.
 
 Run L26 of `copy_outputs.sh` to copy gene optimization outputs to this project's data directory.
 
@@ -93,9 +93,9 @@ Run L29-30 of `copy_outputs.sh` to copy gene optimization outputs for the sequen
 
 Results are stored at `resultsDir` specified in `pipeline/assets/params.sh`. It has three main directories:
 
--   `scriptDir`: contains the R and sh scripts used to submit jobs to SLURM
--   `logDir`: contains logs for standard output (extension `.o`) and standard error (extension `.e`) associated with the jobs, if any
--   `outputDir`: contains the outputs for the submitted jobs
+- `scriptDir`: contains the R and sh scripts used to submit jobs to SLURM
+- `logDir`: contains logs for standard output (extension `.o`) and standard error (extension `.e`) associated with the jobs, if any
+- `outputDir`: contains the outputs for the submitted jobs
 
 The outputs in `outputDir` are structured first within the name of the task and within that subdirectories will use the data object name.
 
