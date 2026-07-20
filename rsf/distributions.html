@@ -170,12 +170,13 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#histotype-distribution" id="toc-histotype-distribution" class="nav-link active" data-scroll-target="#histotype-distribution"><span class="header-section-number">3.1</span> Histotype Distribution</a></li>
   <li><a href="#cohort-distribution" id="toc-cohort-distribution" class="nav-link" data-scroll-target="#cohort-distribution"><span class="header-section-number">3.2</span> Cohort Distribution</a></li>
-  <li><a href="#quality-control" id="toc-quality-control" class="nav-link" data-scroll-target="#quality-control"><span class="header-section-number">3.3</span> Quality Control</a>
+  <li><a href="#tissue-source" id="toc-tissue-source" class="nav-link" data-scroll-target="#tissue-source"><span class="header-section-number">3.3</span> Tissue Source</a></li>
+  <li><a href="#quality-control" id="toc-quality-control" class="nav-link" data-scroll-target="#quality-control"><span class="header-section-number">3.4</span> Quality Control</a>
   <ul class="collapse">
-  <li><a href="#failed-samples" id="toc-failed-samples" class="nav-link" data-scroll-target="#failed-samples"><span class="header-section-number">3.3.1</span> Failed Samples</a></li>
-  <li><a href="#sec-gd-vs-nr" id="toc-sec-gd-vs-nr" class="nav-link" data-scroll-target="#sec-gd-vs-nr"><span class="header-section-number">3.3.2</span> %GD vs.&nbsp;SNR</a></li>
+  <li><a href="#failed-samples" id="toc-failed-samples" class="nav-link" data-scroll-target="#failed-samples"><span class="header-section-number">3.4.1</span> Failed Samples</a></li>
+  <li><a href="#sec-gd-vs-nr" id="toc-sec-gd-vs-nr" class="nav-link" data-scroll-target="#sec-gd-vs-nr"><span class="header-section-number">3.4.2</span> %GD vs.&nbsp;SNR</a></li>
   </ul></li>
-  <li><a href="#pairwise-gene-expression" id="toc-pairwise-gene-expression" class="nav-link" data-scroll-target="#pairwise-gene-expression"><span class="header-section-number">3.4</span> Pairwise Gene Expression</a></li>
+  <li><a href="#pairwise-gene-expression" id="toc-pairwise-gene-expression" class="nav-link" data-scroll-target="#pairwise-gene-expression"><span class="header-section-number">3.5</span> Pairwise Gene Expression</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/TalhoukLab/OV_Histotypes/edit/main/rsf/distributions.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/TalhoukLab/OV_Histotypes/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -702,10 +703,99 @@ Table&nbsp;3.3: Pre-QC Cohort Distribution by CodeSet
 </div>
 </div>
 </section>
-<section id="quality-control" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="quality-control"><span class="header-section-number">3.3</span> Quality Control</h2>
-<section id="failed-samples" class="level3" data-number="3.3.1">
-<h3 data-number="3.3.1" class="anchored" data-anchor-id="failed-samples"><span class="header-section-number">3.3.1</span> Failed Samples</h3>
+<section id="tissue-source" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="tissue-source"><span class="header-section-number">3.3</span> Tissue Source</h2>
+<div class="cell">
+<div id="tbl-tissue-src" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tissue-src-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3.4: Tissue Source by Cohort
+</figcaption>
+<div aria-describedby="tbl-tissue-src-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Data </th>
+   <th style="text-align:left;"> Cohort </th>
+   <th style="text-align:right;"> FFPE </th>
+   <th style="text-align:right;"> Frozen </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;vertical-align: middle !important;" rowspan="8"> Training </td>
+   <td style="text-align:left;"> OVAR11 </td>
+   <td style="text-align:right;"> 365 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   
+   <td style="text-align:left;"> JAPAN </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 8 </td>
+  </tr>
+  <tr>
+   
+   <td style="text-align:left;"> MAYO </td>
+   <td style="text-align:right;"> 56 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   
+   <td style="text-align:left;"> MTL </td>
+   <td style="text-align:right;"> 19 </td>
+   <td style="text-align:right;"> 41 </td>
+  </tr>
+  <tr>
+   
+   <td style="text-align:left;"> OOU </td>
+   <td style="text-align:right;"> 98 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   
+   <td style="text-align:left;"> OOUE </td>
+   <td style="text-align:right;"> 30 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   
+   <td style="text-align:left;"> OVAR3 </td>
+   <td style="text-align:right;"> 135 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   
+   <td style="text-align:left;"> VOA </td>
+   <td style="text-align:right;"> 494 </td>
+   <td style="text-align:right;"> 11 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Confirmation </td>
+   <td style="text-align:left;"> TNCO </td>
+   <td style="text-align:right;"> 642 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Validation </td>
+   <td style="text-align:left;"> DOVE4 </td>
+   <td style="text-align:right;"> 894 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="quality-control" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="quality-control"><span class="header-section-number">3.4</span> Quality Control</h2>
+<section id="failed-samples" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="failed-samples"><span class="header-section-number">3.4.1</span> Failed Samples</h3>
 <p>We use an aggregated <code>QCFlag</code> that considers a sample to have failed QC if any of the following QC conditions are flagged:</p>
 <ul>
 <li>Linearity</li>
@@ -717,7 +807,7 @@ Table&nbsp;3.3: Pre-QC Cohort Distribution by CodeSet
 <div id="tbl-qc-failed" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-qc-failed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3.4: Quality Control Summary
+Table&nbsp;3.5: Quality Control Summary
 </figcaption>
 <div aria-describedby="tbl-qc-failed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -778,8 +868,8 @@ Table&nbsp;3.4: Quality Control Summary
 </div>
 </div>
 </section>
-<section id="sec-gd-vs-nr" class="level3" data-number="3.3.2">
-<h3 data-number="3.3.2" class="anchored" data-anchor-id="sec-gd-vs-nr"><span class="header-section-number">3.3.2</span> %GD vs.&nbsp;SNR</h3>
+<section id="sec-gd-vs-nr" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="sec-gd-vs-nr"><span class="header-section-number">3.4.2</span> %GD vs.&nbsp;SNR</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-qc-gd-snr-all" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -810,8 +900,8 @@ Figure&nbsp;3.2: % Genes Detected vs.&nbsp;Signal to Noise Ratio (Zoomed)
 </div>
 </section>
 </section>
-<section id="pairwise-gene-expression" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="pairwise-gene-expression"><span class="header-section-number">3.4</span> Pairwise Gene Expression</h2>
+<section id="pairwise-gene-expression" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="pairwise-gene-expression"><span class="header-section-number">3.5</span> Pairwise Gene Expression</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-genes-cs13-rand1" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -872,7 +962,7 @@ Figure&nbsp;3.6: HKgenes-Normalized CS2 vs.&nbsp;CS3 Gene Expression
 <div id="tbl-genes-comp-test" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-genes-comp-test-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3.5: Wilcoxon signed rank test of gene correlations between normalization methods
+Table&nbsp;3.6: Wilcoxon signed rank test of gene correlations between normalization methods
 </figcaption>
 <div aria-describedby="tbl-genes-comp-test-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">

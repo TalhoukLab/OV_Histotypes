@@ -92,7 +92,7 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
-<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<link href="../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
 <script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <script src="../site_libs/viz-1.8.2/viz.js"></script>
 <link href="../site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
@@ -308,7 +308,7 @@ window.Quarto = {
 <li><strong>Linearity of positive control genes</strong>: If the R-squared from a linear model of positive controls and their concentrations is less than 0.95 or missing, then the sample is flagged.</li>
 <li><strong>Imaging quality</strong>: The sample is flagged if the field of view percentage is less than 75%.</li>
 <li><strong>Positive Control flag</strong>: We consider the two smallest positive controls at concentrations 0.5 and 1. If these two controls are less than the lower limit of detection (defined as two standard deviations below the mean of the negative control expression), or if the mean negative control expression is 0, the sample is flagged.</li>
-<li><strong>The signal-to-noise ratio or percent of genes detected</strong>: These two measures are defined as the ratio of the average housekeeping gene expression over the upper limit of detection, defined as two standard deviations above the mean of the negative control expression (or 0 if this limit is less than 0.001), and the proportion of endogenous genes with expression greater than the upper limit of detection. These measures are flagged if they are below a pre-specified threshold, which is determined visually by considering their bivariate distribution in a scatterplot. In this case, we used 100 for the SNR threshold and 50% for the threshold for genes detected. Note: these thresholds were determined by examining the relationship in <a href="distributions.html#sec-gd-vs-nr" class="quarto-xref"><span>Section 3.3.2</span></a>.</li>
+<li><strong>The signal-to-noise ratio or percent of genes detected</strong>: These two measures are defined as the ratio of the average housekeeping gene expression over the upper limit of detection, defined as two standard deviations above the mean of the negative control expression (or 0 if this limit is less than 0.001), and the proportion of endogenous genes with expression greater than the upper limit of detection. These measures are flagged if they are below a pre-specified threshold, which is determined visually by considering their bivariate distribution in a scatterplot. In this case, we used 100 for the SNR threshold and 50% for the threshold for genes detected. Note: these thresholds were determined by examining the relationship in <a href="distributions.html#sec-gd-vs-nr" class="quarto-xref"><span>Section 3.4.2</span></a>.</li>
 </ul>
 </section>
 <section id="housekeeping-genes-normalization" class="level3" data-number="2.1.3">
@@ -374,10 +374,10 @@ Figure&nbsp;2.2: Cohorts Selection
 <h2 data-number="2.2" class="anchored" data-anchor-id="classifiers"><span class="header-section-number">2.2</span> Classifiers</h2>
 <p>We used a supervised learning framework to train four multinomial classification algorithms in the Training Set. The full prediction model pipeline was run using SLURM batch jobs submitted to a partition on a Rocky 9 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the tidymodels suite of packages in R (v4.5.2). The classifiers we used are:</p>
 <ul>
-<li>Random Forest (<code>rf</code>)</li>
-<li>Support Vector Machine (<code>svm</code>)</li>
-<li>XGBoost (<code>xgb</code>)</li>
-<li>Regularized Multinomial Regression (<code>mr</code>)</li>
+<li>Random Forest (<code>rf</code>) <span class="citation" data-cites="wright2017">(<a href="references.html#ref-wright2017" role="doc-biblioref">Wright and Ziegler 2017</a>)</span></li>
+<li>Support Vector Machine (<code>svm</code>) <span class="citation" data-cites="platt1999probabilistic">(<a href="references.html#ref-platt1999probabilistic" role="doc-biblioref"><span class="nocase">Platt et al.</span> 1999</a>)</span></li>
+<li>XGBoost (<code>xgb</code>) <span class="citation" data-cites="chen2016">(<a href="references.html#ref-chen2016" role="doc-biblioref">Chen and Guestrin 2016</a>)</span></li>
+<li>Regularized Multinomial Regression (<code>mr</code>) <span class="citation" data-cites="hastie2015statistical">(<a href="references.html#ref-hastie2015statistical" role="doc-biblioref">Hastie et al. 2015</a>)</span></li>
 </ul>
 <section id="resampling-of-training-set" class="level3" data-number="2.2.1">
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="resampling-of-training-set"><span class="header-section-number">2.2.1</span> Resampling of Training Set</h3>
@@ -413,10 +413,10 @@ Figure&nbsp;2.2: Cohorts Selection
 <p>One of the main concerns in the analysis is that the distribution of the five main histotypes is highly imbalanced, which has implications for the accuracy of the classifier. To mitigate this, we investigated several strategies based on subsampling approaches:</p>
 <ul>
 <li><strong>None</strong>: No subsampling is performed</li>
-<li><strong>Down-sampling</strong>: All levels except the minority class are sampled down to the same frequency as the minority class</li>
-<li><strong>Up-sampling</strong>: All levels except the majority class are sampled up to the same frequency as the majority class</li>
-<li><strong>SMOTE</strong>: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class</li>
-<li><strong>Hybrid</strong>: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class, then the majority class is sampled down to the same frequency as the rest.</li>
+<li><strong>Down-sampling</strong>: All levels except the minority class are sampled down to the same frequency as the minority class <span class="citation" data-cites="themis">(<a href="references.html#ref-themis" role="doc-biblioref">Hvitfeldt 2025</a>)</span></li>
+<li><strong>Up-sampling</strong>: All levels except the majority class are sampled up to the same frequency as the majority class <span class="citation" data-cites="themis">(<a href="references.html#ref-themis" role="doc-biblioref">Hvitfeldt 2025</a>)</span></li>
+<li><strong>SMOTE</strong>: All levels except the majority class have synthetic data generated until they have the same frequency as the majority class <span class="citation" data-cites="chawla2002smote">(<a href="references.html#ref-chawla2002smote" role="doc-biblioref">Chawla et al. 2002</a>)</span></li>
+<li><strong>Hybrid</strong>: All levels except the majority class have synthetic data generated up to 50% of the frequency of the majority class (i.e.&nbsp;SMOTE with 0.5 ratio of minority to majority), then the majority class is down-sampled to the same frequency as the rest.</li>
 </ul>
 <p><a href="#fig-sampling" class="quarto-xref">Figure&nbsp;<span>2.3</span></a> helps visualize how the distribution of classes changes when we apply subsampling techniques to handle class imbalance:</p>
 <div class="cell">
@@ -1568,11 +1568,29 @@ Table&nbsp;2.1: Gene Distribution
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-chawla2002smote" class="csl-entry" role="listitem">
+Chawla, Nitesh V, Kevin W Bowyer, Lawrence O Hall, and W Philip Kegelmeyer. 2002. <span>“SMOTE: Synthetic Minority over-Sampling Technique.”</span> <em>Journal of Artificial Intelligence Research</em> 16: 321–57.
+</div>
+<div id="ref-chen2016" class="csl-entry" role="listitem">
+Chen, Tianqi, and Carlos Guestrin. 2016. <span>“XGBoost: A Scalable Tree Boosting System.”</span> <em>arXiv</em>, ahead of print. <a href="https://doi.org/10.48550/ARXIV.1603.02754">https://doi.org/10.48550/ARXIV.1603.02754</a>.
+</div>
+<div id="ref-hastie2015statistical" class="csl-entry" role="listitem">
+Hastie, Trevor, Robert Tibshirani, and Martin Wainwright. 2015. <span>“Statistical Learning with Sparsity.”</span> <em>Monographs on Statistics and Applied Probability</em> 143 (143): 8.
+</div>
+<div id="ref-themis" class="csl-entry" role="listitem">
+Hvitfeldt, Emil. 2025. <em>Themis: Extra Recipes Steps for Dealing with Unbalanced Data</em>. <a href="https://doi.org/10.32614/CRAN.package.themis">https://doi.org/10.32614/CRAN.package.themis</a>.
+</div>
 <div id="ref-pihur2009rankaggreg" class="csl-entry" role="listitem">
 Pihur, Vasyl, Susmita Datta, and Somnath Datta. 2009. <span>“RankAggreg, an r Package for Weighted Rank Aggregation.”</span> <em>BMC Bioinformatics</em> 10 (1): 62.
 </div>
+<div id="ref-platt1999probabilistic" class="csl-entry" role="listitem">
+<span class="nocase">Platt, John et al.</span> 1999. <span>“Probabilistic Outputs for Support Vector Machines and Comparisons to Regularized Likelihood Methods.”</span> <em>Advances in Large Margin Classifiers</em> 10 (3): 61–74.
+</div>
 <div id="ref-talhouk2016" class="csl-entry" role="listitem">
 Talhouk, Aline, Stefan Kommoss, Robertson Mackenzie, et al. 2016. <span>“Single-Patient Molecular Testing with NanoString nCounter Data Using a Reference-Based Strategy for Batch Effect Correction.”</span> <em>PLOS ONE</em> 11 (4): e0153844. <a href="https://doi.org/10.1371/journal.pone.0153844">https://doi.org/10.1371/journal.pone.0153844</a>.
+</div>
+<div id="ref-wright2017" class="csl-entry" role="listitem">
+Wright, Marvin N., and Andreas Ziegler. 2017. <span>“<span><strong>Ranger</strong></span>: A Fast Implementation of Random Forests for High Dimensional Data in <span><em>C++</em></span> and <span><em>R</em></span>.”</span> <em>Journal of Statistical Software</em> 77 (1). <a href="https://doi.org/10.18637/jss.v077.i01">https://doi.org/10.18637/jss.v077.i01</a>.
 </div>
 </div>
 </section>
