@@ -2263,7 +2263,7 @@ val_conf_mat_simp + val_roc_curve_simp + val_eval_gg +
 For a tree model, the "gain" is the most frequently used variable importance measure. It represents the fractional contribution of each feature to the model based on the total gain of this feature's splits. A higher percentage means higher importance. Figure @fig-final-model-vip shows the gain for the top 10 features of the final model (Hybrid-XGB).
 
 ```{r}
-#| label: fig-final-model-vip
+#| label: fig-final-vip
 #| fig-cap: 'Final Model Variable Importance Plot'
 
 # Final model
@@ -2281,6 +2281,46 @@ final_vip <- vip(
   labs(title = "Feature Importance")
 
 print(final_vip)
+```
+
+```{r}
+#| label: fig-final-vip-hist
+#| fig-cap: 'Final Model Variable Importance Plot by Histotype'
+#| fig-width: 10
+
+# Get class labels, palette and calculate total number of trees
+class_labels <- wflow_hybrid_xgb_opt |>
+  pluck("pre", "actions", "recipe", "recipe", "ptype", "class") |>
+  levels()
+class_palette2 <- c("#D95F02", "#7570B3", "#1B9E77", "#66A61E", "#E7298A")
+n_class <- final_model |>
+  xgb.config() |>
+  pluck("learner", "objective", "softmax_multiclass_param", "num_class") |>
+  as.numeric()
+class_idx <- seq_len(n_class)
+rounds <- xgb.get.num.boosted.rounds(final_model)
+trees <- n_class * rounds
+
+# Variable importance by histotype using tree indices
+final_vip_hist <-
+  pmap(list(class_idx, class_labels, class_palette2), ~ {
+    tree_idx <- seq(..1, trees, by = n_class)
+    vip(
+      object = final_model,
+      num_features = 10,
+      include_type = TRUE,
+      aesthetics = list(fill = ..3, width = 0.5),
+      trees = tree_idx
+    ) +
+      theme_bw() +
+      theme(panel.grid = element_blank()) +
+      labs(title = ..2)
+  }) |>
+  (\(x) x[c(3, 1, 2, 5, 4)])() |>
+  wrap_plots(axes = "collect") +
+  plot_annotation(title = "Feature Importance by Histotype", tag_levels = "A")
+
+print(final_vip_hist)
 ```
 
 ```{r}
@@ -2736,3 +2776,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
