@@ -2283,6 +2283,58 @@ final_vip <- vip(
 print(final_vip)
 ```
 
+```{r}
+#| label: tbl-gene-membership
+#| tbl-cap: 'Detailed Gene Membership'
+
+# Get all unique genes
+cs1_genes <- cs1_norm$Name
+cs2_genes <- cs2_norm$Name
+cs3_genes <- cs3_norm$Name
+unique_genes <- unique(c(cs1_genes, cs2_genes, cs3_genes))
+
+# Determine gene membership
+gene_membership <- tibble(
+  Genes = unique_genes,
+  CS1 = Genes %in% cs1_genes,
+  CS2 = Genes %in% cs2_genes,
+  CS3 = Genes %in% cs3_genes,
+  PrOTYPE = Genes %in% overlap_PrOTYPE,
+  SPOT = Genes %in% overlap_SPOT,
+  Core = Genes %in% overlap_all,
+  `All Overlap` = Genes %in% names(train_data),
+  Complete = Genes %in% names(val_full_data),
+  `Optimal-HXGB` = Genes %in% opt_genes_hybrid_xgb,
+  `Optimal-SSVM` = Genes %in% opt_genes_smote_svm
+) |>
+  mutate(across(where(is.logical), ~ ifelse(.x, symbol$tick, "")))
+
+# Interactive table to navigate various gene sets
+datatable(
+  gene_membership,
+  options = list(
+    scrollX = TRUE,
+    fixedColumns = TRUE,
+    columnDefs = list(
+      list(
+        targets = 1,
+        render = JS("$.fn.dataTable.render.ellipsis( 10 )")
+      ),
+      list(type = "natural", targets = 0)
+    ),
+    pageLength = 50,
+    dom = "Blfrtip",
+    buttons = c("copy", "excel", "pdf"),
+    lengthMenu = list(c(10, 50, 100, -1), c(10, 50, 100, "All"))
+  ),
+  rownames = FALSE,
+  filter = "top",
+  autoHideNavigation = TRUE,
+  extensions = c("FixedColumns", "Buttons"),
+  plugins = c("ellipsis", "natural")
+)
+```
+
 ### Additional Explorations
 
 ```{r}
