@@ -133,7 +133,7 @@ overlap_SPOT <- intersect(names(train_data), genes_SPOT)
 overlap_all <- union(overlap_PrOTYPE, overlap_SPOT)
 
 # PrOTYPE final model
-final_model <- readRDS(here("data/final_model.rds"))
+protype_final_model <- readRDS(here("data/final_model.rds"))
 
 # DOVE consolidated IHC scores
 final_scores <- read_excel(here("data-raw/CT14-05_Scores-Deconvoluted-Summarized_MA27SEPT2016/outputs/final_scores.xlsx"))
@@ -2670,7 +2670,7 @@ val_data_protype <- cs3_norm |>
   semi_join(val_pred_hgsoc_samples, by = "FileName") |>
   column_to_rownames("FileName")
 
-val_pred_protype <- final_model |>
+val_pred_protype <- protype_final_model |>
   predict(val_data_protype, type = "prob") |>
   as.data.frame() |>
   rownames_to_column("FileName") |>
@@ -2678,7 +2678,7 @@ val_pred_protype <- final_model |>
   mutate(prob = max(c_across(where(is.numeric))),
          entropy = entropy::entropy(c_across(matches("^C")), unit = "log2")) |>
   ungroup() |>
-  bind_cols(Subtype = predict(final_model, val_data_protype, type = "class")) |> 
+  bind_cols(Subtype = predict(protype_final_model, val_data_protype, type = "class")) |> 
   add_count(Subtype) |> 
   mutate(median_entropy = median(entropy), .by = Subtype)
 
