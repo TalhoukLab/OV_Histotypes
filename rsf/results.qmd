@@ -31,6 +31,7 @@ library(tabulapdf)
 library(janitor)
 library(flextable)
 library(probably)
+library(vip)
 library(conflicted)
 
 # Choose preferences among conflicting functions
@@ -2257,6 +2258,29 @@ val_conf_mat_simp + val_roc_curve_simp + val_eval_gg +
   plot_layout(design = layout) +
   plot_annotation(title = "Hybrid-XGB, Optimal Set Summary in Validation Set", tag_levels = "A") &
   theme(plot.tag = element_text(face = "bold"))
+```
+
+For a tree model, the "gain" is the most frequently used variable importance measure. It represents the fractional contribution of each feature to the model based on the total gain of this feature's splits. A higher percentage means higher importance. Figure @fig-final-model-vip shows the gain for the top 10 features of the final model (Hybrid-XGB).
+
+```{r}
+#| label: fig-final-model-vip
+#| fig-cap: 'Final Model Variable Importance Plot'
+
+# Final model
+final_model <- mod_hybrid_xgb_opt |> extract_fit_engine() 
+
+# Variable importance
+final_vip <- vip(
+  object = final_model,
+  num_features = 10,
+  include_type = TRUE,
+  aesthetics = list(fill = "purple", width = 0.5)
+) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) +
+  labs(title = "Feature Importance")
+
+print(final_vip)
 ```
 
 ### Additional Explorations
