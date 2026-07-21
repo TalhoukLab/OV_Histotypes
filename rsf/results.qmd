@@ -32,6 +32,8 @@ library(janitor)
 library(flextable)
 library(probably)
 library(vip)
+library(xgboost)
+library(shapviz)
 library(conflicted)
 
 # Choose preferences among conflicting functions
@@ -2324,6 +2326,28 @@ print(final_vip_hist)
 ```
 
 ```{r}
+#| label: fig-final-shapviz
+#| fig-cap: 'Final Model SHAP Importance Plot'
+#| fig-width: 10
+
+sv <- shapviz(final_model,
+  X_pred = as.matrix(val_data[opt_genes_hybrid_xgb])
+) |>
+  set_names(class_labels) |>
+  (\(x) x[c(3, 1, 2, 5, 4)])() |>
+  mshapviz()
+
+sv_beeswarm <-
+  sv_importance(object = sv, kind = "beeswarm", max_display = 10) +
+  plot_annotation(title = "SHAP Summary Plot by Histotype", tag_levels = "A") &
+  theme_bw() &
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank())
+
+print(sv_beeswarm)
+```
+
+```{r}
 #| label: tbl-gene-membership
 #| tbl-cap: 'Detailed Gene Membership'
 
@@ -2776,4 +2800,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
