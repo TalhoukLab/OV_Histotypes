@@ -2303,6 +2303,7 @@ For example, the class index labels from our model are ordered CCOC, ENOC, HGSOC
 #| label: fig-final-vip-hist
 #| fig-cap: 'Final Model Variable Importance Plot by Histotype'
 #| fig-width: 10
+#| fig-height: 7
 
 # Get class labels, palette and calculate total number of trees
 class_labels <- wflow_hybrid_xgb_opt |>
@@ -2347,6 +2348,7 @@ For example, we see that for CCOC, higher values of the gene HNF1B increase the 
 #| label: fig-final-shapviz
 #| fig-cap: 'Final Model SHAP Importance Plot'
 #| fig-width: 10
+#| fig-height: 7
 
 sv <- shapviz(final_model,
   X_pred = as.matrix(val_data[opt_genes_hybrid_xgb])
@@ -2818,3 +2820,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
