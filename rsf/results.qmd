@@ -2262,7 +2262,7 @@ val_conf_mat_simp + val_roc_curve_simp + val_eval_gg +
   theme(plot.tag = element_text(face = "bold"))
 ```
 
-For a tree model, the "gain" is the most frequently used variable importance measure. It represents the fractional contribution of each feature to the model based on the total gain of this feature's splits. A higher percentage means higher importance. Figure @fig-final-model-vip shows the gain for the top 10 features of the final model (Hybrid-XGB).
+For a tree model, the "gain" is the most frequently used variable importance measure. It represents the fractional contribution of each feature to the model based on the total gain of this feature's splits. A higher percentage means higher importance. Figure @fig-final-vip shows the gain for the top 10 features of the final model (Hybrid-XGB).
 
 ```{r}
 #| label: fig-final-vip
@@ -2820,4 +2820,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
