@@ -51,21 +51,21 @@ vi_files <- list.files(
   pattern = "vi",
   full.names = TRUE
 )
-vi_ranked <- vi_files %>%
-  set_names(gsub("_vi.*", "",  basename(.))) %>%
-  map(readRDS) %>%
-  list_rbind(names_to = "wflow") %>%
+vi_ranked <- vi_files |>
+  (\(x) set_names(x, gsub("_vi.*", "", basename(x))))() |>
+  map(readRDS) |>
+  list_rbind(names_to = "wflow") |>
   separate(wflow,
            c("wflow", "Sequence"),
            sep = "_s(?=[^_]+$)",
-           convert = TRUE) %>%
-  arrange(Sequence) %>%
-  nest(.by = Rank) %>%
-  mutate(Variable = data %>%
-           map("Variable") %>%
-           accumulate(union)) %>%
-  tail(1) %>%
-  select(Variable) %>%
+           convert = TRUE) |>
+  arrange(Sequence) |>
+  nest(.by = Rank) |>
+  mutate(Variable = data |>
+           map("Variable") |>
+           accumulate(union)) |>
+  tail(1) |>
+  select(Variable) |>
   unnest(Variable)
 
 # Only consider candidate genes not already in PrOTYPE and SPOT
@@ -77,7 +77,7 @@ candidates <- c("C10orf116", "GAD1", "TPX2", "KGFLP2", "EGFL6", "KLK7", "PBX1",
                 "TP53", "SEMA6A", "SERPINA5", "ZBED1", "TSPAN8", "SCGB1D2", "LGALS4",
                 "MAP1LC3A")
 
-vi_ranked_candidates <- vi_ranked %>%
+vi_ranked_candidates <- vi_ranked |>
   filter(Variable %in% candidates)
 
 all_vi_file <- file.path(

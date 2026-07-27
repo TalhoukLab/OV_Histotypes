@@ -10,15 +10,15 @@ metrics_files <- list.files(
   path = file.path(outputDir, "gene_opt", "merge_results", dataset),
   full.names = TRUE
 )
-all_wflow_metrics <- metrics_files %>%
-  set_names(gsub("(.*)_add(.*)_metrics.*", "\\1_\\2", basename(.))) %>%
-  map(readRDS) %>%
-  list_rbind(names_to = "Workflow_Method_Genes") %>%
+all_wflow_metrics <- metrics_files |>
+  (\(x) set_names(x, gsub("(.*)_add(.*)_metrics.*", "\\1_\\2", basename(x))))() |>
+  map(readRDS) |>
+  list_rbind(names_to = "Workflow_Method_Genes") |>
   separate_wider_regex(
     cols = Workflow_Method_Genes,
     patterns = c(Workflow = ".*", "_", Method = ".*", "_", Genes = ".*"),
     too_few = "align_start"
-  ) %>%
+  ) |>
   mutate(Genes = as.integer(Genes))
 
 all_metrics_file <- file.path(

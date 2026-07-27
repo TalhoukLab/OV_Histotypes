@@ -11,9 +11,9 @@ metrics_files <- list.files(
   pattern = "metrics",
   full.names = TRUE
 )
-all_wflow_metrics <- metrics_files %>%
-  set_names(gsub("wflow_(.*)_metrics.*", "\\1",  basename(.))) %>%
-  map(readRDS) %>%
+all_wflow_metrics <- metrics_files |>
+  (\(x) set_names(x, gsub("wflow_(.*)_metrics.*", "\\1", basename(x))))() |>
+  map(readRDS) |>
   list_rbind(names_to = "wflow")
 
 all_metrics_file <- file.path(
@@ -31,9 +31,9 @@ vi_files <- list.files(
   pattern = "vi",
   full.names = TRUE
 )
-all_wflow_vi <- vi_files %>%
-  set_names(gsub("wflow_(.*)_vi.*", "\\1",  basename(.))) %>%
-  map(readRDS) %>%
+all_wflow_vi <- vi_files |>
+  (\(x) set_names(x, gsub("wflow_(.*)_vi.*", "\\1", basename(x))))() |>
+  map(readRDS) |>
   list_rbind(names_to = "wflow")
 
 all_vi_file <- file.path(

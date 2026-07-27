@@ -17,13 +17,13 @@ if (gene_opt_rank == "vi") {
 }
 
 # Order of candidate genes for specified workflow
-candidate_genes <- ranked_df %>%
-  filter(wflow == gene_opt_wflow) %>%
-  slice_head(n = as.numeric(ngene)) %>%
+candidate_genes <- ranked_df |>
+  filter(wflow == gene_opt_wflow) |>
+  slice_head(n = as.numeric(ngene)) |>
   pull(Variable)
 
 # Select genes
-data <- data %>%
+data <- data |>
   select(all_of(c(base_genes, candidate_genes)))
 train_ref <- cbind(data, class = factor(class))
 
@@ -33,7 +33,7 @@ folds <- nested_cv(
   train_ref,
   outside = vfold_cv(v = n_folds, strata = class),
   inside = vfold_cv(v = n_folds, repeats = 2, strata = class, pool = 0)
-) %>%
+) |>
   suppressWarnings()
 
 # Metrics

@@ -11,12 +11,12 @@ metrics_files <- list.files(
   full.names = TRUE
 )
 
-all_wflow_metrics <- metrics_files %>%
-  set_names(gsub("_metrics.*", "\\1", basename(.))) %>%
-  map(readRDS) %>%
-  list_rbind(names_to = "wflow_genes") %>%
-  separate(wflow_genes, c("wflow", "Genes"), sep = "_add", convert = TRUE) %>%
-  separate(wflow, c("wflow", "Sequence"), sep = "_s(?=[^_]+$)", convert = TRUE) %>%
+all_wflow_metrics <- metrics_files |>
+  (\(x) set_names(x, gsub("_metrics.*", "\\1", basename(x))))() |>
+  map(readRDS) |>
+  list_rbind(names_to = "wflow_genes") |>
+  separate(wflow_genes, c("wflow", "Genes"), sep = "_add", convert = TRUE) |>
+  separate(wflow, c("wflow", "Sequence"), sep = "_s(?=[^_]+$)", convert = TRUE) |>
   arrange(Sequence, Genes)
 
 all_metrics_file <- file.path(
