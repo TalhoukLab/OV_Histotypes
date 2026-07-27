@@ -55,7 +55,7 @@ conflicts_prefer(
 )
 
 # Run cohort processing
-source(here("validation/cs_process_cohorts.R"))
+source(here("src/process_cohorts.R"))
 source(here("src/funs.R"))
 
 ## Inputs

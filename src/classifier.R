@@ -1,5 +1,5 @@
 # Process cohorts
-source(here::here("validation/cs_process_cohorts.R"))
+source(here::here("src/process_cohorts.R"))
 source(here::here("src/funs.R"))
 
 

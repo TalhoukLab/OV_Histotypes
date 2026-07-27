@@ -11,7 +11,7 @@ library(patchwork)
 library(kableExtra)
 library(epiR)
 library(here)
-source(here("validation/cs_classifier.R"))
+source(here("src/classifier.R"))
 ```
 
 ## Histotype Distribution
