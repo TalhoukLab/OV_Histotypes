@@ -8,8 +8,8 @@ resultsDir="/projects/"$user"_prj/results/OV_Histotypes"
 outputDir=$resultsDir"/outputs"
 
 # Training pipeline outputs
-cp $outputDir/merge_results/train/wflow_up_xgb_model_train.rds $inputDir/
 cp $outputDir/merge_results/train/wflow_up_rf_model_train.rds $inputDir/
+cp $outputDir/merge_results/train/wflow_smote_svm_model_train.rds $inputDir/
 cp $outputDir/merge_results/train/wflow_hybrid_xgb_model_train.rds $inputDir/
 cp $outputDir/summarize_results/train/* $inputDir/
 
