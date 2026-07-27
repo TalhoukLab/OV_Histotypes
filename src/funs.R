@@ -42,14 +42,14 @@ cor_stats <- function(x, y) {
 
 # Compute one-vs-all metrics
 ova_metrics <- function(x, truth, estimate, metric_set) {
-  x %>%
+  x |>
     dplyr::mutate(
       truth_ova = purrr::map({{ truth }}, ~ {
         case_when(
           levels({{ truth }}) %in% .x ~ as.character(.x),
           is.na(.x) ~ NA_character_,
           .default = "class_0"
-        ) %>%
+        ) |>
           rlang::set_names(levels({{ truth }}))
       }),
       estimate_ova = purrr::map({{ estimate }}, ~ {
@@ -57,24 +57,24 @@ ova_metrics <- function(x, truth, estimate, metric_set) {
           levels({{ estimate }}) %in% .x ~ as.character(.x),
           is.na(.x) ~ NA_character_,
           .default = "class_0"
-        ) %>%
+        ) |>
           rlang::set_names(levels({{ estimate }}))
       })
-    ) %>%
-    tidyr::unnest_longer(col = c(truth_ova, estimate_ova)) %>%
-    dplyr::mutate(class_group = purrr::map2_chr(truth_ova_id, estimate_ova_id, unique)) %>%
-    tidyr::nest(.by = class_group) %>%
+    ) |>
+    tidyr::unnest_longer(col = c(truth_ova, estimate_ova)) |>
+    dplyr::mutate(class_group = purrr::map2_chr(truth_ova_id, estimate_ova_id, unique)) |>
+    tidyr::nest(.by = class_group) |>
     dplyr::mutate(
       data =
         purrr::map2(data, class_group, \(x, y) dplyr::mutate(x, dplyr::across(
           dplyr::matches("ova"),
-          ~ .x %>%
-            forcats::fct_expand(y, "class_0") %>%
+          ~ .x |>
+            forcats::fct_expand(y, "class_0") |>
             forcats::fct_relevel("class_0", after = Inf)
-        ))) %>%
-        purrr::map(metric_set, truth = truth_ova, estimate = estimate_ova) %>%
+        ))) |>
+        purrr::map(metric_set, truth = truth_ova, estimate = estimate_ova) |>
         suppressWarnings()
-    ) %>%
+    ) |>
     tidyr::unnest(cols = data)
 }
 

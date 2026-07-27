@@ -19,15 +19,15 @@ plan(multicore, workers = all_cores)
 
 ## Tune workflow across inner folds
 inner_folds <- pluck(folds, "inner_resamples", as.numeric(fold_id))
-tuned_set <- wflow_set %>%
+tuned_set <- wflow_set |>
   workflow_map(
     seed = 2024,
     resamples = inner_folds,
     grid = tuning_grid,
     metrics = mset,
     control = control_grid(save_pred = TRUE, save_workflow = TRUE)
-  ) %>%
-  suppressMessages() %>%
+  ) |>
+  suppressMessages() |>
   suppressWarnings()
 
 ## Unregister parallel multicore

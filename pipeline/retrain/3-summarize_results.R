@@ -55,10 +55,10 @@ train_ref <- cbind(data, class = class)
 n_class <- n_distinct(class)
 
 # Top workflow by per-class F1-score out of n_class
-seq_top <- all_wflow_metrics %>%
-  distinct(pick(-fold_id, -.estimate)) %>%
-  filter(.metric == rank_metric, class_group != "Overall") %>%
-  slice_max(order_by = mean_estimate) %>%
+seq_top <- all_wflow_metrics |>
+  distinct(pick(-fold_id, -.estimate)) |>
+  filter(.metric == rank_metric, class_group != "Overall") |>
+  slice_max(order_by = mean_estimate) |>
   add_column(n_class = n_class)
 
 saveRDS(seq_top, here("data", paste0("seq_top_c", n_class, ".rds")))
@@ -66,9 +66,9 @@ saveRDS(seq_top, here("data", paste0("seq_top_c", n_class, ".rds")))
 # Create retrain data and class if more than 2 classes
 if (n_class > 2) {
   retrain_ref <-
-    train_ref %>% filter(!class %in% seq_top[["class_group"]])
-  retrain_data <- retrain_ref %>% select(-class)
-  retrain_class <- retrain_ref %>% pull(class)
+    train_ref |> filter(!class %in% seq_top[["class_group"]])
+  retrain_data <- retrain_ref |> select(-class)
+  retrain_class <- retrain_ref |> pull(class)
 
   saveRDS(retrain_data, here("data", paste0("retrain_", n_class - 1, "_data.rds")))
   saveRDS(retrain_class, here("data", paste0("retrain_", n_class - 1, "_class.rds")))
