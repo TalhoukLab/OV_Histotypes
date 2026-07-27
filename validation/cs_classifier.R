@@ -10,16 +10,16 @@ tissue_df <- annot_all |>
   mutate(col_name = paste0("X", FileName), tissue.source, .keep = "none")
 
 # CS1: n=264
-cs1_df <- cohorts %>%
+cs1_df <- cohorts |>
   filter(col_name %in% cs1_samples)
 
 # CS2: n=826
-cs2_df <- cohorts %>%
+cs2_df <- cohorts |>
   filter(col_name %in% cs2_samples)
 
 # CS3: n=2094 (Vancouver site only and removed pools)
-cs3_df <- cohorts %>%
-  semi_join(hist_cs3_van, by = "col_name") %>%
+cs3_df <- cohorts |>
+  semi_join(hist_cs3_van, by = "col_name") |>
   filter(col_name %in% cs3_samples)
 
 cs_all_df <-
@@ -38,57 +38,57 @@ cs3_dedup <- cs_all_df |> filter(file_source == "cs3")
 # Reference Samples -------------------------------------------------------
 
 # CS1: n=5
-cs1_samples_R <- cs1_dedup %>%
-  semi_join(hist_rand1, by = "ottaID") %>%
-  arrange(ottaID) %>%
+cs1_samples_R <- cs1_dedup |>
+  semi_join(hist_rand1, by = "ottaID") |>
+  arrange(ottaID) |>
   pull(col_name)
 
 # CS2: n=5
-cs2_samples_R <- cs2_dedup %>%
-  semi_join(hist_rand1, by = "ottaID") %>%
-  arrange(ottaID) %>%
+cs2_samples_R <- cs2_dedup |>
+  semi_join(hist_rand1, by = "ottaID") |>
+  arrange(ottaID) |>
   pull(col_name)
 
 # CS3: n=5
-cs3_samples_R <- cs3_dedup %>%
-  semi_join(hist_rand1, by = "ottaID") %>%
-  arrange(ottaID) %>%
+cs3_samples_R <- cs3_dedup |>
+  semi_join(hist_rand1, by = "ottaID") |>
+  arrange(ottaID) |>
   pull(col_name)
 
 
 # Expression Samples ------------------------------------------------------
 
 # CS1: n=241
-cs1_samples_X <- cs1_dedup %>%
-  anti_join(hist_rand1, by = "ottaID") %>%
+cs1_samples_X <- cs1_dedup |>
+  anti_join(hist_rand1, by = "ottaID") |>
   pull(col_name)
 
 # CS1 with duplicates: n=257
-cs1_samples_all_X <- cohorts %>%
-  anti_join(hist_rand1, by = "ottaID") %>%
-  filter(col_name %in% cs1_samples) %>%
+cs1_samples_all_X <- cohorts |>
+  anti_join(hist_rand1, by = "ottaID") |>
+  filter(col_name %in% cs1_samples) |>
   pull(col_name)
 
 # CS2: n=790
-cs2_samples_X <- cs2_dedup %>%
-  anti_join(hist_rand1, by = "ottaID") %>%
+cs2_samples_X <- cs2_dedup |>
+  anti_join(hist_rand1, by = "ottaID") |>
   pull(col_name)
 
 # CS2 with duplicates: n=820
-cs2_samples_all_X <- cohorts %>%
-  anti_join(hist_rand1, by = "ottaID") %>%
-  filter(col_name %in% cs2_samples) %>%
+cs2_samples_all_X <- cohorts |>
+  anti_join(hist_rand1, by = "ottaID") |>
+  filter(col_name %in% cs2_samples) |>
   pull(col_name)
 
 # CS3: n=2006
-cs3_samples_X <- cs3_dedup %>%
-  anti_join(hist_rand1, by = "ottaID") %>%
+cs3_samples_X <- cs3_dedup |>
+  anti_join(hist_rand1, by = "ottaID") |>
   pull(col_name)
 
 # CS3 with duplicates: n=2139
-cs3_samples_all_X <- cohorts %>%
-  anti_join(hist_rand1, by = "ottaID") %>%
-  filter(col_name %in% cs3_samples) %>%
+cs3_samples_all_X <- cohorts |>
+  anti_join(hist_rand1, by = "ottaID") |>
+  filter(col_name %in% cs3_samples) |>
   pull(col_name)
 
 
@@ -128,28 +128,28 @@ cs3_X <- select_samples(cs3_norm, cs3_samples_X)
 cs13_genes <- intersect(names(cs3_R), names(cs1_R))
 cs1_train <- refMethod(Y = cs1_X[cs13_genes],
                        R1 = cs3_R[cs13_genes],
-                       R2 = cs1_R[cs13_genes]) %>%
-  as.data.frame() %>%
+                       R2 = cs1_R[cs13_genes]) |>
+  as.data.frame() |>
   select(all_of(common_genes123))
 
 # Normalizing CS1 all to CS3 using n=79 common genes
 cs1_all_train <- refMethod(Y = cs1_all_X[cs13_genes],
                            R1 = cs3_R[cs13_genes],
-                           R2 = cs1_R[cs13_genes]) %>%
+                           R2 = cs1_R[cs13_genes]) |>
   as.data.frame()
 
 # Normalizing CS2 to CS3 uses n=136 common genes
 cs23_genes <- intersect(names(cs3_R), names(cs2_R))
 cs2_train <- refMethod(Y = cs2_X[cs23_genes],
                        R1 = cs3_R[cs23_genes],
-                       R2 = cs2_R[cs23_genes]) %>%
-  as.data.frame() %>%
+                       R2 = cs2_R[cs23_genes]) |>
+  as.data.frame() |>
   select(all_of(common_genes123))
 
 # Normalizing CS2 all to CS3 using n=136 common genes
 cs2_all_train <- refMethod(Y = cs2_all_X[cs23_genes],
                            R1 = cs3_R[cs23_genes],
-                           R2 = cs2_R[cs23_genes]) %>%
+                           R2 = cs2_R[cs23_genes]) |>
   as.data.frame()
 
 
@@ -184,11 +184,11 @@ cs3_train <-
   list(VAN = cs3_X, USC = cs3_usc_norm, AOC = cs3_aoc_norm) |>
   map(~ {
     .x |>
-      rownames_to_column("FileName") %>%
-      mutate(col_name = paste0("X", FileName)) %>%
-      inner_join(cohorts, by = "col_name") %>%
-      filter(!cohort %in% c("TNCO", "DOVE4")) %>%
-      column_to_rownames("FileName") %>%
+      rownames_to_column("FileName") |>
+      mutate(col_name = paste0("X", FileName)) |>
+      inner_join(cohorts, by = "col_name") |>
+      filter(!cohort %in% c("TNCO", "DOVE4")) |>
+      column_to_rownames("FileName") |>
       select(ottaID, all_of(common_genes123))
   }) |>
   list_rbind(names_to = "Site") |>
@@ -210,7 +210,7 @@ train_ref_comb <-
   select(ottaID, CodeSet, all_of(common_genes123), hist_gr, hist_final)
 
 # Training set removed replicates (CS3 > CS2 > CS1), n=1501-244=1257
-train_ref <- train_ref_comb %>%
+train_ref <- train_ref_comb |>
   slice_tail(n = 1, by = ottaID)
 
 train_data <- select(train_ref, where(is.double))
@@ -242,9 +242,9 @@ saveRDS(two_step_class, here::here("data/two_step_class.rds"))
 # CS1 and CS2 with duplicates ---------------------------------------------
 
 # CS1 all set, n=257, common genes with CS3 n=79
-cs1_all_ref <- cs1_all_train %>%
-  rownames_to_column("FileName") %>%
-  inner_join(hist, by = "FileName") %>%
+cs1_all_ref <- cs1_all_train |>
+  rownames_to_column("FileName") |>
+  inner_join(hist, by = "FileName") |>
   column_to_rownames("FileName")
 
 cs1_all_data <- select(cs1_all_ref, where(is.double))
@@ -254,9 +254,9 @@ saveRDS(cs1_all_data, here::here("data/cs1_all_data.rds"))
 saveRDS(cs1_all_class, here::here("data/cs1_all_class.rds"))
 
 # CS2 all set, n=820 common genes with CS3 n=136
-cs2_all_ref <- cs2_all_train %>%
-  rownames_to_column("FileName") %>%
-  inner_join(hist, by = "FileName") %>%
+cs2_all_ref <- cs2_all_train |>
+  rownames_to_column("FileName") |>
+  inner_join(hist, by = "FileName") |>
   column_to_rownames("FileName")
 
 cs2_all_data <- select(cs2_all_ref, where(is.double))
