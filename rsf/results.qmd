@@ -1208,7 +1208,7 @@ conf_entropy <- data.frame(FileName = rownames(conf_data),
           rowwise() |>
           mutate(
             prob = max(c_across(where(is.numeric))),
-            entropy = entropy::entropy(c_across(matches(".pred")), unit = "log2")
+            entropy = suppressWarnings(entropy::entropy(c_across(matches(".pred")), unit = "log2"))
           ) |>
           ungroup()
       }) |>
