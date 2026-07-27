@@ -112,8 +112,7 @@ train_comb_codeset <- train_ref_comb |>
 
 train_derep_codeset <- train_ref |> 
   mutate(hist_final = factor(hist_final,
-                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-                             labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
+                             levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
