@@ -31,6 +31,11 @@ alg <- "rf"
 samp <- "smote"
 rank_metric <- "f_meas"
 
+# make retrain_summarize
+dataset <- "train"
+n_folds <- 5
+rank_metric <- "f_meas"
+
 # make gene_opt
 dataset <- "conf"
 n_folds <- 5
