@@ -572,8 +572,9 @@ per_class_f1 <- filter(per_class_metrics_comp, .metric == "f_meas")
 
 # Rank metric
 wflow_ranks_f1 <- per_class_f1 |> 
+  mutate(class_group = fct_inorder(class_group)) |>
   mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) |> 
-  arrange(rank) |> 
+  arrange(class_group, rank) |>
   pivot_wider(id_cols = class_group,
               names_from = "rank",
               values_from = "wflow") |> 
@@ -636,8 +637,9 @@ per_class_bal_acc <- filter(per_class_metrics_comp, .metric == "bal_accuracy")
 
 # Rank metric
 wflow_ranks_bal_acc <- per_class_bal_acc |>
+  mutate(class_group = fct_inorder(class_group)) |>
   mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) |>
-  arrange(rank) |>
+  arrange(class_group, rank) |>
   pivot_wider(id_cols = class_group,
               names_from = "rank",
               values_from = "wflow") |>
@@ -700,8 +702,9 @@ per_class_kap <- filter(per_class_metrics_comp, .metric == "kap")
 
 # Rank metric
 wflow_ranks_kap <- per_class_kap |>
+  mutate(class_group = fct_inorder(class_group)) |>
   mutate(rank = factor(row_number(-mean_estimate)), .by = class_group) |>
-  arrange(rank) |>
+  arrange(class_group, rank) |>
   pivot_wider(id_cols = class_group,
               names_from = "rank",
               values_from = "wflow") |>
