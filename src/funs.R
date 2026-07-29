@@ -161,6 +161,83 @@ gene_rank_de <- function(data, preds, method, class, candidates = NULL) {
   }
 }
 
+#' Rank aggregation for a metric
+#'
+#' Rank aggregation for a metric such as F1-score, balanced accuracy, kappa
+#' using per-class mean estimates
+#'
+#' @param x input data.frame with per-class mean estimates of various evaluation
+#' metrics and workflows
+#' @param metric specific evaluation metric
+rankaggreg_metric <- function(x, metric) {
+  wflow_ranks <- x |>
+    dplyr::filter(.metric == metric) |>
+    dplyr::mutate(class_group = forcats::fct_inorder(class_group)) |>
+    dplyr::mutate(rank = factor(dplyr::row_number(-mean_estimate)), .by = class_group) |>
+    dplyr::arrange(class_group, rank) |>
+    tidyr::pivot_wider(id_cols = class_group,
+                       names_from = "rank",
+                       values_from = "wflow") |>
+    tibble::column_to_rownames("class_group") |>
+    as.matrix()
+
+  rankagg_df <- RankAggreg::RankAggreg(
+    x = wflow_ranks,
+    k = ncol(wflow_ranks),
+    method = "GA",
+    seed = 2025,
+    verbose = FALSE,
+    maxIter = 1e5
+  ) |>
+    purrr::pluck("top.list") |>
+    tibble::enframe(name = "Rank", value = "Workflow")
+
+  rankagg_df
+}
+
+#' Metric summary with ranks from rank aggregation
+#'
+#' @param x input data.frame with per-class mean estimates of various evaluation
+#' metrics and workflows
+#' @param metric specific evaluation metric
+#' @param ra rank aggregation output from `rankaggreg_metric()`
+rankaggreg_summary <- function(x, metric, ra) {
+  x |>
+    dplyr::filter(.metric == metric) |>
+    dplyr::rename(Workflow = wflow) |>
+    dplyr::mutate(mean_estimate = round(mean_estimate, digits = 3)) |>
+    dplyr::inner_join(ra, by = "Workflow") |>
+    tidyr::pivot_wider(id_cols = c(Workflow, Rank),
+                       names_from = class_group,
+                       values_from = mean_estimate) |>
+    dplyr::arrange(Rank)
+}
+
+#' View interactive table of rank aggregation summary
+#' @param .summ metric summary output from `rankaggreg_summary()`
+rankaggreg_view <- function(.summ) {
+  DT::datatable(
+    .summ,
+    options = list(
+      scrollX = TRUE,
+      fixedColumns = TRUE,
+      columnDefs = list(
+        list(
+          targets = 1,
+          render = JS("$.fn.dataTable.render.ellipsis( 10 )")
+        ),
+        list(type = "natural", targets = 0)
+      ),
+      pageLength = 50
+    ),
+    rownames = FALSE,
+    filter = "top",
+    autoHideNavigation = TRUE,
+    extensions = "FixedColumns",
+    plugins = c("ellipsis", "natural")
+  )
+}
+
 
 # Plotting Functions ------------------------------------------------------
 
