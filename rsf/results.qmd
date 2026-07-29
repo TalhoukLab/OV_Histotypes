@@ -2340,7 +2340,7 @@ final_vip_hist <-
 print(final_vip_hist)
 ```
 
-A SHAP importance plot incorporates directionality and distribution of the importance patterns. Figure @fig-final-shapviz illustrates a beeswarm plot for each histotype. We only show the top 10 features, with the most important at the top to the least important at the bottom. Positive SHAP values increase the prediction and negative SHAP values decrease the prediction. The colours represent feature values, with low values coloured purple and high values coloured yellow. Finally, the density of the points indicate whether there is a high concentration of observations distributed at a particular SHAP value.
+A SHAP importance plot incorporates directionality and distribution of the importance patterns [@lundberg2017unified]. Figure @fig-final-shapviz illustrates a beeswarm plot for each histotype. We only show the top 10 features, with the most important at the top to the least important at the bottom. Positive SHAP values increase the prediction and negative SHAP values decrease the prediction. The colours represent feature values, with low values coloured purple and high values coloured yellow. Finally, the density of the points indicate whether there is a high concentration of observations distributed at a particular SHAP value.
 
 For example, we see that for CCOC, higher values of the gene HNF1B increase the prediction and lower values decrease the prediction. Conversely, lower values of CYP2C18 decrease the prediction of HGSOC and vice versa.
 
