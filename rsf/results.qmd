@@ -2226,6 +2226,46 @@ sv_beeswarm <-
 print(sv_beeswarm)
 ```
 
+We can use a scatterplot to visualize how the actual values of individual features affect SHAP values, and subsequently the model predictions. The relationship may be linear, curved, or some other complex pattern. Fig @fig-shap-dep-hnf1b and @fig-shap-dep-tff3 show the SHAP dependence plots for HNF1B and TFF3 respectively.
+
+We know from the beeswarm plot that HNF1B was the most important feature for the CCOC class. SHAP values are relatively flat until HNF1B increases past -4, at which point the SHAP values start to increase sharply and prediction is strongly driven toward CCOC. At the same value of -4, the inverse pattern is observed for HGSOC.
+
+```{r}
+#| label: fig-shap-dep-hnf1b
+#| fig-cap: 'SHAP Dependence Plot for HNF1B'
+#| fig-height: 7
+
+sv_dep_hnf1b <- 
+  sv_dependence(sv, v = "HNF1B", color_var = "HNF1B") &
+  scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0)) &
+  scale_color_viridis_c(breaks = c(-8, -6, -4, -2),
+                        option = "inferno",
+                        begin = 0.25,
+                        end = 0.85)
+sv_dep_hnf1b +
+  plot_annotation(title = "SHAP Dependence Plot for HNF1B", tag_levels = "A") &
+  theme_bw() &
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank())
+```
+
+TFF3 was the most important feature for ENOC prediction. SHAP values start to flip to positive after TFF3 increases past -5. On the other hand for CCOC, SHAP values start to flip to negative as TFF3 increases past -2, driving prediction away from the CCOC class.
+
+```{r}
+#| label: fig-shap-dep-tff3
+#| fig-cap: 'SHAP Dependence Plot for TFF3'
+#| fig-height: 7
+
+sv_dep_tff3 <- 
+  sv_dependence(sv, v = "TFF3", color_var = "TFF3")
+
+sv_dep_tff3 +
+  plot_annotation(title = "SHAP Dependence Plot for TFF3", tag_levels = "A") &
+  theme_bw() &
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank())
+```
+
 #### Gene Membership
 
 ```{r}
