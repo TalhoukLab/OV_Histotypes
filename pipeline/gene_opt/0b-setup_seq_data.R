@@ -2,8 +2,8 @@
 data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))[[nseq]]
 class <- readRDS(file.path(inputDir, paste0(dataset, "_class.rds")))[[nseq]]
 
-# Genes from PrOTYPE and SPOT to keep
-base_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
+# Core gene set from PrOTYPE and SPOT
+core_genes <- c("COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
                 "THBS2", "TCF7L1", "HMGA2", "FN1", "POSTN", "COL1A2", "COL5A2",
                 "PDZK1IP1", "FBN1", "HIF1A", "CXCL10", "DUSP4", "SOX17", "MITF",
                 "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9")
@@ -24,7 +24,7 @@ candidate_genes <- ranked_vi |>
 
 # Select genes
 data <- data |>
-  select(all_of(c(base_genes, candidate_genes)))
+  select(all_of(c(core_genes, candidate_genes)))
 train_ref <- cbind(data, class = factor(class))
 
 # Nested resampling

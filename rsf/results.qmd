@@ -1398,7 +1398,7 @@ gene_hybrid_xgb_names <- all_vi_train |>
   filter(wflow == "hybrid_xgb") |> 
   rowid_to_column("Genes") |> 
   select(Genes, Name = Variable) |> 
-  add_row(Genes = 0L, Name = "Base", .before = 1) |> 
+  add_row(Genes = 0L, Name = "Core", .before = 1) |> 
   slice_min(order_by = Genes, n = -1)
 
 dat_gene_hybrid_xgb <- gene_opt_all_metrics_conf |> 
@@ -1454,7 +1454,7 @@ opt_genes_hybrid_xgb <- c(overlap_all, genes_add_hybrid_xgb)
 
 In the Hybrid-XGB classifier, the optimal number of genes is highlighted in red in @fig-gene-hybrid-xgb. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_hybrid_xgb`=`r length(opt_genes_hybrid_xgb)`.
 
-The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-hybrid-xgb. Base genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_hybrid_xgb, last = " and ")`. Unused genes are annotated with red crosses.
+The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-hybrid-xgb. Core genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_hybrid_xgb, last = " and ")`. Unused genes are annotated with red crosses.
 
 ```{r}
 #| label: tbl-gene-opt-hybrid-xgb
@@ -1474,7 +1474,7 @@ gene_order_hybrid_xgb <- c(opt_genes_hybrid_xgb, unused_genes_hybrid_xgb)
 gene_dist_hybrid_xgb <-
   tibble(
     Genes = gene_order_hybrid_xgb,
-    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    Set = ifelse(Genes %in% overlap_all, "Core", "Candidates"),
     PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
     SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
     `Optimal Set` = if_else(
@@ -1516,7 +1516,7 @@ gene_smote_svm_names <- all_vi_train |>
   filter(wflow == "smote_svm") |> 
   rowid_to_column("Genes") |> 
   select(Genes, Name = Variable) |> 
-  add_row(Genes = 0L, Name = "Base", .before = 1) |> 
+  add_row(Genes = 0L, Name = "Core", .before = 1) |> 
   slice_min(order_by = Genes, n = -1)
 
 dat_gene_smote_svm <- gene_opt_all_metrics_conf |> 
@@ -1572,7 +1572,7 @@ opt_genes_smote_svm <- c(overlap_all, genes_add_smote_svm)
 
 In the SMOTE-svm classifier, the optimal number of genes is achieved at the highest averaged F1-score with `r n_genes_smote_svm` genes added, highlighted in red in @fig-gene-smote-svm. Hence the optimal number of total genes used will be n=`r length(overlap_all)`+`r n_genes_smote_svm`=`r length(opt_genes_smote_svm)`.
 
-The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-smote-svm. Base genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`. Unused genes are annotated with red crosses.
+The gene profile of the optimal set of genes used is displayed in @tbl-gene-opt-smote-svm. Core genes in the PrOTYPE and SPOT sets are annotated with green circles, and the added genes are annotated with yellow circles. The added genes are: `r str_flatten_comma(genes_add_smote_svm, last = " and ")`. Unused genes are annotated with red crosses.
 
 ```{r}
 #| label: tbl-gene-opt-smote-svm
@@ -1592,7 +1592,7 @@ gene_order_smote_svm <- c(opt_genes_smote_svm, unused_genes_smote_svm)
 gene_dist_smote_svm <-
   tibble(
     Genes = gene_order_smote_svm,
-    Set = ifelse(Genes %in% overlap_all, "Base", "Candidates"),
+    Set = ifelse(Genes %in% overlap_all, "Core", "Candidates"),
     PrOTYPE = ifelse(Genes %in% overlap_PrOTYPE, symbol$tick, ""),
     SPOT = ifelse(Genes %in% overlap_SPOT, symbol$tick, ""),
     `Optimal Set` = if_else(
@@ -1623,11 +1623,11 @@ gene_dist_smote_svm |>
 
 ### Gene List Comparisons in Confirmation Set
 
-We train the Hybrid-XGB and SMOTE-SVM workflows using the base and optimal gene lists in the training set. The models are evaluated on the confirmation set. Overall and per-class results are shown in @tbl-gene-list-comps-conf. The gene lists are:
+We train the Hybrid-XGB and SMOTE-SVM workflows using the core and optimal gene lists in the training set. The models are evaluated on the confirmation set. Overall and per-class results are shown in @tbl-gene-list-comps-conf. The gene lists are:
 
-1.  Base (n=28): among the overlapping genes, the base set from the PrOTYPE and SPOT lists
+1.  Core (n=28): among the overlapping genes, the core set from the PrOTYPE and SPOT lists
 
-2.  Optimal (n=47, 69): among the overlapping genes, the base set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-hybrid-xgb and @fig-gene-smote-svm
+2.  Optimal (n=47, 69): among the overlapping genes, the core set plus the additional number of genes that result in the optimal value for a selected evaluation metric, as assessed in @fig-gene-hybrid-xgb and @fig-gene-smote-svm
 
 ```{r}
 #| label: tbl-gene-list-comps-conf
@@ -1650,9 +1650,9 @@ set.seed(2024)
 mod_hybrid_xgb_opt <- wflow_hybrid_xgb_opt |>
   fit(data = train_ref)
 
-# Base workflow
+# Core workflow
 set.seed(2024)
-wflow_hybrid_xgb_base <- wflow_hybrid_xgb_model |>
+wflow_hybrid_xgb_core <- wflow_hybrid_xgb_model |>
   pluck("pre", "actions", "recipe", "recipe") |>
   modify_at(c("var_info", "term_info"),
             \(x) x |>
@@ -1660,9 +1660,9 @@ wflow_hybrid_xgb_base <- wflow_hybrid_xgb_model |>
               arrange(match(variable, gene_order_hybrid_xgb))) |>
   update_recipe(x = wflow_hybrid_xgb_model, recipe = _)
 
-# Base model
+# Core model
 set.seed(2024)
-mod_hybrid_xgb_base <- wflow_hybrid_xgb_base |>
+mod_hybrid_xgb_core <- wflow_hybrid_xgb_core |>
   fit(data = train_ref)
 
 ## SMOTE-SVM
@@ -1681,9 +1681,9 @@ set.seed(2024)
 mod_smote_svm_opt <- wflow_smote_svm_opt |>
   fit(data = train_ref)
 
-# Base workflow
+# Core workflow
 set.seed(2024)
-wflow_smote_svm_base <- wflow_smote_svm_model |>
+wflow_smote_svm_core <- wflow_smote_svm_model |>
   pluck("pre", "actions", "recipe", "recipe") |>
   modify_at(c("var_info", "term_info"),
             \(x) x |>
@@ -1691,9 +1691,9 @@ wflow_smote_svm_base <- wflow_smote_svm_model |>
               arrange(match(variable, gene_order_smote_svm))) |>
   update_recipe(x = wflow_smote_svm_model, recipe = _)
 
-# Base model
+# Core model
 set.seed(2024)
-mod_smote_svm_base <- wflow_smote_svm_base |>
+mod_smote_svm_core <- wflow_smote_svm_core |>
   fit(data = train_ref)
 
 # Confirmation set overall predictions
@@ -1701,9 +1701,9 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
                                 Truth = conf_class) |>
   mutate(
     Prediction_hybrid_xgb_opt = predict(mod_hybrid_xgb_opt, conf_data)[[".pred_class"]],
-    Prediction_hybrid_xgb_base = predict(mod_hybrid_xgb_base, conf_data)[[".pred_class"]],
+    Prediction_hybrid_xgb_core = predict(mod_hybrid_xgb_core, conf_data)[[".pred_class"]],
     Prediction_smote_svm_opt = predict(mod_smote_svm_opt, conf_data)[[".pred_class"]],
-    Prediction_smote_svm_base = predict(mod_smote_svm_base, conf_data)[[".pred_class"]],
+    Prediction_smote_svm_core = predict(mod_smote_svm_core, conf_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   pivot_longer(
@@ -1718,9 +1718,9 @@ conf_pred_overall <- data.frame(FileName = rownames(conf_data),
       recode_values(
         Method,
         "hybrid_xgb_opt" ~ "Hybrid-XGB, Optimal",
-        "hybrid_xgb_base" ~ "Hybrid-XGB, Base",
+        "hybrid_xgb_core" ~ "Hybrid-XGB, Core",
         "smote_svm_opt" ~ "SMOTE-SVM, Optimal",
-        "smote_svm_base" ~ "SMOTE-SVM, Base",
+        "smote_svm_core" ~ "SMOTE-SVM, Core",
       )
     ))
 
@@ -1811,7 +1811,7 @@ ggplot(conf_eval_long) +
 
 ## Validation Set
 
-From the results in @tbl-gene-list-comps-conf and @fig-gene-list-comps-conf, we see that the Hybrid-XGB, optimal workflow as the highest overall F1-Score and balanced accuracy. Thus, we choose the Hybrid-XGB model trained on the training set for the all overlap, optimal, and base gene lists, and evaluate performance in the validation set.
+From the results in @tbl-gene-list-comps-conf and @fig-gene-list-comps-conf, we see that the Hybrid-XGB, optimal workflow as the highest overall F1-Score and balanced accuracy. Thus, we choose the Hybrid-XGB model trained on the training set for the all overlap, optimal, and core gene lists, and evaluate performance in the validation set.
 
 ### Evaluation Metrics
 
@@ -1826,7 +1826,7 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
   mutate(
     Prediction_hybrid_xgb_all = predict(mod_hybrid_xgb, val_data)[[".pred_class"]], 
     Prediction_hybrid_xgb_opt = predict(mod_hybrid_xgb_opt, val_data)[[".pred_class"]],
-    Prediction_hybrid_xgb_base = predict(mod_hybrid_xgb_base, val_data)[[".pred_class"]],
+    Prediction_hybrid_xgb_core = predict(mod_hybrid_xgb_core, val_data)[[".pred_class"]],
     across(c("Truth", matches("Prediction")), factor)
   ) |> 
   pivot_longer(
@@ -1843,7 +1843,7 @@ val_pred_overall <- data.frame(FileName = rownames(val_data),
       Method,
       "hybrid_xgb_all" ~ "Hybrid-XGB, All Overlap",
       "hybrid_xgb_opt" ~ "Hybrid-XGB, Optimal",
-      "hybrid_xgb_base" ~ "Hybrid-XGB, Base"
+      "hybrid_xgb_core" ~ "Hybrid-XGB, Core"
     )
   ))
 
@@ -1992,25 +1992,25 @@ val_roc_curve_hybrid_xgb_opt <-
 print(val_roc_curve_hybrid_xgb_opt)
 ```
 
-#### Base Set
+#### Core Set
 
 ```{r}
-#| label: fig-val-roc-hybrid-xgb-base
+#| label: fig-val-roc-hybrid-xgb-core
 #| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
 
-val_roc_curve_hybrid_xgb_base <- 
+val_roc_curve_hybrid_xgb_core <- 
   plot_roc_curve(
-    model = mod_hybrid_xgb_base,
+    model = mod_hybrid_xgb_core,
     data = val_data,
     class = val_class,
-    title = "ROC Curves for Hybrid-XGB, Base Set Model in Validation Set",
+    title = "ROC Curves for Hybrid-XGB, Core Set Model in Validation Set",
     cols = class_palette
   )
 
-print(val_roc_curve_hybrid_xgb_base)
+print(val_roc_curve_hybrid_xgb_core)
 ```
 :::
 
@@ -2053,20 +2053,20 @@ plot_calib_curve(
 )
 ```
 
-#### Base Set
+#### Core Set
 
 ```{r}
-#| label: fig-val-calib-hybrid-xgb-base
+#| label: fig-val-calib-hybrid-xgb-core
 #| fig-cap: !expr get_plot_title()
 #| fig-height: 7
 #| fig-width: 8
 #| out-width: '100%'
 
 plot_calib_curve(
-  model = mod_hybrid_xgb_base,
+  model = mod_hybrid_xgb_core,
   data = val_data,
   class = val_class,
-  title = "Calibration Plots for Hybrid-XGB, Base Set Model in Validation Set",
+  title = "Calibration Plots for Hybrid-XGB, Core Set Model in Validation Set",
   cols = class_palette
 )
 ```
