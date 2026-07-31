@@ -2233,6 +2233,7 @@ We know from the beeswarm plot that HNF1B was the most important feature for the
 ```{r}
 #| label: fig-shap-dep-hnf1b
 #| fig-cap: 'SHAP Dependence Plot for HNF1B'
+#| fig-width: 10
 #| fig-height: 7
 
 sv_dep_hnf1b <- 
@@ -2254,6 +2255,7 @@ TFF3 was the most important feature for ENOC prediction. SHAP values start to fl
 ```{r}
 #| label: fig-shap-dep-tff3
 #| fig-cap: 'SHAP Dependence Plot for TFF3'
+#| fig-width: 10
 #| fig-height: 7
 
 sv_dep_tff3 <- 
@@ -2721,3 +2723,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
