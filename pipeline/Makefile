@@ -1,4 +1,4 @@
-all: tune_wflows merge_results summarize_results
+train: tune_wflows merge_results summarize_results
 
 sequential: seq_tune seq_merge seq_summarize
 

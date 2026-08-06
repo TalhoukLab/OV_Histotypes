@@ -2,7 +2,7 @@
 
 ## Training
 
-To run the ML pipeline on the **training set**, execute `make all` with parameters
+To run the ML pipeline on the **training set**, execute `make train` with parameters
 
 ``` bash
 dataSets=(train)
