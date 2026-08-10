@@ -5,12 +5,15 @@ suppressPackageStartupMessages({
 })
 source(here("src/funs.R"))
 
-# Summarize all workflow metrics
-metrics_files <- list.files(
-  path = file.path(outputDir, "retrain", "merge_results", dataset),
-  pattern = "metrics",
-  full.names = TRUE
-)
+# Summarize all workflow metrics (already exists for training set)
+if (dataset != "train") {
+  metrics_path <- file.path(outputDir, "retrain", "merge_results", dataset)
+} else {
+  metrics_path <- file.path(outputDir, "merge_results", dataset)
+}
+metrics_files <- list.files(path = metrics_path,
+                            pattern = "metrics",
+                            full.names = TRUE)
 all_wflow_metrics <- metrics_files |>
   (\(x) set_names(x, gsub("wflow_(.*)_metrics.*", "\\1", basename(x))))() |>
   map(readRDS) |>
