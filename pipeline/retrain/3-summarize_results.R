@@ -25,26 +25,6 @@ all_metrics_file <- file.path(
 )
 saveRDS(all_wflow_metrics, all_metrics_file)
 
-# Summarize all workflow variable importance ranks and write to file
-vi_files <- list.files(
-  path = file.path(outputDir, "retrain", "merge_results", dataset),
-  pattern = "vi",
-  full.names = TRUE
-)
-all_wflow_vi <- vi_files |>
-  (\(x) set_names(x, gsub("wflow_(.*)_vi.*", "\\1", basename(x))))() |>
-  map(readRDS) |>
-  list_rbind(names_to = "wflow")
-
-all_vi_file <- file.path(
-  outputDir,
-  "retrain",
-  "summarize_results",
-  dataset,
-  paste0("all_vi_", dataset, ".rds")
-)
-saveRDS(all_wflow_vi, all_vi_file)
-
 # Find the top class of each sequence and generate a retraining subset for the
 # next sequence.
 data <- readRDS(file.path(inputDir, paste0(dataset, "_data.rds")))
