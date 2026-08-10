@@ -5,7 +5,7 @@ suppressPackageStartupMessages({
 })
 source(here("src/funs.R"))
 
-# Summarize all workflow metrics (already exists for training set)
+# Summarize all workflow metrics (already exists for training set) and write to file
 if (dataset != "train") {
   metrics_path <- file.path(outputDir, "retrain", "merge_results", dataset)
 } else {
@@ -18,6 +18,15 @@ all_wflow_metrics <- metrics_files |>
   (\(x) set_names(x, gsub("wflow_(.*)_metrics.*", "\\1", basename(x))))() |>
   map(readRDS) |>
   list_rbind(names_to = "wflow")
+
+all_metrics_file <- file.path(
+  outputDir,
+  "retrain",
+  "summarize_results",
+  dataset,
+  paste0("all_metrics_", dataset, ".rds")
+)
+saveRDS(all_wflow_metrics, all_metrics_file)
 
 # Find the top class of each sequence and generate a retraining subset for the
 # next sequence.
