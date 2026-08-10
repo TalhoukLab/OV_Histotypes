@@ -78,9 +78,25 @@ ova_metrics <- function(x, truth, estimate, metric_set) {
     tidyr::unnest(cols = data)
 }
 
-# Summarize mean metrics across CV folds
-summarize_metrics <- function(x, metric, highlight = TRUE, digits = 3) {
-  df <- x |>
+#' Summarize mean metrics across CV folds
+#'
+#' @param data training set summary with columns `wflow`, `Subsampling`,
+#'   `Algorithms`, `.metric`, `.estimate`, .`mean_estimate`, `class_group`,
+#'   `lower`, `upper`.
+#' @param metric evaluation metric
+#' @param highlight logical; if `TRUE`, if all values from a CV fold are
+#'   undefined, the mean estimate is coloured red; if some values from a CV fold
+#'   are undefined, the mean estimate is coloured yellow; the maximum mean
+#'   estimate is coloured green.
+#' @param digits number of digits to round mean estimates
+#' @param kable_extra logical; if `TRUE`, format table using
+#'   `kableExtra::kable_styling()`
+summarize_metrics <- function(data,
+                              metric,
+                              highlight = TRUE,
+                              digits = 3,
+                              kable_extra = TRUE) {
+  df <- data |>
     dplyr::filter(.metric == metric) |>
     dplyr::distinct(dplyr::pick(-fold_id, -.estimate)) |>
     dplyr::mutate(mean_estimate = round(mean_estimate, digits = digits))
@@ -103,7 +119,16 @@ summarize_metrics <- function(x, metric, highlight = TRUE, digits = 3) {
       names_from = class_group,
       values_from = mean_estimate
     )
-  return(df)
+  if (kable_extra) {
+    df |>
+      kableExtra::kbl(booktabs = TRUE, escape = FALSE) |>
+      kableExtra::kable_styling() |>
+      kableExtra::add_header_above(c(" " = 3, "Histotypes" = 5)) |>
+      kableExtra::column_spec(column = 3, border_right = TRUE) |>
+      kableExtra::collapse_rows(columns = 1)
+  } else {
+    df
+  }
 }
 
 #' Gene ranks from differential expression of a predicted class
@@ -240,6 +265,67 @@ rankaggreg_view <- function(.summ) {
 
 
 # Plotting Functions ------------------------------------------------------
+
+#' Label evaluation metric
+#'
+#' @param x metric value as given in package `yardstick`
+label_metric <- function(x) {
+  dplyr::replace_values(
+    x,
+    "accuracy" ~ "Accuracy",
+    "bal_accuracy" ~ "Balanced Accuracy",
+    "f_meas" ~ "F1-Score",
+    "kap" ~ "Kappa",
+    "roc_auc" ~ "AUC",
+    "sensitivity" ~ "Sensitivity",
+    "specificity" ~ "Specificity"
+  )
+}
+
+#' Plot training set metrics
+#'
+#' @param data training set summary with columns `wflow`, `Subsampling`,
+#'   `Algorithms`, `.metric`, `.estimate`, .`mean_estimate`, `class_group`,
+#'   `lower`, `upper`.
+#' @param metric evaluation metric
+#' @param palette colour palette to use for `class_group` levels
+plot_training_metric <- function(data, metric, palette) {
+  metric_name <- label_metric(metric)
+  p <- ggplot2::ggplot(
+    data |> dplyr::filter(.metric == metric),
+    ggplot2::aes(
+      x = forcats::fct_reorder(.data$wflow, .data$mean_estimate, .desc = TRUE),
+      y = .data$mean_estimate,
+      ymin = .data$lower,
+      ymax = .data$upper,
+      color = .data$Algorithms,
+      shape = .data$Subsampling
+    )
+  ) +
+    ggplot2::geom_pointrange() +
+    ggplot2::scale_colour_viridis_d(begin = 0,
+                                    end = 0.9,
+                                    option = "plasma") +
+    ggh4x::facet_wrap2(
+      ggplot2::vars(class_group),
+      ncol = 1,
+      strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = c("grey90", palette)))
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold"),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+      panel.grid.major.x = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
+    ) +
+    ggplot2::labs(
+      x = "Workflow",
+      y = metric_name,
+      title = paste("Training Set Mean", metric_name)
+    )
+
+  print(p)
+}
 
 #' Plot confusion matrix from observed and predicted classes
 #'

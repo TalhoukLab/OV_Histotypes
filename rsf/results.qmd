@@ -182,50 +182,16 @@ all_metrics_train <- all_metrics_train |>
 #| tbl-cap: 'Training Set Mean Accuracy'
 #| tbl-pos: 'H'
 
-all_metrics_train |>
-  summarize_metrics(metric = "accuracy") |>
-  kbl(booktabs = TRUE, escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
-  column_spec(column = 3, border_right = TRUE) |>
-  collapse_rows(columns = 1)
+summarize_metrics(all_metrics_train, metric = "accuracy")
 ```
 
 ```{r}
 #| label: fig-train-accuracy
-#| fig-cap: 'Training Set Mean Accuracy'
+#| fig-cap: !expr ggplot2::last_plot()@labels$title
 #| fig-height: 8
 #| fig-width: 7
 
-p <- ggplot(
-  all_metrics_train |> filter(.metric == "accuracy"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  scale_colour_viridis_d(begin = 0,
-                         end = 0.9,
-                         option = "plasma") +
-  facet_wrap2(~ class_group,
-              ncol = 1,
-              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Workflow",
-       y = "Accuracy",
-       title = "Training Set Mean Accuracy")
-print(p)
+plot_training_metric(all_metrics_train, metric = "accuracy", palette = class_palette)
 ```
 
 ### Sensitivity
@@ -235,50 +201,16 @@ print(p)
 #| tbl-cap: 'Training Set Mean Sensitivity'
 #| tbl-pos: 'H'
 
-all_metrics_train |>
-  summarize_metrics(metric = "sensitivity") |>
-  kbl(booktabs = TRUE, escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
-  column_spec(column = 3, border_right = TRUE) |>
-  collapse_rows(columns = 1)
+summarize_metrics(all_metrics_train, metric = "sensitivity")
 ```
 
 ```{r}
 #| label: fig-train-sens
-#| fig-cap: 'Training Set Mean Sensitivity'
+#| fig-cap: !expr ggplot2::last_plot()@labels$title
 #| fig-height: 8
 #| fig-width: 7
 
-p <- ggplot(
-  all_metrics_train |> filter(.metric == "sensitivity"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  scale_colour_viridis_d(begin = 0,
-                         end = 0.9,
-                         option = "plasma") +
-  facet_wrap2(~ class_group,
-              ncol = 1,
-              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Workflow",
-       y = "Sensitivity",
-       title = "Training Set Mean Sensitivity")
-print(p)
+plot_training_metric(all_metrics_train, metric = "sensitivity", palette = class_palette)
 ```
 
 ### Specificity
@@ -288,50 +220,16 @@ print(p)
 #| tbl-cap: 'Training Set Mean Specificity'
 #| tbl-pos: 'H'
 
-all_metrics_train |>
-  summarize_metrics(metric = "specificity") |>
-  kbl(booktabs = TRUE, escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
-  column_spec(column = 3, border_right = TRUE) |>
-  collapse_rows(columns = 1)
+summarize_metrics(all_metrics_train, metric = "specificity")
 ```
 
 ```{r}
 #| label: fig-train-spec
-#| fig-cap: 'Training Set Mean Specificity'
+#| fig-cap: !expr ggplot2::last_plot()@labels$title
 #| fig-height: 8
 #| fig-width: 7
 
-p <- ggplot(
-  all_metrics_train |> filter(.metric == "specificity"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  scale_colour_viridis_d(begin = 0,
-                         end = 0.9,
-                         option = "plasma") +
-  facet_wrap2(~ class_group,
-              ncol = 1,
-              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Workflow",
-       y = "Specificity",
-       title = "Training Set Mean Specificity")
-print(p)
+plot_training_metric(all_metrics_train, metric = "specificity", palette = class_palette)
 ```
 
 ### F1-Score
@@ -341,50 +239,16 @@ print(p)
 #| tbl-cap: 'Training Set Mean F1-Score'
 #| tbl-pos: 'H'
 
-all_metrics_train |>
-  summarize_metrics(metric = "f_meas") |>
-  kbl(booktabs = TRUE, escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
-  column_spec(column = 3, border_right = TRUE) |>
-  collapse_rows(columns = 1)
+summarize_metrics(all_metrics_train, metric = "f_meas")
 ```
 
 ```{r}
 #| label: fig-train-f1
-#| fig-cap: 'Training Set Mean F1-Score'
+#| fig-cap: !expr ggplot2::last_plot()@labels$title
 #| fig-height: 8
 #| fig-width: 7
 
-p <- ggplot(
-  all_metrics_train |> filter(.metric == "f_meas"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  scale_colour_viridis_d(begin = 0,
-                         end = 0.9,
-                         option = "plasma") +
-  facet_wrap2(~ class_group,
-              ncol = 1,
-              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Workflow",
-       y = "F1-Score",
-       title = "Training Set Mean F1-Score")
-print(p)
+plot_training_metric(all_metrics_train, metric = "f_meas", palette = class_palette)
 ```
 
 ### Balanced Accuracy
@@ -394,50 +258,16 @@ print(p)
 #| tbl-cap: 'Training Set Mean Balanced Accuracy'
 #| tbl-pos: 'H'
 
-all_metrics_train |>
-  summarize_metrics(metric = "bal_accuracy") |>
-  kbl(booktabs = TRUE, escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
-  column_spec(column = 3, border_right = TRUE) |>
-  collapse_rows(columns = 1)
+summarize_metrics(all_metrics_train, metric = "bal_accuracy")
 ```
 
 ```{r}
 #| label: fig-train-bal-accuracy
-#| fig-cap: 'Training Set Mean Balanced Accuracy'
+#| fig-cap: !expr ggplot2::last_plot()@labels$title
 #| fig-height: 8
 #| fig-width: 7
 
-p <- ggplot(
-  all_metrics_train |> filter(.metric == "bal_accuracy"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  scale_colour_viridis_d(begin = 0,
-                         end = 0.9,
-                         option = "plasma") +
-  facet_wrap2(~ class_group,
-              ncol = 1,
-              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Workflow",
-       y = "Balanced Accuracy",
-       title = "Training Set Mean Balanced Accuracy")
-print(p)
+plot_training_metric(all_metrics_train, metric = "bal_accuracy", palette = class_palette)
 ```
 
 ### Kappa
@@ -447,50 +277,16 @@ print(p)
 #| tbl-cap: 'Training Set Mean Kappa'
 #| tbl-pos: 'H'
 
-all_metrics_train |>
-  summarize_metrics(metric = "kap") |>
-  kbl(booktabs = TRUE, escape = FALSE) |>
-  kable_styling() |>
-  add_header_above(c(" " = 3, "Histotypes" = 5)) |>
-  column_spec(column = 3, border_right = TRUE) |>
-  collapse_rows(columns = 1)
+summarize_metrics(all_metrics_train, metric = "kap")
 ```
 
 ```{r}
 #| label: fig-train-kappa
-#| fig-cap: 'Training Set Mean Kappa'
+#| fig-cap: !expr ggplot2::last_plot()@labels$title
 #| fig-height: 8
 #| fig-width: 7
 
-p <- ggplot(
-  all_metrics_train |> filter(.metric == "kap"),
-  aes(
-    x = fct_reorder(wflow, mean_estimate, .desc = TRUE),
-    y = mean_estimate,
-    ymin = lower,
-    ymax = upper,
-    color = Algorithms,
-    shape = Subsampling
-  )
-) +
-  geom_pointrange() +
-  scale_colour_viridis_d(begin = 0,
-                         end = 0.9,
-                         option = "plasma") +
-  facet_wrap2(~ class_group,
-              ncol = 1,
-              strip = strip_themed(background_x = elem_list_rect(fill = c("grey90", class_palette)))) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Workflow",
-       y = "Kappa",
-       title = "Training Set Mean Kappa")
-print(p)
+plot_training_metric(all_metrics_train, metric = "kap", palette = class_palette)
 ```
 :::
 
@@ -2723,4 +2519,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
