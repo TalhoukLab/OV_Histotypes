@@ -1,13 +1,15 @@
+# All make targets
 train: tune_wflows merge_results summarize_results
 
-sequential: seq_tune seq_merge seq_summarize
-
 retrain: retrain_tune retrain_merge retrain_summarize
+
+sequential: seq_tune seq_merge seq_summarize
 
 gene_opt: gene_tune gene_merge gene_summarize
 
 gene_opt_seq: gene_seq_tune gene_seq_merge gene_seq_summarize
 
+# Training classifier
 tune_wflows:
 	./1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
 
@@ -16,16 +18,6 @@ merge_results:
 
 summarize_results:
 	./3-summarize_results.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# Sequential classifier
-seq_tune:
-	./sequential/1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
-
-seq_merge:
-	./sequential/2-merge_results.sh $(filter-out $@,$(MAKECMDGOALS))
-
-seq_summarize:
-	./sequential/3-summarize_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Retrain for sequential and two-step classifiers
 retrain_tune:
@@ -36,6 +28,16 @@ retrain_merge:
 
 retrain_summarize:
 	./retrain/3-summarize_results.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Sequential classifier
+seq_tune:
+	./sequential/1-tune_wflows.sh $(filter-out $@,$(MAKECMDGOALS))
+
+seq_merge:
+	./sequential/2-merge_results.sh $(filter-out $@,$(MAKECMDGOALS))
+
+seq_summarize:
+	./sequential/3-summarize_results.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Gene optimization
 gene_tune:
