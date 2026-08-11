@@ -263,6 +263,20 @@ rankaggreg_view <- function(.summ) {
   )
 }
 
+#' Choose optimal genes by modifying the internal structure of a workflow object
+#'
+#' @param workflow workflow object
+#' @param vars an ordered vector of optimal genes
+modify_wflow_vars <- function(workflow, vars) {
+  workflow |>
+    purrr::pluck("pre", "actions", "recipe", "recipe") |>
+    purrr::modify_at(c("var_info", "term_info"),
+                     \(x) x |>
+                       dplyr::filter(variable %in% c(vars, "class")) |>
+                       dplyr::arrange(match(variable, vars))) |>
+    workflows::update_recipe(workflow, recipe = _)
+}
+
 
 # Plotting Functions ------------------------------------------------------
 

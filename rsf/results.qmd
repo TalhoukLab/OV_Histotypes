@@ -1411,13 +1411,8 @@ We train the Hybrid-XGB and SMOTE-SVM workflows using the core and optimal gene 
 ## Hybrid-XGB
 # Optimal workflow
 set.seed(2024)
-wflow_hybrid_xgb_opt <- wflow_hybrid_xgb_model |>
-  pluck("pre", "actions", "recipe", "recipe") |>
-  modify_at(c("var_info", "term_info"),
-            \(x) x |>
-              filter(variable %in% c(opt_genes_hybrid_xgb, "class")) |>
-              arrange(match(variable, gene_order_hybrid_xgb))) |>
-  update_recipe(x = wflow_hybrid_xgb_model, recipe = _)
+wflow_hybrid_xgb_opt <- modify_wflow_vars(workflow = wflow_hybrid_xgb_model,
+                                          vars = opt_genes_hybrid_xgb)
 
 # Optimal model
 set.seed(2024)
@@ -1426,13 +1421,8 @@ mod_hybrid_xgb_opt <- wflow_hybrid_xgb_opt |>
 
 # Core workflow
 set.seed(2024)
-wflow_hybrid_xgb_core <- wflow_hybrid_xgb_model |>
-  pluck("pre", "actions", "recipe", "recipe") |>
-  modify_at(c("var_info", "term_info"),
-            \(x) x |>
-              filter(variable %in% c(overlap_all, "class")) |>
-              arrange(match(variable, gene_order_hybrid_xgb))) |>
-  update_recipe(x = wflow_hybrid_xgb_model, recipe = _)
+wflow_hybrid_xgb_core <- modify_wflow_vars(workflow = wflow_hybrid_xgb_model,
+                                          vars = overlap_all)
 
 # Core model
 set.seed(2024)
@@ -1442,14 +1432,8 @@ mod_hybrid_xgb_core <- wflow_hybrid_xgb_core |>
 ## SMOTE-SVM
 # Optimal workflow
 set.seed(2024)
-wflow_smote_svm_opt <- wflow_smote_svm_model |>
-  pluck("pre", "actions", "recipe", "recipe") |>
-  modify_at(c("var_info", "term_info"),
-            \(x) x |>
-              filter(variable %in% c(opt_genes_smote_svm, "class")) |>
-              arrange(match(variable, gene_order_smote_svm))) |>
-  update_recipe(x = wflow_smote_svm_model, recipe = _)
-
+wflow_smote_svm_opt <- modify_wflow_vars(workflow = wflow_smote_svm_model,
+                                        vars = opt_genes_smote_svm)
 # Optimal model
 set.seed(2024)
 mod_smote_svm_opt <- wflow_smote_svm_opt |>
@@ -1457,13 +1441,8 @@ mod_smote_svm_opt <- wflow_smote_svm_opt |>
 
 # Core workflow
 set.seed(2024)
-wflow_smote_svm_core <- wflow_smote_svm_model |>
-  pluck("pre", "actions", "recipe", "recipe") |>
-  modify_at(c("var_info", "term_info"),
-            \(x) x |>
-              filter(variable %in% c(overlap_all, "class")) |>
-              arrange(match(variable, gene_order_smote_svm))) |>
-  update_recipe(x = wflow_smote_svm_model, recipe = _)
+wflow_smote_svm_core <- modify_wflow_vars(workflow = wflow_smote_svm_model,
+                                          vars = overlap_all)
 
 # Core model
 set.seed(2024)
@@ -2488,4 +2467,3 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
-
