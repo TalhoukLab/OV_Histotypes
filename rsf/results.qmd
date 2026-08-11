@@ -1521,6 +1521,7 @@ conf_eval |>
 #| label: fig-gene-list-comps-conf
 #| fig-cap: 'Gene List Comparisons of Evaluation Metrics in Confirmation Set'
 #| fig-width: 10
+#| fig-height: 6
 #| out-width: '100%'
 
 conf_eval_long <- conf_eval |>
