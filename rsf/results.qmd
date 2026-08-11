@@ -479,28 +479,11 @@ metrics_top <- per_class_metrics |>
         `SMOTE-SVM` = "smote_svm",
         `Hybrid-XGB` = "hybrid_xgb"
       ), 
-    .metric = recode_values(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa",
-      ptype = factor(
-        levels = c(
-          "Accuracy",
-          "Sensitivity",
-          "Specificity",
-          "F1-Score",
-          "Balanced Accuracy",
-          "Kappa"
-        )
-      )
-    )
+    .metric = label_metric(.metric)
   ) |> 
   drop_na(.metric) |> 
-  arrange(Rank)
+  arrange(Rank) |> 
+  mutate(.metric = fct_inorder(.metric))
 
 metrics_top_df <- metrics_top |>
   select(Metric = .metric, Workflow, mean_estimate, lower, upper, class_group) |>
@@ -775,18 +758,7 @@ conf_eval_per_class <- conf_pred_overall |>
   nest(.by = Method) |> 
   mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
   unnest(data) |> 
-  mutate(
-    Metric = recode_values(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa"
-    ),
-    .keep = "unused"
-  ) |> 
+  mutate(Metric = label_metric(.metric), .keep = "unused") |> 
   pivot_wider(
     id_cols = c(Method, Metric),
     names_from = class_group,
@@ -809,8 +781,8 @@ conf_eval |>
 ```{r}
 #| label: fig-conf-eval
 #| fig-cap: 'Evaluation Metrics on Confirmation Set Models'
-#| fig-height: 7
 #| fig-width: 9
+#| out-width: '100%'
 
 conf_eval_long <- conf_eval |>
   pivot_longer(cols = where(is.double),
@@ -820,19 +792,25 @@ conf_eval_long <- conf_eval |>
          Metric = fct_inorder(Metric),
          Class = fct_inorder(Class))
 
-ggplot(conf_eval_long) +
-  geom_tile(aes(x = Class, y = Method, fill = Score)) +
-  geom_text(aes(x = Class, y = Method, label = round(Score, digits = 2)),
-            size = 3) +
+ggplot(conf_eval_long, aes(x = Class, y = Method)) +
+  geom_tile(aes(fill = Score)) +
+  geom_text(aes(label = round(Score, digits = 2)), size = 3) +
   facet_wrap(vars(Metric)) +
-  scale_fill_viridis_c(option = "plasma",
-                       breaks = c(0, 1),
-                       limits = c(0, 1),
-                       begin = 0.2) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    breaks = c(0, 1),
+    limits = c(0, 1),
+    begin = 0.2
+  ) +
   theme_minimal() +
   theme(
     axis.title = element_blank(),
-    axis.text.x.bottom = element_text(angle = 45, hjust = 1, vjust = 1),
+    axis.text.x.bottom = element_text(
+      angle = 45,
+      hjust = 1,
+      vjust = 1
+    ),
+    panel.grid = element_blank(),
     strip.text = element_text(face = "bold"),
     legend.position = "bottom",
     legend.direction = "horizontal"
@@ -1542,18 +1520,7 @@ conf_eval_per_class <- conf_pred_overall |>
   nest(.by = Method) |> 
   mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
   unnest(data) |> 
-  mutate(
-    Metric = recode_values(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa"
-    ),
-    .keep = "unused"
-  ) |>
+  mutate(Metric = label_metric(.metric), .keep = "unused") |> 
   pivot_wider(
     id_cols = c(Method, Metric),
     names_from = class_group,
@@ -1585,19 +1552,25 @@ conf_eval_long <- conf_eval |>
          Metric = fct_inorder(Metric),
          Class = fct_inorder(Class))
 
-ggplot(conf_eval_long) +
-  geom_tile(aes(x = Class, y = Method, fill = Score)) +
-  geom_text(aes(x = Class, y = Method, label = round(Score, digits = 2)),
-            size = 3) +
+ggplot(conf_eval_long, aes(x = Class, y = Method)) +
+  geom_tile(aes(fill = Score)) +
+  geom_text(aes(label = round(Score, digits = 2)), size = 3) +
   facet_wrap(vars(Metric)) +
-  scale_fill_viridis_c(option = "plasma",
-                       breaks = c(0, 1),
-                       limits = c(0, 1),
-                       begin = 0.2) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    breaks = c(0, 1),
+    limits = c(0, 1),
+    begin = 0.2
+  ) +
   theme_minimal() +
   theme(
     axis.title = element_blank(),
-    axis.text.x.bottom = element_text(angle = 45, hjust = 1, vjust = 1),
+    axis.text.x.bottom = element_text(
+      angle = 45,
+      hjust = 1,
+      vjust = 1
+    ),
+    panel.grid = element_blank(),
     strip.text = element_text(face = "bold"),
     legend.position = "bottom",
     legend.direction = "horizontal"
@@ -1663,18 +1636,7 @@ val_eval_per_class <- val_pred_overall |>
   nest(.by = Method) |> 
   mutate(data = map(data, ~ ova_metrics(.x, Truth, Prediction, per_class_mset))) |> 
   unnest(data) |> 
-  mutate(
-    Metric = recode_values(
-      .metric,
-      "accuracy" ~ "Accuracy",
-      "sensitivity" ~ "Sensitivity",
-      "specificity" ~ "Specificity",
-      "f_meas" ~ "F1-Score",
-      "bal_accuracy" ~ "Balanced Accuracy",
-      "kap" ~ "Kappa"
-    ),
-    .keep = "unused"
-  ) |> 
+  mutate(Metric = label_metric(.metric), .keep = "unused") |> 
   pivot_wider(
     id_cols = c(Method, Metric),
     names_from = class_group,
@@ -1695,7 +1657,8 @@ val_eval |>
 ```{r}
 #| label: fig-val-eval
 #| fig-cap: 'Evaluation Metrics on Validation Set Models'
-#| fig-height: 5.5
+#| fig-width: 10
+#| out-width: '100%'
 
 val_eval_long <- val_eval |>
   pivot_longer(cols = where(is.double),
@@ -1705,19 +1668,25 @@ val_eval_long <- val_eval |>
          Metric = fct_inorder(Metric),
          Class = fct_inorder(Class))
 
-ggplot(val_eval_long) +
-  geom_tile(aes(x = Class, y = Method, fill = Score)) +
-  geom_text(aes(x = Class, y = Method, label = round(Score, digits = 2)),
-            size = 3) +
+ggplot(val_eval_long, aes(x = Class, y = Method)) +
+  geom_tile(aes(fill = Score)) +
+  geom_text(aes(label = round(Score, digits = 2)), size = 3) +
   facet_wrap(vars(Metric)) +
-  scale_fill_viridis_c(option = "plasma",
-                       breaks = c(0, 1),
-                       limits = c(0, 1),
-                       begin = 0.2) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    breaks = c(0, 1),
+    limits = c(0, 1),
+    begin = 0.2
+  ) +
   theme_minimal() +
   theme(
     axis.title = element_blank(),
-    axis.text.x.bottom = element_text(angle = 45, hjust = 1, vjust = 1),
+    axis.text.x.bottom = element_text(
+      angle = 45,
+      hjust = 1,
+      vjust = 1
+    ),
+    panel.grid = element_blank(),
     strip.text = element_text(face = "bold"),
     legend.position = "bottom",
     legend.direction = "horizontal"
@@ -2519,3 +2488,4 @@ p <- wrap_plots(list(A = p1, B = p2, C = p3),
 
 print(p)
 ```
+
