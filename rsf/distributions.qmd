@@ -24,6 +24,7 @@ train_cohort_codeset <- hist_all_mol |>
     cs1_samples_coh, cs2_samples_coh, cs3_samples_coh
   ))) |>
   droplevels() |>
+  mutate(CodeSet = factor(CodeSet, levels = c("CS1", "CS2", "CS3"))) |> 
   describeBy(
     var.names = "hist_gr2",
     var.labels = "Histotype",
@@ -43,6 +44,7 @@ train_qc_codeset <- hist_all_mol |>
     cs1_samples_coh_qc, cs2_samples_coh_qc, cs3_samples_coh_qc
   ))) |> 
   droplevels() |> 
+  mutate(CodeSet = factor(CodeSet, levels = c("CS1", "CS2", "CS3"))) |> 
   describeBy(
     var.names = "hist_gr2",
     var.labels = "Histotype",
@@ -58,7 +60,10 @@ train_qc_codeset <- hist_all_mol |>
 #| label: train-hist-codeset
 
 train_hist_codeset <- hist |>
-  mutate(hist_final = factor(hist_final, levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
+  mutate(
+    hist_final = factor(hist_final, levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+    CodeSet = factor(CodeSet, levels = c("CS1", "CS2", "CS3"))
+  ) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -78,7 +83,8 @@ train_dedup_codeset <- hist |>
     cs1_dedup$col_name, cs2_dedup$col_name, cs3_dedup$col_name
   ))) |>
   mutate(hist_final = factor(hist_final,
-                             levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
+                             levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+         CodeSet = factor(CodeSet, levels = c("CS1", "CS2", "CS3"))) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -95,7 +101,8 @@ train_dedup_codeset <- hist |>
 
 train_comb_codeset <- train_ref_comb |> 
   mutate(hist_final = factor(hist_final,
-                             levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
+                             levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+         CodeSet = factor(CodeSet, levels = c("CS1", "CS2", "CS3"))) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
@@ -112,7 +119,8 @@ train_comb_codeset <- train_ref_comb |>
 
 train_derep_codeset <- train_ref |> 
   mutate(hist_final = factor(hist_final,
-                             levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |> 
+                             levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC")),
+         CodeSet = factor(CodeSet, levels = c("CS1", "CS2", "CS3"))) |> 
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
