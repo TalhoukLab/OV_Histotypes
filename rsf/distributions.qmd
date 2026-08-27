@@ -168,8 +168,7 @@ hist_train_conf_val <-
   map_dfr(~ select(., hist_final), .id = "Data") |> 
   mutate(Data = factor(Data, levels = c("Training", "Confirmation", "Validation")),
          hist_final = factor(hist_final,
-                             levels = c("HGSC", "CCOC", "ENOC", "MUC", "LGSC"),
-                             labels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |>
+                             levels = c("HGSOC", "CCOC", "ENOC", "MUOC", "LGSOC"))) |>
   describeBy(
     var.names = "hist_final",
     var.labels = "Histotype",
