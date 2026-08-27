@@ -505,6 +505,7 @@ metrics_top_df |>
 #| label: fig-top-wflows-by-all-metric
 #| fig-cap: !expr paste('Top', n_wflow_top, 'Workflow Per-Class Evaluation Metrics by Metric')
 #| fig-height: 7
+#| fig-width: 8
 #| out-width: '100%'
 
 p <-
