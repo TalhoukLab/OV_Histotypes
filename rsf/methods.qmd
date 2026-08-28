@@ -59,25 +59,17 @@ $$log_2(\text{endogenous gene expression}) - \text{average(}log_2(\text{housekee
 
 To normalize between CodeSets, we randomly selected five specimens, one from each histotype, among specimens repeated in all three CodeSets. This formed the reference set (Random 1). We selected only one sample from each histotype to use as few samples as possible for normalization and retain the rest for analysis.
 
-A reference-based approach (@talhouk2016) was used to normalize CS1 to CS3 and CS2 to CS3 across their common genes:
+A reference-based approach (@talhouk2016) was used to normalize all CodeSets to CS3 across their common genes:
 
 $$\begin{aligned}
 \text{X-Norm}_{\text{CS1}} = X_{\text{CS1}} + {\bar{R}_{\text{CS3}}} - {\bar{R}_{\text{CS1}}} \\
 \text{X-Norm}_{\text{CS2}} = X_{\text{CS2}} + {\bar{R}_{\text{CS3}}} - {\bar{R}_{\text{CS2}}}
 \end{aligned}$$ {#eq-rand1-cs1-cs2}
 
-Samples in CS3 were processed at three different locations; we also had to normalize for “site” in this CodeSet. Finally, the CS3 expression samples were included in the training set without further normalization:
-
-$$\begin{aligned}
-\text{X-Norm}_{\text{CS3-USC}} = X_{\text{CS3-USC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-USC}}} \\
-\text{X-Norm}_{\text{CS3-AOC}} = X_{\text{CS3-AOC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-AOC}}}
-\end{aligned}$$ {#eq-rand1-cs3-sites}
-
-The CS3 expression samples were included in the training set without further normalization. CS3 cross-site replicates were all chosen from Vancouver, thus we did not retain any samples from USC or AOC. Finally, the initial training set is assembled by combining the normalized datasets for CS1 and CS2 along with the CS3 expression not used in normalization:
+The initial training set is assembled by combining the normalized datasets for CS1 and CS2 with the CS3 expression data not used in normalization:
 
 $$\begin{aligned} 
-\text{Training Set} &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3-VAN}} + \text{X-Norm}_{\text{CS3-USC}} + \text{X-Norm}_{\text{CS3-AOC}} \\
-                        &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3}}
+\text{Training Set} &= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3}}
 \end{aligned}$$ {#eq-training-set}
 
 ```{r}
