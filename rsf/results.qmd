@@ -1165,8 +1165,8 @@ From @fig-conf-eval, we see that both Hybrid-XGB and SMOTE-SVM have the highest 
 ```{r}
 #| label: fig-gene-hybrid-xgb
 #| fig-cap: 'Gene Optimization for Hybrid-XGB Classifier using Averaged F1-Score'
-#| fig-height: 2
-#| fig-width: 5
+#| fig-height: 5
+#| fig-width: 6
 #| out-width: '100%'
 
 gene_hybrid_xgb_names <- all_vi_train |> 
@@ -1213,8 +1213,12 @@ p_gene_hybrid_xgb <-
     title = "Gene Optimziation for Hybrid-XGB",
     color = NULL
   )
-ggplotly(p_gene_hybrid_xgb, width = 600, height = 600) |> 
-  layout(showlegend = FALSE)
+if (is_html_output()) {
+  ggplotly(p_gene_hybrid_xgb, width = 600, height = 600) |> 
+    layout(showlegend = FALSE)  
+} else {
+  p_gene_hybrid_xgb
+}
 
 n_genes_hybrid_xgb <- dat_gene_hybrid_xgb |> 
   filter(Optimal) |> 
@@ -1283,8 +1287,8 @@ gene_dist_hybrid_xgb |>
 ```{r}
 #| label: fig-gene-smote-svm
 #| fig-cap: 'Gene Optimization for SMOTE-SVM Classifier using Averaged F1-Score'
-#| fig-height: 2
-#| fig-width: 5
+#| fig-height: 5
+#| fig-width: 6
 #| out-width: '100%'
 
 gene_smote_svm_names <- all_vi_train |> 
@@ -1331,8 +1335,13 @@ p_gene_smote_svm <-
     title = "Gene Optimziation for SMOTE-SVM",
     color = NULL
   )
-ggplotly(p_gene_smote_svm, width = 600, height = 600) |> 
-  layout(showlegend = FALSE)
+
+if (is_html_output()) {
+  ggplotly(p_gene_smote_svm, width = 600, height = 600) |> 
+    layout(showlegend = FALSE)
+} else {
+  p_gene_smote_svm
+}
 
 n_genes_smote_svm <- dat_gene_smote_svm |> 
   filter(Optimal) |> 
