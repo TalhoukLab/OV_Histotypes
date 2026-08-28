@@ -11,6 +11,8 @@ library(rlang)
 library(purrr)
 library(forcats)
 library(DiagrammeR)
+library(DiagrammeRsvg)
+library(rsvg)
 library(VennDiagram)
 library(futile.logger)
 library(kableExtra)
@@ -118,7 +120,7 @@ The final training set used only genes that were common across all three CodeSet
 ```{r}
 #| label: fig-processing
 #| fig-cap: 'Cohorts Selection'
-#| out-height: '50%'
+#| out-height: '40%'
 #| out-width: '100%'
 
 # Training Cohort
@@ -164,7 +166,7 @@ val3 <- dove4 |> filter(col_name %in% cs3_samples)
 val4 <- val3 |> semi_join(hist_cs3_van, by = "col_name")
 val5 <- dove4 |> filter(col_name %in% cs3_dedup$col_name)
 
-grViz(
+processing <- grViz(
   paste0(
     "digraph processing {
 
@@ -231,6 +233,16 @@ grViz(
     "
   )
 )
+
+if (is_html_output()) {
+  processing
+} else {
+  processing |> 
+    export_svg() |> 
+    charToRaw() |> 
+    rsvg_pdf(here("rsf/diagrams/fig-processing.pdf"))
+  include_graphics(here("rsf/diagrams/fig-processing.pdf"))
+}
 ```
 
 ## Classifiers
