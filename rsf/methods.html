@@ -323,21 +323,15 @@ window.Quarto = {
 <section id="between-codeset-and-site-normalization" class="level3" data-number="2.1.4">
 <h3 data-number="2.1.4" class="anchored" data-anchor-id="between-codeset-and-site-normalization"><span class="header-section-number">2.1.4</span> Between CodeSet and Site Normalization</h3>
 <p>To normalize between CodeSets, we randomly selected five specimens, one from each histotype, among specimens repeated in all three CodeSets. This formed the reference set (Random 1). We selected only one sample from each histotype to use as few samples as possible for normalization and retain the rest for analysis.</p>
-<p>A reference-based approach (<span class="citation" data-cites="talhouk2016">Talhouk et al. (<a href="references.html#ref-talhouk2016" role="doc-biblioref">2016</a>)</span>) was used to normalize CS1 to CS3 and CS2 to CS3 across their common genes:</p>
+<p>A reference-based approach (<span class="citation" data-cites="talhouk2016">Talhouk et al. (<a href="references.html#ref-talhouk2016" role="doc-biblioref">2016</a>)</span>) was used to normalize all CodeSets to CS3 across their common genes:</p>
 <p><span id="eq-rand1-cs1-cs2"><span class="math display">\[\begin{aligned}
 \text{X-Norm}_{\text{CS1}} = X_{\text{CS1}} + {\bar{R}_{\text{CS3}}} - {\bar{R}_{\text{CS1}}} \\
 \text{X-Norm}_{\text{CS2}} = X_{\text{CS2}} + {\bar{R}_{\text{CS3}}} - {\bar{R}_{\text{CS2}}}
 \end{aligned} \tag{2.2}\]</span></span></p>
-<p>Samples in CS3 were processed at three different locations; we also had to normalize for “site” in this CodeSet. Finally, the CS3 expression samples were included in the training set without further normalization:</p>
-<p><span id="eq-rand1-cs3-sites"><span class="math display">\[\begin{aligned}
-\text{X-Norm}_{\text{CS3-USC}} = X_{\text{CS3-USC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-USC}}} \\
-\text{X-Norm}_{\text{CS3-AOC}} = X_{\text{CS3-AOC}} + {\bar{R}_{\text{CS3-VAN}}} - {\bar{R}_{\text{CS3-AOC}}}
-\end{aligned} \tag{2.3}\]</span></span></p>
-<p>The CS3 expression samples were included in the training set without further normalization. CS3 cross-site replicates were all chosen from Vancouver, thus we did not retain any samples from USC or AOC. Finally, the initial training set is assembled by combining the normalized datasets for CS1 and CS2 along with the CS3 expression not used in normalization:</p>
+<p>The initial training set is assembled by combining the normalized datasets for CS1 and CS2 with the CS3 expression data not used in normalization:</p>
 <p><span id="eq-training-set"><span class="math display">\[\begin{aligned}
-\text{Training Set} &amp;= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3-VAN}} + \text{X-Norm}_{\text{CS3-USC}} + \text{X-Norm}_{\text{CS3-AOC}} \\
-                        &amp;= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3}}
-\end{aligned} \tag{2.4}\]</span></span></p>
+\text{Training Set} &amp;= \text{X-Norm}_{\text{CS1}} + \text{X-Norm}_{\text{CS2}} + \text{X}_{\text{CS3}}
+\end{aligned} \tag{2.3}\]</span></span></p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-venn-genes" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -362,7 +356,7 @@ Figure&nbsp;2.1: Venn diagram of common and unique gene targets covered by each 
 <div id="fig-processing" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-processing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-f8106a68b7a57ee7c45a" style="width:100%;height:50%;"></div>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-f8106a68b7a57ee7c45a" style="width:100%;height:40%;"></div>
 <script type="application/json" data-for="htmlwidget-f8106a68b7a57ee7c45a">{"x":{"diagram":"digraph processing {\n\n    # layout\n    # fontname = \"times-italic\"\n    graph [layout = dot, overlap = FALSE, ranksep = \"0.1\"]\n\n    # node definitions\n    node [shape = box, style = \"filled, rounded\", color = \"white\", fillcolor = \"white\"]\n\n    MAYO [label = \"MAYO\nn = 69\", color = \"black\"]\n    OOU [label = \"OOU\nn = 170\", color = \"black\"]\n    OOUE [label = \"OOUE\nn = 73\", color = \"black\"]\n    VOA [label = \"VOA\nn = 805\", color = \"black\"]\n    MTL [label = \"MTL\nn = 62\", color = \"black\"]\n    OVAR3 [label = \"OVAR3\nn = 150\", color = \"black\"]\n    OVAR11 [label = \"OVAR11\nn = 416\", color = \"black\"]\n    JAPAN [label = \"JAPAN\nn = 8\", color = \"black\"]\n    intermediate_1 [shape = point, width = 0.01, height = 0.01]\n    train_1 [label = \"n = 1753\", style = \"filled\", fillcolor = \"grey90\"]\n    train_2 [label = \"Training Set\nn = 1722\", style = \"filled\", fillcolor = \"#7BB369\"]\n    train_3 [label = \"n = 1650\", style = \"filled\", fillcolor = \"grey90\"]\n    train_cs1 [label = \"CS1\nExpression Samples = 241\nReference Samples = 5\", fillcolor = \"#607C8E\"]\n    train_cs2 [label = \"CS2\nExpression Samples = 790\nReference Samples = 5\", fillcolor = \"#FFA756\"]\n    train_cs3 [label = \"CS3\nExpression Samples = 470\nReference Samples = 5\", fillcolor = \"#259FED\"]\n    train_5 [label = \"Training Set\nn = 1257\", style = \"filled\", fillcolor = \"#7BB369\"]\n\n    conf1 [label = \"TNCO\nn = 691\", color = \"black\"]\n    conf2 [label = \"Confirmation Set\nn = 690\", style = \"filled\", fillcolor = \"#B19CD7\"]\n    conf3 [label = \"Confirmation Set\nn = 659\", style = \"filled\", fillcolor = \"#B19CD7\"]\n    conf5 [label = \"Confirmation Set\nn = 642\", style = \"filled\", fillcolor = \"#B19CD7\"]\n\n    val1 [label = \"DOVE4\nn = 1160\", color = \"black\"]\n    val2 [label = \"Validation Set\nn = 959\", style = \"filled\", fillcolor = \"#04D9FF\"]\n    intermediate_2 [shape = point, width = 0.01, height = 0.01]\n    val3 [label = \"Validation Set\nn = 929\", style = \"filled\", fillcolor = \"#04D9FF\"]\n    val5 [label = \"Validation Set\nn = 894\", style = \"filled\", fillcolor = \"#04D9FF\"]\n\n    # edge definitions\n    edge [minlen = 4, arrowsize = 0.75]\n    {MAYO OOU OOUE VOA MTL OVAR3 OVAR11 JAPAN} -> intermediate_1 [dir = none]\n    intermediate_1 -> train_1\n    train_1 -> train_2 [xlabel = \"Exclude Quality Control Fails: 31\"]\n    train_2 -> train_3 [xlabel = \"Exclude Other Histotypes: 72\"]\n    train_3 -> {train_cs1 train_cs2 train_cs3} [style = invis, minlen = 1]\n    train_cs1 -> train_5 [xlabel = \"Exclude Replicates: 244      \"]\n    {train_cs2 train_cs3} -> train_5\n\n    conf1 -> conf2 [xlabel = \"Exclude Quality\nControl Fails: 1\"]\n    conf2 -> conf3 [xlabel = \"Exclude Other\nHistotypes: 31\"]\n    conf3 -> conf5 [xlabel = \"Exclude non-Vancouver: 0\nExclude Replicates: 17\", minlen = 7]\n\n    val1 -> val2 [xlabel = \"Exclude Quality\nControl Fails: 201\"]\n    val2 -> intermediate_2 [xlabel = \"Exclude Other\nHistotypes: 30\", dir = none]\n    intermediate_2 -> val3\n    val3 -> val5 [xlabel = \"Exclude non-Vancouver: 6\nExclude Replicates: 29\", minlen = 7]\n\n    # subgraph definitions\n    subgraph {rank = same; MAYO; OOU; OOUE; VOA; MTL; OVAR3; OVAR11; JAPAN; conf1; val1}\n    subgraph {rank = same; train_2; conf2; val2}\n    subgraph {rank = same; train_cs1; train_cs2; train_cs3; conf3; val3}\n    subgraph {rank = same; train_5; conf5; val5}\n    }\n    ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-processing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -375,7 +369,7 @@ Figure&nbsp;2.2: Cohorts Selection
 </section>
 <section id="classifiers" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="classifiers"><span class="header-section-number">2.2</span> Classifiers</h2>
-<p>We used a supervised learning framework to train four multinomial classification algorithms in the Training Set. The full prediction model pipeline was run using SLURM batch jobs submitted to a partition on a Rocky 9 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the tidymodels suite of packages in R (v4.5.2). The classifiers we used are:</p>
+<p>We used a supervised learning framework to train four multinomial classification algorithms in the Training Set. The full prediction model pipeline was run using SLURM batch jobs submitted to a partition on a Rocky 9 server. All resampling techniques, pre-processing, model specification, hyperparameter tuning, and evaluation metrics were implemented using the tidymodels suite of packages in R (v4.6.1). The classifiers we used are:</p>
 <ul>
 <li>Random Forest (<code>rf</code>) <span class="citation" data-cites="wright2017">(<a href="references.html#ref-wright2017" role="doc-biblioref">Wright and Ziegler 2017</a>)</span></li>
 <li>Support Vector Machine (<code>svm</code>) <span class="citation" data-cites="platt1999probabilistic">(<a href="references.html#ref-platt1999probabilistic" role="doc-biblioref"><span class="nocase">Platt et al.</span> 1999</a>)</span></li>
@@ -455,7 +449,7 @@ Figure&nbsp;2.3: Visualization of Subsampling Techniques
 &amp; X_k = \text{Training data with k classes}  \\
 &amp; C_k = \text{Class with highest}\;F_1\;\text{score from training}\;X_k \\
 &amp; W_k = \text{Workflow associated with}\;C_k
-\end{aligned} \tag{2.5}\]</span></span></p>
+\end{aligned} \tag{2.4}\]</span></span></p>
 <p><a href="#fig-two-step-flowchart" class="quarto-xref">Figure&nbsp;<span>2.4</span></a> shows how the two-step algorithm works:</p>
 <div class="cell" data-fig-height="2.5" data-out-height="100%" data-layout-align="default">
 <div class="cell-output-display">
@@ -1121,36 +1115,36 @@ Figure&nbsp;2.7: Aggregating Predictions for Sequential Algorithm
 <section id="accuracy" class="level4" data-number="2.5.1.1">
 <h4 data-number="2.5.1.1" class="anchored" data-anchor-id="accuracy"><span class="header-section-number">2.5.1.1</span> Accuracy</h4>
 <p>The accuracy is defined as the proportion of correct predictions out of all cases:</p>
-<p><span id="eq-accuracy"><span class="math display">\[\text{accuracy} = \frac{TP}{TP + FP + FN + TN} \tag{2.6}\]</span></span></p>
+<p><span id="eq-accuracy"><span class="math display">\[\text{accuracy} = \frac{TP}{TP + FP + FN + TN} \tag{2.5}\]</span></span></p>
 </section>
 <section id="sensitivity" class="level4" data-number="2.5.1.2">
 <h4 data-number="2.5.1.2" class="anchored" data-anchor-id="sensitivity"><span class="header-section-number">2.5.1.2</span> Sensitivity</h4>
 <p>Sensitivity is the proportional of correctly predicted positive cases, out of all cases that were truly positive</p>
-<p><span id="eq-sens"><span class="math display">\[\text{sensitivity} = \frac{TP}{TP + FN} \tag{2.7}\]</span></span></p>
+<p><span id="eq-sens"><span class="math display">\[\text{sensitivity} = \frac{TP}{TP + FN} \tag{2.6}\]</span></span></p>
 </section>
 <section id="specificity" class="level4" data-number="2.5.1.3">
 <h4 data-number="2.5.1.3" class="anchored" data-anchor-id="specificity"><span class="header-section-number">2.5.1.3</span> Specificity</h4>
 <p>Specificity is the proportional of correctly predicted negative cases, out of all cases that were truly negative.</p>
-<p><span id="eq-spec"><span class="math display">\[\text{specificity} = \frac{TN}{TN + FP} \tag{2.8}\]</span></span></p>
+<p><span id="eq-spec"><span class="math display">\[\text{specificity} = \frac{TN}{TN + FP} \tag{2.7}\]</span></span></p>
 </section>
 <section id="f1-score" class="level4" data-number="2.5.1.4">
 <h4 data-number="2.5.1.4" class="anchored" data-anchor-id="f1-score"><span class="header-section-number">2.5.1.4</span> F1-Score</h4>
 <p>The F-measure can be thought of as a harmonic mean between precision and recall:</p>
-<p><span id="eq-f1"><span class="math display">\[F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times precision) + recall} \tag{2.9}\]</span></span></p>
+<p><span id="eq-f1"><span class="math display">\[F_{meas} = \frac{(1 + \beta^2) \times precision \times recall}{(\beta^2 \times precision) + recall} \tag{2.8}\]</span></span></p>
 <p>The <span class="math inline">\(\beta\)</span> value can be adjusted to place more weight upon precision or recall. The most common value is <span class="math inline">\(\beta\)</span> is 1, which is also commonly known as the F1-score. A multiclass extension doesn’t exist for the F1-score, so we use macro-averaging to calculate this metric when there are more than two classes. For example, with <span class="math inline">\(k\)</span> classes, the macro-averaged F1-score is equal to:</p>
-<p><span id="eq-f1-macro"><span class="math display">\[{F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i} \tag{2.10}\]</span></span></p>
+<p><span id="eq-f1-macro"><span class="math display">\[{F_1}_{macro} = \frac{1}{k} \sum_{i=1}^{k}{F_1}_{i} \tag{2.9}\]</span></span></p>
 <p>where each <span class="math inline">\({F_1}_{i}\)</span> is the F1-score computed frrom recoding classes into <span class="math inline">\(k=i\)</span> vs.&nbsp;<span class="math inline">\(k \neq i\)</span>.</p>
 <p>In situations where there is not at least one predicted case for each of the classes (e.g.&nbsp;for a poor classifier), <span class="math inline">\({F_1}_{i}\)</span> is undefined because the per-class precision of class <span class="math inline">\(i\)</span> is undefined. Those <span class="math inline">\({F_1}_{i}\)</span> terms are removed from the <span class="math inline">\({F_1}_{macro}\)</span> equation and the resulting value may be inflated. Interpreting the F1-score in such a case would be misleading.</p>
 </section>
 <section id="balanced-accuracy" class="level4" data-number="2.5.1.5">
 <h4 data-number="2.5.1.5" class="anchored" data-anchor-id="balanced-accuracy"><span class="header-section-number">2.5.1.5</span> Balanced Accuracy</h4>
 <p>Balanced accuracy is the arithmetic mean of sensitivity and specificity.</p>
-<p><span id="eq-bal-accuracy"><span class="math display">\[\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2} \tag{2.11}\]</span></span></p>
+<p><span id="eq-bal-accuracy"><span class="math display">\[\text{Balanced Accuracy} = \frac{\text{Sensitivity} + \text{Specificity}}{2} \tag{2.10}\]</span></span></p>
 </section>
 <section id="kappa" class="level4" data-number="2.5.1.6">
 <h4 data-number="2.5.1.6" class="anchored" data-anchor-id="kappa"><span class="header-section-number">2.5.1.6</span> Kappa</h4>
 <p>Kappa is the defined as:</p>
-<p><span id="eq-kappa"><span class="math display">\[\text{kappa} = \frac{p_0 - p_e}{1 - p_e} \tag{2.12}\]</span></span></p>
+<p><span id="eq-kappa"><span class="math display">\[\text{kappa} = \frac{p_0 - p_e}{1 - p_e} \tag{2.11}\]</span></span></p>
 <p>where <span class="math inline">\(p_0\)</span> is the observed agreement among raters and <span class="math inline">\(p_e\)</span> is the hypothetical probability of agreement due to random chance.</p>
 </section>
 </section>
